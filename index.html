@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/standalone.css">
 </head>
-<body data-lab-preview>
+<body>
   <header class="site-header">
     <a class="site-header__brand" href="https://support.searchstax.com/hc/en-us">
       <img src="assets/searchstax-logo.svg" alt="SearchStax">
@@ -26,30 +26,16 @@
   class="search-lab lt-container"
   id="main-content"
   data-search-lab
-  data-search-url=""
-  data-search-credential=""
-  data-before-profile=""
-  data-after-profile=""
-  data-ranking-profile=""
+  data-search-url="https://searchcloud-29-us-east-1.searchstax.com/29847/searchlabdemo-16707/emselect"
+  data-search-credential="ef1ccc4d470be7a6eaa07e87a2ee577d08bba67c"
+  data-before-profile="Main Profile"
+  data-after-profile="SearchLabAfter"
+  data-ranking-profile="SearchLabRanking"
 >
   <div class="search-lab__inner lt-container-inner">
     <nav class="search-lab__breadcrumb" aria-label="Breadcrumb">
       <ol class="breadcrumbs"><li><a href="https://support.searchstax.com/hc/en-us">Help Center</a></li><li aria-current="page">Search Lab</li></ol>
     </nav>
-
-    <section class="search-lab__setup" data-lab-setup hidden aria-labelledby="lab-setup-heading">
-      <h2 id="lab-setup-heading">Connect the preview</h2>
-      <p>These details are saved for this preview tab’s session. Use the isolated demo app’s read-only credential.</p>
-      <form data-lab-setup-form>
-        <label>Demo search endpoint <input name="endpoint" type="url" autocomplete="off" required></label>
-        <label>Read-only credential <input name="credential" type="password" autocomplete="off" required></label>
-        <label>Before profile <input name="before" value="Main Profile" required></label>
-        <label>After profile <input name="after" value="SearchLabAfter" required></label>
-        <label>Ranking after profile <input name="rankingAfter" value="SearchLabRanking" required></label>
-        <button type="submit" class="lt-btn lt-btn--secondary">Connect preview</button>
-      </form>
-      <p role="status" data-lab-setup-status></p>
-    </section>
 
     <header class="search-lab__intro">
       <div>

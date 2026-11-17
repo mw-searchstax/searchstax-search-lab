@@ -12,14 +12,14 @@ From this directory, start a static server:
 python3 -m http.server 4173 --bind 127.0.0.1
 ```
 
-Open `http://127.0.0.1:4173/`. To run searches, use the preview connection form with the demo app's Select Endpoint, an active **read-only** Search API credential, and the three prepared profile names. Connection details stay in the current browser tab's session storage and aren't included in share links.
+Open `http://127.0.0.1:4173/`. Searches connect automatically to the isolated demo app using the Search Endpoint, read-only Search API credential, and prepared profile names configured in `index.html`.
 
 The page loads the SearchStax JavaScript UI Kit from its CDN and sends search requests directly to the configured SearchStax endpoint. Use the isolated demo app and public fictional content only. Don't use a read/write or administrative credential.
 
 ## Hosting
 
-The preview is publicly hosted at https://mw-searchstax.github.io/searchstax-search-lab/. GitHub Pages deploys the root of the `main` branch. Each browser session currently needs the demo connection details entered in the preview form, so this is not yet a self-service visitor experience.
+The preview is publicly hosted at https://mw-searchstax.github.io/searchstax-search-lab/. GitHub Pages deploys the root of the `main` branch.
 
-A read-only credential supplied to browser code is visible to visitors; use a server-side proxy if it must remain private. A visitor-facing deployment still needs an agreed connection approach and a review of the host's terms.
+The demo endpoint and read-only credential in `index.html` are public and visible to visitors. They must be limited to the isolated demo app and its fictional content. Don't use a read/write or administrative credential. Use a server-side proxy if a credential must remain private.
 
 A staff-only Zendesk draft test saved the iframe markup but omitted both the Search Lab and an Alder Coast control iframe from the rendered article preview. No Zendesk Admin settings or theme templates were changed for this test.

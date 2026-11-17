@@ -34,7 +34,6 @@
   };
   var DEFAULT_COLOR = '#a33c22';
   var DEFAULT_FONT = 'arial';
-  var PREVIEW_STORAGE_KEY = 'search-lab-preview-connection';
   var FONT_STACKS = {
     arial: 'Arial, Helvetica, sans-serif',
     verdana: 'Verdana, Geneva, sans-serif',
@@ -55,8 +54,6 @@
   var colorInput = root.querySelector('#lab-accent');
   var fontInput = root.querySelector('#lab-font');
   var scenarioInput = root.querySelector('#lab-scenario');
-  var setup = root.querySelector('[data-lab-setup]');
-  var setupForm = root.querySelector('[data-lab-setup-form]');
   var facetsPanel = root.querySelector('[data-lab-facets-panel]');
   var facets = root.querySelector('#lab-facets');
   var resultsLayout = root.querySelector('[data-lab-results-layout]');
@@ -252,21 +249,6 @@
     }
   }
 
-  function restorePreviewConnection() {
-    if (!document.body.hasAttribute('data-lab-preview')) return;
-    if (validSearchURL(config.searchURL) && config.searchAuth && config.before && config.after && config.before !== config.after) return;
-    try {
-      var saved = JSON.parse(window.sessionStorage.getItem(PREVIEW_STORAGE_KEY) || 'null');
-      if (saved && validSearchURL(saved.searchURL) && typeof saved.searchAuth === 'string' && saved.searchAuth &&
-        typeof saved.before === 'string' && saved.before && typeof saved.after === 'string' && saved.after && saved.before !== saved.after) {
-        config = { searchURL: saved.searchURL, searchAuth: saved.searchAuth, before: saved.before, after: saved.after,
-          rankingAfter: typeof saved.rankingAfter === 'string' && saved.rankingAfter ? saved.rankingAfter : config.rankingAfter };
-      }
-    } catch {
-      // Storage can be disabled. The preview setup remains available.
-    }
-  }
-
   function safeResults(items) {
     return items.filter(function (item) {
       try {
@@ -332,8 +314,7 @@
     var Searchstax = getConstructor();
     if (!validSearchURL(config.searchURL) || !config.searchAuth ||
       !config.before || !config.after || config.before === config.after) {
-      if (document.body.hasAttribute('data-lab-preview')) setup.hidden = false;
-      showUnavailable('The live demo hasn’t been configured yet.');
+      showUnavailable();
       return;
     }
     if (!Searchstax) {
@@ -442,33 +423,6 @@
     queryInput.value = SCENARIOS[state.scenario].query;
     runSearch(queryInput.value, true);
   });
-  setupForm.addEventListener('submit', function (event) {
-    event.preventDefault();
-    var fields = setupForm.elements;
-    var next = {
-      searchURL: fields.endpoint.value.trim(),
-      searchAuth: fields.credential.value,
-      before: fields.before.value.trim(),
-      after: fields.after.value.trim(),
-      rankingAfter: fields.rankingAfter.value.trim(),
-    };
-    fields.credential.value = '';
-    if (!validSearchURL(next.searchURL) || !next.searchAuth || !next.before || !next.after || !next.rankingAfter ||
-      next.before === next.after || next.rankingAfter === next.before || next.rankingAfter === next.after) {
-      root.querySelector('[data-lab-setup-status]').textContent = 'Enter a valid SearchStax endpoint, read-only credential, and three different profiles.';
-      return;
-    }
-    config = next;
-    if (document.body.hasAttribute('data-lab-preview')) {
-      try {
-        window.sessionStorage.setItem(PREVIEW_STORAGE_KEY, JSON.stringify(next));
-      } catch {
-        // The connection still works until this page is reloaded.
-      }
-    }
-    setup.hidden = true;
-    initialize();
-  });
   filterToggle.addEventListener('change', function () {
     state.filters = filterToggle.checked;
     updateDesign();
@@ -504,6 +458,5 @@
   readSharedSettings();
   updateDesign();
   updateScenario();
-  restorePreviewConnection();
   initialize();
 })();

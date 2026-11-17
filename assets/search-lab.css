@@ -17,13 +17,6 @@
 .search-lab button:disabled { cursor: wait; opacity: .55; }
 .search-lab :focus-visible { outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #333); outline-offset: var(--focus-ring-offset, 3px); }
 .search-lab__breadcrumb { padding-top: 1.5rem; color: var(--lab-muted); font-size: .875rem; }
-.search-lab__setup { margin-top: 2rem; padding: 1.25rem; border: 1px solid var(--lab-border); border-radius: var(--border-radius-base, 6px); background: var(--color-bg-secondary, #f7f7f7); }
-.search-lab__setup h2 { margin: 0 0 .5rem; font-size: 1.25rem; }
-.search-lab__setup p { margin: 0 0 .75rem; }
-.search-lab__setup form { display: flex; flex-wrap: wrap; align-items: end; gap: .75rem; }
-.search-lab__setup label { display: grid; gap: .25rem; font-size: .875rem; }
-.search-lab__setup input { min-width: 12rem; padding: .5rem; border: 1px solid var(--lab-border); border-radius: var(--border-radius-base, 6px); background: var(--color-bg, #fff); }
-.search-lab__setup [data-lab-setup-status]:empty { display: none; }
 .search-lab__intro { display: flex; justify-content: space-between; align-items: end; gap: 1.5rem; padding: 2rem 0; }
 .search-lab__intro > div:first-child { max-width: 42.5rem; }
 .search-lab__intro h1 { margin-bottom: .75rem; }
