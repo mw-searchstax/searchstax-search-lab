@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore how SearchStax design and relevance settings affect a search experience.">
+  <title>Search Lab | SearchStax</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/standalone.css">
+</head>
+<body data-lab-preview>
+  <header class="site-header">
+    <a class="site-header__brand" href="https://support.searchstax.com/hc/en-us">
+      <img src="assets/searchstax-logo.svg" alt="SearchStax">
+      <strong class="site-header__wordmark" aria-hidden="true">SEARCHSTAX</strong>
+      <span>Site Search Documentation</span>
+    </a>
+  </header>
+<link rel="stylesheet" href="assets/search-lab.css">
+<script defer src="https://cdn.jsdelivr.net/npm/@searchstax-inc/searchstudio-ux-js@4.2.34/dist/@searchstax-inc/searchstudio-ux-js.iife.js"></script>
+<script defer src="assets/search-lab.js"></script>
+
+<main
+  class="search-lab lt-container"
+  id="main-content"
+  data-search-lab
+  data-search-url=""
+  data-search-credential=""
+  data-before-profile=""
+  data-after-profile=""
+  data-ranking-profile=""
+>
+  <div class="search-lab__inner lt-container-inner">
+    <nav class="search-lab__breadcrumb" aria-label="Breadcrumb">
+      <ol class="breadcrumbs"><li><a href="https://support.searchstax.com/hc/en-us">Help Center</a></li><li aria-current="page">Search Lab</li></ol>
+    </nav>
+
+    <section class="search-lab__setup" data-lab-setup hidden aria-labelledby="lab-setup-heading">
+      <h2 id="lab-setup-heading">Connect the preview</h2>
+      <p>These details are saved for this preview tab’s session. Use the isolated demo app’s read-only credential.</p>
+      <form data-lab-setup-form>
+        <label>Demo search endpoint <input name="endpoint" type="url" autocomplete="off" required></label>
+        <label>Read-only credential <input name="credential" type="password" autocomplete="off" required></label>
+        <label>Before profile <input name="before" value="Main Profile" required></label>
+        <label>After profile <input name="after" value="SearchLabAfter" required></label>
+        <label>Ranking after profile <input name="rankingAfter" value="SearchLabRanking" required></label>
+        <button type="submit" class="lt-btn lt-btn--secondary">Connect preview</button>
+      </form>
+      <p role="status" data-lab-setup-status></p>
+    </section>
+
+    <header class="search-lab__intro">
+      <div>
+        <h1>Search Lab</h1>
+        <p>Design a search experience, then explore how a small change can help people find what they need.</p>
+      </div>
+      <div class="search-lab__actions">
+        <button type="button" class="lt-btn lt-btn--secondary" data-lab-share>Share settings</button>
+        <button type="button" class="lt-btn lt-btn--secondary" data-lab-reset>Reset</button>
+      </div>
+    </header>
+
+    <div class="search-lab__workspace">
+      <aside class="search-lab__controls" aria-label="Search Lab controls">
+        <section class="search-lab__control-section" aria-labelledby="lab-design-heading">
+          <div class="search-lab__section-heading">
+            <span>01 / DESIGN</span>
+            <h2 id="lab-design-heading">Make it yours</h2>
+            <p>Change the look of the search experience.</p>
+          </div>
+
+          <fieldset class="search-lab__field">
+            <legend>Results layout</legend>
+            <div class="search-lab__layout-options">
+              <label><input type="radio" name="lab-layout" value="list" checked><span><span aria-hidden="true">☰</span> List</span></label>
+              <label><input type="radio" name="lab-layout" value="cards"><span><span aria-hidden="true">▦</span> Cards</span></label>
+            </div>
+          </fieldset>
+
+          <div class="search-lab__field search-lab__field--inline">
+            <div><label for="lab-filters">Show filters</label><p>Help visitors narrow their results.</p></div>
+            <input id="lab-filters" type="checkbox" checked>
+          </div>
+
+          <div class="search-lab__field search-lab__field--inline">
+            <div><label for="lab-accent">Accent color</label><p>Make the experience feel like your brand.</p></div>
+            <input id="lab-accent" type="color" value="#a33c22">
+          </div>
+
+          <div class="search-lab__field search-lab__font-field">
+            <label for="lab-font">Preview font</label>
+            <p>Choose a common font with a fallback.</p>
+            <select id="lab-font">
+              <option value="arial">Arial</option>
+              <option value="verdana">Verdana</option>
+              <option value="tahoma">Tahoma</option>
+              <option value="trebuchet">Trebuchet MS</option>
+              <option value="georgia">Georgia</option>
+              <option value="times">Times New Roman</option>
+              <option value="courier">Courier New</option>
+            </select>
+          </div>
+        </section>
+
+        <section class="search-lab__control-section search-lab__control-section--lesson" aria-labelledby="lab-relevance-heading">
+          <div class="search-lab__section-heading">
+            <span>02 / EXPLORE RELEVANCE</span>
+            <h2 id="lab-relevance-heading">Try a real example</h2>
+            <p data-lab-lesson-intro>See how Search Fields can help a page match a search.</p>
+          </div>
+          <div class="search-lab__field search-lab__scenario">
+            <label for="lab-scenario">Scenario</label>
+            <select id="lab-scenario" aria-describedby="lab-scenario-help">
+              <option value="fields">Search Fields</option>
+              <option value="ranking">Ranking</option>
+            </select>
+            <p id="lab-scenario-help">Choosing a scenario starts its example search.</p>
+          </div>
+          <div class="search-lab__lesson-label"><span data-lab-lesson-name>SEARCH FIELDS</span><span>GUIDED EXAMPLE</span></div>
+          <p class="search-lab__lesson-copy" data-lab-lesson-copy>The fictional International Health page includes “Travel Vaccinations” in a service-name field.</p>
+          <div class="search-lab__comparison" role="group" aria-label="Search Fields comparison" data-lab-comparison>
+            <button type="button" data-lab-phase="before" aria-pressed="true">Before</button>
+            <button type="button" data-lab-phase="after" aria-pressed="false">After</button>
+          </div>
+          <p class="search-lab__comparison-description" data-lab-explanation>Before: the service-name field isn’t included in Search Fields.</p>
+          <p class="search-lab__lesson-note" data-lab-lesson-note>The same query runs against a prepared demo profile. Adding a field can make a page eligible to match; it doesn’t guarantee its position.</p>
+          <a class="search-lab__learn" href="https://support.searchstax.com/hc/en-us/articles/40483375841421-Search-Fields" data-lab-doc><span data-lab-doc-label>Learn about Search Fields</span> <span aria-hidden="true">↗</span></a>
+          <a class="search-lab__learn" href="https://support.searchstax.com/hc/en-us/articles/50357414946317-Search-Fields-Video" data-lab-video><span data-lab-video-label>Watch the Search Fields video</span> <span aria-hidden="true">↗</span></a>
+        </section>
+
+        <div class="search-lab__handoff">
+          <strong>Like what you see?</strong>
+          <p>Copy starter CSS for a JavaScript UI Kit implementation.</p>
+          <button type="button" class="lt-btn lt-btn--secondary" data-lab-copy-css>Copy starter CSS <span aria-hidden="true">↗</span></button>
+        </div>
+      </aside>
+
+      <section class="search-lab__preview" aria-labelledby="lab-preview-heading">
+        <div class="search-lab__preview-topline">
+          <div><span>LIVE PREVIEW</span><h2 id="lab-preview-heading">Your search experience</h2></div>
+          <span class="search-lab__preview-badge"><span></span> DEMO CONTENT</span>
+        </div>
+
+        <div class="search-lab__browser">
+          <div class="search-lab__browser-bar" aria-hidden="true">
+            <span class="search-lab__browser-dots"><i></i><i></i><i></i></span>
+            <span class="search-lab__browser-address">aldercoast.edu / search</span>
+          </div>
+          <div class="search-lab__site">
+            <div class="search-lab__site-header">
+              <div class="search-lab__site-brand"><span class="search-lab__site-mark" aria-hidden="true"><svg viewBox="0 0 28 28" fill="none"><path d="M14 2v24M2 14h24M5.5 5.5l17 17m0-17-17 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span><span>ALDER COAST<br><small>UNIVERSITY HEALTH</small></span></div>
+              <span class="search-lab__site-nav" aria-hidden="true">Care &nbsp;&nbsp; Education &nbsp;&nbsp; Research</span>
+            </div>
+            <div class="search-lab__site-content">
+              <p class="search-lab__site-kicker">EXPLORE ALDER COAST</p>
+              <h3>What are you looking for?</h3>
+              <p>Search care, education, research, and community resources.</p>
+              <form class="search-lab__search-form" data-lab-search-form role="search">
+                <label class="search-lab__sr-only" for="lab-query">Search the demo site</label>
+                <input id="lab-query" type="search" value="travel vaccinations" placeholder="Search the demo site" autocomplete="off">
+                <button type="submit">Search</button>
+              </form>
+              <p class="search-lab__sample">Try: <button type="button" data-lab-sample>travel vaccinations</button></p>
+
+              <div class="search-lab__results-heading"><strong data-lab-summary>Search results</strong><span data-lab-profile-label>Before</span></div>
+              <p class="search-lab__status" role="status" aria-live="polite" data-lab-status>Connecting to the demo…</p>
+              <div class="search-lab__results-layout" data-lab-results-layout aria-busy="false">
+                <aside class="search-lab__facets" aria-label="Filter search results" data-lab-facets-panel>
+                  <strong>Filter by</strong>
+                  <div id="lab-facets"></div>
+                  <p class="search-lab__facet-empty" data-lab-facet-empty hidden>No filters available for this search.</p>
+                </aside>
+                <div class="search-lab__results-column">
+                  <div id="lab-results"></div>
+                  <div id="lab-pagination"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="search-lab__preview-footnote">Alder Coast University Health is a fictional site created for SearchStax training.</p>
+      </section>
+    </div>
+    <p class="search-lab__feedback" role="status" aria-live="polite" data-lab-feedback></p>
+  </div>
+</main>
+
+</body>
+</html>
