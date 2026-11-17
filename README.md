@@ -1,6 +1,6 @@
 # SearchStax Search Lab
 
-An unpublished standalone preview for exploring SearchStax design and relevance settings using the fictional Alder Coast University Health content.
+A standalone preview for exploring SearchStax design and relevance settings using the fictional Alder Coast University Health content.
 
 The preview includes the Search Fields and Ranking scenarios, layout and styling controls, shareable settings, and starter CSS. Searches use the existing isolated demo Search App and its prepared Search Profiles.
 
@@ -18,6 +18,8 @@ The page loads the SearchStax JavaScript UI Kit from its CDN and sends search re
 
 ## Hosting
 
-This repository doesn't deploy or enable GitHub Pages. The page can be adapted for static hosting, but a visitor-facing deployment needs an agreed way to configure the demo connection, an appropriate company-owned host, and a review of the host's terms. A read-only credential supplied to browser code is visible to visitors; use a server-side proxy if it must remain private.
+The preview is publicly hosted at https://mw-searchstax.github.io/searchstax-search-lab/. GitHub Pages deploys the root of the `main` branch. Each browser session currently needs the demo connection details entered in the preview form, so this is not yet a self-service visitor experience.
 
-Embedding a separately hosted page in a Zendesk article also requires testing the Help Center's existing embed and content-security settings.
+A read-only credential supplied to browser code is visible to visitors; use a server-side proxy if it must remain private. A visitor-facing deployment still needs an agreed connection approach and a review of the host's terms.
+
+A staff-only Zendesk draft test saved the iframe markup but omitted both the Search Lab and an Alder Coast control iframe from the rendered article preview. No Zendesk Admin settings or theme templates were changed for this test.
