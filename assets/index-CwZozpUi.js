@@ -1,0 +1,10888 @@
+(function(){let e=document.createElement(`link`).relList;if(e&&e.supports&&e.supports(`modulepreload`))return;for(let e of document.querySelectorAll(`link[rel="modulepreload"]`))n(e);new MutationObserver(e=>{for(let t of e)if(t.type===`childList`)for(let e of t.addedNodes)e.tagName===`LINK`&&e.rel===`modulepreload`&&n(e)}).observe(document,{childList:!0,subtree:!0});function t(e){let t={};return e.integrity&&(t.integrity=e.integrity),e.referrerPolicy&&(t.referrerPolicy=e.referrerPolicy),t.credentials=e.crossOrigin===`use-credentials`?`include`:e.crossOrigin===`anonymous`?`omit`:`same-origin`,t}function n(e){if(e.ep)return;e.ep=!0;let n=t(e);fetch(e.href,n)}})();function e(e){try{let t=new URL(e);return(t.protocol===`https:`||t.protocol===`http:`)&&!t.username&&!t.password?t.href:null}catch{return null}}function t(e,t=`emselect`){try{let n=new URL(e.trim());return n.protocol!==`https:`||!n.hostname.endsWith(`.searchstax.com`)||n.port||n.username||n.password||n.search||n.hash||!n.pathname.replace(/\/$/,``).endsWith(`/`+t)?null:n.href}catch{return null}}var n={arial:`Arial, Helvetica, sans-serif`,verdana:`Verdana, Geneva, sans-serif`,tahoma:`Tahoma, Geneva, sans-serif`,trebuchet:`"Trebuchet MS", Helvetica, sans-serif`,georgia:`Georgia, "Times New Roman", serif`,times:`"Times New Roman", Times, serif`,courier:`"Courier New", Courier, monospace`},r={compact:`6px`,standard:`12px`,roomy:`20px`},i={standard:`5px`,square:`0px`,rounded:`14px`},a=[5,10,20],o={layout:`list`,resultSpacing:`standard`,filters:!0,showDescriptions:!0,showThumbnails:!1,showSorting:!1,showSuggestions:!1,showSmartAnswersSample:!0,samplePromotions:`off`,resultsPerPage:10,color:`#263f58`,background:`#ffffff`,logoURL:``,corners:`standard`,listDividers:!0,underlineTitles:!1,font:`arial`,searchFieldText:`Search the website`,searchButtonText:`Search`,noResultsText:`No matching pages. Try another search or remove a filter.`};function s(e){return e===`list`||e===`cards`}function c(e){return e!==null&&Object.hasOwn(r,e)}function l(e){return a.find(t=>String(t)===e)??o.resultsPerPage}function u(e){return e===`indexed`||e===`external`||e===`both`?e:`off`}function d(e){return e!==null&&Object.hasOwn(n,e)}function f(e){return/^#[\da-f]{6}$/i.test(e)}function p(e){return e!==null&&Object.hasOwn(i,e)?e:o.corners}function m(t){let n=e(t??``);return n?.startsWith(`https:`)?n:``}function h(e,t){return e?.replace(/[\r\n]+/g,` `).trim()||t}function g(e){let t=e.get(`lab_layout`),n=e.get(`lab_spacing`),r=e.get(`lab_font`),i=`#`+(e.get(`lab_color`)??``).toLowerCase(),a=`#`+(e.get(`lab_background`)??``).toLowerCase();return{layout:s(t)?t:o.layout,resultSpacing:c(n)?n:o.resultSpacing,filters:e.get(`lab_filters`)!==`off`,showDescriptions:e.get(`lab_descriptions`)!==`off`,showThumbnails:e.get(`lab_thumbnails`)===`on`,showSorting:e.get(`lab_sorting`)===`on`,showSuggestions:e.get(`lab_suggestions`)===`on`,showSmartAnswersSample:e.get(`lab_answer_sample`)!==`off`,samplePromotions:u(e.get(`lab_promotions`)),resultsPerPage:l(e.get(`lab_page_size`)),color:f(i)?i:o.color,background:f(a)?a:o.background,logoURL:m(e.get(`lab_logo`)),corners:p(e.get(`lab_corners`)),listDividers:e.get(`lab_dividers`)!==`off`,underlineTitles:e.get(`lab_underline`)===`on`,font:d(r)?r:o.font,searchFieldText:h(e.get(`lab_field_text`),o.searchFieldText),searchButtonText:h(e.get(`lab_button_text`),o.searchButtonText),noResultsText:h(e.get(`lab_no_results_text`),o.noResultsText)}}function _(e,t){e.set(`lab_layout`,t.layout),e.set(`lab_color`,t.color.slice(1)),e.set(`lab_font`,t.font),e.set(`lab_filters`,t.filters?`on`:`off`),t.background!==o.background&&e.set(`lab_background`,t.background.slice(1)),t.logoURL&&e.set(`lab_logo`,t.logoURL),t.corners!==o.corners&&e.set(`lab_corners`,t.corners),t.listDividers||e.set(`lab_dividers`,`off`),t.underlineTitles&&e.set(`lab_underline`,`on`),t.resultSpacing!==o.resultSpacing&&e.set(`lab_spacing`,t.resultSpacing),t.showDescriptions||e.set(`lab_descriptions`,`off`),t.showThumbnails&&e.set(`lab_thumbnails`,`on`),t.showSorting&&e.set(`lab_sorting`,`on`),t.showSuggestions&&e.set(`lab_suggestions`,`on`),t.showSmartAnswersSample||e.set(`lab_answer_sample`,`off`),t.samplePromotions!==`off`&&e.set(`lab_promotions`,t.samplePromotions),t.resultsPerPage!==o.resultsPerPage&&e.set(`lab_page_size`,String(t.resultsPerPage)),t.searchFieldText!==o.searchFieldText&&e.set(`lab_field_text`,t.searchFieldText),t.searchButtonText!==o.searchButtonText&&e.set(`lab_button_text`,t.searchButtonText),t.noResultsText!==o.noResultsText&&e.set(`lab_no_results_text`,t.noResultsText)}function v(e){let[t,n,r]=[1,3,5].map(t=>{let n=parseInt(e.slice(t,t+2),16)/255;return n<=.04045?n/12.92:((n+.055)/1.055)**2.4}),i=t*.2126+n*.7152+r*.0722;return(i+.05)/.05>=1.05/(i+.05)?`#000000`:`#ffffff`}function y(e){let t=v(e.background)===`#ffffff`;return{accent:e.color,accentText:v(e.color),background:e.background,ink:e.background===o.background?`#202e3a`:v(e.background),titleInk:e.background===o.background?`#263f58`:v(e.background),divider:e.background===o.background?`#d8dfe3`:t?`#a1aab1`:`#79838a`,cornerRadius:i[e.corners],font:n[e.font],resultGap:r[e.resultSpacing]}}var b=Uint8Array,x=Uint16Array,S=Int32Array,C=new b([0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,0,0,0,0]),w=new b([0,0,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,0,0]),T=new b([16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15]),E=function(e,t){for(var n=new x(31),r=0;r<31;++r)n[r]=t+=1<<e[r-1];for(var i=new S(n[30]),r=1;r<30;++r)for(var a=n[r];a<n[r+1];++a)i[a]=a-n[r]<<5|r;return{b:n,r:i}},D=E(C,2),O=D.b,k=D.r;O[28]=258,k[258]=28;var A=E(w,0);A.b;for(var j=A.r,M=new x(32768),N=0;N<32768;++N){var P=(N&43690)>>1|(N&21845)<<1;P=(P&52428)>>2|(P&13107)<<2,P=(P&61680)>>4|(P&3855)<<4,M[N]=((P&65280)>>8|(P&255)<<8)>>1}for(var F=(function(e,t,n){for(var r=e.length,i=0,a=new x(t);i<r;++i)e[i]&&++a[e[i]-1];var o=new x(t);for(i=1;i<t;++i)o[i]=o[i-1]+a[i-1]<<1;var s;if(n){s=new x(1<<t);var c=15-t;for(i=0;i<r;++i)if(e[i])for(var l=i<<4|e[i],u=t-e[i],d=o[e[i]-1]++<<u,f=d|(1<<u)-1;d<=f;++d)s[M[d]>>c]=l}else for(s=new x(r),i=0;i<r;++i)e[i]&&(s[i]=M[o[e[i]-1]++]>>15-e[i]);return s}),I=new b(288),N=0;N<144;++N)I[N]=8;for(var N=144;N<256;++N)I[N]=9;for(var N=256;N<280;++N)I[N]=7;for(var N=280;N<288;++N)I[N]=8;for(var L=new b(32),N=0;N<32;++N)L[N]=5;var R=F(I,9,0),ee=F(L,5,0),z=function(e){return(e+7)/8|0},te=function(e,t,n){return(t==null||t<0)&&(t=0),(n==null||n>e.length)&&(n=e.length),new b(e.subarray(t,n))},B=[`unexpected EOF`,`invalid block type`,`invalid length/literal`,`invalid distance`,`stream finished`,`no stream handler`,,`no callback`,`invalid UTF-8 data`,`extra field too long`,`date not in range 1980-2099`,`filename too long`,`stream finishing`,`invalid zip data`],V=function(e,t,n){var r=Error(t||B[e]);if(r.code=e,Error.captureStackTrace&&Error.captureStackTrace(r,V),!n)throw r;return r},H=function(e,t,n){n<<=t&7;var r=t/8|0;e[r]|=n,e[r+1]|=n>>8},ne=function(e,t,n){n<<=t&7;var r=t/8|0;e[r]|=n,e[r+1]|=n>>8,e[r+2]|=n>>16},U=function(e,t){for(var n=[],r=0;r<e.length;++r)e[r]&&n.push({s:r,f:e[r]});var i=n.length,a=n.slice();if(!i)return{t:W,l:0};if(i==1){var o=new b(n[0].s+1);return o[n[0].s]=1,{t:o,l:1}}n.sort(function(e,t){return e.f-t.f}),n.push({s:-1,f:25001});var s=n[0],c=n[1],l=0,u=1,d=2;for(n[0]={s:-1,f:s.f+c.f,l:s,r:c};u!=i-1;)s=n[n[l].f<n[d].f?l++:d++],c=n[l!=u&&n[l].f<n[d].f?l++:d++],n[u++]={s:-1,f:s.f+c.f,l:s,r:c};for(var f=a[0].s,r=1;r<i;++r)a[r].s>f&&(f=a[r].s);var p=new x(f+1),m=re(n[u-1],p,0);if(m>t){var r=0,h=0,g=m-t,_=1<<g;for(a.sort(function(e,t){return p[t.s]-p[e.s]||e.f-t.f});r<i;++r){var v=a[r].s;if(p[v]>t)h+=_-(1<<m-p[v]),p[v]=t;else break}for(h>>=g;h>0;){var y=a[r].s;p[y]<t?h-=1<<t-p[y]++-1:++r}for(;r>=0&&h;--r){var S=a[r].s;p[S]==t&&(--p[S],++h)}m=t}return{t:new b(p),l:m}},re=function(e,t,n){return e.s==-1?Math.max(re(e.l,t,n+1),re(e.r,t,n+1)):t[e.s]=n},ie=function(e){for(var t=e.length;t&&!e[--t];);for(var n=new x(++t),r=0,i=e[0],a=1,o=function(e){n[r++]=e},s=1;s<=t;++s)if(e[s]==i&&s!=t)++a;else{if(!i&&a>2){for(;a>138;a-=138)o(32754);a>2&&(o(a>10?a-11<<5|28690:a-3<<5|12305),a=0)}else if(a>3){for(o(i),--a;a>6;a-=6)o(8304);a>2&&(o(a-3<<5|8208),a=0)}for(;a--;)o(i);a=1,i=e[s]}return{c:n.subarray(0,r),n:t}},ae=function(e,t){for(var n=0,r=0;r<t.length;++r)n+=e[r]*t[r];return n},oe=function(e,t,n){var r=n.length,i=z(t+2);e[i]=r&255,e[i+1]=r>>8,e[i+2]=e[i]^255,e[i+3]=e[i+1]^255;for(var a=0;a<r;++a)e[i+a+4]=n[a];return(i+4+r)*8},se=function(e,t,n,r,i,a,o,s,c,l,u){H(t,u++,n),++i[256];for(var d=U(i,15),f=d.t,p=d.l,m=U(a,15),h=m.t,g=m.l,_=ie(f),v=_.c,y=_.n,b=ie(h),S=b.c,E=b.n,D=new x(19),O=0;O<v.length;++O)++D[v[O]&31];for(var O=0;O<S.length;++O)++D[S[O]&31];for(var k=U(D,7),A=k.t,j=k.l,M=19;M>4&&!A[T[M-1]];--M);var N=l+5<<3,P=ae(i,I)+ae(a,L)+o,z=ae(i,f)+ae(a,h)+o+14+3*M+ae(D,A)+2*D[16]+3*D[17]+7*D[18];if(c>=0&&N<=P&&N<=z)return oe(t,u,e.subarray(c,c+l));var te,B,V,re;if(H(t,u,1+(z<P)),u+=2,z<P){te=F(f,p,0),B=f,V=F(h,g,0),re=h;var se=F(A,j,0);H(t,u,y-257),H(t,u+5,E-1),H(t,u+10,M-4),u+=14;for(var O=0;O<M;++O)H(t,u+3*O,A[T[O]]);u+=3*M;for(var ce=[v,S],W=0;W<2;++W)for(var le=ce[W],O=0;O<le.length;++O){var G=le[O]&31;H(t,u,se[G]),u+=A[G],G>15&&(H(t,u,le[O]>>5&127),u+=le[O]>>12)}}else te=R,B=I,V=ee,re=L;for(var O=0;O<s;++O){var ue=r[O];if(ue>255){var G=ue>>18&31;ne(t,u,te[G+257]),u+=B[G+257],G>7&&(H(t,u,ue>>23&31),u+=C[G]);var de=ue&31;ne(t,u,V[de]),u+=re[de],de>3&&(ne(t,u,ue>>5&8191),u+=w[de])}else ne(t,u,te[ue]),u+=B[ue]}return ne(t,u,te[256]),u+B[256]},ce=new S([65540,131080,131088,131104,262176,1048704,1048832,2114560,2117632]),W=new b(0),le=function(e,t,n,r,i,a){var o=a.z||e.length,s=new b(r+o+5*(1+Math.ceil(o/7e3))+i),c=s.subarray(r,s.length-i),l=a.l,u=(a.r||0)&7;if(t){u&&(c[0]=a.r>>3);for(var d=ce[t-1],f=d>>13,p=d&8191,m=(1<<n)-1,h=a.p||new x(32768),g=a.h||new x(m+1),_=Math.ceil(n/3),v=2*_,y=function(t){return(e[t]^e[t+1]<<_^e[t+2]<<v)&m},T=new S(25e3),E=new x(288),D=new x(32),O=0,A=0,M=a.i||0,N=0,P=a.w||0,F=0;M+2<o;++M){var I=y(M),L=M&32767,R=g[I];if(h[L]=R,g[I]=L,P<=M){var ee=o-M;if((O>7e3||N>24576)&&(ee>423||!l)){u=se(e,c,0,T,E,D,A,N,F,M-F,u),N=O=A=0,F=M;for(var B=0;B<286;++B)E[B]=0;for(var B=0;B<30;++B)D[B]=0}var V=2,H=0,ne=p,U=L-R&32767;if(ee>2&&I==y(M-U))for(var re=Math.min(f,ee)-1,ie=Math.min(32767,M),ae=Math.min(258,ee);U<=ie&&--ne&&L!=R;){if(e[M+V]==e[M+V-U]){for(var W=0;W<ae&&e[M+W]==e[M+W-U];++W);if(W>V){if(V=W,H=U,W>re)break;for(var le=Math.min(U,W-2),G=0,B=0;B<le;++B){var ue=M-U+B&32767,de=ue-h[ue]&32767;de>G&&(G=de,R=ue)}}}L=R,R=h[L],U+=L-R&32767}if(H){T[N++]=268435456|k[V]<<18|j[H];var fe=k[V]&31,K=j[H]&31;A+=C[fe]+w[K],++E[257+fe],++D[K],P=M+V,++O}else T[N++]=e[M],++E[e[M]]}}for(M=Math.max(M,P);M<o;++M)T[N++]=e[M],++E[e[M]];u=se(e,c,l,T,E,D,A,N,F,M-F,u),l||(a.r=u&7|c[u/8|0]<<3,u-=7,a.h=g,a.p=h,a.i=M,a.w=P)}else{for(var M=a.w||0;M<o+l;M+=65535){var pe=M+65535;pe>=o&&(c[u/8|0]=l,pe=o),u=oe(c,u+1,e.subarray(M,pe))}a.i=o}return te(s,0,r+z(u)+i)},G=(function(){for(var e=new Int32Array(256),t=0;t<256;++t){for(var n=t,r=9;--r;)n=(n&1&&-306674912)^n>>>1;e[t]=n}return e})(),ue=function(){var e=-1;return{p:function(t){for(var n=e,r=0;r<t.length;++r)n=G[n&255^t[r]]^n>>>8;e=n},d:function(){return~e}}},de=function(e,t,n,r,i){if(!i&&(i={l:1},t.dictionary)){var a=t.dictionary.subarray(-32768),o=new b(a.length+e.length);o.set(a),o.set(e,a.length),e=o,i.w=a.length}return le(e,t.level==null?6:t.level,t.mem==null?i.l?Math.ceil(Math.max(8,Math.min(13,Math.log(e.length)))*1.5):20:12+t.mem,n,r,i)},fe=function(e,t){var n={};for(var r in e)n[r]=e[r];for(var r in t)n[r]=t[r];return n},K=function(e,t,n){for(;n;++t)e[t]=n,n>>>=8};function pe(e,t){return de(e,t||{},0,0)}var me=function(e,t,n,r){for(var i in e){var a=e[i],o=t+i,s=r;Array.isArray(a)&&(s=fe(r,a[1]),a=a[0]),ArrayBuffer.isView(a)?n[o]=[a,s]:(n[o+=`/`]=[new b(0),s],me(a,o,n,r))}},he=typeof TextEncoder<`u`&&new TextEncoder,ge=typeof TextDecoder<`u`&&new TextDecoder;try{ge.decode(W,{stream:!0})}catch{}function q(e,t){if(t){for(var n=new b(e.length),r=0;r<e.length;++r)n[r]=e.charCodeAt(r);return n}if(he)return he.encode(e);for(var i=e.length,a=new b(e.length+(e.length>>1)),o=0,s=function(e){a[o++]=e},r=0;r<i;++r){if(o+5>a.length){var c=new b(o+8+(i-r<<1));c.set(a),a=c}var l=e.charCodeAt(r);l<128||t?s(l):l<2048?(s(192|l>>6),s(128|l&63)):l>55295&&l<57344?(l=65536+(l&1047552)|e.charCodeAt(++r)&1023,s(240|l>>18),s(128|l>>12&63),s(128|l>>6&63),s(128|l&63)):(s(224|l>>12),s(128|l>>6&63),s(128|l&63))}return te(a,0,o)}var _e=function(e){var t=0;if(e)for(var n in e){var r=e[n].length;r>65535&&V(9),t+=r+4}return t},ve=function(e,t,n,r,i,a,o,s){var c=r.length,l=n.extra,u=s&&s.length,d=_e(l);K(e,t,o==null?67324752:33639248),t+=4,o!=null&&(e[t++]=20,e[t++]=n.os),e[t]=20,t+=2,e[t++]=n.flag<<1|(a<0&&8),e[t++]=i&&8,e[t++]=n.compression&255,e[t++]=n.compression>>8;var f=new Date(n.mtime==null?Date.now():n.mtime),p=f.getFullYear()-1980;if((p<0||p>119)&&V(10),K(e,t,p<<25|f.getMonth()+1<<21|f.getDate()<<16|f.getHours()<<11|f.getMinutes()<<5|f.getSeconds()>>1),t+=4,a!=-1&&(K(e,t,n.crc),K(e,t+4,a<0?-a-2:a),K(e,t+8,n.size)),K(e,t+12,c),K(e,t+14,d),t+=16,o!=null&&(K(e,t,u),K(e,t+6,n.attrs),K(e,t+10,o),t+=14),e.set(r,t),t+=c,d)for(var m in l){var h=l[m],g=h.length;K(e,t,+m),K(e,t+2,g),e.set(h,t+4),t+=4+g}return u&&(e.set(s,t),t+=u),t},ye=function(e,t,n,r,i){K(e,t,101010256),K(e,t+8,n),K(e,t+10,n),K(e,t+12,r),K(e,t+16,i)};function be(e,t){t||={};var n={},r=[];me(e,``,n,t);var i=0,a=0;for(var o in n){var s=n[o],c=s[0],l=s[1],u=l.level==0?0:8,d=q(o),f=d.length,p=l.comment,m=p&&q(p),h=m&&m.length,g=_e(l.extra);f>65535&&V(11);var _=u?pe(c,l):c,v=_.length,y=ue();y.p(c),r.push(fe(l,{size:c.length,crc:y.d(),c:_,f:d,m,u:f!=o.length||m&&p.length!=h,o:i,compression:u})),i+=30+f+g+v,a+=76+2*(f+g)+(h||0)+v}for(var x=new b(a+22),S=i,C=a-i,w=0;w<r.length;++w){var d=r[w];ve(x,d.o,d,d.f,d.u,d.c.length);var T=30+d.f.length+_e(d.extra);x.set(d.c,d.o+T),ve(x,i,d,d.f,d.u,d.c.length,d.o,d.m),i+=16+T+(d.m?d.m.length:0)}return ye(x,i,r.length,C,S),x}var xe={"https://mw-searchstax.github.io/university-health-search-demo/locations/rehabilitation-center/":{source:`data:image/jpeg;base64,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`,path:`thumbnails/rehabilitation-center.jpg`},"https://mw-searchstax.github.io/university-health-search-demo/care/services/rehabilitation/":{source:`data:image/jpeg;base64,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`,path:`thumbnails/rehabilitation-design.jpg`}},Se=[{label:`Relevance`,order:``},{label:`Page address (A–Z)`,order:`url asc`},{label:`Page address (Z–A)`,order:`url desc`}],Ce=`<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SearchStax JavaScript Starter</title>
+  <link rel="stylesheet" href="./search.css">
+  <script defer src="%%UI_KIT_URL%%"><\/script>
+  <script type="module" src="./search.js"><\/script>
+</head>
+<body class="search-starter-page">
+  <main class="search-starter">
+    %%COMPANY_LOGO%%
+    <h1>Search Central County</h1>
+    <p>Search fictional university health content with the SearchStax JavaScript UI Kit.</p>
+    <form class="search-starter__form" role="search">
+      <label class="search-starter__sr-only" for="search-query">%%SEARCH_FIELD_TEXT%%</label>
+      <input id="search-query" type="search" value="rehabilitation" placeholder="%%SEARCH_FIELD_TEXT%%" autocomplete="off" required>
+      <button class="search-starter__submit" type="submit" disabled>%%SEARCH_BUTTON_TEXT%%</button>
+    </form>
+    <div id="search-smart-answers-sample" hidden>%%SMART_ANSWERS_SAMPLE%%</div>
+    <section class="smart-answers-sample__card search-starter__answer" aria-labelledby="search-customer-answer-heading" data-customer-answer hidden>
+      <h2 id="search-customer-answer-heading">Smart Answer</h2>
+      <p role="status" data-customer-answer-status></p>
+      <div class="search-starter__answer-content" data-customer-answer-content hidden></div>
+    </section>
+    <p id="search-status" role="status">Connecting to search…</p>
+    <div id="search-sorting" hidden>
+      <label class="search-starter__sort" for="search-sort-order">
+        Sort by <select id="search-sort-order"></select>
+      </label>
+    </div>
+    <div class="search-starter__body" id="search-output" aria-busy="false">
+      <aside class="search-starter__filters" aria-label="Filter search results" hidden>
+        <div id="search-facets"></div>
+      </aside>
+      <div>
+        <div id="search-results"></div>
+        <p class="search-starter__no-results" id="search-no-results" hidden></p>
+        <div data-pagination-focus tabindex="-1" role="group" aria-label="Search result pagination">
+          <div id="search-pagination"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+`,we=`import { sampleSuggestionSource, setupSearchSuggestions } from './suggestions.js';
+import { createCustomerSuggestionSource } from './customer-suggestions.js';
+import { setupPaginationFocus } from './pagination-focus.js';
+import { contentLanguageTag } from './content-language.js';
+import { demoResultText, demoResultTitle } from './demo-content.js';
+import { readCustomerEndpoint, webURL } from './web-url.js';
+import { readAnswerEndpoint, setupCustomerAnswers } from './customer-answers.js';
+import {
+  applySampleIndexedPromotion,
+  createSampleExternalPromotion,
+  samplePromotionMode,
+  samplePromotionQuery,
+  updateSampleExternalPromotion,
+} from './promotions.js';
+
+const logo = document.querySelector('.search-starter__logo');
+if (logo) {
+  logo.addEventListener('error', () => { logo.hidden = true; });
+  if (logo.complete && !logo.naturalWidth) logo.hidden = true;
+}
+
+// UI Kit connection settings
+// This starter connects to the public, read-only Central County demo.
+// See README.md to connect your Search App.
+const config = %%STARTER_CONFIG%%;
+
+// Display labels for the demo facet values.
+const demoFacets = %%DEMO_FACETS%%;
+const demoThumbnails = %%DEMO_THUMBNAILS%%;
+const demoSorting = %%DEMO_SORTING%%;
+const language = config.language || 'en';
+const resultLanguage = contentLanguageTag(language);
+const usesDemoProfile = config.searchURL === demoFacets.searchURL &&
+  config.model === demoSorting.model && resultLanguage === 'en';
+
+const form = document.querySelector('.search-starter__form');
+const submit = form.querySelector('button');
+const query = document.querySelector('#search-query');
+const status = document.querySelector('#search-status');
+const output = document.querySelector('#search-output');
+const smartAnswersSample = document.querySelector('#search-smart-answers-sample');
+smartAnswersSample.hidden = !config.showSmartAnswersSample || !usesDemoProfile;
+
+let requestAnswer;
+if (!usesDemoProfile && config.showSmartAnswersSample && config.questionURL?.trim()) {
+  const answerEndpoint = readAnswerEndpoint(config.questionURL);
+  const profile = config.model?.trim();
+  if (answerEndpoint && profile) {
+    const answers = setupCustomerAnswers(document.querySelector('.search-starter'));
+    const connection = { answerEndpoint, profile, language, token: config.searchAuth };
+    requestAnswer = term => answers.start(connection, term);
+  } else {
+    document.querySelector('[data-customer-answer]').hidden = false;
+    document.querySelector('[data-customer-answer-status]').textContent =
+      'Set a Search Profile and a valid SearchStax streaming Answer endpoint to use Smart Answers.';
+  }
+}
+const externalPromotions = usesDemoProfile ? createSampleExternalPromotion() : document.createElement('section');
+if (!usesDemoProfile) externalPromotions.setAttribute('aria-label', 'External promotions');
+externalPromotions.hidden = true;
+output.before(externalPromotions);
+if (usesDemoProfile && config.samplePromotions !== 'off') {
+  query.value = samplePromotionQuery;
+}
+const noResultsMessage = document.querySelector('#search-no-results');
+let requestTimer;
+let promotionResponse;
+
+noResultsMessage.textContent = config.noResultsText;
+form.addEventListener('submit', event => event.preventDefault());
+if (config.showSuggestions) {
+  let source = usesDemoProfile ? sampleSuggestionSource : null;
+  if (!usesDemoProfile && config.suggesterURL) {
+    const endpoint = readCustomerEndpoint(config.suggesterURL, 'emsuggest');
+    if (endpoint) source = createCustomerSuggestionSource({ token: config.searchAuth, language }, endpoint);
+  }
+  if (source) setupSearchSuggestions(form, 'starter-search-suggestions')(source);
+}
+
+function renderExternalPromotions(entries) {
+  const banners = [];
+  for (const entry of Array.isArray(entries) ? entries : []) {
+    if (typeof entry?.url !== 'string') continue;
+    const url = webURL(entry.url);
+    if (!url) continue;
+
+    const banner = document.createElement('div');
+    banner.className = 'search-promotion-banner';
+    const label = document.createElement('span');
+    label.className = 'search-promotion-marker';
+    label.textContent = 'Promoted';
+    const link = document.createElement('a');
+    link.href = url;
+    link.referrerPolicy = 'no-referrer';
+    link.textContent = (typeof entry.name === 'string' && entry.name.trim()) || url;
+    if (resultLanguage) link.lang = resultLanguage;
+    banner.append(label, link);
+    if (typeof entry.description === 'string' && entry.description.trim()) {
+      const description = document.createElement('p');
+      description.textContent = entry.description.trim();
+      if (resultLanguage) description.lang = resultLanguage;
+      banner.append(description);
+    }
+    banners.push(banner);
+  }
+  externalPromotions.replaceChildren(...banners);
+  externalPromotions.hidden = banners.length === 0;
+}
+
+try {
+  const kit = window['@searchstaxInc/searchstudioUxJs'] || window.Searchstax;
+  const Searchstax = typeof kit === 'function' ? kit : kit.Searchstax;
+  const search = new Searchstax();
+  setupPaginationFocus(document.querySelector('[data-pagination-focus]'), () => search);
+  search.initialize({
+    searchURL: config.searchURL,
+    searchAuth: config.searchAuth,
+    authType: 'token',
+    language,
+    model: config.model,
+    suggesterURL: '',
+    trackApiKey: '',
+    router: { enabled: false },
+    hooks: {
+      afterSearch(items, response) {
+        const total = response?.response?.numFound;
+        if (typeof total !== 'number') return [];
+        window.clearTimeout(requestTimer);
+        status.textContent = total === 1 ? '1 result' : total + ' results';
+        noResultsMessage.hidden = total !== 0;
+        const results = items.filter(item => /^https?:\\/\\//i.test(item.url));
+        if (!usesDemoProfile) {
+          if (response !== promotionResponse) {
+            promotionResponse = response;
+            renderExternalPromotions(response.externalLinks);
+          }
+          return results.map(item => ({ ...item, indexedPromotion: item.promoted === true, resultLanguage }));
+        }
+        const mode = samplePromotionMode(response.responseHeader?.params?.q, config.samplePromotions);
+        updateSampleExternalPromotion(externalPromotions, mode);
+        return applySampleIndexedPromotion(
+          results.map(item => ({
+            ...item,
+            title: demoResultTitle(item.title),
+            description: demoResultText(item.description),
+            demoThumbnail: demoThumbnails[item.url],
+          })),
+          response,
+          mode,
+        );
+      },
+    },
+  });
+  search.setCookiesDisabled(true);
+
+  if (config.showSorting) {
+    const sortField = document.querySelector('#search-sorting');
+    const sortOrder = document.querySelector('#search-sort-order');
+    if (usesDemoProfile) {
+      sortOrder.replaceChildren(...demoSorting.options.map(({ label, order }) => new Option(label, order)));
+      sortField.hidden = false;
+    } else {
+      search.dataLayer.$searchResultsMetadata.subscribe(metadata => {
+        const options = metadata?.sorting?.options ?? [];
+        sortOrder.replaceChildren(...options.map(({ key, value }) => new Option(value || key, key)));
+        const order = search.dataLayer.searchObject.order;
+        sortOrder.value = options.find(({ key }) => encodeURIComponent(key) === order)?.key ?? '';
+        sortField.hidden = options.length === 0;
+      });
+    }
+    sortOrder.addEventListener('change', () => {
+      const current = search.dataLayer.searchObject;
+      if (current.query) {
+        search.dataLayer.setSearchObject({ ...current, order: encodeURIComponent(sortOrder.value), page: 1 });
+      }
+    });
+  }
+
+  search.addSearchResultsWidget('search-results', {
+    renderMethod: 'pagination',
+    resultsPerPage: config.resultsPerPage,
+    templates: {
+      mainTemplate: {
+        template: '<div id="search-result-list" class="searchstax-search-results"></div>',
+        searchResultsContainerId: 'search-result-list',
+      },
+      searchResultTemplate: {
+        template: '<article class="searchstax-search-result">{{#sampleIndexedPromotion}}<span class="sample-indexed-promotion">Sample indexed promotion</span>{{/sampleIndexedPromotion}}{{#indexedPromotion}}<span class="search-promotion-marker">Promoted</span>{{/indexedPromotion}}{{#demoThumbnail}}<img class="search-starter__result-thumbnail" src="{{demoThumbnail}}" alt="" width="384" height="216" loading="lazy">{{/demoThumbnail}}<h2{{#resultLanguage}} lang="{{resultLanguage}}"{{/resultLanguage}}><a href="{{url}}" data-result-id="{{uniqueId}}">{{title}}</a></h2><p class="search-starter__result-description"{{#resultLanguage}} lang="{{resultLanguage}}"{{/resultLanguage}}>{{description}}</p></article>',
+        searchResultUniqueIdAttribute: 'data-result-id',
+      },
+      noSearchResultTemplate: { template: ' ' },
+    },
+  });
+
+  if (config.showFilters) {
+    document.querySelector('.search-starter__filters').hidden = false;
+    const facets = document.querySelector('#search-facets');
+    if (usesDemoProfile) {
+      new MutationObserver(() => {
+        facets.querySelectorAll('[data-facet-value]').forEach(label => {
+          const value = label.dataset.facetValue;
+          const text = Object.hasOwn(demoFacets.labels, value) ? demoFacets.labels[value] : value;
+          if (label.textContent !== text) label.textContent = text;
+        });
+      }).observe(facets, { childList: true, subtree: true });
+    }
+    search.addFacetsWidget('search-facets', {
+      facetingType: 'or',
+      itemsPerPageDesktop: 20,
+      itemsPerPageMobile: 20,
+      templates: {
+        mainTemplateDesktop: { template: '<div class="search-facet-groups"></div>', facetsContainerClass: 'search-facet-groups' },
+        mainTemplateMobile: { template: ' ' },
+        facetItemContainerTemplate: {
+          template: '<fieldset><legend>{{label}}</legend><div class="search-facet-options"></div></fieldset>',
+          facetListContainerClass: 'search-facet-options',
+        },
+        facetItemTemplate: {
+          template: '<label><input class="search-facet-checkbox" type="checkbox" {{#disabled}}disabled{{/disabled}} {{#isChecked}}checked{{/isChecked}}><span data-facet-value="{{value}}">{{value}}</span><small>{{count}}</small></label>',
+          inputCheckboxClass: 'search-facet-checkbox',
+          checkTriggerClasses: [],
+        },
+      },
+    });
+  }
+
+  search.addPaginationWidget('search-pagination', {
+    templates: { mainTemplate: {
+      template: '{{#results.length}}<nav class="search-starter__pagination" aria-label="Search result pages"><span tabindex="-1" data-page-range data-page-start="{{startResultIndex}}">{{startResultIndex}}–{{endResultIndex}} of {{totalResults}} results</span>{{^isFirstPage}}<button type="button" data-page-step="previous">Previous</button>{{/isFirstPage}}{{^isLastPage}}<button type="button" data-page-step="next">Next</button>{{/isLastPage}}</nav>{{/results.length}}',
+    } },
+  });
+  search.dataLayer.setItemsPerPage(config.resultsPerPage);
+
+  search.dataLayer.$loadingChange.subscribe(loading => {
+    output.setAttribute('aria-busy', String(loading));
+    if (loading) {
+      status.textContent = 'Searching…';
+      noResultsMessage.hidden = true;
+      externalPromotions.hidden = true;
+      promotionResponse = undefined;
+      window.clearTimeout(requestTimer);
+      requestTimer = window.setTimeout(() => {
+        output.setAttribute('aria-busy', 'false');
+        status.textContent = 'Search is unavailable. Try again in a moment.';
+      }, 15000);
+    }
+  });
+
+  function runSearch() {
+    const term = query.value.trim();
+    if (!term) {
+      status.textContent = 'Enter a search term.';
+      return;
+    }
+    void requestAnswer?.(term);
+    const current = search.dataLayer.searchObject;
+    const next = { ...current, query: term, page: 1, facets: [] };
+    if (term === current.query && current.page === 1 && !current.facets.length) {
+      search.search(next);
+    } else {
+      search.dataLayer.setSearchObject(next);
+    }
+  }
+
+  submit.disabled = false;
+  form.addEventListener('submit', runSearch);
+  runSearch();
+} catch {
+  submit.disabled = true;
+  status.textContent = 'Couldn’t start search. Check the UI Kit and Search App configuration.';
+}
+`,Te="# SearchStax JavaScript Starter\n\nThis starter uses the SearchStax JavaScript UI Kit to search the fictional Central County university health website. It comes connected to the public, read-only demo, so you can try it without a SearchStax account.\n\nIf you enabled sample thumbnails, the ZIP includes fictional images for two Central County results.\n\nIf you enabled sort options, the demo starts in Relevance order. Use **Sort by** to put all matching pages in page-address order, even when the results span several pages.\n\nIf you enabled sample search suggestions, type `reh` to try them. Choosing a suggestion runs a search against the fictional demo.\n\nIf your design shows the Smart Answers sample, expand **Smart Answers Sample** to see the fixed fictional answer and its source link.\n\nIf you enabled sample promotions, the starter opens with `campus flu clinic`. The indexed sample moves the 2026 notice to the first relevance result when that notice is present. The external sample displays a separate link above the results. [Indexed and external promotions](https://support.searchstax.com/hc/en-us/articles/40499202855693-Promotions-Indexed-vs-External)\n\nThe starter uses the **Results per page** setting from your design. To change it in the starter, edit `resultsPerPage` in `search.js`.\n\nTo change the message visitors see when a search finds no matches, edit `noResultsText` in `search.js`.\n\n## Run the Demo\n\n1. Extract the ZIP file.\n2. With Python 3 installed, open a terminal in the extracted folder that contains `index.html` and run this command.\n\n   ```sh\n   python3 -m http.server 4175 --bind 127.0.0.1\n   ```\n\n3. Open [http://127.0.0.1:4175/](http://127.0.0.1:4175/) in your browser. You'll need an internet connection to load the UI Kit and search the demo.\n\nPress Ctrl+C in the terminal when you're done.\n\n## Connect Your Search App\n\n1. In Site Search, open an existing Search App with indexed content. Go to **App Settings > All APIs > Search & Indexing** to find the Select endpoint (ending in `/emselect`) and a **Read Only** token.\n2. Open `search.js` and find **UI Kit connection settings**. Set `searchURL` to your Select endpoint, `searchAuth` to the Read Only token, and `model` to your Search Profile name. Set `language` to the language configured for the App, such as `fr_ca` for Canadian French. Result titles and descriptions use that language while the starter controls stay in English. If you enabled filters in Search Lab, the starter displays the facets configured for that profile.\n3. In your Search Profile, go to **Configurations > Basic Configurations > Results Fields**. Map the fields you want to show to **Title**, **URL**, and **Description**. Use full `https://` or `http://` URLs in the field you map to **URL**. If you're showing filters, configure the indexed fields visitors can filter by under **Faceting**. Publish your changes in Site Search. [Results Fields](https://support.searchstax.com/hc/en-us/articles/40837318253197-Results-Fields) · [Faceting](https://support.searchstax.com/hc/en-us/articles/40836775695117-Faceting)\n4. In `index.html`, update the page title, heading, and search field text for your site. Change the sample query in the search input's `value` attribute to a term that matches your content, then reload the page to try it.\n\nPublish indexed or external promotions in the connected Search Profile and search for one of their trigger phrases. External promotions appear above the results. Indexed promotions display a **Promoted** label in the order returned by the app. The sample promotions are available with the included Central County connection. [Promotions](https://support.searchstax.com/hc/en-us/articles/40155433600397-Promotions)\n\nAlways use a Read Only credential in browser code. For a private setup where the endpoint or token must stay on your server, use a server-side proxy. [Hide Tokens and Endpoints in UI Kits](https://support.searchstax.com/hc/en-us/articles/39440547272077-Hide-Tokens-and-Endpoints-in-UI-Kits)\n\nIf you move the search UI into an existing page, keep the `.search-starter` wrapper so the styles in `search.css` still apply. The standalone page uses `.search-starter-page` on the body for the page margin and colors.\n\nFor sorting on your app, configure and publish sort options on your Search Profile under **Configurations > Advanced Configurations > Sorting**. Set `showSorting` to `true` in `search.js`. **Sort by** displays the published options after a search. Choosing an option keeps the current filters and returns to the first page. [Facets and sorting setup](https://support.searchstax.com/hc/en-us/articles/38268731934349-Setting-Up-Facets-Filters-and-Sorting)\n\nFor live suggestions on your app, enable and publish Auto-Suggest in Site Search. In `search.js`, set `suggesterURL` to the app’s HTTPS Auto-Suggest endpoint ending in `/emsuggest`, and set `showSuggestions` to `true`. The starter uses the same read-only token and language as search. Use the arrow keys and Enter to search for a suggestion, or press Escape to dismiss the list. Leave `suggesterURL` empty to use search without connected suggestions. [Auto-Suggest](https://support.searchstax.com/hc/en-us/articles/40075200119437-Auto-Suggest) · [Auto-Suggest API](https://support.searchstax.com/hc/en-us/articles/40243330090893-Auto-Suggest-API)\n\nThe Smart Answers sample is available with the Central County connection. For live answers on your own app, enable and publish Smart Answers on the Search Profile you set in `model`. In `search.js`, set `questionURL` to that app’s HTTPS streaming Smart Answers endpoint and set `showSmartAnswersSample` to `true` to display the answer. The starter uses the same read-only token and language as search. It requests an answer for the opening query and each submitted search. Leave `questionURL` empty to skip answer requests. [Smart Answers setup](https://support.searchstax.com/hc/en-us/articles/40075209934989-Smart-Answers) · [Smart Answers API](https://support.searchstax.com/hc/en-us/articles/40243570123021-Smart-Answers-API)\n",Ee=`.search-starter-page { margin: 0; color: #202e3a; background: #fff; }
+.search-starter, .search-starter *, .search-starter *::before, .search-starter *::after { box-sizing: border-box; }
+.search-starter { max-width: 1150px; margin: auto; padding: 32px clamp(16px, 4vw, 42px); }
+.search-starter h1 { margin: 0 0 8px; }
+.search-starter__logo { display: block; width: auto; max-width: min(100%, 13rem); height: 2.5rem; margin-bottom: .75rem; object-fit: contain; object-position: left center; }
+.search-starter__logo[hidden] { display: none; }
+.search-starter p { line-height: 1.5; }
+.search-starter input, .search-starter button { font: inherit; }
+.search-starter button { cursor: pointer; }
+.search-starter button:disabled { cursor: default; }
+.search-starter :focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+.search-starter__form { display: flex; gap: 4px; max-width: 650px; margin-top: 20px; }
+.search-starter__form input { flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid #465766; border-radius: 5px; }
+.search-starter__submit { flex: none; max-width: 45%; padding: 10px 14px; border: 0; border-radius: 5px; font-weight: 700; overflow-wrap: anywhere; }
+.search-starter__answer { margin-top: 12px; }
+.search-starter__answer h2 { margin: 0 0 8px; font-size: 1rem; }
+.search-starter__answer-content { font-size: .875rem; line-height: 1.55; white-space: pre-wrap; }
+.search-starter__sort { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin-bottom: 12px; }
+.search-starter__sort select { max-width: 100%; min-height: 36px; padding: 4px 8px; border: 1px solid #465766; border-radius: 5px; color: #202e3a; background: #fff; font: inherit; }
+.search-starter__body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
+.search-starter__filters fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+.search-starter__filters legend { margin-bottom: 8px; font-weight: 700; }
+.search-starter__filters label { display: flex; align-items: center; gap: 6px; min-height: 36px; overflow-wrap: anywhere; }
+.search-starter__filters input { flex: none; width: 24px; height: 24px; margin: 0; }
+.search-starter__filters small { margin-left: auto; }
+.search-starter .searchstax-search-result { min-width: 0; padding: 16px; border: 1px solid #d8dfe3; border-radius: 5px; overflow-wrap: anywhere; }
+.search-starter__result-thumbnail { display: block; width: min(100%, 12rem); height: auto; margin: 0 0 8px; border-radius: 4px; }
+.search-starter .searchstax-search-result h2 { margin: 0 0 7px; font-size: 1rem; }
+.search-starter .searchstax-search-result a { color: #263f58; }
+.search-starter .searchstax-search-result p { margin: 0; font-size: .875rem; }
+.search-starter__no-results { overflow-wrap: anywhere; }
+.search-starter__pagination { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 16px; }
+.search-starter__sr-only,
+.search-starter-page #searchAccessibilityContainer {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+`,De=`// Search Lab’s demo index can still contain records from before the site rename.
+export function demoResultText(value) {
+  return typeof value === 'string' ? value.replaceAll('Alder Coast', 'Central County') : '';
+}
+
+export function demoResultTitle(value) {
+  return demoResultText(value)
+    .replace(/<\\/?(?:em|b|strong)>/gi, '')
+    .replace(/\\s*\\|\\s*Central County University Health\\s*$/, '');
+}
+`,J=`.sample-search-suggestions {
+  max-width: 650px;
+  margin: 4px 0 10px;
+  padding: 4px;
+  border: 1px solid #718075;
+  border-radius: 5px;
+  color: #253a34;
+  background: #fff;
+}
+
+.sample-search-suggestions[hidden] { display: none; }
+.sample-search-suggestions p { margin: 4px 8px; font-size: .8125rem; font-weight: 600; }
+.sample-search-suggestions ul { margin: 0; padding: 0; list-style: none; }
+.sample-search-suggestions [role='option'] { min-height: 40px; padding: 9px 8px; cursor: pointer; overflow-wrap: anywhere; }
+.sample-search-suggestions [role='option']:hover { background: #f2f6f4; }
+.sample-search-suggestions [aria-selected='true'] { background: #e5eee8; outline: 2px solid #526a5b; outline-offset: -2px; }
+.search-suggestions-feedback { margin: 4px 0 8px; color: #526759; font-size: .8125rem; }
+.search-suggestions-feedback:empty { display: none; }
+
+@media (forced-colors: active) {
+  .sample-search-suggestions [aria-selected='true'] { outline-color: Highlight; }
+}
+`,Oe=`const sampleTerms = [
+  'campus flu clinic',
+  'international health',
+  'orthopedics',
+  'primary care',
+  'rehabilitation',
+  'rehabilitation center',
+  'sports medicine',
+  'travel vaccinations',
+];
+
+export const sampleSuggestionSource = {
+  label: 'Sample search suggestions',
+  minimumChars: 3,
+  suggest(prefix) {
+    const normalized = prefix.toLowerCase();
+    return sampleTerms.filter(term => term !== normalized && term.startsWith(normalized));
+  },
+};
+
+export function setupSearchSuggestions(form, listId) {
+  const input = form.querySelector('input[type="search"]');
+  const popup = document.createElement('div');
+  const label = document.createElement('p');
+  const list = document.createElement('ul');
+  const feedback = document.createElement('p');
+  feedback.className = 'search-suggestions-feedback';
+  feedback.setAttribute('role', 'status');
+  popup.className = 'sample-search-suggestions';
+  popup.hidden = true;
+  label.id = listId + '-label';
+  list.id = listId;
+  list.setAttribute('role', 'listbox');
+  list.setAttribute('aria-labelledby', label.id);
+  popup.append(label, list);
+  form.after(popup, feedback);
+
+  let source = null;
+  let pending = null;
+  let activeIndex = -1;
+
+  function close() {
+    if (pending) {
+      window.clearTimeout(pending.timer);
+      pending.controller.abort();
+      pending = null;
+    }
+    popup.hidden = true;
+    list.replaceChildren();
+    feedback.textContent = '';
+    activeIndex = -1;
+    input.removeAttribute('aria-activedescendant');
+    if (source) input.setAttribute('aria-expanded', 'false');
+  }
+
+  function show(matches) {
+    if (!matches.length) return;
+    list.replaceChildren(...matches.map((term, index) => {
+      const option = document.createElement('li');
+      option.id = listId + '-' + index;
+      option.setAttribute('role', 'option');
+      option.setAttribute('aria-selected', 'false');
+      if (source.language) option.lang = source.language;
+      option.textContent = term;
+      return option;
+    }));
+    popup.hidden = false;
+    input.setAttribute('aria-expanded', 'true');
+  }
+
+  function requestSuggestions() {
+    close();
+    const prefix = input.value.trim();
+    const activeSource = source;
+    if (!activeSource || prefix.length < activeSource.minimumChars) return;
+    const request = { controller: new AbortController(), step: 0, timer: undefined };
+    pending = request;
+    const resolve = async () => {
+      try {
+        const matches = await activeSource.suggest(prefix, request.controller.signal);
+        if (pending !== request || input.value.trim() !== prefix) return;
+        show(matches);
+        if (!popup.hidden && request.step) moveSelection(request.step);
+      } catch {
+        if (pending === request) feedback.textContent = 'Search suggestions are unavailable. You can continue searching.';
+      } finally {
+        if (pending === request) pending = null;
+      }
+    };
+    if (activeSource.delay) request.timer = window.setTimeout(resolve, activeSource.delay);
+    else void resolve();
+  }
+
+  function choose(option) {
+    input.value = option.textContent;
+    close();
+    input.focus({ preventScroll: true });
+    form.requestSubmit();
+  }
+
+  function moveSelection(step) {
+    if (popup.hidden) {
+      if (!pending) requestSuggestions();
+      if (!pending) return false;
+      pending.step = step;
+      return true;
+    }
+    const options = list.children;
+    if (activeIndex >= 0) options[activeIndex].setAttribute('aria-selected', 'false');
+    if (activeIndex === -1) activeIndex = step > 0 ? 0 : options.length - 1;
+    else activeIndex = (activeIndex + step + options.length) % options.length;
+    const option = options[activeIndex];
+    option.setAttribute('aria-selected', 'true');
+    input.setAttribute('aria-activedescendant', option.id);
+    option.scrollIntoView({ block: 'nearest' });
+    return true;
+  }
+
+  input.addEventListener('input', event => {
+    if (event.isComposing) close();
+    else requestSuggestions();
+  });
+  input.addEventListener('compositionend', requestSuggestions);
+  input.addEventListener('blur', close);
+  input.addEventListener('keydown', event => {
+    if (!source || event.isComposing || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+    switch (event.key) {
+      case 'ArrowDown':
+      case 'ArrowUp':
+        if (moveSelection(event.key === 'ArrowDown' ? 1 : -1)) event.preventDefault();
+        break;
+      case 'Escape':
+        if (popup.hidden && !pending) break;
+        event.preventDefault();
+        close();
+        break;
+      case 'Enter':
+        if (activeIndex < 0) break;
+        event.preventDefault();
+        choose(list.children[activeIndex]);
+        break;
+    }
+  });
+  form.addEventListener('submit', close);
+  list.addEventListener('mousedown', event => event.preventDefault());
+  list.addEventListener('click', event => {
+    const option = event.target.closest('[role="option"]');
+    if (option) choose(option);
+  });
+
+  return function setSuggestionSource(value) {
+    if (source === value) return;
+    source = value;
+    close();
+    if (source) {
+      label.textContent = source.label;
+      input.setAttribute('role', 'combobox');
+      input.setAttribute('aria-autocomplete', 'list');
+      input.setAttribute('aria-controls', listId);
+    } else {
+      for (const attribute of ['role', 'aria-autocomplete', 'aria-controls', 'aria-expanded']) {
+        input.removeAttribute(attribute);
+      }
+    }
+  };
+}
+`,ke=`/**
+ * Maintain focus when the UI Kit replaces its pagination controls.
+ * @template {{ page: number, itemsPerPage: number | undefined }} Search
+ * @param {HTMLElement} host
+ * @param {() => {
+ *   dataLayer: { loading: boolean, searchObject: Search, setSearchObject: (search: Search) => void },
+ *   search: (search: Search) => unknown
+ * } | null | undefined} getSearch
+ */
+export function setupPaginationFocus(host, getSearch) {
+  const announcement = host.querySelector('[data-page-announcement]');
+  let pending;
+  let frame;
+
+  function changePage(event) {
+    const button = event.target instanceof Element && event.target.closest('button[data-page-step]');
+    const api = getSearch();
+    const current = api?.dataLayer.searchObject;
+    if (!button || button.disabled || !current?.itemsPerPage || api.dataLayer.loading) return;
+    const range = host.querySelector('[data-page-range]');
+    const from = Number(range?.dataset.pageStart);
+    const step = button.dataset.pageStep;
+    if (!Number.isSafeInteger(from) || from < 1 || (step !== 'previous' && step !== 'next')) return;
+    const page = 1 + Math.floor((from - 1) / current.itemsPerPage) + (step === 'next' ? 1 : -1);
+    if (document.activeElement === button || event.detail === 0) {
+      pending = { range: range.textContent.trim(), step };
+      if (announcement) announcement.textContent = '';
+      host.focus({ preventScroll: true });
+    }
+    const search = { ...current, page };
+    // A failed request can leave the requested page ahead of the displayed range.
+    if (page === current.page) api.search(search);
+    else api.dataLayer.setSearchObject(search);
+  }
+
+  function restoreAfterRender() {
+    if (!pending || document.activeElement !== host) return;
+    const range = host.querySelector('[data-page-range]');
+    const text = range?.textContent.trim();
+    if (!text || text === pending.range) return;
+    // Some UI Kits render the new range before they finish the current request.
+    if (getSearch()?.dataLayer.loading) {
+      frame ??= requestAnimationFrame(() => {
+        frame = undefined;
+        restoreAfterRender();
+      });
+      return;
+    }
+    const button = host.querySelector(\`button[data-page-step="\${pending.step}"]:not(:disabled)\`);
+    pending = undefined;
+    if (button) {
+      button.focus();
+      if (announcement) announcement.textContent = text;
+    } else {
+      range.focus();
+    }
+  }
+
+  function leavePagination(event) {
+    if (event.target === host) pending = undefined;
+  }
+
+  const observer = new MutationObserver(restoreAfterRender);
+  observer.observe(host, { childList: true, characterData: true, subtree: true });
+  host.addEventListener('click', changePage);
+  host.addEventListener('focusout', leavePagination);
+  return () => {
+    if (frame !== undefined) cancelAnimationFrame(frame);
+    observer.disconnect();
+    host.removeEventListener('click', changePage);
+    host.removeEventListener('focusout', leavePagination);
+  };
+}
+`,Ae=`/** @param {string | undefined} value */
+export function contentLanguageTag(value) {
+  if (!value) return undefined;
+  try {
+    return Intl.getCanonicalLocales(value.trim().replaceAll('_', '-'))[0];
+  } catch {
+    return undefined;
+  }
+}
+`,je=`/** @param {string} value */
+export function webURL(value) {
+  try {
+    const url = new URL(value);
+    return (url.protocol === 'https:' || url.protocol === 'http:') && !url.username && !url.password ? url.href : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * @param {string} value
+ * @param {'emselect' | 'emsuggest'} route
+ */
+export function readCustomerEndpoint(value, route = 'emselect') {
+  try {
+    const url = new URL(value.trim());
+    if (url.protocol !== 'https:' || !url.hostname.endsWith('.searchstax.com') ||
+      url.port || url.username || url.password || url.search || url.hash ||
+      !url.pathname.replace(/\\/$/, '').endsWith('/' + route)) return null;
+    return url.href;
+  } catch {
+    return null;
+  }
+}
+`,Y=`import { webURL } from './web-url.js';
+import { contentLanguageTag } from './content-language.js';
+
+/** @typedef {{ token: string, profile: string, language: string, answerEndpoint?: string }} AnswerConnection */
+const answerLimit = 65536;
+const frameBoundary = /\\r\\n\\r\\n|\\n\\n|\\r\\r|\\n\\r\\n|\\r\\n\\n/;
+const referenceDefinition = /^ {0,3}\\[([^\\]\\r\\n]+)\\]:[ \\t]*(<[^>\\r\\n]+>|[^\\s<>]+)(?:[ \\t]+"[^"\\r\\n]*")?[ \\t]*$/gm;
+const answerLink = /(!?)\\[([^\\]\\n]+)\\](?:\\((<[^>\\n]+>|[^\\s()<>]+(?:\\([^()\\s]*\\)[^\\s()<>]*)*)(?:[ \\t]+"[^"\\n]*")?\\)|\\[([^\\]\\n]*)\\])?/g;
+
+/** @param {string} value */
+export function readAnswerEndpoint(value) {
+  try {
+    const url = new URL(value.trim());
+    if (url.protocol !== 'https:' || !url.hostname.endsWith('.searchstax.com') ||
+      url.port || url.username || url.password || url.search || url.hash ||
+      !/^\\/api\\/v1\\/(?:\\d+\\/)?answer\\/?$/.test(url.pathname)) return null;
+    return url.href;
+  } catch {
+    return null;
+  }
+}
+
+class AnswerError extends Error {}
+
+/** @param {string} answer */
+function cleanAnswer(answer) {
+  return answer.replace(/\\[comment\\]: <> \\(\\{[\\s\\S]*?(?:\\}\\)|$)/g, '').trim();
+}
+
+/** @param {string} data */
+function isAnswerFailure(data) {
+  if (data.includes('[!CAUTION]')) return true;
+  if (!data.trimStart().startsWith('{')) return false;
+  try {
+    return JSON.parse(data)?.success === false;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * @param {AnswerConnection & { answerEndpoint: string }} connection
+ * @param {string} question
+ * @param {AbortSignal} signal
+ * @param {(answer: string) => void} onPartial
+ */
+async function requestAnswer(connection, question, signal, onPartial) {
+  const url = new URL(connection.answerEndpoint);
+  url.search = new URLSearchParams({ q: question, model: connection.profile, language: connection.language }).toString();
+  const response = await fetch(url, {
+    headers: { Authorization: 'Token ' + connection.token, Accept: 'text/event-stream' },
+    credentials: 'omit',
+    referrerPolicy: 'no-referrer',
+    redirect: 'error',
+    cache: 'no-store',
+    signal,
+  });
+  if (response.status === 401 || response.status === 403) {
+    throw new AnswerError('Smart Answers couldn’t access this profile. Check the read-only token and confirm Smart Answers is enabled and published.');
+  }
+  if (!response.ok || !response.headers.get('content-type')?.startsWith('text/event-stream') || !response.body) {
+    throw new AnswerError('Smart Answers is unavailable. Check the Answer endpoint or try another search.');
+  }
+
+  const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
+  let answer = '';
+  let buffer = '';
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) throw new AnswerError('The Smart Answer was interrupted. Try your search again.');
+      buffer += value;
+      let receivedText = false;
+      let boundary;
+      while ((boundary = frameBoundary.exec(buffer))) {
+        const frame = buffer.slice(0, boundary.index);
+        buffer = buffer.slice(boundary.index + boundary[0].length);
+        const data = frame.split(/\\r\\n|\\r|\\n/)
+          .filter(line => line === 'data' || line.startsWith('data:'))
+          .map(line => line.slice(5).replace(/^ /, ''))
+          .join('\\n');
+        if (!data || data === 'I_AM_A_QUESTION') continue;
+        if (data === 'I_AM_NOT_A_QUESTION') return null;
+        if (data === 'CLOSE') return cleanAnswer(answer);
+        if (isAnswerFailure(data) || answer.length + data.length > answerLimit) {
+          throw new AnswerError('Smart Answers couldn’t generate an answer. Try another search.');
+        }
+        answer += data;
+        receivedText = true;
+      }
+      if (buffer.length > answerLimit) throw new AnswerError('Smart Answers returned an unreadable response.');
+      if (receivedText) onPartial(cleanAnswer(answer));
+    }
+  } finally {
+    await reader.cancel().catch(() => {});
+    reader.releaseLock();
+  }
+}
+
+/**
+ * @param {string} answer
+ * @param {boolean} linkSources
+ * @returns {(Node | string)[]}
+ */
+function answerNodes(answer, linkSources) {
+  /** @param {string} text */
+  const plain = (text) => text
+    .replace(/^#{1,6}[ \\t]+/gm, '')
+    .replace(/\\*\\*([^*\\n]+)\\*\\*|__([^_\\n]+)__/g, (_, bold, underline) => bold ?? underline);
+  /** @type {(Node | string)[]} */
+  const nodes = [];
+  /** @type {Map<string, string>} */
+  const references = new Map();
+  const body = answer.replace(referenceDefinition, (_, name, url) => {
+    references.set(name.trim().toLowerCase(), url);
+    return '';
+  }).trim();
+  let consumed = 0;
+  for (const match of body.matchAll(answerLink)) {
+    const [markup, image, label, inlineURL, reference] = match;
+    const address = inlineURL ?? references.get((reference || label).trim().toLowerCase());
+    if (!address) continue;
+    const index = match.index ?? 0;
+    nodes.push(plain(body.slice(consumed, index)));
+    consumed = index + markup.length;
+    const href = !image && linkSources ? webURL(address.replace(/^<|>$/g, '')) : null;
+    if (!href) {
+      nodes.push(plain(label));
+      continue;
+    }
+    const link = document.createElement('a');
+    link.href = href;
+    link.referrerPolicy = 'no-referrer';
+    link.textContent = plain(label);
+    nodes.push(link);
+  }
+  nodes.push(plain(body.slice(consumed)));
+  return nodes;
+}
+
+/** @param {HTMLElement} preview */
+export function setupCustomerAnswers(preview) {
+  const panel = /** @type {HTMLElement} */ (preview.querySelector('[data-customer-answer]'));
+  const status = /** @type {HTMLElement} */ (panel.querySelector('[data-customer-answer-status]'));
+  const content = /** @type {HTMLElement} */ (panel.querySelector('[data-customer-answer-content]'));
+  const announcement = preview.querySelector('[data-customer-answer-announcement]');
+  /** @type {AbortController | null} */
+  let current = null;
+
+  /** @param {string} message */
+  function setStatus(message) {
+    status.textContent = message;
+    if (announcement) announcement.textContent = message;
+  }
+
+  function clear() {
+    current?.abort();
+    current = null;
+    panel.hidden = true;
+    setStatus('');
+    content.replaceChildren();
+    content.removeAttribute('lang');
+    content.hidden = true;
+  }
+
+  /**
+   * @param {AnswerConnection} connection
+   * @param {string} question
+   */
+  async function start(connection, question) {
+    clear();
+    if (!connection.answerEndpoint) return;
+    const language = contentLanguageTag(connection.language);
+    if (language) content.lang = language;
+    const controller = new AbortController();
+    current = controller;
+    panel.hidden = false;
+    setStatus('Generating a Smart Answer…');
+    const timer = window.setTimeout(() => controller.abort(), 45000);
+    try {
+      const answer = await requestAnswer({ ...connection, answerEndpoint: connection.answerEndpoint }, question,
+        controller.signal, text => {
+          if (current !== controller || !text) return;
+          content.replaceChildren(...answerNodes(text, false));
+          content.hidden = false;
+        });
+      if (current !== controller) return;
+      if (answer === null) {
+        clear();
+      } else if (answer) {
+        content.replaceChildren(...answerNodes(answer, true));
+        content.hidden = false;
+        setStatus('Smart Answer ready.');
+      } else {
+        setStatus('No Smart Answer was returned for this search.');
+      }
+    } catch (error) {
+      if (current !== controller) return;
+      content.replaceChildren();
+      content.hidden = true;
+      setStatus(error instanceof AnswerError ? error.message
+        : 'Smart Answers is unavailable. Check the Answer endpoint or try another search.');
+    } finally {
+      window.clearTimeout(timer);
+      if (current === controller) current = null;
+    }
+  }
+
+  return { clear, start };
+}
+`,Me=`import { readAnswerEndpoint, setupCustomerAnswers } from './customer-answers.js';
+
+/** @param {string} value */
+function starterAnswerEndpoint(value) {
+  const searchstaxURL = readAnswerEndpoint(value);
+  if (searchstaxURL) return searchstaxURL;
+  try {
+    const url = new URL(value, window.location.href);
+    if (url.origin === window.location.origin && !url.username && !url.password && !url.search && !url.hash) {
+      return url.href;
+    }
+  } catch { /* Show configuration feedback for an invalid endpoint. */ }
+  return null;
+}
+
+/**
+ * @param {HTMLElement} host
+ * @param {{ questionURL: string, searchAuth: string, model: string, language: string }} connection
+ */
+export function setupStarterAnswers(host, connection) {
+  host.innerHTML = \`
+    <p class="search-starter__sr-only" role="status" data-customer-answer-announcement></p>
+    <section class="smart-answers-sample__card search-starter__answer" aria-label="Smart Answer" data-customer-answer hidden>
+      <h2>Smart Answer</h2>
+      <p data-customer-answer-status></p>
+      <div class="search-starter__answer-content" data-customer-answer-content hidden></div>
+    </section>\`;
+
+  const answers = setupCustomerAnswers(host);
+  const answerEndpoint = starterAnswerEndpoint(connection.questionURL.trim());
+  const profile = connection.model?.trim();
+  if (!answerEndpoint || !profile) {
+    const panel = host.querySelector('[data-customer-answer]');
+    const status = host.querySelector('[data-customer-answer-status]');
+    if (panel instanceof HTMLElement && status) {
+      panel.hidden = false;
+      status.textContent = 'Set a Search Profile and a valid streaming Answer endpoint to use Smart Answers.';
+    }
+    return;
+  }
+
+  const answerConnection = { answerEndpoint, profile, language: connection.language, token: connection.searchAuth };
+  return {
+    clear: answers.clear,
+    /** @param {string} query */
+    start(query) {
+      if (query === '*') {
+        answers.clear();
+        return;
+      }
+      void answers.start(answerConnection, query);
+    },
+  };
+}
+`,Ne=`/**
+ * @param {{ key: string, value: unknown }[]} fields
+ * @param {string} fieldName
+ * @param {boolean} decorative
+ * @returns {string | null}
+ */
+export function thumbnailAlt(fields, fieldName, decorative) {
+  const value = fieldName ? fields.find(field => field.key === fieldName)?.value : undefined;
+  const values = Array.isArray(value) ? value : [value];
+  const text = values.find(entry => typeof entry === 'string' && entry.trim().length > 0);
+  return text?.trim() || (decorative ? '' : null);
+}
+`,X=`.search-promotion-banner {
+  margin-block: 12px;
+  padding: 12px 16px;
+  border: 1px solid #d7e0da;
+  border-inline-start: 3px solid var(--preview-accent, var(--search-accent, #263f58));
+  border-radius: 5px;
+  color: #253a34;
+  background: #f3f7f4;
+  overflow-wrap: anywhere;
+}
+
+.search-promotion-banner[hidden] { display: none; }
+.search-promotion-banner p { margin: 4px 0 0; }
+.search-promotion-banner .sample-external-promotion__label { margin: 0 0 4px; }
+.search-promotion-banner a { color: #244a39; font-weight: 600; text-decoration: underline; }
+.sample-external-promotion__label, .sample-indexed-promotion, .search-promotion-marker { font-size: .8125rem; font-weight: 600; }
+.sample-indexed-promotion, .search-promotion-marker { display: block; margin-bottom: 4px; color: #364e40; }
+`,Z=`const demoSite = 'https://mw-searchstax.github.io/university-health-search-demo/';
+const indexedNotice = demoSite + 'news/flu-clinic-update-2026/';
+
+export const samplePromotionQuery = 'campus flu clinic';
+export const sampleExternalPromotion = {
+  url: demoSite + 'care/resources/flu-shot-appointments/',
+  title: 'Read the fictional flu shot appointment notice',
+};
+
+export function samplePromotionMode(query, setting) {
+  const normalized = typeof query === 'string' ? query.trim().toLowerCase().replace(/\\s+/g, ' ') : '';
+  return normalized === samplePromotionQuery ? setting : 'off';
+}
+
+export function applySampleIndexedPromotion(items, response, mode) {
+  if (mode !== 'indexed' && mode !== 'both') return items;
+  const sort = response.responseHeader?.params?.sort;
+  if (response.response.start !== 0 || (sort && sort !== 'score desc')) return items;
+  const index = items.findIndex(item => item.url === indexedNotice);
+  if (index === -1) return items;
+  return [{ ...items[index], sampleIndexedPromotion: true }, ...items.slice(0, index), ...items.slice(index + 1)];
+}
+
+export function createSampleExternalPromotion() {
+  const banner = document.createElement('section');
+  banner.className = 'sample-external-promotion search-promotion-banner';
+  banner.setAttribute('aria-label', 'Sample external promotion');
+  banner.hidden = true;
+  const label = document.createElement('p');
+  label.className = 'sample-external-promotion__label';
+  label.textContent = 'Sample external promotion';
+  const link = document.createElement('a');
+  link.href = sampleExternalPromotion.url;
+  link.textContent = sampleExternalPromotion.title;
+  banner.append(label, link);
+  return banner;
+}
+
+export function updateSampleExternalPromotion(banner, mode) {
+  banner.hidden = mode !== 'external' && mode !== 'both';
+}
+`,Pe=`<details class="smart-answers-sample">
+  <summary>Smart Answers Sample</summary>
+  <div class="smart-answers-sample__card">
+    <p class="smart-answers-sample__note">A fixed example based on fictional content.</p>
+    <p><strong>What’s in the Rehabilitation Center’s design display?</strong></p>
+    <p>The display includes a mock apartment layout and adjustable classroom furniture. Drawings beside the display label doorways, furniture, and circulation paths.</p>
+    <p><a href="https://mw-searchstax.github.io/university-health-search-demo/locations/rehabilitation-center/">Read the fictional Rehabilitation Center page</a></p>
+  </div>
+</details>
+`,Fe=`.smart-answers-sample {
+  margin: 8px 0 13px;
+  border-bottom: 1px solid var(--lab-border, #d7e0da);
+}
+
+.smart-answers-sample[hidden] { display: none; }
+.smart-answers-sample[open] { padding-bottom: .75rem; }
+.smart-answers-sample summary { min-height: 44px; padding: .6rem .25rem; font-weight: 600; cursor: pointer; }
+.smart-answers-sample__card {
+  padding: 12px 16px;
+  border: 1px solid var(--lab-border, #d7e0da);
+  border-inline-start: 3px solid var(--preview-accent, var(--search-accent, #263f58));
+  border-radius: 5px;
+  overflow-wrap: anywhere;
+}
+.smart-answers-sample__card p { margin: 0 0 8px; }
+.smart-answers-sample__card p:last-child { margin-bottom: 0; }
+.smart-answers-sample__note { color: var(--lab-muted, #526759); font-size: .875rem; }
+.smart-answers-sample__card a { color: #244a39; text-decoration: underline; }
+`,Q=`import { contentLanguageTag } from './content-language.js';
+
+/**
+ * @typedef {Object} SuggestionPayload
+ * @property {{ enabled?: boolean, minPrefixChars?: number }} [metadata]
+ * @property {Record<string, Record<string, { suggestions?: { term?: unknown }[] }>>} [suggest]
+ */
+
+/**
+ * @param {{ token: string, language: string }} connection
+ * @param {string} endpoint
+ */
+export function createCustomerSuggestionSource(connection, endpoint) {
+  let minimumChars = 2;
+  return {
+    label: 'Search suggestions',
+    language: contentLanguageTag(connection.language),
+    delay: 250,
+    get minimumChars() { return minimumChars; },
+    /** @param {string} prefix @param {AbortSignal} signal */
+    async suggest(prefix, signal) {
+      const url = new URL(endpoint);
+      url.searchParams.set('q', prefix);
+      url.searchParams.set('language', connection.language);
+      const response = await fetch(url, {
+        headers: { Authorization: 'Token ' + connection.token },
+        credentials: 'omit',
+        redirect: 'error',
+        referrerPolicy: 'no-referrer',
+        cache: 'no-store',
+        signal: AbortSignal.any([signal, AbortSignal.timeout(5000)]),
+      });
+      if (!response.ok) throw new Error('Unable to fetch suggestions');
+      /** @type {SuggestionPayload} */
+      const payload = await response.json();
+      if (payload?.metadata?.enabled === false) throw new Error('Auto-Suggest is disabled');
+      const configuredMinimum = payload?.metadata?.minPrefixChars;
+      if (typeof configuredMinimum === 'number' && Number.isSafeInteger(configuredMinimum) && configuredMinimum > 0) {
+        minimumChars = configuredMinimum;
+      }
+
+      const seen = new Set([prefix.toLowerCase()]);
+      /** @type {string[]} */
+      const suggestions = [];
+      for (const dictionary of Object.values(payload?.suggest ?? {})) {
+        for (const match of Object.values(dictionary ?? {})) {
+          if (!Array.isArray(match?.suggestions)) continue;
+          for (const suggestion of match.suggestions) {
+            if (typeof suggestion?.term !== 'string') continue;
+            const term = suggestion.term.trim();
+            const key = term.toLowerCase();
+            if (!term || seen.has(key)) continue;
+            seen.add(key);
+            suggestions.push(term);
+            if (suggestions.length === 8) return suggestions;
+          }
+        }
+      }
+      return suggestions;
+    },
+  };
+}
+`,Ie=`<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SearchStax React Starter</title>
+</head>
+<body class="search-starter-page">
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"><\/script>
+</body>
+</html>
+`,Le=`{
+  "name": "searchstax-react-starter",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1"
+  },
+  "engines": { "node": "^20.19.0 || >=22.12.0" },
+  "dependencies": {
+    "@searchstax-inc/searchstudio-ux-react": "4.2.70",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "vite": "8.3.8"
+  }
+}
+`,Re=`{
+  "name": "searchstax-react-starter",
+  "version": "1.0.0",
+  "lockfileVersion": 3,
+  "requires": true,
+  "packages": {
+    "": {
+      "name": "searchstax-react-starter",
+      "version": "1.0.0",
+      "dependencies": {
+        "@searchstax-inc/searchstudio-ux-react": "4.2.70",
+        "react": "19.3.1",
+        "react-dom": "19.3.1"
+      },
+      "devDependencies": {
+        "vite": "8.3.8"
+      },
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@emnapi/core": {
+      "version": "2.0.0-beta.2",
+      "resolved": "https://registry.npmjs.org/@emnapi/core/-/core-2.0.0-beta.2.tgz",
+      "integrity": "sha512-MzCVoWtcg4Pm2B3je5mMvYMvj3MmBKw+fU7vbsJc9/iT8ip6/eYIHo/Dsm/mr+wsHB6SEyJDuxB09Yy6r/8+4A==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "dependencies": {
+        "@emnapi/wasi-threads": "2.2.0",
+        "tslib": "^2.4.0"
+      }
+    },
+    "node_modules/@emnapi/runtime": {
+      "version": "2.0.0-beta.2",
+      "resolved": "https://registry.npmjs.org/@emnapi/runtime/-/runtime-2.0.0-beta.2.tgz",
+      "integrity": "sha512-JcrSPzPvZuNZvJqPTF9Fw25LbOJ8avzFVlaf2grmH4Cku0oGP47tRgqPZadcfj3YoZMHkFVnCYFbQM8I+i5QEw==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "dependencies": {
+        "tslib": "^2.4.0"
+      }
+    },
+    "node_modules/@emnapi/wasi-threads": {
+      "version": "2.2.0",
+      "resolved": "https://registry.npmjs.org/@emnapi/wasi-threads/-/wasi-threads-2.2.0.tgz",
+      "integrity": "sha512-JP7OYH38Q7+pyTAe14raZHLQIK7BDKbdwji+Xi3pcd/6QkJYQH3SX4wu6EplGrGJWRepoNzedfm0G3B9Z4e9Rw==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "dependencies": {
+        "tslib": "^2.4.0"
+      }
+    },
+    "node_modules/@jridgewell/gen-mapping": {
+      "version": "0.3.13",
+      "resolved": "https://registry.npmjs.org/@jridgewell/gen-mapping/-/gen-mapping-0.3.13.tgz",
+      "integrity": "sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==",
+      "license": "MIT",
+      "dependencies": {
+        "@jridgewell/sourcemap-codec": "^1.5.0",
+        "@jridgewell/trace-mapping": "^0.3.24"
+      }
+    },
+    "node_modules/@jridgewell/resolve-uri": {
+      "version": "3.1.3",
+      "resolved": "https://registry.npmjs.org/@jridgewell/resolve-uri/-/resolve-uri-3.1.3.tgz",
+      "integrity": "sha512-lhTtjtoEArWBjismtfS761S9Hlyn+nIZqOZVYoZ1Xn82PMNMVnk+jj/NhC4fAXGTs7ydONcJiR5vyQBTMDu27g==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=6.0.0"
+      }
+    },
+    "node_modules/@jridgewell/source-map": {
+      "version": "0.3.11",
+      "resolved": "https://registry.npmjs.org/@jridgewell/source-map/-/source-map-0.3.11.tgz",
+      "integrity": "sha512-ZMp1V8ZFcPG5dIWnQLr3NSI1MiCU7UETdS/A0G8V/XWHvJv3ZsFqutJn1Y5RPmAPX6F3BiE397OqveU/9NCuIA==",
+      "license": "MIT",
+      "dependencies": {
+        "@jridgewell/gen-mapping": "^0.3.5",
+        "@jridgewell/trace-mapping": "^0.3.25"
+      }
+    },
+    "node_modules/@jridgewell/sourcemap-codec": {
+      "version": "1.6.0",
+      "resolved": "https://registry.npmjs.org/@jridgewell/sourcemap-codec/-/sourcemap-codec-1.6.0.tgz",
+      "integrity": "sha512-T7jf+5zgsZHwNJ4lvQ7/aezbyk0nNX+zJVWpmHA7VYsEx7a7qr5Rg5IbtJFqkgze5Y2sruq1RUY8Q837Od7iFw==",
+      "license": "MIT"
+    },
+    "node_modules/@jridgewell/trace-mapping": {
+      "version": "0.3.31",
+      "resolved": "https://registry.npmjs.org/@jridgewell/trace-mapping/-/trace-mapping-0.3.31.tgz",
+      "integrity": "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==",
+      "license": "MIT",
+      "dependencies": {
+        "@jridgewell/resolve-uri": "^3.1.0",
+        "@jridgewell/sourcemap-codec": "^1.4.14"
+      }
+    },
+    "node_modules/@napi-rs/wasm-runtime": {
+      "version": "1.2.6",
+      "resolved": "https://registry.npmjs.org/@napi-rs/wasm-runtime/-/wasm-runtime-1.2.6.tgz",
+      "integrity": "sha512-mRyDmEw9/fCDXCGfL1sbgIw/GUK0PVxRW4YwgPN61F3LQ+fSyoBFarJVzgGyhF6kRzEQZ0FejDqm4WLXSeqQmw==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "dependencies": {
+        "@tybys/wasm-util": "^0.10.3"
+      },
+      "engines": {
+        "node": "^20.19.0 || ^22.13.0 || >=23.5.0"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/Brooooooklyn"
+      },
+      "peerDependencies": {
+        "@emnapi/core": "^1.7.1 || 2.0.0-beta.2",
+        "@emnapi/runtime": "^1.7.1 || 2.0.0-beta.2"
+      }
+    },
+    "node_modules/@oxc-project/types": {
+      "version": "0.156.0",
+      "resolved": "https://registry.npmjs.org/@oxc-project/types/-/types-0.156.0.tgz",
+      "integrity": "sha512-1Duyg48TdJNdyhEB8Xn1L36bT9Pv6GUtlKjHxOys8xkaF/rQq3XJE+bAurSK/AgIz5mGFsb77cn9Pb20+WCScw==",
+      "dev": true,
+      "license": "MIT",
+      "funding": {
+        "url": "https://github.com/sponsors/oxc-project"
+      }
+    },
+    "node_modules/@rolldown/binding-android-arm-eabi": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-android-arm-eabi/-/binding-android-arm-eabi-1.2.19.tgz",
+      "integrity": "sha512-e+Ebe0WT+9tbXmNKPIiC8YrWAHYwug3m6i4p3rZGGulfZri1jtI4HslT+OZnFf/OIHowWF71DTlHwXBP2SiA7A==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "android"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-android-arm64": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-android-arm64/-/binding-android-arm64-1.2.19.tgz",
+      "integrity": "sha512-hOombrTJ+szt2ciEzS7oCA78lMPBgF5UMQWCJIyNfnrI7GLl8HYoFqCnpL2gcPOaXMqryGCU5ExdQKyDDcC+yA==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "android"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-darwin-arm64": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-darwin-arm64/-/binding-darwin-arm64-1.2.19.tgz",
+      "integrity": "sha512-XoMA2pwCKGTQzUjPgtRwkedH4WmXhdIPKT6l6oOxd1PUbNodGI6DcBekgN7EC//+x3pfBYX/qL1gNmZAqivw5g==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-darwin-x64": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-darwin-x64/-/binding-darwin-x64-1.2.19.tgz",
+      "integrity": "sha512-zo8EsSSwMZCY/e+fRnGaX02YGgvJD0yvhNi/9hpGPA2MJ9ZF8dPCw75UGfpI6OpQ/myR/dIYmogRvqiZD0TrXg==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-freebsd-x64": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-freebsd-x64/-/binding-freebsd-x64-1.2.19.tgz",
+      "integrity": "sha512-O8ISAOfI1nj7AuBPd30FSF47z7f7lzlk5poQVGgiikvQuGEBFYvW8ki+UEnT+YJPnNGjQzn304klt4O9FUE7mA==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "freebsd"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-linux-arm-gnueabihf": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-arm-gnueabihf/-/binding-linux-arm-gnueabihf-1.2.19.tgz",
+      "integrity": "sha512-/lYCba5NO0yq4S0jGMH8QTBtkvQxoXjoQWzF5BcWp9MjB9jxVRD1GQDNofkVjcOj30DWyhLIN/4Oe60JKzaONw==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-linux-arm64-gnu": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-arm64-gnu/-/binding-linux-arm64-gnu-1.2.19.tgz",
+      "integrity": "sha512-pm/apFMBnSbFb3O6nG5pHO1iqHhZrjGDFEjSm+ot9J17XXPvH9L90y5h+jgfHCE+Qdlsvy8qKEcU4VKxgjD+vA==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-linux-arm64-musl": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-arm64-musl/-/binding-linux-arm64-musl-1.2.19.tgz",
+      "integrity": "sha512-K1SmQp3FFichn8oqrNIwvFoZ5wcvjC7goBzpaMNvLf9FZc+QB/QvLmnpJZgAAGHiD980tP8FZZnXk2K94rvlxg==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "libc": [
+        "musl"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-linux-ppc64-gnu": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-ppc64-gnu/-/binding-linux-ppc64-gnu-1.2.19.tgz",
+      "integrity": "sha512-I0xwD57jP/3A7+5UPZin2w8Y7XHEmEM5zqpYZOcQ45MlNW6tUJUziymV3yRr7rL4vwyfEcRsRksC4a7Kc08p5Q==",
+      "cpu": [
+        "ppc64"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-linux-s390x-gnu": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-s390x-gnu/-/binding-linux-s390x-gnu-1.2.19.tgz",
+      "integrity": "sha512-BrtEHT24SNXj9HiXqy+s/kXiSiQGt6EKCPUlRirAoIioVxKGnbXBUEkbZASAei7iZJB0/Ynm+0JP00Ipx7AnSw==",
+      "cpu": [
+        "s390x"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-linux-x64-gnu": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-x64-gnu/-/binding-linux-x64-gnu-1.2.19.tgz",
+      "integrity": "sha512-rm75/9DkHKeU2WnA8w4X94WGYgLlDCFCfkQC+4bguVJmC/jvDRv2B+2wLOYhyE0fVuv7//Ckk39OoOufyCu76Q==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-linux-x64-musl": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-x64-musl/-/binding-linux-x64-musl-1.2.19.tgz",
+      "integrity": "sha512-irh/4+iYFM4GAzpluDErgjz89bj6NDtqqMAG/6O1LG38Ed3NpyebzCpcVNkFW8uhy+/3/BocUvnXDR33CXWe9A==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "libc": [
+        "musl"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-openharmony-arm64": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-openharmony-arm64/-/binding-openharmony-arm64-1.2.19.tgz",
+      "integrity": "sha512-+KWTWNoPt+CfSq94CiceWu3yPE+QzkaG+phPyz9G60tmZLwfQkcA4AeksafzvJAw4pvg1mcd5a1TkUqVv0s4JA==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "openharmony"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-wasm32-wasi": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-wasm32-wasi/-/binding-wasm32-wasi-1.2.19.tgz",
+      "integrity": "sha512-7EH+skOsl5qpWnK0vzamgJFhOv1cwxQpsxm8tI883K9fur5c27p8q87fzEO6BbBPabA2/+s/zR63/pLc137iOg==",
+      "cpu": [
+        "wasm32"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "dependencies": {
+        "@emnapi/core": "2.0.0-beta.2",
+        "@emnapi/runtime": "2.0.0-beta.2",
+        "@napi-rs/wasm-runtime": "1.2.6"
+      },
+      "engines": {
+        "node": "^20.19.0 || ^22.13.0 || >=23.5.0"
+      }
+    },
+    "node_modules/@rolldown/binding-win32-arm64-msvc": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-win32-arm64-msvc/-/binding-win32-arm64-msvc-1.2.19.tgz",
+      "integrity": "sha512-3Q1Yg1Q7tEvBWoZf5rFvG/GKZQPgwfru+p4wBajDfJFBs0SHCpL++dfTjW9gyAKd1T7ZpIYvdaUax7Pa/IhFVQ==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-win32-x64-msvc": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-win32-x64-msvc/-/binding-win32-x64-msvc-1.2.19.tgz",
+      "integrity": "sha512-y/sqRRc6d7hECzOFc5n3LSeqctmIp9mMjY1Kq4s14uLPd/LZ4z7i1zrW6fMtp2mPeuQIC4e6ULMcwQzMomqQag==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/pluginutils": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@rolldown/pluginutils/-/pluginutils-1.1.1.tgz",
+      "integrity": "sha512-glFIJDvLNDtJhT9qrMFWLPbvS+skxgt4L0K8Ei2YtnhPysAJnsI7nyxSJxKj4ADeKX0OLjC4ntRkwpLOoS3rwA==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/@searchstax-inc/searchstudio-ux-js": {
+      "version": "4.2.70",
+      "resolved": "https://registry.npmjs.org/@searchstax-inc/searchstudio-ux-js/-/searchstudio-ux-js-4.2.70.tgz",
+      "integrity": "sha512-cpYSZmEuhNUgsDSKMx0dk4Gp1MbAImrEcSYbKzC50n97SNQLvrhCEqFlBPta2mz6ELzG9hqPQ0gGsyCcyvq7mQ==",
+      "dependencies": {
+        "dompurify": "^3.2.5",
+        "eventsource": "^3.0.5",
+        "marked": "^15.0.11",
+        "mustache": "^4.2.0",
+        "terser": "^5.44.0"
+      },
+      "engines": {
+        "node": ">=20.19.0"
+      }
+    },
+    "node_modules/@searchstax-inc/searchstudio-ux-react": {
+      "version": "4.2.70",
+      "resolved": "https://registry.npmjs.org/@searchstax-inc/searchstudio-ux-react/-/searchstudio-ux-react-4.2.70.tgz",
+      "integrity": "sha512-FTur3x5di4h/fdc0/9hTvLBj0v/awOya+29DgntrsEWvltJFYFda/r9+8sUViDsoBz6eTOEdL3UM5tcvka7DPA==",
+      "dependencies": {
+        "@searchstax-inc/searchstudio-ux-js": "npm:@searchstax-inc/searchstudio-ux-js@^4.2.70"
+      },
+      "peerDependencies": {
+        "react": "^18.0.0 || ^19.0.0",
+        "react-dom": "^18.0.0 || ^19.0.0"
+      }
+    },
+    "node_modules/@tybys/wasm-util": {
+      "version": "0.10.5",
+      "resolved": "https://registry.npmjs.org/@tybys/wasm-util/-/wasm-util-0.10.5.tgz",
+      "integrity": "sha512-dOGOPxlaNV+G046mZzN+9C0dAcQZeSKcXiVaM0TYy/LM4ttTmgSBDxYfovcYI8Em3+eAbiAYpvWLOv8+ZVRJKA==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "dependencies": {
+        "tslib": "^2.4.0"
+      }
+    },
+    "node_modules/@types/trusted-types": {
+      "version": "2.0.7",
+      "resolved": "https://registry.npmjs.org/@types/trusted-types/-/trusted-types-2.0.7.tgz",
+      "integrity": "sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==",
+      "license": "MIT",
+      "optional": true
+    },
+    "node_modules/acorn": {
+      "version": "8.19.0",
+      "resolved": "https://registry.npmjs.org/acorn/-/acorn-8.19.0.tgz",
+      "integrity": "sha512-oJlA3XiRm7Cyk6qFD2Jn8ak9B7jSy0qy00ADO3+8dpT0LSjFihQYv4C02LFCSYJV3Q37xYwwRy5m+IpIiUzqWw==",
+      "license": "MIT",
+      "bin": {
+        "acorn": "bin/acorn"
+      },
+      "engines": {
+        "node": ">=0.4.0"
+      }
+    },
+    "node_modules/buffer-from": {
+      "version": "1.1.2",
+      "resolved": "https://registry.npmjs.org/buffer-from/-/buffer-from-1.1.2.tgz",
+      "integrity": "sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==",
+      "license": "MIT"
+    },
+    "node_modules/commander": {
+      "version": "2.20.3",
+      "resolved": "https://registry.npmjs.org/commander/-/commander-2.20.3.tgz",
+      "integrity": "sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==",
+      "license": "MIT"
+    },
+    "node_modules/detect-libc": {
+      "version": "2.1.2",
+      "resolved": "https://registry.npmjs.org/detect-libc/-/detect-libc-2.1.2.tgz",
+      "integrity": "sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==",
+      "dev": true,
+      "license": "Apache-2.0",
+      "engines": {
+        "node": ">=8"
+      }
+    },
+    "node_modules/dompurify": {
+      "version": "3.4.18",
+      "resolved": "https://registry.npmjs.org/dompurify/-/dompurify-3.4.18.tgz",
+      "integrity": "sha512-ofe3wI/uNm68HInABYFJYqQxRw1EaKAjNdrFVKqjUY+UZurvNd2L/HuQe097s/4RivWiZyP6tT7aoT8atjfhwg==",
+      "license": "(MPL-2.0 OR Apache-2.0)",
+      "optionalDependencies": {
+        "@types/trusted-types": "^2.0.7"
+      }
+    },
+    "node_modules/eventsource": {
+      "version": "3.0.7",
+      "resolved": "https://registry.npmjs.org/eventsource/-/eventsource-3.0.7.tgz",
+      "integrity": "sha512-CRT1WTyuQoD771GW56XEZFQ/ZoSfWid1alKGDYMmkt2yl8UXrVR4pspqWNEcqKvVIzg6PAltWjxcSSPrboA4iA==",
+      "license": "MIT",
+      "dependencies": {
+        "eventsource-parser": "^3.0.1"
+      },
+      "engines": {
+        "node": ">=18.0.0"
+      }
+    },
+    "node_modules/eventsource-parser": {
+      "version": "3.1.1",
+      "resolved": "https://registry.npmjs.org/eventsource-parser/-/eventsource-parser-3.1.1.tgz",
+      "integrity": "sha512-EKN1vKAMcZ8MlYMpaNuxN6R9yakzH6uajHcHVTqWJzvu5pWw9DyhbP35HH8MVBQ+dZjAfDxk+A8NiR9KWaXiyQ==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=18.0.0"
+      }
+    },
+    "node_modules/fdir": {
+      "version": "6.5.0",
+      "resolved": "https://registry.npmjs.org/fdir/-/fdir-6.5.0.tgz",
+      "integrity": "sha512-tIbYtZbucOs0BRGqPJkshJUYdL+SDH7dVM8gjy+ERp3WAUjLEFJE+02kanyHtwjWOnwrKYBiwAmM0p4kLJAnXg==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=12.0.0"
+      },
+      "peerDependencies": {
+        "picomatch": "^3 || ^4"
+      },
+      "peerDependenciesMeta": {
+        "picomatch": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/fsevents": {
+      "version": "2.3.3",
+      "resolved": "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz",
+      "integrity": "sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==",
+      "dev": true,
+      "hasInstallScript": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": "^8.16.0 || ^10.6.0 || >=11.0.0"
+      }
+    },
+    "node_modules/lightningcss": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss/-/lightningcss-1.33.0.tgz",
+      "integrity": "sha512-WkUDrojuJs0xkgGf2udWxa3yGBRxPtxUkB79i6aCZLRgc7PM8fZe9TosfPDcvEpQZbuFASnHYmRLBLUbmLOIIA==",
+      "dev": true,
+      "license": "MPL-2.0",
+      "dependencies": {
+        "detect-libc": "^2.0.3"
+      },
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      },
+      "optionalDependencies": {
+        "lightningcss-android-arm64": "1.33.0",
+        "lightningcss-darwin-arm64": "1.33.0",
+        "lightningcss-darwin-x64": "1.33.0",
+        "lightningcss-freebsd-x64": "1.33.0",
+        "lightningcss-linux-arm-gnueabihf": "1.33.0",
+        "lightningcss-linux-arm64-gnu": "1.33.0",
+        "lightningcss-linux-arm64-musl": "1.33.0",
+        "lightningcss-linux-x64-gnu": "1.33.0",
+        "lightningcss-linux-x64-musl": "1.33.0",
+        "lightningcss-win32-arm64-msvc": "1.33.0",
+        "lightningcss-win32-x64-msvc": "1.33.0"
+      }
+    },
+    "node_modules/lightningcss-android-arm64": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-android-arm64/-/lightningcss-android-arm64-1.33.0.tgz",
+      "integrity": "sha512-gEpRTalKdosp4Bb8qWtc2iOgE5SeIHlpS1up9bFq2wAyYhl1UdTObYiHe98zEM9SQvSoqQZ1IQD0JNpg3Ml5pg==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "android"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-darwin-arm64": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-darwin-arm64/-/lightningcss-darwin-arm64-1.33.0.tgz",
+      "integrity": "sha512-Sciaz8eenNTKn9b3t7+xr0ipTp9YxKQY4npwQ3mrRuL0BAVHBLyZxofhaKBAVtzmtRZ/zTyo0/to4B1uWG/Djg==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-darwin-x64": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-darwin-x64/-/lightningcss-darwin-x64-1.33.0.tgz",
+      "integrity": "sha512-Z5UPAxzrjlWNNyGy6i65cJzzvgJ5D3T6wMvs+gWpY9d7qRhANrxqAp6LhxIgZhWEw18RfJTGcRxjuLIBr+m8XQ==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-freebsd-x64": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-freebsd-x64/-/lightningcss-freebsd-x64-1.33.0.tgz",
+      "integrity": "sha512-QQM/Ti/hQajJwCY+RiWuCZ9sdtI/XQk7nDK5vC8kkdwixezOlDgvDx7+RT+QjK6FcFT4MpsuoBnHIo/O3StRRg==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "freebsd"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-linux-arm-gnueabihf": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm-gnueabihf/-/lightningcss-linux-arm-gnueabihf-1.33.0.tgz",
+      "integrity": "sha512-N7FVBe6iS24MlM6R/4RBTxGhQheZGs7tiQ9U32UtF75NzP5Q7xWPRqLBCKxlRQRk3rY1jCIPLzx7WzOhuUIRLQ==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-linux-arm64-gnu": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm64-gnu/-/lightningcss-linux-arm64-gnu-1.33.0.tgz",
+      "integrity": "sha512-j2v/itmy4HlNxlc6voKXYgBqNi0Ng2LShg4z7GufpEgs05P+2suBVyi9I6YHq5uoVFx9ETin3eCEhLVyXGQnKg==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-linux-arm64-musl": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm64-musl/-/lightningcss-linux-arm64-musl-1.33.0.tgz",
+      "integrity": "sha512-yiO5ROMuYQgXbC60yjZU5CYSFZGKXL0HFATXt9mHJn1+zW55oCtMI9NfcVhYLMFDL7gV7oBPon/EmMMGg2OvtQ==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "libc": [
+        "musl"
+      ],
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-linux-x64-gnu": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-linux-x64-gnu/-/lightningcss-linux-x64-gnu-1.33.0.tgz",
+      "integrity": "sha512-ar+Ju7LmcN0Jo4FpL4hpFybwNG9/3A/Br5KW2n2jyODg3MEZXaDYADdemoNS+BDNfMgKvylJLj4S5tyRActuAg==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-linux-x64-musl": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-linux-x64-musl/-/lightningcss-linux-x64-musl-1.33.0.tgz",
+      "integrity": "sha512-RYiYbkokw0trfKqqzfF55lginwEPrD3OJDfTuJzFs1MK6iFnDenaz1fqLLtX4ITG3OktJQXOeTaw1awrBAlZPw==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "libc": [
+        "musl"
+      ],
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-win32-arm64-msvc": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-win32-arm64-msvc/-/lightningcss-win32-arm64-msvc-1.33.0.tgz",
+      "integrity": "sha512-1K+MPfLSFVpphzpdbfkhlWk6wBrTObBzS2T6db10PNOZgR9GoVsAWzwNyuhUYYbTp23j+4RrncfujZ4uAzXvwA==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-win32-x64-msvc": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-win32-x64-msvc/-/lightningcss-win32-x64-msvc-1.33.0.tgz",
+      "integrity": "sha512-OlEICDx/Xl0FqSp4bry8zFnCvGpig3Gl4gCquvYwHuqJKEC1+n9NgDniFvqHGmMv1ZkqDJrDqKKSykTDX+ehuA==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/marked": {
+      "version": "15.0.12",
+      "resolved": "https://registry.npmjs.org/marked/-/marked-15.0.12.tgz",
+      "integrity": "sha512-8dD6FusOQSrpv9Z1rdNMdlSgQOIP880DHqnohobOmYLElGEqAL/JvxvuxZO16r4HtjTlfPRDC1hbvxC9dPN2nA==",
+      "license": "MIT",
+      "bin": {
+        "marked": "bin/marked.js"
+      },
+      "engines": {
+        "node": ">= 18"
+      }
+    },
+    "node_modules/mustache": {
+      "version": "4.2.0",
+      "resolved": "https://registry.npmjs.org/mustache/-/mustache-4.2.0.tgz",
+      "integrity": "sha512-71ippSywq5Yb7/tVYyGbkBggbU8H3u5Rz56fH60jGFgr8uHwxs+aSKeqmluIVzM0m0kB7xQjKS6qPfd0b2ZoqQ==",
+      "license": "MIT",
+      "bin": {
+        "mustache": "bin/mustache"
+      }
+    },
+    "node_modules/nanoid": {
+      "version": "3.3.20",
+      "resolved": "https://registry.npmjs.org/nanoid/-/nanoid-3.3.20.tgz",
+      "integrity": "sha512-uKdg2G3GNCKQn9byYOpxbGqrT2fGO5KRt5J/8b3pok8rT6qxGWF6hxMyJiEYtAf+FVyYuD9hRaDqX5uPFYJ4ZQ==",
+      "dev": true,
+      "funding": [
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/ai"
+        }
+      ],
+      "license": "MIT",
+      "bin": {
+        "nanoid": "bin/nanoid.cjs"
+      },
+      "engines": {
+        "node": "^10 || ^12 || ^13.7 || ^14 || >=15.0.1"
+      }
+    },
+    "node_modules/picocolors": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/picocolors/-/picocolors-1.1.1.tgz",
+      "integrity": "sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==",
+      "dev": true,
+      "license": "ISC"
+    },
+    "node_modules/picomatch": {
+      "version": "4.0.7",
+      "resolved": "https://registry.npmjs.org/picomatch/-/picomatch-4.0.7.tgz",
+      "integrity": "sha512-qcJu88Q2IWqJsDD529JKMdwGm/dvInW4HvQnRwiH9JtihJvzGOscDtHE3x1pBKeUOTysQ8kVmLnJ2kJu7yhcGA==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=12"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/jonschlinkert"
+      }
+    },
+    "node_modules/postcss": {
+      "version": "8.5.33",
+      "resolved": "https://registry.npmjs.org/postcss/-/postcss-8.5.33.tgz",
+      "integrity": "sha512-RVHEU9/Pp1Fnjr/MpAJsZoADukCKhfIi15OunEYiGktIkYLkPVvC1sioWolGDS7XByMTx9m/IGbro0Js13zhnQ==",
+      "dev": true,
+      "funding": [
+        {
+          "type": "opencollective",
+          "url": "https://opencollective.com/postcss/"
+        },
+        {
+          "type": "tidelift",
+          "url": "https://tidelift.com/funding/github/npm/postcss"
+        },
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/ai"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "nanoid": "^3.3.20",
+        "picocolors": "^1.1.1",
+        "source-map-js": "^1.2.2"
+      },
+      "engines": {
+        "node": "^10 || ^12 || >=14"
+      }
+    },
+    "node_modules/react": {
+      "version": "19.3.1",
+      "resolved": "https://registry.npmjs.org/react/-/react-19.3.1.tgz",
+      "integrity": "sha512-QNhWdt7nrgVWWQG58QuGsAR3jv3Hbe4mb4vz7w2csnHavciZJgda1CPNaldF6eVxv90ud3jUXpKlHL69gO38yw==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=0.10.0"
+      }
+    },
+    "node_modules/react-dom": {
+      "version": "19.3.1",
+      "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-19.3.1.tgz",
+      "integrity": "sha512-Y0bARz53lhEC1NMCASs0/j+faB/zqt3R8hpvg1e8+61ZVJ4UL0UdC4cBbXfZMcIuhrfgeILTLe+ZeBCavQPtKQ==",
+      "license": "MIT",
+      "dependencies": {
+        "scheduler": "^0.28.0"
+      },
+      "peerDependencies": {
+        "react": "^19.3.1"
+      }
+    },
+    "node_modules/rolldown": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/rolldown/-/rolldown-1.2.19.tgz",
+      "integrity": "sha512-QIiV1J9d0pzN4jeeTH4sjPy0AZ6cAy2cG0ExeoE1+U8Rvj+hR3gYkokx0YbeUNGlZqiQJJ2utcETe0oKXwzsuA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@oxc-project/types": "=0.156.0",
+        "@rolldown/pluginutils": "^1.0.0"
+      },
+      "bin": {
+        "rolldown": "bin/cli.mjs"
+      },
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      },
+      "optionalDependencies": {
+        "@rolldown/binding-android-arm-eabi": "1.2.19",
+        "@rolldown/binding-android-arm64": "1.2.19",
+        "@rolldown/binding-darwin-arm64": "1.2.19",
+        "@rolldown/binding-darwin-x64": "1.2.19",
+        "@rolldown/binding-freebsd-x64": "1.2.19",
+        "@rolldown/binding-linux-arm-gnueabihf": "1.2.19",
+        "@rolldown/binding-linux-arm64-gnu": "1.2.19",
+        "@rolldown/binding-linux-arm64-musl": "1.2.19",
+        "@rolldown/binding-linux-ppc64-gnu": "1.2.19",
+        "@rolldown/binding-linux-s390x-gnu": "1.2.19",
+        "@rolldown/binding-linux-x64-gnu": "1.2.19",
+        "@rolldown/binding-linux-x64-musl": "1.2.19",
+        "@rolldown/binding-openharmony-arm64": "1.2.19",
+        "@rolldown/binding-wasm32-wasi": "1.2.19",
+        "@rolldown/binding-win32-arm64-msvc": "1.2.19",
+        "@rolldown/binding-win32-x64-msvc": "1.2.19"
+      }
+    },
+    "node_modules/scheduler": {
+      "version": "0.28.0",
+      "resolved": "https://registry.npmjs.org/scheduler/-/scheduler-0.28.0.tgz",
+      "integrity": "sha512-juorfCmIkIw8tT+p5BXSm6PJjQF/ycEYmKyzURCIt/RaZIhL+PulbQ9Yu2z1HdOJDdqDTlxA1+xKBmHXJsczAw==",
+      "license": "MIT"
+    },
+    "node_modules/source-map": {
+      "version": "0.6.1",
+      "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.6.1.tgz",
+      "integrity": "sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==",
+      "license": "BSD-3-Clause",
+      "engines": {
+        "node": ">=0.10.0"
+      }
+    },
+    "node_modules/source-map-js": {
+      "version": "1.2.2",
+      "resolved": "https://registry.npmjs.org/source-map-js/-/source-map-js-1.2.2.tgz",
+      "integrity": "sha512-KGj/8Y43x35aZVDtt+J4mK1hoLGHULMYfSkODJNQjNDC3oW1PqPoxMwo0pLUsWM/UEGzON/NxeHywEfNXNP3Vw==",
+      "dev": true,
+      "license": "BSD-3-Clause",
+      "engines": {
+        "node": ">=0.10.0"
+      }
+    },
+    "node_modules/source-map-support": {
+      "version": "0.5.21",
+      "resolved": "https://registry.npmjs.org/source-map-support/-/source-map-support-0.5.21.tgz",
+      "integrity": "sha512-uBHU3L3czsIyYXKX88fdrGovxdSCoTGDRZ6SYXtSRxLZUzHg5P/66Ht6uoUlHu9EZod+inXhKo3qQgwXUT/y1w==",
+      "license": "MIT",
+      "dependencies": {
+        "buffer-from": "^1.0.0",
+        "source-map": "^0.6.0"
+      }
+    },
+    "node_modules/terser": {
+      "version": "5.51.2",
+      "resolved": "https://registry.npmjs.org/terser/-/terser-5.51.2.tgz",
+      "integrity": "sha512-bWnjSNscmuI+GJze6ZupnHP8G/cTcsJF+bXCeQknk2SHQsgbNJnLrqiH9jZ2W4STPVXH2mDKKRX3iwPhc9Cn/Q==",
+      "license": "BSD-2-Clause",
+      "dependencies": {
+        "@jridgewell/source-map": "^0.3.3",
+        "acorn": "^8.15.0",
+        "commander": "^2.20.0",
+        "source-map-support": "~0.5.20"
+      },
+      "bin": {
+        "terser": "bin/terser"
+      },
+      "engines": {
+        "node": ">=10"
+      }
+    },
+    "node_modules/tinyglobby": {
+      "version": "0.2.17",
+      "resolved": "https://registry.npmjs.org/tinyglobby/-/tinyglobby-0.2.17.tgz",
+      "integrity": "sha512-wXR/dYpcqKmfWpEdZjiKJOwCNFndD0DMnrW/cYjVGttEkBfVgcLFHoNrlj47mjOVic9yyNu65alsgF4NQyTa2g==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "fdir": "^6.5.0",
+        "picomatch": "^4.0.4"
+      },
+      "engines": {
+        "node": ">=12.0.0"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/SuperchupuDev"
+      }
+    },
+    "node_modules/tslib": {
+      "version": "2.9.1",
+      "resolved": "https://registry.npmjs.org/tslib/-/tslib-2.9.1.tgz",
+      "integrity": "sha512-a4Ux9VKuIMHsOS7ENbEq6hK2ZGYIT27Rtl0E4eD9KqwxhKiQeMZE/9xb3IdYwWaSOyIBQLExhQgXDTYoiCxnWA==",
+      "dev": true,
+      "license": "0BSD",
+      "optional": true
+    },
+    "node_modules/vite": {
+      "version": "8.3.8",
+      "resolved": "https://registry.npmjs.org/vite/-/vite-8.3.8.tgz",
+      "integrity": "sha512-LzOn3h9rG/0vhLdXrV4yJ4QFA9eEoqCl+Yx+kGJd7aB9w6nfNgVHKSYwLPZUHrz4ZGa+t+kXjV9itvcHDLQouA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "lightningcss": "^1.33.0",
+        "picomatch": "^4.0.7",
+        "postcss": "^8.5.32",
+        "rolldown": "~1.2.18",
+        "tinyglobby": "^0.2.17"
+      },
+      "bin": {
+        "vite": "bin/vite.js"
+      },
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      },
+      "funding": {
+        "url": "https://github.com/vitejs/vite?sponsor=1"
+      },
+      "optionalDependencies": {
+        "fsevents": "~2.3.3"
+      },
+      "peerDependencies": {
+        "@types/node": "^20.19.0 || >=22.12.0",
+        "@vitejs/devtools": "^0.7.1 || ^0.8.0",
+        "esbuild": "^0.27.0 || ^0.28.0",
+        "jiti": ">=1.21.0",
+        "less": "^4.0.0",
+        "sass": "^1.70.0",
+        "sass-embedded": "^1.70.0",
+        "stylus": ">=0.54.8",
+        "sugarss": "^5.0.0",
+        "terser": "^5.16.0",
+        "tsx": "^4.8.1",
+        "yaml": "^2.4.2"
+      },
+      "peerDependenciesMeta": {
+        "@types/node": {
+          "optional": true
+        },
+        "@vitejs/devtools": {
+          "optional": true
+        },
+        "esbuild": {
+          "optional": true
+        },
+        "jiti": {
+          "optional": true
+        },
+        "less": {
+          "optional": true
+        },
+        "sass": {
+          "optional": true
+        },
+        "sass-embedded": {
+          "optional": true
+        },
+        "stylus": {
+          "optional": true
+        },
+        "sugarss": {
+          "optional": true
+        },
+        "terser": {
+          "optional": true
+        },
+        "tsx": {
+          "optional": true
+        },
+        "yaml": {
+          "optional": true
+        }
+      }
+    }
+  }
+}
+`,ze=`import React from 'react';
+import { createRoot } from 'react-dom/client';
+import SearchApp from './SearchApp.jsx';
+import '../search.css';
+
+createRoot(document.getElementById('root')).render(<SearchApp />);
+`,Be=`import React, { useEffect, useRef, useState } from 'react';
+import {
+  SearchstaxExternalPromotionsWidget,
+  SearchstaxFacetsWidget,
+  SearchstaxPaginationWidget,
+  SearchstaxResultWidget,
+  SearchstaxSortingWidget,
+  SearchstaxWrapper,
+} from '@searchstax-inc/searchstudio-ux-react';
+import { connection, demo, design } from './config.js';
+import { contentLanguageTag } from './content-language.js';
+import { demoResultText, demoResultTitle } from './demo-content.js';
+import { setupStarterAnswers } from './starter-answers.js';
+import { thumbnailAlt } from './thumbnail-alt.js';
+import { createCustomerSuggestionSource } from './customer-suggestions.js';
+import { sampleSuggestionSource, setupSearchSuggestions } from './suggestions.js';
+import { setupPaginationFocus } from './pagination-focus.js';
+import { applySampleIndexedPromotion, sampleExternalPromotion, samplePromotionMode, samplePromotionQuery } from './promotions.js';
+
+const resultLanguage = contentLanguageTag(connection.language);
+const isDemo = connection.searchURL === demo.searchURL && connection.model === demo.model && resultLanguage === demo.language;
+const initialQuery = connection.initialQuery || (isDemo ? (design.samplePromotions === 'off' ? 'rehabilitation' : samplePromotionQuery) : '');
+
+function publicLink(value) {
+  try {
+    const url = new URL(value);
+    if (['https:', 'http:'].includes(url.protocol) && !url.username && !url.password) return url.href;
+  } catch { /* An unmapped URL produces no link. */ }
+  return '';
+}
+
+function plainText(value) {
+  return typeof value === 'string' ? value.replace(/<\\/?(?:em|b|strong)>/gi, '') : '';
+}
+
+function resultCards(results) {
+  return (
+    <div className="searchstax-search-results">
+      {results.map((item) => (
+        <article className="searchstax-search-result" key={item.uniqueId || item.url}>
+          {item.sampleIndexedPromotion && <span className="sample-indexed-promotion">Sample indexed promotion</span>}
+          {!isDemo && item.promoted && <span className="search-promotion-marker">Promoted</span>}
+          {item.previewThumbnail && item.previewThumbnailAlt !== null && (
+            <img className="search-starter__result-thumbnail" src={item.previewThumbnail} alt={item.previewThumbnailAlt} lang={resultLanguage} loading="lazy" referrerPolicy="no-referrer" />
+          )}
+          <h2 lang={resultLanguage}><a href={item.url} referrerPolicy="no-referrer">{item.title || item.url}</a></h2>
+          {item.description && <p className="search-starter__result-description" lang={resultLanguage}>{item.description}</p>}
+        </article>
+      ))}
+    </div>
+  );
+}
+
+function facetControls(data, containers, isExpanded, toggle, selectFacet, isChecked) {
+  if (!data?.facets?.length) return null;
+  return data.facets.map((facet) => (
+    <fieldset key={facet.name}>
+      <legend>{facet.label || facet.name}</legend>
+      {facet.values.map((value, index) => {
+        const key = index + facet.name;
+        containers[key] ??= React.createRef();
+        const label = isDemo && Object.hasOwn(demo.facetLabels, value.value) ? demo.facetLabels[value.value] : value.value;
+        return (
+          <div key={value.value} ref={containers[key]}>
+            <label className={'desktop-' + key}>
+              <input type="checkbox" checked={Boolean(isChecked(value))} readOnly disabled={value.disabled}
+                onClick={(event) => selectFacet(key, event, value, true)} />
+              <span>{label}</span><small>{value.count}</small>
+            </label>
+          </div>
+        );
+      })}
+    </fieldset>
+  ));
+}
+
+function sortControls(data, selected, api) {
+  const choices = isDemo ? demo.sortOptions : data?.sortOptions?.map(item => ({ label: item.value, order: item.key }));
+  if (!data?.searchExecuted || !choices?.length) return null;
+  return (
+    <label className="search-starter__sort">
+      Sort by
+      <select value={selected} onChange={(event) => {
+        const current = api.dataLayer.searchObject;
+        api.dataLayer.setSearchObject({ ...current, order: encodeURIComponent(event.target.value), page: 1 });
+      }}>
+        {choices.map(option => <option key={option.order} value={option.order}>{option.label}</option>)}
+      </select>
+    </label>
+  );
+}
+
+function pageControls(page) {
+  if (!page?.totalResults) return null;
+  return (
+    <nav className="search-starter__pagination" aria-label="Search result pages">
+      <span tabIndex={-1} data-page-range="" data-page-start={page.startResultIndex}>{page.startResultIndex}–{page.endResultIndex} of {page.totalResults} results</span>
+      {!page.isFirstPage && <button type="button" data-page-step="previous">Previous</button>}
+      {!page.isLastPage && <button type="button" data-page-step="next">Next</button>}
+    </nav>
+  );
+}
+
+function livePromotions(data) {
+  const links = data?.externalPromotions?.flatMap(item => {
+    const url = publicLink(item.url);
+    return url ? [{ ...item, url }] : [];
+  });
+  if (!links?.length) return null;
+  return (
+    <section aria-label="External promotions">
+      {links.map(item => (
+        <div key={item.id ?? item.url} className="search-promotion-banner">
+          <span className="search-promotion-marker">Promoted</span>
+          <a href={item.url} lang={resultLanguage} referrerPolicy="no-referrer">{item.name || item.url}</a>
+          {item.description && <p lang={resultLanguage}>{item.description}</p>}
+        </div>
+      ))}
+    </section>
+  );
+}
+
+function SearchExperience({ api, summary, status, setStatus, timer }) {
+  const form = useRef(null);
+  const input = useRef(null);
+  const pagination = useRef(null);
+  const answerHost = useRef(null);
+  const answers = useRef(null);
+  const setSuggestionSource = useRef(null);
+
+  function runSearch(query) {
+    const term = query.trim();
+    if (!term) {
+      setStatus('Enter a search term.');
+      return;
+    }
+    const current = api.dataLayer.searchObject;
+    const next = { ...current, query: term, page: 1, facets: [] };
+    answers.current?.start(term);
+    if (current.query === term && current.page === 1 && !current.facets.length) api.search(next);
+    else api.dataLayer.setSearchObject(next);
+  }
+
+  useEffect(() => {
+    const loading = api.dataLayer.$loadingChange;
+    const subscription = loading.subscribe((value) => {
+      if (!value) return;
+      setStatus('Searching…');
+      window.clearTimeout(timer.current);
+      timer.current = window.setTimeout(() => setStatus('Search is unavailable. Try again in a moment.'), 15000);
+    });
+    api.dataLayer.setItemsPerPage(design.resultsPerPage);
+    if (!isDemo && design.showSmartAnswersSample && connection.questionURL?.trim()) {
+      answers.current = setupStarterAnswers(answerHost.current, connection);
+    }
+    if (initialQuery) runSearch(initialQuery);
+    else setStatus('Enter a search term.');
+    return () => {
+      answers.current?.clear();
+      loading.unsubscribe(subscription);
+      window.clearTimeout(timer.current);
+    };
+  }, [api]);
+
+  useEffect(() => {
+    if (!design.showSuggestions) return;
+    const source = isDemo ? sampleSuggestionSource : connection.suggesterURL
+      ? createCustomerSuggestionSource({ token: connection.searchAuth, language: connection.language }, connection.suggesterURL)
+      : null;
+    if (!source) return;
+    setSuggestionSource.current ??= setupSearchSuggestions(form.current, 'react-search-suggestions');
+    setSuggestionSource.current(source);
+    return () => setSuggestionSource.current(null);
+  }, []);
+
+  useEffect(() => setupPaginationFocus(pagination.current, () => api), [api]);
+
+  const modes = isDemo ? samplePromotionMode(summary.query, design.samplePromotions) : 'off';
+  return <>
+    <form className="search-starter__form" role="search" ref={form}
+      onSubmit={(event) => { event.preventDefault(); runSearch(input.current.value); }}>
+      <label className="search-starter__sr-only" htmlFor="starter-query">{design.searchFieldText}</label>
+      <input id="starter-query" type="search" defaultValue={initialQuery} placeholder={design.searchFieldText} ref={input} autoComplete="off" required />
+      <button type="submit" className="search-starter__submit">{design.searchButtonText}</button>
+    </form>
+    {isDemo && design.showSmartAnswersSample && <div dangerouslySetInnerHTML={{ __html: demo.answerSampleHTML }} />}
+    <div ref={answerHost} />
+    <p role="status">{status}</p>
+    {design.showSorting && <SearchstaxSortingWidget searchSortingTemplate={(data, _, selected) => sortControls(data, selected, api)} />}
+    {(modes === 'external' || modes === 'both') &&
+      <section className="sample-external-promotion search-promotion-banner" aria-label="Sample external promotion">
+        <p className="sample-external-promotion__label">Sample external promotion</p>
+        <a href={sampleExternalPromotion.url} referrerPolicy="no-referrer">{sampleExternalPromotion.title}</a>
+      </section>}
+    {!isDemo && <SearchstaxExternalPromotionsWidget searchExternalPromotionsTemplate={livePromotions} />}
+    <div className="search-starter__body">
+      {design.showFilters &&
+        <aside className="search-starter__filters" aria-label="Filter search results">
+          <SearchstaxFacetsWidget facetingType="or" itemsPerPageDesktop={20} itemsPerPageMobile={20}
+            facetsTemplateDesktop={facetControls} facetsTemplateMobile={() => null} />
+        </aside>}
+      <div>
+        <SearchstaxResultWidget renderMethod="pagination" resultsPerPage={design.resultsPerPage}
+          resultsTemplate={resultCards}
+          noResultTemplate={() => <p className="search-starter__no-results">{design.noResultsText}</p>} />
+        <div ref={pagination} tabIndex={-1} role="group" aria-label="Search result pagination">
+          <SearchstaxPaginationWidget paginationTemplate={pageControls} />
+          <span className="search-starter__sr-only" role="status" data-page-announcement="" />
+        </div>
+      </div>
+    </div>
+  </>;
+}
+
+export default function SearchApp() {
+  const [api, setApi] = useState(null);
+  const [summary, setSummary] = useState({ query: '' });
+  const [status, setStatus] = useState('Connecting to search…');
+  const timer = useRef();
+
+  function afterSearch(items, response) {
+    const total = response?.response?.numFound;
+    if (typeof total !== 'number') return [];
+    window.clearTimeout(timer.current);
+    const query = response.responseHeader?.params?.q ?? '';
+    setSummary({ query });
+    setStatus(total + (total === 1 ? ' result' : ' results'));
+    const results = items.flatMap((item) => {
+      const url = publicLink(item.url);
+      return url ? [{
+        ...item,
+        url,
+        title: isDemo ? demoResultTitle(item.title) : plainText(item.title),
+        description: isDemo ? demoResultText(plainText(item.description)) : plainText(item.description),
+        previewThumbnail: design.showThumbnails ? (isDemo ? demo.thumbnailPaths[url] : publicLink(item.thumbnail)) : '',
+        previewThumbnailAlt: isDemo ? '' : thumbnailAlt(
+          item.allFields,
+          connection.thumbnailAltField,
+          connection.thumbnailsWithoutAltAreDecorative,
+        ),
+      }] : [];
+    });
+    return isDemo ? applySampleIndexedPromotion(results, response, samplePromotionMode(query, design.samplePromotions)) : results;
+  }
+
+  return (
+    <main className="search-starter">
+      {design.logoURL && <img className="search-starter__logo" src={design.logoURL} alt="Company logo"
+        referrerPolicy="no-referrer" onError={event => { event.currentTarget.hidden = true; }} />}
+      <h1>{isDemo ? 'Search Central County' : 'Search'}</h1>
+      {isDemo && <p>Search fictional university health content with the SearchStax React UI Kit.</p>}
+      <SearchstaxWrapper searchURL={connection.searchURL} searchAuth={connection.searchAuth}
+        authType="token" model={connection.model} language={connection.language}
+        suggesterURL=""
+        trackApiKey="" router={{ enabled: false }} afterSearch={afterSearch}
+        initialized={(instance) => { instance.setCookiesDisabled(true); setApi(instance); }}>
+        {api && <SearchExperience api={api} summary={summary} status={status} setStatus={setStatus} timer={timer} />}
+      </SearchstaxWrapper>
+    </main>
+  );
+}
+`,Ve="# SearchStax React Starter\n\nThis project uses the SearchStax React UI Kit and starts with the public Central County fictional demo. It includes your Search Lab design and uses Vite for local development.\n\n## Run the Demo\n\nUse Node.js 20.19+ on the 20.x line, or Node.js 22.12 or later.\n\n```sh\nnpm ci\nnpm run dev\n```\n\nOpen the localhost URL printed in the terminal. You’ll need an internet connection for the demo search. Run `npm run build` to create the deployable files in `dist/`.\n\n- Search for `rehabilitation` to try filters or view the optional sample thumbnails.\n- Search for `campus flu clinic` to try pagination, sorting, or the Promotion formats selected in your design.\n- If you enabled sample suggestions, type `reh`. If the Smart Answers sample is visible, expand it to read the fixed answer and its source.\n\n## Connect Your Search App\n\nUse `src/config.js` to connect your app. Keep the `demo` object and set `connection.searchURL` to your Select endpoint, `connection.searchAuth` to an active **Read Only** token, `connection.model` to your Search Profile name, and `connection.language` to the language configured for your app. Set `connection.initialQuery` to a term that matches your content or leave it empty to start with a blank search box.\n\n1. In Site Search, go to **App Settings > All APIs > Search & Indexing** for your Select endpoint and token.\n2. Map Title, URL, and Description in your Search Profile’s **Results Fields**. Map Thumbnail if you’re displaying images. Configure and publish any facets, sort options, and Promotions you want to use. [Results Fields](https://support.searchstax.com/hc/en-us/articles/40837318253197-Results-Fields)\n3. For live suggestions, enable and publish Auto-Suggest and set `suggesterURL` to its endpoint. For live Smart Answers, enable and publish the feature on your eligible profile and set `questionURL` to the streaming Answer endpoint. Enable the corresponding display options in the exported `design` object. [Auto-Suggest API](https://support.searchstax.com/hc/en-us/articles/40243330090893-Auto-Suggest-API) · [Smart Answers setup](https://support.searchstax.com/hc/en-us/articles/40075209934989-Smart-Answers)\n\nThe starter requests a Smart Answer for the opening query and submitted searches. Use the SearchStax streaming endpoint or a same-origin proxy that returns the same event stream.\n\n### Thumbnail Descriptions\n\nTo show informative thumbnails, enable thumbnails in the design and map the image URL field to **Thumbnail**. Add the indexed description as a Return Field with **No mapping** in **Results Fields**. Then set `connection.thumbnailAltField` in `src/config.js` to that field’s name, such as `image_alt`. Use a description that conveys the information the image adds. The starter omits a connected thumbnail when its description is missing. Set `thumbnailsWithoutAltAreDecorative` to `true` only if every thumbnail without a description is decorative or repeats the nearby text. Those images use empty alt text. [Decorative images](https://www.w3.org/WAI/tutorials/images/decorative/)\n\nBrowser code is visible to visitors. Use a server-side proxy when a token must stay private. [Endpoint and token guidance](https://support.searchstax.com/hc/en-us/articles/39440547272077-Hide-Tokens-and-Endpoints-in-UI-Kits)\n\nEdit `search.css` for styling. Retain the `.search-starter` wrapper so the exported selectors still apply.\n\n## Use It in Next.js\n\nIn an existing Next.js App Router project, install the React UI Kit version pinned in this ZIP. Copy the files from `src/` except `main.jsx` into your search route. Copy `public/thumbnails/` if it’s present. Import `search.css` from your route or root layout, and add `search-starter-page` to the body if you use the standalone page styles.\n\nLoad `SearchApp.jsx` with server rendering disabled from a Client Component. The SearchStax kit mounts against the browser DOM.\n\n```jsx\n// app/search/SearchClient.jsx\n'use client';\n\nimport dynamic from 'next/dynamic';\n\nexport default dynamic(() => import('./SearchApp.jsx'), {\n  ssr: false,\n  loading: () => <p role=\"status\">Loading search…</p>,\n});\n```\n\nRender `<SearchClient />` from your route’s `page.jsx`. [Next.js client-only loading](https://nextjs.org/docs/app/guides/lazy-loading)\n",He=`<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SearchStax Vue Starter</title>
+</head>
+<body class="search-starter-page">
+  <div id="app"></div>
+  <script type="module" src="/src/main.js"><\/script>
+</body>
+</html>
+`,Ue=`{
+  "name": "searchstax-vue-starter",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1"
+  },
+  "engines": { "node": "^20.19.0 || >=22.12.0" },
+  "dependencies": {
+    "@searchstax-inc/searchstudio-ux-vue": "4.2.70",
+    "vue": "3.5.45"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "6.0.11",
+    "vite": "8.3.8"
+  }
+}
+`,We=`{
+  "name": "searchstax-vue-starter",
+  "version": "1.0.0",
+  "lockfileVersion": 3,
+  "requires": true,
+  "packages": {
+    "": {
+      "name": "searchstax-vue-starter",
+      "version": "1.0.0",
+      "dependencies": {
+        "@searchstax-inc/searchstudio-ux-vue": "4.2.70",
+        "vue": "3.5.45"
+      },
+      "devDependencies": {
+        "@vitejs/plugin-vue": "6.0.11",
+        "vite": "8.3.8"
+      },
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@babel/helper-string-parser": {
+      "version": "7.29.14",
+      "resolved": "https://registry.npmjs.org/@babel/helper-string-parser/-/helper-string-parser-7.29.14.tgz",
+      "integrity": "sha512-CXvKMFvM80ihI7Vox9jb+kQjnyjESQNPM+vB7U0Zz6TWuZA+Z/FL0QPMH300h33qJtIx+REeBhXqWOPW48TcAQ==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=6.9.0"
+      }
+    },
+    "node_modules/@babel/helper-validator-identifier": {
+      "version": "7.29.7",
+      "resolved": "https://registry.npmjs.org/@babel/helper-validator-identifier/-/helper-validator-identifier-7.29.7.tgz",
+      "integrity": "sha512-qehxGkRj55h/ff8EMaJ+cYhyaKlHIxqYDn682wQD7RNp9UujOQsHog2uS0r2vzr4pW+sXf90NeeayjcNaX3fFg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=6.9.0"
+      }
+    },
+    "node_modules/@babel/parser": {
+      "version": "7.29.14",
+      "resolved": "https://registry.npmjs.org/@babel/parser/-/parser-7.29.14.tgz",
+      "integrity": "sha512-VL220vXuyO2z3rNIQwY7ftj9UwpqOt+33sH+sBWkOekbsSR2g7EEMnOx24ZlCH0xOA3DM/33SifVFGbnJD8r/w==",
+      "license": "MIT",
+      "dependencies": {
+        "@babel/types": "^7.29.14"
+      },
+      "bin": {
+        "parser": "bin/babel-parser.js"
+      },
+      "engines": {
+        "node": ">=6.0.0"
+      }
+    },
+    "node_modules/@babel/types": {
+      "version": "7.29.14",
+      "resolved": "https://registry.npmjs.org/@babel/types/-/types-7.29.14.tgz",
+      "integrity": "sha512-UjI/dKmwJwT9pOszJitq2G6EObZPnsZUfdCr92z2TlF3EZK9J3EdfOKUrCzHl6wFthbzwhzl1Soc/UIwxRiq6w==",
+      "license": "MIT",
+      "dependencies": {
+        "@babel/helper-string-parser": "^7.29.14",
+        "@babel/helper-validator-identifier": "^7.29.7"
+      },
+      "engines": {
+        "node": ">=6.9.0"
+      }
+    },
+    "node_modules/@emnapi/core": {
+      "version": "2.0.0-beta.2",
+      "resolved": "https://registry.npmjs.org/@emnapi/core/-/core-2.0.0-beta.2.tgz",
+      "integrity": "sha512-MzCVoWtcg4Pm2B3je5mMvYMvj3MmBKw+fU7vbsJc9/iT8ip6/eYIHo/Dsm/mr+wsHB6SEyJDuxB09Yy6r/8+4A==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "dependencies": {
+        "@emnapi/wasi-threads": "2.2.0",
+        "tslib": "^2.4.0"
+      }
+    },
+    "node_modules/@emnapi/runtime": {
+      "version": "2.0.0-beta.2",
+      "resolved": "https://registry.npmjs.org/@emnapi/runtime/-/runtime-2.0.0-beta.2.tgz",
+      "integrity": "sha512-JcrSPzPvZuNZvJqPTF9Fw25LbOJ8avzFVlaf2grmH4Cku0oGP47tRgqPZadcfj3YoZMHkFVnCYFbQM8I+i5QEw==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "dependencies": {
+        "tslib": "^2.4.0"
+      }
+    },
+    "node_modules/@emnapi/wasi-threads": {
+      "version": "2.2.0",
+      "resolved": "https://registry.npmjs.org/@emnapi/wasi-threads/-/wasi-threads-2.2.0.tgz",
+      "integrity": "sha512-JP7OYH38Q7+pyTAe14raZHLQIK7BDKbdwji+Xi3pcd/6QkJYQH3SX4wu6EplGrGJWRepoNzedfm0G3B9Z4e9Rw==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "dependencies": {
+        "tslib": "^2.4.0"
+      }
+    },
+    "node_modules/@jridgewell/gen-mapping": {
+      "version": "0.3.13",
+      "resolved": "https://registry.npmjs.org/@jridgewell/gen-mapping/-/gen-mapping-0.3.13.tgz",
+      "integrity": "sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==",
+      "license": "MIT",
+      "dependencies": {
+        "@jridgewell/sourcemap-codec": "^1.5.0",
+        "@jridgewell/trace-mapping": "^0.3.24"
+      }
+    },
+    "node_modules/@jridgewell/resolve-uri": {
+      "version": "3.1.3",
+      "resolved": "https://registry.npmjs.org/@jridgewell/resolve-uri/-/resolve-uri-3.1.3.tgz",
+      "integrity": "sha512-lhTtjtoEArWBjismtfS761S9Hlyn+nIZqOZVYoZ1Xn82PMNMVnk+jj/NhC4fAXGTs7ydONcJiR5vyQBTMDu27g==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=6.0.0"
+      }
+    },
+    "node_modules/@jridgewell/source-map": {
+      "version": "0.3.11",
+      "resolved": "https://registry.npmjs.org/@jridgewell/source-map/-/source-map-0.3.11.tgz",
+      "integrity": "sha512-ZMp1V8ZFcPG5dIWnQLr3NSI1MiCU7UETdS/A0G8V/XWHvJv3ZsFqutJn1Y5RPmAPX6F3BiE397OqveU/9NCuIA==",
+      "license": "MIT",
+      "dependencies": {
+        "@jridgewell/gen-mapping": "^0.3.5",
+        "@jridgewell/trace-mapping": "^0.3.25"
+      }
+    },
+    "node_modules/@jridgewell/sourcemap-codec": {
+      "version": "1.6.0",
+      "resolved": "https://registry.npmjs.org/@jridgewell/sourcemap-codec/-/sourcemap-codec-1.6.0.tgz",
+      "integrity": "sha512-T7jf+5zgsZHwNJ4lvQ7/aezbyk0nNX+zJVWpmHA7VYsEx7a7qr5Rg5IbtJFqkgze5Y2sruq1RUY8Q837Od7iFw==",
+      "license": "MIT"
+    },
+    "node_modules/@jridgewell/trace-mapping": {
+      "version": "0.3.31",
+      "resolved": "https://registry.npmjs.org/@jridgewell/trace-mapping/-/trace-mapping-0.3.31.tgz",
+      "integrity": "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==",
+      "license": "MIT",
+      "dependencies": {
+        "@jridgewell/resolve-uri": "^3.1.0",
+        "@jridgewell/sourcemap-codec": "^1.4.14"
+      }
+    },
+    "node_modules/@napi-rs/wasm-runtime": {
+      "version": "1.2.6",
+      "resolved": "https://registry.npmjs.org/@napi-rs/wasm-runtime/-/wasm-runtime-1.2.6.tgz",
+      "integrity": "sha512-mRyDmEw9/fCDXCGfL1sbgIw/GUK0PVxRW4YwgPN61F3LQ+fSyoBFarJVzgGyhF6kRzEQZ0FejDqm4WLXSeqQmw==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "dependencies": {
+        "@tybys/wasm-util": "^0.10.3"
+      },
+      "engines": {
+        "node": "^20.19.0 || ^22.13.0 || >=23.5.0"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/Brooooooklyn"
+      },
+      "peerDependencies": {
+        "@emnapi/core": "^1.7.1 || 2.0.0-beta.2",
+        "@emnapi/runtime": "^1.7.1 || 2.0.0-beta.2"
+      }
+    },
+    "node_modules/@oxc-project/types": {
+      "version": "0.156.0",
+      "resolved": "https://registry.npmjs.org/@oxc-project/types/-/types-0.156.0.tgz",
+      "integrity": "sha512-1Duyg48TdJNdyhEB8Xn1L36bT9Pv6GUtlKjHxOys8xkaF/rQq3XJE+bAurSK/AgIz5mGFsb77cn9Pb20+WCScw==",
+      "dev": true,
+      "license": "MIT",
+      "funding": {
+        "url": "https://github.com/sponsors/oxc-project"
+      }
+    },
+    "node_modules/@rolldown/binding-android-arm-eabi": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-android-arm-eabi/-/binding-android-arm-eabi-1.2.19.tgz",
+      "integrity": "sha512-e+Ebe0WT+9tbXmNKPIiC8YrWAHYwug3m6i4p3rZGGulfZri1jtI4HslT+OZnFf/OIHowWF71DTlHwXBP2SiA7A==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "android"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-android-arm64": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-android-arm64/-/binding-android-arm64-1.2.19.tgz",
+      "integrity": "sha512-hOombrTJ+szt2ciEzS7oCA78lMPBgF5UMQWCJIyNfnrI7GLl8HYoFqCnpL2gcPOaXMqryGCU5ExdQKyDDcC+yA==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "android"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-darwin-arm64": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-darwin-arm64/-/binding-darwin-arm64-1.2.19.tgz",
+      "integrity": "sha512-XoMA2pwCKGTQzUjPgtRwkedH4WmXhdIPKT6l6oOxd1PUbNodGI6DcBekgN7EC//+x3pfBYX/qL1gNmZAqivw5g==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-darwin-x64": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-darwin-x64/-/binding-darwin-x64-1.2.19.tgz",
+      "integrity": "sha512-zo8EsSSwMZCY/e+fRnGaX02YGgvJD0yvhNi/9hpGPA2MJ9ZF8dPCw75UGfpI6OpQ/myR/dIYmogRvqiZD0TrXg==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-freebsd-x64": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-freebsd-x64/-/binding-freebsd-x64-1.2.19.tgz",
+      "integrity": "sha512-O8ISAOfI1nj7AuBPd30FSF47z7f7lzlk5poQVGgiikvQuGEBFYvW8ki+UEnT+YJPnNGjQzn304klt4O9FUE7mA==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "freebsd"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-linux-arm-gnueabihf": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-arm-gnueabihf/-/binding-linux-arm-gnueabihf-1.2.19.tgz",
+      "integrity": "sha512-/lYCba5NO0yq4S0jGMH8QTBtkvQxoXjoQWzF5BcWp9MjB9jxVRD1GQDNofkVjcOj30DWyhLIN/4Oe60JKzaONw==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-linux-arm64-gnu": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-arm64-gnu/-/binding-linux-arm64-gnu-1.2.19.tgz",
+      "integrity": "sha512-pm/apFMBnSbFb3O6nG5pHO1iqHhZrjGDFEjSm+ot9J17XXPvH9L90y5h+jgfHCE+Qdlsvy8qKEcU4VKxgjD+vA==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-linux-arm64-musl": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-arm64-musl/-/binding-linux-arm64-musl-1.2.19.tgz",
+      "integrity": "sha512-K1SmQp3FFichn8oqrNIwvFoZ5wcvjC7goBzpaMNvLf9FZc+QB/QvLmnpJZgAAGHiD980tP8FZZnXk2K94rvlxg==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "libc": [
+        "musl"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-linux-ppc64-gnu": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-ppc64-gnu/-/binding-linux-ppc64-gnu-1.2.19.tgz",
+      "integrity": "sha512-I0xwD57jP/3A7+5UPZin2w8Y7XHEmEM5zqpYZOcQ45MlNW6tUJUziymV3yRr7rL4vwyfEcRsRksC4a7Kc08p5Q==",
+      "cpu": [
+        "ppc64"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-linux-s390x-gnu": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-s390x-gnu/-/binding-linux-s390x-gnu-1.2.19.tgz",
+      "integrity": "sha512-BrtEHT24SNXj9HiXqy+s/kXiSiQGt6EKCPUlRirAoIioVxKGnbXBUEkbZASAei7iZJB0/Ynm+0JP00Ipx7AnSw==",
+      "cpu": [
+        "s390x"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-linux-x64-gnu": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-x64-gnu/-/binding-linux-x64-gnu-1.2.19.tgz",
+      "integrity": "sha512-rm75/9DkHKeU2WnA8w4X94WGYgLlDCFCfkQC+4bguVJmC/jvDRv2B+2wLOYhyE0fVuv7//Ckk39OoOufyCu76Q==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-linux-x64-musl": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-x64-musl/-/binding-linux-x64-musl-1.2.19.tgz",
+      "integrity": "sha512-irh/4+iYFM4GAzpluDErgjz89bj6NDtqqMAG/6O1LG38Ed3NpyebzCpcVNkFW8uhy+/3/BocUvnXDR33CXWe9A==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "libc": [
+        "musl"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-openharmony-arm64": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-openharmony-arm64/-/binding-openharmony-arm64-1.2.19.tgz",
+      "integrity": "sha512-+KWTWNoPt+CfSq94CiceWu3yPE+QzkaG+phPyz9G60tmZLwfQkcA4AeksafzvJAw4pvg1mcd5a1TkUqVv0s4JA==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "openharmony"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-wasm32-wasi": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-wasm32-wasi/-/binding-wasm32-wasi-1.2.19.tgz",
+      "integrity": "sha512-7EH+skOsl5qpWnK0vzamgJFhOv1cwxQpsxm8tI883K9fur5c27p8q87fzEO6BbBPabA2/+s/zR63/pLc137iOg==",
+      "cpu": [
+        "wasm32"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "dependencies": {
+        "@emnapi/core": "2.0.0-beta.2",
+        "@emnapi/runtime": "2.0.0-beta.2",
+        "@napi-rs/wasm-runtime": "1.2.6"
+      },
+      "engines": {
+        "node": "^20.19.0 || ^22.13.0 || >=23.5.0"
+      }
+    },
+    "node_modules/@rolldown/binding-win32-arm64-msvc": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-win32-arm64-msvc/-/binding-win32-arm64-msvc-1.2.19.tgz",
+      "integrity": "sha512-3Q1Yg1Q7tEvBWoZf5rFvG/GKZQPgwfru+p4wBajDfJFBs0SHCpL++dfTjW9gyAKd1T7ZpIYvdaUax7Pa/IhFVQ==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-win32-x64-msvc": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-win32-x64-msvc/-/binding-win32-x64-msvc-1.2.19.tgz",
+      "integrity": "sha512-y/sqRRc6d7hECzOFc5n3LSeqctmIp9mMjY1Kq4s14uLPd/LZ4z7i1zrW6fMtp2mPeuQIC4e6ULMcwQzMomqQag==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/pluginutils": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@rolldown/pluginutils/-/pluginutils-1.1.1.tgz",
+      "integrity": "sha512-glFIJDvLNDtJhT9qrMFWLPbvS+skxgt4L0K8Ei2YtnhPysAJnsI7nyxSJxKj4ADeKX0OLjC4ntRkwpLOoS3rwA==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/@searchstax-inc/searchstudio-ux-js": {
+      "version": "4.2.70",
+      "resolved": "https://registry.npmjs.org/@searchstax-inc/searchstudio-ux-js/-/searchstudio-ux-js-4.2.70.tgz",
+      "integrity": "sha512-cpYSZmEuhNUgsDSKMx0dk4Gp1MbAImrEcSYbKzC50n97SNQLvrhCEqFlBPta2mz6ELzG9hqPQ0gGsyCcyvq7mQ==",
+      "dependencies": {
+        "dompurify": "^3.2.5",
+        "eventsource": "^3.0.5",
+        "marked": "^15.0.11",
+        "mustache": "^4.2.0",
+        "terser": "^5.44.0"
+      },
+      "engines": {
+        "node": ">=20.19.0"
+      }
+    },
+    "node_modules/@searchstax-inc/searchstudio-ux-vue": {
+      "version": "4.2.70",
+      "resolved": "https://registry.npmjs.org/@searchstax-inc/searchstudio-ux-vue/-/searchstudio-ux-vue-4.2.70.tgz",
+      "integrity": "sha512-ljJYx/LAoQqe1/Jht1S8T01CT6fC3HByDF7JJqcOfpdPzzvtT3SUSkSDaSku8p0vVqUBwxhDgVL1hzrezpZVGg==",
+      "dependencies": {
+        "@searchstax-inc/searchstudio-ux-js": "npm:@searchstax-inc/searchstudio-ux-js@^4.2.70"
+      },
+      "peerDependencies": {
+        "vue": "^3.0.0"
+      }
+    },
+    "node_modules/@tybys/wasm-util": {
+      "version": "0.10.5",
+      "resolved": "https://registry.npmjs.org/@tybys/wasm-util/-/wasm-util-0.10.5.tgz",
+      "integrity": "sha512-dOGOPxlaNV+G046mZzN+9C0dAcQZeSKcXiVaM0TYy/LM4ttTmgSBDxYfovcYI8Em3+eAbiAYpvWLOv8+ZVRJKA==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "dependencies": {
+        "tslib": "^2.4.0"
+      }
+    },
+    "node_modules/@types/trusted-types": {
+      "version": "2.0.7",
+      "resolved": "https://registry.npmjs.org/@types/trusted-types/-/trusted-types-2.0.7.tgz",
+      "integrity": "sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==",
+      "license": "MIT",
+      "optional": true
+    },
+    "node_modules/@vitejs/plugin-vue": {
+      "version": "6.0.11",
+      "resolved": "https://registry.npmjs.org/@vitejs/plugin-vue/-/plugin-vue-6.0.11.tgz",
+      "integrity": "sha512-m48lskIUJGlB6qUiYhDMI8nd2ngeidz2U4nKTjqI13cFMu5rH8JeEILPkDtK9Fk/TjBA2pkj8AlbenqDaKu+ww==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@rolldown/pluginutils": "^1.0.1"
+      },
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      },
+      "peerDependencies": {
+        "vite": "^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0",
+        "vue": "^3.2.25 || ^3.6.0-rc.15"
+      }
+    },
+    "node_modules/@vue/compiler-core": {
+      "version": "3.5.45",
+      "resolved": "https://registry.npmjs.org/@vue/compiler-core/-/compiler-core-3.5.45.tgz",
+      "integrity": "sha512-XGHJrM6ufZARAc/w+tyOswStw9tdKiqCKBScI4gGaNxD+aaGu/HQWgKJ+JItjRLPqenQ7iE7G8AJC7T5ew1p+g==",
+      "license": "MIT",
+      "dependencies": {
+        "@babel/parser": "^7.29.12",
+        "@vue/shared": "3.5.45",
+        "entities": "^7.0.1",
+        "estree-walker": "^2.0.2",
+        "source-map-js": "^1.2.2"
+      }
+    },
+    "node_modules/@vue/compiler-dom": {
+      "version": "3.5.45",
+      "resolved": "https://registry.npmjs.org/@vue/compiler-dom/-/compiler-dom-3.5.45.tgz",
+      "integrity": "sha512-LbP2d19GSOYGPmvMBBCVJVlv7TKtjM1Cfeyu3cYia720pknZP+1cLX7H5MVatvruT6MuJhiPuNbQBW/MDn/EwA==",
+      "license": "MIT",
+      "dependencies": {
+        "@vue/compiler-core": "3.5.45",
+        "@vue/shared": "3.5.45"
+      }
+    },
+    "node_modules/@vue/compiler-sfc": {
+      "version": "3.5.45",
+      "resolved": "https://registry.npmjs.org/@vue/compiler-sfc/-/compiler-sfc-3.5.45.tgz",
+      "integrity": "sha512-MKFjb2UX0M/l/jhfzqMLrI8VM4pfvFKG3pqFZkSZFHRLtNld/O4RtUPZFWSwhro/14qP88UQEkWzHxAZAQ0tsw==",
+      "license": "MIT",
+      "dependencies": {
+        "@babel/parser": "^7.29.12",
+        "@vue/compiler-core": "3.5.45",
+        "@vue/compiler-dom": "3.5.45",
+        "@vue/compiler-ssr": "3.5.45",
+        "@vue/shared": "3.5.45",
+        "estree-walker": "^2.0.2",
+        "magic-string": "^0.30.21",
+        "postcss": "^8.5.32",
+        "source-map-js": "^1.2.2"
+      }
+    },
+    "node_modules/@vue/compiler-ssr": {
+      "version": "3.5.45",
+      "resolved": "https://registry.npmjs.org/@vue/compiler-ssr/-/compiler-ssr-3.5.45.tgz",
+      "integrity": "sha512-RF5sbZOfYz5AK00tOJUn2PwFXR2fS1u2HVzI8D9VF9rGAFxuGBqg2bB1kJ3ZHMprqSltXnT9MZE1IsqjSM8oew==",
+      "license": "MIT",
+      "dependencies": {
+        "@vue/compiler-dom": "3.5.45",
+        "@vue/shared": "3.5.45"
+      }
+    },
+    "node_modules/@vue/reactivity": {
+      "version": "3.5.45",
+      "resolved": "https://registry.npmjs.org/@vue/reactivity/-/reactivity-3.5.45.tgz",
+      "integrity": "sha512-WqkyubNWpI4OYBOipSrjIssMdJO8K1i9Zts/Wm8Er10/0msOEwCyWWWvZnAI7WW3kQsTong6DJp8Cbb+vd4cPA==",
+      "license": "MIT",
+      "dependencies": {
+        "@vue/shared": "3.5.45"
+      }
+    },
+    "node_modules/@vue/runtime-core": {
+      "version": "3.5.45",
+      "resolved": "https://registry.npmjs.org/@vue/runtime-core/-/runtime-core-3.5.45.tgz",
+      "integrity": "sha512-bzIO3+FABjpj85uIKSc+Qnj36/sxDNI3tcH9i6w6xKA1k6e0ejv0G0jMCfeJBvK3yGL5XbJ3DMZj+ClqyCHFYw==",
+      "license": "MIT",
+      "dependencies": {
+        "@vue/reactivity": "3.5.45",
+        "@vue/shared": "3.5.45"
+      }
+    },
+    "node_modules/@vue/runtime-dom": {
+      "version": "3.5.45",
+      "resolved": "https://registry.npmjs.org/@vue/runtime-dom/-/runtime-dom-3.5.45.tgz",
+      "integrity": "sha512-ZvRTFMDgfqTDYWvJfoVpQTJx1RN5M6l7Pyd6wfdY2NaXzbPQVh9ezeQYFbNPP6bIcRVn2SqSSR25N/jSW69BFw==",
+      "license": "MIT",
+      "dependencies": {
+        "@vue/reactivity": "3.5.45",
+        "@vue/runtime-core": "3.5.45",
+        "@vue/shared": "3.5.45",
+        "csstype": "^3.2.3"
+      }
+    },
+    "node_modules/@vue/server-renderer": {
+      "version": "3.5.45",
+      "resolved": "https://registry.npmjs.org/@vue/server-renderer/-/server-renderer-3.5.45.tgz",
+      "integrity": "sha512-1fNXUHhhsWf4EVL4XixbGBU5mKdiIXJAB82feHRTyPPo6ZUEYWIJuEeUl3mVV6QDBp50HJOX4obLhxYXlrjrzA==",
+      "license": "MIT",
+      "dependencies": {
+        "@vue/compiler-ssr": "3.5.45",
+        "@vue/runtime-dom": "3.5.45",
+        "@vue/shared": "3.5.45"
+      }
+    },
+    "node_modules/@vue/shared": {
+      "version": "3.5.45",
+      "resolved": "https://registry.npmjs.org/@vue/shared/-/shared-3.5.45.tgz",
+      "integrity": "sha512-ue9fgHmVNPlP7iW3+cxoBX/Cnlw53dHlVSw0JKGY6z1lObg8pHoj928M2nzG4/yVsMZ3NaRZ2s2z61uC16NDwQ==",
+      "license": "MIT"
+    },
+    "node_modules/acorn": {
+      "version": "8.19.0",
+      "resolved": "https://registry.npmjs.org/acorn/-/acorn-8.19.0.tgz",
+      "integrity": "sha512-oJlA3XiRm7Cyk6qFD2Jn8ak9B7jSy0qy00ADO3+8dpT0LSjFihQYv4C02LFCSYJV3Q37xYwwRy5m+IpIiUzqWw==",
+      "license": "MIT",
+      "bin": {
+        "acorn": "bin/acorn"
+      },
+      "engines": {
+        "node": ">=0.4.0"
+      }
+    },
+    "node_modules/buffer-from": {
+      "version": "1.1.2",
+      "resolved": "https://registry.npmjs.org/buffer-from/-/buffer-from-1.1.2.tgz",
+      "integrity": "sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==",
+      "license": "MIT"
+    },
+    "node_modules/commander": {
+      "version": "2.20.3",
+      "resolved": "https://registry.npmjs.org/commander/-/commander-2.20.3.tgz",
+      "integrity": "sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==",
+      "license": "MIT"
+    },
+    "node_modules/csstype": {
+      "version": "3.2.4",
+      "resolved": "https://registry.npmjs.org/csstype/-/csstype-3.2.4.tgz",
+      "integrity": "sha512-PoKaoPzQapnEoqUSnHx1u6W6ku8CVEgKsnpmmzU3m1nwkidpPBQ8V/Zq2+bWNrsOKoKLwTGdbx6xF7BXP1zLVQ==",
+      "license": "MIT"
+    },
+    "node_modules/detect-libc": {
+      "version": "2.1.2",
+      "resolved": "https://registry.npmjs.org/detect-libc/-/detect-libc-2.1.2.tgz",
+      "integrity": "sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==",
+      "dev": true,
+      "license": "Apache-2.0",
+      "engines": {
+        "node": ">=8"
+      }
+    },
+    "node_modules/dompurify": {
+      "version": "3.4.18",
+      "resolved": "https://registry.npmjs.org/dompurify/-/dompurify-3.4.18.tgz",
+      "integrity": "sha512-ofe3wI/uNm68HInABYFJYqQxRw1EaKAjNdrFVKqjUY+UZurvNd2L/HuQe097s/4RivWiZyP6tT7aoT8atjfhwg==",
+      "license": "(MPL-2.0 OR Apache-2.0)",
+      "optionalDependencies": {
+        "@types/trusted-types": "^2.0.7"
+      }
+    },
+    "node_modules/entities": {
+      "version": "7.0.1",
+      "resolved": "https://registry.npmjs.org/entities/-/entities-7.0.1.tgz",
+      "integrity": "sha512-TWrgLOFUQTH994YUyl1yT4uyavY5nNB5muff+RtWaqNVCAK408b5ZnnbNAUEWLTCpum9w6arT70i1XdQ4UeOPA==",
+      "license": "BSD-2-Clause",
+      "engines": {
+        "node": ">=0.12"
+      },
+      "funding": {
+        "url": "https://github.com/fb55/entities?sponsor=1"
+      }
+    },
+    "node_modules/estree-walker": {
+      "version": "2.0.2",
+      "resolved": "https://registry.npmjs.org/estree-walker/-/estree-walker-2.0.2.tgz",
+      "integrity": "sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==",
+      "license": "MIT"
+    },
+    "node_modules/eventsource": {
+      "version": "3.0.7",
+      "resolved": "https://registry.npmjs.org/eventsource/-/eventsource-3.0.7.tgz",
+      "integrity": "sha512-CRT1WTyuQoD771GW56XEZFQ/ZoSfWid1alKGDYMmkt2yl8UXrVR4pspqWNEcqKvVIzg6PAltWjxcSSPrboA4iA==",
+      "license": "MIT",
+      "dependencies": {
+        "eventsource-parser": "^3.0.1"
+      },
+      "engines": {
+        "node": ">=18.0.0"
+      }
+    },
+    "node_modules/eventsource-parser": {
+      "version": "3.1.1",
+      "resolved": "https://registry.npmjs.org/eventsource-parser/-/eventsource-parser-3.1.1.tgz",
+      "integrity": "sha512-EKN1vKAMcZ8MlYMpaNuxN6R9yakzH6uajHcHVTqWJzvu5pWw9DyhbP35HH8MVBQ+dZjAfDxk+A8NiR9KWaXiyQ==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=18.0.0"
+      }
+    },
+    "node_modules/fdir": {
+      "version": "6.5.0",
+      "resolved": "https://registry.npmjs.org/fdir/-/fdir-6.5.0.tgz",
+      "integrity": "sha512-tIbYtZbucOs0BRGqPJkshJUYdL+SDH7dVM8gjy+ERp3WAUjLEFJE+02kanyHtwjWOnwrKYBiwAmM0p4kLJAnXg==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=12.0.0"
+      },
+      "peerDependencies": {
+        "picomatch": "^3 || ^4"
+      },
+      "peerDependenciesMeta": {
+        "picomatch": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/fsevents": {
+      "version": "2.3.3",
+      "resolved": "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz",
+      "integrity": "sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==",
+      "dev": true,
+      "hasInstallScript": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": "^8.16.0 || ^10.6.0 || >=11.0.0"
+      }
+    },
+    "node_modules/lightningcss": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss/-/lightningcss-1.33.0.tgz",
+      "integrity": "sha512-WkUDrojuJs0xkgGf2udWxa3yGBRxPtxUkB79i6aCZLRgc7PM8fZe9TosfPDcvEpQZbuFASnHYmRLBLUbmLOIIA==",
+      "dev": true,
+      "license": "MPL-2.0",
+      "dependencies": {
+        "detect-libc": "^2.0.3"
+      },
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      },
+      "optionalDependencies": {
+        "lightningcss-android-arm64": "1.33.0",
+        "lightningcss-darwin-arm64": "1.33.0",
+        "lightningcss-darwin-x64": "1.33.0",
+        "lightningcss-freebsd-x64": "1.33.0",
+        "lightningcss-linux-arm-gnueabihf": "1.33.0",
+        "lightningcss-linux-arm64-gnu": "1.33.0",
+        "lightningcss-linux-arm64-musl": "1.33.0",
+        "lightningcss-linux-x64-gnu": "1.33.0",
+        "lightningcss-linux-x64-musl": "1.33.0",
+        "lightningcss-win32-arm64-msvc": "1.33.0",
+        "lightningcss-win32-x64-msvc": "1.33.0"
+      }
+    },
+    "node_modules/lightningcss-android-arm64": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-android-arm64/-/lightningcss-android-arm64-1.33.0.tgz",
+      "integrity": "sha512-gEpRTalKdosp4Bb8qWtc2iOgE5SeIHlpS1up9bFq2wAyYhl1UdTObYiHe98zEM9SQvSoqQZ1IQD0JNpg3Ml5pg==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "android"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-darwin-arm64": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-darwin-arm64/-/lightningcss-darwin-arm64-1.33.0.tgz",
+      "integrity": "sha512-Sciaz8eenNTKn9b3t7+xr0ipTp9YxKQY4npwQ3mrRuL0BAVHBLyZxofhaKBAVtzmtRZ/zTyo0/to4B1uWG/Djg==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-darwin-x64": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-darwin-x64/-/lightningcss-darwin-x64-1.33.0.tgz",
+      "integrity": "sha512-Z5UPAxzrjlWNNyGy6i65cJzzvgJ5D3T6wMvs+gWpY9d7qRhANrxqAp6LhxIgZhWEw18RfJTGcRxjuLIBr+m8XQ==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-freebsd-x64": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-freebsd-x64/-/lightningcss-freebsd-x64-1.33.0.tgz",
+      "integrity": "sha512-QQM/Ti/hQajJwCY+RiWuCZ9sdtI/XQk7nDK5vC8kkdwixezOlDgvDx7+RT+QjK6FcFT4MpsuoBnHIo/O3StRRg==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "freebsd"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-linux-arm-gnueabihf": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm-gnueabihf/-/lightningcss-linux-arm-gnueabihf-1.33.0.tgz",
+      "integrity": "sha512-N7FVBe6iS24MlM6R/4RBTxGhQheZGs7tiQ9U32UtF75NzP5Q7xWPRqLBCKxlRQRk3rY1jCIPLzx7WzOhuUIRLQ==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-linux-arm64-gnu": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm64-gnu/-/lightningcss-linux-arm64-gnu-1.33.0.tgz",
+      "integrity": "sha512-j2v/itmy4HlNxlc6voKXYgBqNi0Ng2LShg4z7GufpEgs05P+2suBVyi9I6YHq5uoVFx9ETin3eCEhLVyXGQnKg==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-linux-arm64-musl": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm64-musl/-/lightningcss-linux-arm64-musl-1.33.0.tgz",
+      "integrity": "sha512-yiO5ROMuYQgXbC60yjZU5CYSFZGKXL0HFATXt9mHJn1+zW55oCtMI9NfcVhYLMFDL7gV7oBPon/EmMMGg2OvtQ==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "libc": [
+        "musl"
+      ],
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-linux-x64-gnu": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-linux-x64-gnu/-/lightningcss-linux-x64-gnu-1.33.0.tgz",
+      "integrity": "sha512-ar+Ju7LmcN0Jo4FpL4hpFybwNG9/3A/Br5KW2n2jyODg3MEZXaDYADdemoNS+BDNfMgKvylJLj4S5tyRActuAg==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-linux-x64-musl": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-linux-x64-musl/-/lightningcss-linux-x64-musl-1.33.0.tgz",
+      "integrity": "sha512-RYiYbkokw0trfKqqzfF55lginwEPrD3OJDfTuJzFs1MK6iFnDenaz1fqLLtX4ITG3OktJQXOeTaw1awrBAlZPw==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "libc": [
+        "musl"
+      ],
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-win32-arm64-msvc": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-win32-arm64-msvc/-/lightningcss-win32-arm64-msvc-1.33.0.tgz",
+      "integrity": "sha512-1K+MPfLSFVpphzpdbfkhlWk6wBrTObBzS2T6db10PNOZgR9GoVsAWzwNyuhUYYbTp23j+4RrncfujZ4uAzXvwA==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-win32-x64-msvc": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-win32-x64-msvc/-/lightningcss-win32-x64-msvc-1.33.0.tgz",
+      "integrity": "sha512-OlEICDx/Xl0FqSp4bry8zFnCvGpig3Gl4gCquvYwHuqJKEC1+n9NgDniFvqHGmMv1ZkqDJrDqKKSykTDX+ehuA==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/magic-string": {
+      "version": "0.30.21",
+      "resolved": "https://registry.npmjs.org/magic-string/-/magic-string-0.30.21.tgz",
+      "integrity": "sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@jridgewell/sourcemap-codec": "^1.5.5"
+      }
+    },
+    "node_modules/marked": {
+      "version": "15.0.12",
+      "resolved": "https://registry.npmjs.org/marked/-/marked-15.0.12.tgz",
+      "integrity": "sha512-8dD6FusOQSrpv9Z1rdNMdlSgQOIP880DHqnohobOmYLElGEqAL/JvxvuxZO16r4HtjTlfPRDC1hbvxC9dPN2nA==",
+      "license": "MIT",
+      "bin": {
+        "marked": "bin/marked.js"
+      },
+      "engines": {
+        "node": ">= 18"
+      }
+    },
+    "node_modules/mustache": {
+      "version": "4.2.0",
+      "resolved": "https://registry.npmjs.org/mustache/-/mustache-4.2.0.tgz",
+      "integrity": "sha512-71ippSywq5Yb7/tVYyGbkBggbU8H3u5Rz56fH60jGFgr8uHwxs+aSKeqmluIVzM0m0kB7xQjKS6qPfd0b2ZoqQ==",
+      "license": "MIT",
+      "bin": {
+        "mustache": "bin/mustache"
+      }
+    },
+    "node_modules/nanoid": {
+      "version": "3.3.20",
+      "resolved": "https://registry.npmjs.org/nanoid/-/nanoid-3.3.20.tgz",
+      "integrity": "sha512-uKdg2G3GNCKQn9byYOpxbGqrT2fGO5KRt5J/8b3pok8rT6qxGWF6hxMyJiEYtAf+FVyYuD9hRaDqX5uPFYJ4ZQ==",
+      "funding": [
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/ai"
+        }
+      ],
+      "license": "MIT",
+      "bin": {
+        "nanoid": "bin/nanoid.cjs"
+      },
+      "engines": {
+        "node": "^10 || ^12 || ^13.7 || ^14 || >=15.0.1"
+      }
+    },
+    "node_modules/picocolors": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/picocolors/-/picocolors-1.1.1.tgz",
+      "integrity": "sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==",
+      "license": "ISC"
+    },
+    "node_modules/picomatch": {
+      "version": "4.0.7",
+      "resolved": "https://registry.npmjs.org/picomatch/-/picomatch-4.0.7.tgz",
+      "integrity": "sha512-qcJu88Q2IWqJsDD529JKMdwGm/dvInW4HvQnRwiH9JtihJvzGOscDtHE3x1pBKeUOTysQ8kVmLnJ2kJu7yhcGA==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=12"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/jonschlinkert"
+      }
+    },
+    "node_modules/postcss": {
+      "version": "8.5.33",
+      "resolved": "https://registry.npmjs.org/postcss/-/postcss-8.5.33.tgz",
+      "integrity": "sha512-RVHEU9/Pp1Fnjr/MpAJsZoADukCKhfIi15OunEYiGktIkYLkPVvC1sioWolGDS7XByMTx9m/IGbro0Js13zhnQ==",
+      "funding": [
+        {
+          "type": "opencollective",
+          "url": "https://opencollective.com/postcss/"
+        },
+        {
+          "type": "tidelift",
+          "url": "https://tidelift.com/funding/github/npm/postcss"
+        },
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/ai"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "nanoid": "^3.3.20",
+        "picocolors": "^1.1.1",
+        "source-map-js": "^1.2.2"
+      },
+      "engines": {
+        "node": "^10 || ^12 || >=14"
+      }
+    },
+    "node_modules/rolldown": {
+      "version": "1.2.19",
+      "resolved": "https://registry.npmjs.org/rolldown/-/rolldown-1.2.19.tgz",
+      "integrity": "sha512-QIiV1J9d0pzN4jeeTH4sjPy0AZ6cAy2cG0ExeoE1+U8Rvj+hR3gYkokx0YbeUNGlZqiQJJ2utcETe0oKXwzsuA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@oxc-project/types": "=0.156.0",
+        "@rolldown/pluginutils": "^1.0.0"
+      },
+      "bin": {
+        "rolldown": "bin/cli.mjs"
+      },
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      },
+      "optionalDependencies": {
+        "@rolldown/binding-android-arm-eabi": "1.2.19",
+        "@rolldown/binding-android-arm64": "1.2.19",
+        "@rolldown/binding-darwin-arm64": "1.2.19",
+        "@rolldown/binding-darwin-x64": "1.2.19",
+        "@rolldown/binding-freebsd-x64": "1.2.19",
+        "@rolldown/binding-linux-arm-gnueabihf": "1.2.19",
+        "@rolldown/binding-linux-arm64-gnu": "1.2.19",
+        "@rolldown/binding-linux-arm64-musl": "1.2.19",
+        "@rolldown/binding-linux-ppc64-gnu": "1.2.19",
+        "@rolldown/binding-linux-s390x-gnu": "1.2.19",
+        "@rolldown/binding-linux-x64-gnu": "1.2.19",
+        "@rolldown/binding-linux-x64-musl": "1.2.19",
+        "@rolldown/binding-openharmony-arm64": "1.2.19",
+        "@rolldown/binding-wasm32-wasi": "1.2.19",
+        "@rolldown/binding-win32-arm64-msvc": "1.2.19",
+        "@rolldown/binding-win32-x64-msvc": "1.2.19"
+      }
+    },
+    "node_modules/source-map": {
+      "version": "0.6.1",
+      "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.6.1.tgz",
+      "integrity": "sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==",
+      "license": "BSD-3-Clause",
+      "engines": {
+        "node": ">=0.10.0"
+      }
+    },
+    "node_modules/source-map-js": {
+      "version": "1.2.2",
+      "resolved": "https://registry.npmjs.org/source-map-js/-/source-map-js-1.2.2.tgz",
+      "integrity": "sha512-KGj/8Y43x35aZVDtt+J4mK1hoLGHULMYfSkODJNQjNDC3oW1PqPoxMwo0pLUsWM/UEGzON/NxeHywEfNXNP3Vw==",
+      "license": "BSD-3-Clause",
+      "engines": {
+        "node": ">=0.10.0"
+      }
+    },
+    "node_modules/source-map-support": {
+      "version": "0.5.21",
+      "resolved": "https://registry.npmjs.org/source-map-support/-/source-map-support-0.5.21.tgz",
+      "integrity": "sha512-uBHU3L3czsIyYXKX88fdrGovxdSCoTGDRZ6SYXtSRxLZUzHg5P/66Ht6uoUlHu9EZod+inXhKo3qQgwXUT/y1w==",
+      "license": "MIT",
+      "dependencies": {
+        "buffer-from": "^1.0.0",
+        "source-map": "^0.6.0"
+      }
+    },
+    "node_modules/terser": {
+      "version": "5.51.2",
+      "resolved": "https://registry.npmjs.org/terser/-/terser-5.51.2.tgz",
+      "integrity": "sha512-bWnjSNscmuI+GJze6ZupnHP8G/cTcsJF+bXCeQknk2SHQsgbNJnLrqiH9jZ2W4STPVXH2mDKKRX3iwPhc9Cn/Q==",
+      "license": "BSD-2-Clause",
+      "dependencies": {
+        "@jridgewell/source-map": "^0.3.3",
+        "acorn": "^8.15.0",
+        "commander": "^2.20.0",
+        "source-map-support": "~0.5.20"
+      },
+      "bin": {
+        "terser": "bin/terser"
+      },
+      "engines": {
+        "node": ">=10"
+      }
+    },
+    "node_modules/tinyglobby": {
+      "version": "0.2.17",
+      "resolved": "https://registry.npmjs.org/tinyglobby/-/tinyglobby-0.2.17.tgz",
+      "integrity": "sha512-wXR/dYpcqKmfWpEdZjiKJOwCNFndD0DMnrW/cYjVGttEkBfVgcLFHoNrlj47mjOVic9yyNu65alsgF4NQyTa2g==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "fdir": "^6.5.0",
+        "picomatch": "^4.0.4"
+      },
+      "engines": {
+        "node": ">=12.0.0"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/SuperchupuDev"
+      }
+    },
+    "node_modules/tslib": {
+      "version": "2.9.1",
+      "resolved": "https://registry.npmjs.org/tslib/-/tslib-2.9.1.tgz",
+      "integrity": "sha512-a4Ux9VKuIMHsOS7ENbEq6hK2ZGYIT27Rtl0E4eD9KqwxhKiQeMZE/9xb3IdYwWaSOyIBQLExhQgXDTYoiCxnWA==",
+      "dev": true,
+      "license": "0BSD",
+      "optional": true
+    },
+    "node_modules/vite": {
+      "version": "8.3.8",
+      "resolved": "https://registry.npmjs.org/vite/-/vite-8.3.8.tgz",
+      "integrity": "sha512-LzOn3h9rG/0vhLdXrV4yJ4QFA9eEoqCl+Yx+kGJd7aB9w6nfNgVHKSYwLPZUHrz4ZGa+t+kXjV9itvcHDLQouA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "lightningcss": "^1.33.0",
+        "picomatch": "^4.0.7",
+        "postcss": "^8.5.32",
+        "rolldown": "~1.2.18",
+        "tinyglobby": "^0.2.17"
+      },
+      "bin": {
+        "vite": "bin/vite.js"
+      },
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      },
+      "funding": {
+        "url": "https://github.com/vitejs/vite?sponsor=1"
+      },
+      "optionalDependencies": {
+        "fsevents": "~2.3.3"
+      },
+      "peerDependencies": {
+        "@types/node": "^20.19.0 || >=22.12.0",
+        "@vitejs/devtools": "^0.7.1 || ^0.8.0",
+        "esbuild": "^0.27.0 || ^0.28.0",
+        "jiti": ">=1.21.0",
+        "less": "^4.0.0",
+        "sass": "^1.70.0",
+        "sass-embedded": "^1.70.0",
+        "stylus": ">=0.54.8",
+        "sugarss": "^5.0.0",
+        "terser": "^5.16.0",
+        "tsx": "^4.8.1",
+        "yaml": "^2.4.2"
+      },
+      "peerDependenciesMeta": {
+        "@types/node": {
+          "optional": true
+        },
+        "@vitejs/devtools": {
+          "optional": true
+        },
+        "esbuild": {
+          "optional": true
+        },
+        "jiti": {
+          "optional": true
+        },
+        "less": {
+          "optional": true
+        },
+        "sass": {
+          "optional": true
+        },
+        "sass-embedded": {
+          "optional": true
+        },
+        "stylus": {
+          "optional": true
+        },
+        "sugarss": {
+          "optional": true
+        },
+        "terser": {
+          "optional": true
+        },
+        "tsx": {
+          "optional": true
+        },
+        "yaml": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/vue": {
+      "version": "3.5.45",
+      "resolved": "https://registry.npmjs.org/vue/-/vue-3.5.45.tgz",
+      "integrity": "sha512-3cvsib8m9c0vB24+MDKsgcW4+Da4xaBl9Z/5Tbm2pmSIsRPxcil4cdXjXlVsmJ2g64XJo5h+IRd7rsdGT9pZaw==",
+      "license": "MIT",
+      "dependencies": {
+        "@vue/compiler-dom": "3.5.45",
+        "@vue/compiler-sfc": "3.5.45",
+        "@vue/runtime-dom": "3.5.45",
+        "@vue/server-renderer": "3.5.45",
+        "@vue/shared": "3.5.45"
+      },
+      "peerDependencies": {
+        "typescript": "*"
+      },
+      "peerDependenciesMeta": {
+        "typescript": {
+          "optional": true
+        }
+      }
+    }
+  }
+}
+`,Ge=`import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+
+export default defineConfig({ plugins: [vue()] });
+`,$=`import { createApp } from 'vue';
+import SearchApp from './SearchApp.vue';
+import '../search.css';
+
+const app = createApp(SearchApp);
+// Show the warning without the component trace, which can include connection props.
+app.config.warnHandler = (message) => { console.warn('[Vue]', message); };
+app.mount('#app');
+`,Ke=`<script setup>
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
+import {
+  SearchstaxExternalPromotionsWidget,
+  SearchstaxFacetsWidget,
+  SearchstaxPaginationWidget,
+  SearchstaxResultWidget,
+  SearchstaxSortingWidget,
+  SearchstaxWrapper,
+} from '@searchstax-inc/searchstudio-ux-vue';
+import { connection, demo, design } from './config.js';
+import { contentLanguageTag } from './content-language.js';
+import { demoResultText, demoResultTitle } from './demo-content.js';
+import { setupStarterAnswers } from './starter-answers.js';
+import { thumbnailAlt } from './thumbnail-alt.js';
+import { createCustomerSuggestionSource } from './customer-suggestions.js';
+import { sampleSuggestionSource, setupSearchSuggestions } from './suggestions.js';
+import { setupPaginationFocus } from './pagination-focus.js';
+import { applySampleIndexedPromotion, sampleExternalPromotion, samplePromotionMode, samplePromotionQuery } from './promotions.js';
+
+const resultLanguage = contentLanguageTag(connection.language);
+const isDemo = connection.searchURL === demo.searchURL && connection.model === demo.model && resultLanguage === demo.language;
+const initialQuery = connection.initialQuery || (isDemo ? (design.samplePromotions === 'off' ? 'rehabilitation' : samplePromotionQuery) : '');
+const form = ref(null);
+const queryField = ref(null);
+const pagination = ref(null);
+const answerHost = ref(null);
+let answers;
+const status = ref('Connecting to search…');
+const query = ref('');
+const promotionMode = computed(() => isDemo ? samplePromotionMode(query.value, design.samplePromotions) : 'off');
+let api;
+let loadingSubscription;
+let timer;
+let setSuggestionSource;
+
+function publicLink(value) {
+  try {
+    const url = new URL(value);
+    if (['https:', 'http:'].includes(url.protocol) && !url.username && !url.password) return url.href;
+  } catch { /* An unmapped URL produces no link. */ }
+  return '';
+}
+
+function plainText(value) {
+  return typeof value === 'string' ? value.replace(/<\\/?(?:em|b|strong)>/gi, '') : '';
+}
+
+function afterSearch(items, response) {
+  const total = response?.response?.numFound;
+  if (typeof total !== 'number') return [];
+  window.clearTimeout(timer);
+  query.value = response.responseHeader?.params?.q ?? '';
+  status.value = total + (total === 1 ? ' result' : ' results');
+  const results = items.flatMap(item => {
+    const url = publicLink(item.url);
+    return url ? [{
+      ...item,
+      url,
+      title: isDemo ? demoResultTitle(item.title) : plainText(item.title),
+      description: isDemo ? demoResultText(plainText(item.description)) : plainText(item.description),
+      previewThumbnail: design.showThumbnails ? (isDemo ? demo.thumbnailPaths[url] : publicLink(item.thumbnail)) : '',
+      previewThumbnailAlt: isDemo ? '' : thumbnailAlt(
+        item.allFields,
+        connection.thumbnailAltField,
+        connection.thumbnailsWithoutAltAreDecorative,
+      ),
+    }] : [];
+  });
+  return isDemo ? applySampleIndexedPromotion(results, response, promotionMode.value) : results;
+}
+
+function facetLabel(value) {
+  return isDemo && Object.hasOwn(demo.facetLabels, value) ? demo.facetLabels[value] : value;
+}
+
+function sortChoices(data) {
+  return isDemo ? demo.sortOptions : data?.sortOptions?.map(item => ({ label: item.value, order: item.key })) ?? [];
+}
+
+function sortSearch(order) {
+  api.dataLayer.setSearchObject({ ...api.dataLayer.searchObject, order: encodeURIComponent(order), page: 1 });
+}
+
+function livePromotions(data) {
+  return data?.externalPromotions?.flatMap(item => {
+    const url = publicLink(item.url);
+    return url ? [{ ...item, url }] : [];
+  }) ?? [];
+}
+
+function runSearch(value) {
+  const term = value.trim();
+  if (!term) {
+    status.value = 'Enter a search term.';
+    return;
+  }
+  const current = api.dataLayer.searchObject;
+  const next = { ...current, query: term, page: 1, facets: [] };
+  answers?.start(term);
+  if (current.query === term && current.page === 1 && !current.facets.length) api.search(next);
+  else api.dataLayer.setSearchObject(next);
+}
+
+function initialized(instance) {
+  api = instance;
+  api.setCookiesDisabled(true);
+}
+
+// The wrapper emits initialized before mounting its slot and the widgets.
+watch(form, async (element) => {
+  if (!element || loadingSubscription) return;
+  await nextTick();
+  if (!form.value) return;
+  loadingSubscription = api.dataLayer.$loadingChange.subscribe((loading) => {
+    if (!loading) return;
+    status.value = 'Searching…';
+    window.clearTimeout(timer);
+    timer = window.setTimeout(() => { status.value = 'Search is unavailable. Try again in a moment.'; }, 15000);
+  });
+  api.dataLayer.setItemsPerPage(design.resultsPerPage);
+  queryField.value.value = initialQuery;
+  if (!isDemo && design.showSmartAnswersSample && connection.questionURL?.trim()) {
+    answers = setupStarterAnswers(answerHost.value, connection);
+  }
+  if (design.showSuggestions) {
+    const source = isDemo ? sampleSuggestionSource : connection.suggesterURL
+      ? createCustomerSuggestionSource({ token: connection.searchAuth, language: connection.language }, connection.suggesterURL)
+      : null;
+    if (source) {
+      setSuggestionSource = setupSearchSuggestions(element, 'vue-search-suggestions');
+      setSuggestionSource(source);
+    }
+  }
+  if (initialQuery) runSearch(initialQuery);
+  else status.value = 'Enter a search term.';
+}, { flush: 'post' });
+
+watch(pagination, (host, _, onCleanup) => {
+  if (host) onCleanup(setupPaginationFocus(host, () => api));
+}, { flush: 'post' });
+
+onBeforeUnmount(() => {
+  answers?.clear();
+  setSuggestionSource?.(null);
+  if (loadingSubscription) api.dataLayer.$loadingChange.unsubscribe(loadingSubscription);
+  window.clearTimeout(timer);
+});
+<\/script>
+
+<template>
+  <main class="search-starter">
+    <img v-if="design.logoURL" class="search-starter__logo" :src="design.logoURL" alt="Company logo"
+      referrerpolicy="no-referrer" @error="$event.target.hidden = true">
+    <h1>{{ isDemo ? 'Search Central County' : 'Search' }}</h1>
+    <p v-if="isDemo">Search fictional university health content with the SearchStax Vue UI Kit.</p>
+    <SearchstaxWrapper
+      :searchURL="connection.searchURL" :searchAuth="connection.searchAuth" :model="connection.model"
+      :language="connection.language" authType="token" suggesterURL="" trackApiKey=""
+      :router="{ enabled: false }" :afterSearch="afterSearch" @initialized="initialized"
+    >
+      <div>
+        <form ref="form" class="search-starter__form" role="search" @submit.prevent="runSearch(queryField.value)">
+          <label class="search-starter__sr-only" for="starter-query">{{ design.searchFieldText }}</label>
+          <input id="starter-query" ref="queryField" type="search"
+            :placeholder="design.searchFieldText" autocomplete="off" required>
+          <button type="submit" class="search-starter__submit">{{ design.searchButtonText }}</button>
+        </form>
+      </div>
+      <div v-if="isDemo && design.showSmartAnswersSample" v-html="demo.answerSampleHTML"></div>
+      <div ref="answerHost"></div>
+      <p role="status">{{ status }}</p>
+      <SearchstaxSortingWidget v-if="design.showSorting">
+        <template #sorting="{ sortingData, selectedSorting }">
+          <label v-if="sortingData?.searchExecuted && sortChoices(sortingData).length" class="search-starter__sort">
+            Sort by
+            <select :value="selectedSorting" @change="sortSearch($event.target.value)">
+              <option v-for="choice in sortChoices(sortingData)" :key="choice.order" :value="choice.order">{{ choice.label }}</option>
+            </select>
+          </label>
+        </template>
+      </SearchstaxSortingWidget>
+      <section v-if="promotionMode === 'external' || promotionMode === 'both'"
+        class="sample-external-promotion search-promotion-banner" aria-label="Sample external promotion">
+        <p class="sample-external-promotion__label">Sample external promotion</p>
+        <a :href="sampleExternalPromotion.url" referrerpolicy="no-referrer">{{ sampleExternalPromotion.title }}</a>
+      </section>
+      <SearchstaxExternalPromotionsWidget v-if="!isDemo">
+        <template #externalPromotions="{ externalPromotionsData }">
+          <section v-if="livePromotions(externalPromotionsData).length" aria-label="External promotions">
+            <div v-for="entry in livePromotions(externalPromotionsData)" :key="entry.id ?? entry.url" class="search-promotion-banner">
+              <span class="search-promotion-marker">Promoted</span>
+              <a :href="entry.url" :lang="resultLanguage" referrerpolicy="no-referrer">{{ entry.name || entry.url }}</a>
+              <p v-if="entry.description" :lang="resultLanguage">{{ entry.description }}</p>
+            </div>
+          </section>
+        </template>
+      </SearchstaxExternalPromotionsWidget>
+      <div class="search-starter__body">
+        <aside v-if="design.showFilters" class="search-starter__filters" aria-label="Filter search results">
+          <SearchstaxFacetsWidget facetingType="or" :itemsPerPageDesktop="20" :itemsPerPageMobile="20">
+            <template #desktopFacets="{ facetsTemplateDataDesktop, onUpdateRefDesktop, isChecked, selectFacet }">
+              <fieldset v-for="facet in facetsTemplateDataDesktop?.facets" :key="facet.name">
+                <legend>{{ facet.label || facet.name }}</legend>
+                <div v-for="option in facet.values" :key="option.value" :ref="element => onUpdateRefDesktop(element, option)">
+                  <label>
+                    <input type="checkbox" :checked="Boolean(isChecked(option))" :disabled="option.disabled"
+                      @click="selectFacet(option.value + '-desktop', $event, option, true)">
+                    <span>{{ facetLabel(option.value) }}</span><small>{{ option.count }}</small>
+                  </label>
+                </div>
+              </fieldset>
+            </template>
+            <template #mobileFacets></template>
+          </SearchstaxFacetsWidget>
+        </aside>
+        <div>
+          <SearchstaxResultWidget renderMethod="pagination" :resultsPerPage="design.resultsPerPage">
+            <template #results="{ searchResults }">
+              <div class="searchstax-search-results">
+                <article v-for="item in searchResults" :key="item.uniqueId || item.url" class="searchstax-search-result">
+                  <span v-if="item.sampleIndexedPromotion" class="sample-indexed-promotion">Sample indexed promotion</span>
+                  <span v-if="!isDemo && item.promoted" class="search-promotion-marker">Promoted</span>
+                  <img v-if="item.previewThumbnail && item.previewThumbnailAlt !== null" class="search-starter__result-thumbnail" :src="item.previewThumbnail"
+                    :alt="item.previewThumbnailAlt" :lang="resultLanguage" loading="lazy" referrerpolicy="no-referrer">
+                  <h2 :lang="resultLanguage"><a :href="item.url" referrerpolicy="no-referrer">{{ item.title || item.url }}</a></h2>
+                  <p v-if="item.description" class="search-starter__result-description" :lang="resultLanguage">{{ item.description }}</p>
+                </article>
+              </div>
+            </template>
+            <template #noResult>
+              <p class="search-starter__no-results">{{ design.noResultsText }}</p>
+            </template>
+          </SearchstaxResultWidget>
+          <div ref="pagination" tabindex="-1" role="group" aria-label="Search result pagination">
+            <SearchstaxPaginationWidget>
+              <template #pagination="{ paginationData }">
+                <nav v-if="paginationData?.totalResults" class="search-starter__pagination" aria-label="Search result pages">
+                  <span tabindex="-1" data-page-range :data-page-start="paginationData.startResultIndex">{{ paginationData.startResultIndex }}–{{ paginationData.endResultIndex }} of {{ paginationData.totalResults }} results</span>
+                  <button v-if="!paginationData.isFirstPage" type="button" data-page-step="previous">Previous</button>
+                  <button v-if="!paginationData.isLastPage" type="button" data-page-step="next">Next</button>
+                </nav>
+              </template>
+            </SearchstaxPaginationWidget>
+            <span class="search-starter__sr-only" role="status" data-page-announcement></span>
+          </div>
+        </div>
+      </div>
+    </SearchstaxWrapper>
+  </main>
+</template>
+`,qe="# SearchStax Vue Starter\n\nThis Vue 3 project uses the SearchStax Vue UI Kit and starts with the public Central County fictional demo. It includes the design you selected in Search Lab.\n\n## Run the Demo\n\nUse Node.js 20.19+ on the 20.x line, or Node.js 22.12 or later.\n\n```sh\nnpm ci\nnpm run dev\n```\n\nOpen the localhost URL printed in the terminal. The demo search requires an internet connection. Run `npm run build` to create the deployable files in `dist/`.\n\n- Search for `rehabilitation` to try filters or view the optional sample thumbnails.\n- Search for `campus flu clinic` to try paging, sorting, or the Promotion formats selected in your design.\n- If you enabled sample suggestions, type `reh`. If the Smart Answers sample is visible, expand it to read the fixed answer and its source.\n\n## Connect Your Search App\n\nUse `src/config.js` to connect your app. Keep the `demo` object and set `connection.searchURL` to your Select endpoint, `connection.searchAuth` to an active **Read Only** token, `connection.model` to your Search Profile name, and `connection.language` to the language configured for your app. Set `connection.initialQuery` to a term that matches your content or leave it empty to start with a blank search box.\n\n1. Find the Select endpoint and token under **App Settings > All APIs > Search & Indexing**.\n2. Map Title, URL, and Description under the profile’s **Results Fields**. Map Thumbnail if you display images. Configure and publish any facets, sort options, and Promotions you want to use. [Results Fields](https://support.searchstax.com/hc/en-us/articles/40837318253197-Results-Fields)\n3. For live suggestions, enable and publish Auto-Suggest, set `suggesterURL`, and enable `showSuggestions` in `design`. For live Smart Answers, enable and publish the feature on an eligible profile, set `questionURL` to the streaming Answer endpoint, and enable `showSmartAnswersSample` in `design`. [Auto-Suggest API](https://support.searchstax.com/hc/en-us/articles/40243330090893-Auto-Suggest-API) · [Smart Answers setup](https://support.searchstax.com/hc/en-us/articles/40075209934989-Smart-Answers)\n\nThe starter requests a Smart Answer for the opening query and submitted searches. Use the SearchStax streaming endpoint or a same-origin proxy that returns the same event stream.\n\n### Thumbnail Descriptions\n\nTo show informative thumbnails, enable thumbnails in the design and map the image URL field to **Thumbnail**. Add the indexed description as a Return Field with **No mapping** in **Results Fields**. Then set `connection.thumbnailAltField` in `src/config.js` to that field’s name, such as `image_alt`. Use a description that conveys the information the image adds. The starter omits a connected thumbnail when its description is missing. Set `thumbnailsWithoutAltAreDecorative` to `true` only if every thumbnail without a description is decorative or repeats the nearby text. Those images use empty alt text. [Decorative images](https://www.w3.org/WAI/tutorials/images/decorative/)\n\nBrowser code is visible to visitors. Use a server-side proxy for tokens that need to stay private. [Endpoint and token guidance](https://support.searchstax.com/hc/en-us/articles/39440547272077-Hide-Tokens-and-Endpoints-in-UI-Kits)\n\nUse `src/SearchApp.vue` to change the Vue widget templates and `search.css` to change their appearance. Retain the `.search-starter` wrapper so the exported selectors apply. [Vue UI Kit setup](https://support.searchstax.com/hc/en-us/articles/40395808395277-Getting-Started-with-searchstudio-ux-vue)\n",Je=`<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SearchStax Angular Starter</title>
+  <base href="/">
+</head>
+<body class="search-starter-page">
+  <search-app></search-app>
+</body>
+</html>
+`,Ye=`{
+  "name": "searchstax-angular-starter",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "ng serve --host 127.0.0.1",
+    "build": "ng build"
+  },
+  "engines": { "node": "^22.22.3 || ^24.15.0 || >=26.0.0" },
+  "dependencies": {
+    "@angular/common": "22.2.6",
+    "@angular/compiler": "22.2.6",
+    "@angular/core": "22.2.6",
+    "@angular/forms": "22.2.6",
+    "@angular/platform-browser": "22.2.6",
+    "@searchstax-inc/searchstudio-ux-angular": "4.2.70",
+    "rxjs": "7.8.2",
+    "tslib": "2.8.1"
+  },
+  "devDependencies": {
+    "@angular/build": "22.2.6",
+    "@angular/cli": "22.2.6",
+    "@angular/compiler-cli": "22.2.6",
+    "typescript": "6.0.3"
+  }
+}
+`,Xe=`{
+  "name": "searchstax-angular-starter",
+  "version": "1.0.0",
+  "lockfileVersion": 3,
+  "requires": true,
+  "packages": {
+    "": {
+      "name": "searchstax-angular-starter",
+      "version": "1.0.0",
+      "dependencies": {
+        "@angular/common": "22.2.6",
+        "@angular/compiler": "22.2.6",
+        "@angular/core": "22.2.6",
+        "@angular/forms": "22.2.6",
+        "@angular/platform-browser": "22.2.6",
+        "@searchstax-inc/searchstudio-ux-angular": "4.2.70",
+        "rxjs": "7.8.2",
+        "tslib": "2.8.1"
+      },
+      "devDependencies": {
+        "@angular/build": "22.2.6",
+        "@angular/cli": "22.2.6",
+        "@angular/compiler-cli": "22.2.6",
+        "typescript": "6.0.3"
+      },
+      "engines": {
+        "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
+      }
+    },
+    "node_modules/@ampproject/remapping": {
+      "version": "2.3.0",
+      "resolved": "https://registry.npmjs.org/@ampproject/remapping/-/remapping-2.3.0.tgz",
+      "integrity": "sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==",
+      "dev": true,
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@jridgewell/gen-mapping": "^0.3.5",
+        "@jridgewell/trace-mapping": "^0.3.24"
+      },
+      "engines": {
+        "node": ">=6.0.0"
+      }
+    },
+    "node_modules/@angular-devkit/architect": {
+      "version": "0.2202.6",
+      "resolved": "https://registry.npmjs.org/@angular-devkit/architect/-/architect-0.2202.6.tgz",
+      "integrity": "sha512-rUkPPjvxYn3G699TriJDj0ZdX6pXvIwWqnvssuyD3gqNijBp/49kI31fCTqTns8PhZVj1JhatEiKlCvmxnLHgQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@angular-devkit/core": "22.2.6",
+        "rxjs": "7.8.2"
+      },
+      "bin": {
+        "architect": "bin/cli.js"
+      },
+      "engines": {
+        "node": "^22.22.3 || ^24.15.0 || >=26.0.0",
+        "npm": "^6.11.0 || ^7.5.6 || >=8.0.0",
+        "yarn": ">= 1.13.0"
+      }
+    },
+    "node_modules/@angular-devkit/core": {
+      "version": "22.2.6",
+      "resolved": "https://registry.npmjs.org/@angular-devkit/core/-/core-22.2.6.tgz",
+      "integrity": "sha512-OtFUe9fLXpHsqO6gCSbTWIaTO64MCrESRVigs9SAW4EzIagCAhgB0Y8GflTjmKGLvJjilBFJFd0JSIzNxLyifA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "ajv": "8.20.0",
+        "ajv-formats": "3.0.1",
+        "jsonc-parser": "3.3.1",
+        "picomatch": "4.0.7",
+        "rxjs": "7.8.2",
+        "source-map": "0.8.0"
+      },
+      "engines": {
+        "node": "^22.22.3 || ^24.15.0 || >=26.0.0",
+        "npm": "^6.11.0 || ^7.5.6 || >=8.0.0",
+        "yarn": ">= 1.13.0"
+      },
+      "peerDependencies": {
+        "chokidar": "^5.0.0"
+      },
+      "peerDependenciesMeta": {
+        "chokidar": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@angular-devkit/schematics": {
+      "version": "22.2.6",
+      "resolved": "https://registry.npmjs.org/@angular-devkit/schematics/-/schematics-22.2.6.tgz",
+      "integrity": "sha512-XACkbAmAhBGDfxr8Uny2k0ErDwLpauseccNWdIFs4fiisGTqiCByzkH60/4xTmbV3FTj8bQ6cXYIhhaqe0MK1g==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@angular-devkit/core": "22.2.6",
+        "jsonc-parser": "3.3.1",
+        "magic-string": "1.4.1",
+        "ora": "9.4.1",
+        "rxjs": "7.8.2"
+      },
+      "engines": {
+        "node": "^22.22.3 || ^24.15.0 || >=26.0.0",
+        "npm": "^6.11.0 || ^7.5.6 || >=8.0.0",
+        "yarn": ">= 1.13.0"
+      }
+    },
+    "node_modules/@angular/build": {
+      "version": "22.2.6",
+      "resolved": "https://registry.npmjs.org/@angular/build/-/build-22.2.6.tgz",
+      "integrity": "sha512-AJBr02LHSzw9roa0poAKIW2I0ydVPGp7kYh8TaSSfUH53B14ZJIbGuL3eLFSJgatZINjJ4XLrBVzeVSj/GG2yQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@ampproject/remapping": "2.3.0",
+        "@angular-devkit/architect": "0.2202.6",
+        "@babel/core": "8.0.5",
+        "@inquirer/confirm": "6.3.2",
+        "@parcel/watcher": "2.6.0",
+        "@vitejs/plugin-basic-ssl": "2.3.0",
+        "beasties": "0.5.4",
+        "browserslist": "^4.26.0",
+        "chokidar": "5.0.0",
+        "esbuild": "0.28.2",
+        "https-proxy-agent": "9.1.0",
+        "jsonc-parser": "3.3.1",
+        "listr2": "11.1.0",
+        "magic-string": "1.4.1",
+        "mrmime": "2.0.1",
+        "oxc-parser": "0.156.0",
+        "parse5-html-rewriting-stream": "8.0.1",
+        "picomatch": "4.0.7",
+        "piscina": "5.3.2",
+        "rolldown": "1.2.16",
+        "sass": "1.104.1",
+        "sass-embedded": "1.104.1",
+        "semver": "7.8.5",
+        "source-map-support": "0.5.21",
+        "tinyglobby": "0.2.17",
+        "vite": "8.3.5",
+        "xxhash-wasm": "1.1.0"
+      },
+      "engines": {
+        "node": "^22.22.3 || ^24.15.0 || >=26.0.0",
+        "npm": "^6.11.0 || ^7.5.6 || >=8.0.0",
+        "yarn": ">= 1.13.0"
+      },
+      "optionalDependencies": {
+        "@oxc-parser/binding-wasm32-wasi": "0.156.0",
+        "lmdb": "3.5.6"
+      },
+      "peerDependencies": {
+        "@angular/compiler": "^22.0.0",
+        "@angular/compiler-cli": "^22.0.0",
+        "@angular/core": "^22.0.0",
+        "@angular/localize": "^22.0.0",
+        "@angular/platform-browser": "^22.0.0",
+        "@angular/platform-server": "^22.0.0",
+        "@angular/service-worker": "^22.0.0",
+        "@angular/ssr": "^22.2.6",
+        "istanbul-lib-instrument": "^6.0.0",
+        "karma": "^6.4.0",
+        "less": "^4.2.0",
+        "ng-packagr": "^22.0.0",
+        "postcss": "^8.4.0",
+        "rollup": "^4.0.0",
+        "tailwindcss": "^2.0.0 || ^3.0.0 || ^4.0.0",
+        "tslib": "^2.3.0",
+        "typescript": ">=6.0 <6.1",
+        "vitest": "^4.0.8 || ^5.0.0"
+      },
+      "peerDependenciesMeta": {
+        "@angular/core": {
+          "optional": true
+        },
+        "@angular/localize": {
+          "optional": true
+        },
+        "@angular/platform-browser": {
+          "optional": true
+        },
+        "@angular/platform-server": {
+          "optional": true
+        },
+        "@angular/service-worker": {
+          "optional": true
+        },
+        "@angular/ssr": {
+          "optional": true
+        },
+        "istanbul-lib-instrument": {
+          "optional": true
+        },
+        "karma": {
+          "optional": true
+        },
+        "less": {
+          "optional": true
+        },
+        "ng-packagr": {
+          "optional": true
+        },
+        "postcss": {
+          "optional": true
+        },
+        "rollup": {
+          "optional": true
+        },
+        "tailwindcss": {
+          "optional": true
+        },
+        "vitest": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@angular/cli": {
+      "version": "22.2.6",
+      "resolved": "https://registry.npmjs.org/@angular/cli/-/cli-22.2.6.tgz",
+      "integrity": "sha512-Ptof26IRAmHKr9La6earJVTijgpdsUXUxDocXJjist0daUUHAOcvY8hX1CMX6Sr1KXq5HkgVS1wy350M3EiINg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@angular-devkit/architect": "0.2202.6",
+        "@angular-devkit/core": "22.2.6",
+        "@angular-devkit/schematics": "22.2.6",
+        "@inquirer/prompts": "8.7.2",
+        "@listr2/prompt-adapter-inquirer": "4.2.7",
+        "@modelcontextprotocol/server": "2.3.1",
+        "@schematics/angular": "22.2.6",
+        "jsonc-parser": "3.3.1",
+        "listr2": "11.1.0",
+        "npm-package-arg": "14.0.0",
+        "parse5-html-rewriting-stream": "8.0.1",
+        "semver": "7.8.5",
+        "yargs": "18.1.0",
+        "zod": "4.6.6"
+      },
+      "bin": {
+        "ng": "bin/ng.js"
+      },
+      "engines": {
+        "node": "^22.22.3 || ^24.15.0 || >=26.0.0",
+        "npm": "^6.11.0 || ^7.5.6 || >=8.0.0",
+        "yarn": ">= 1.13.0"
+      }
+    },
+    "node_modules/@angular/common": {
+      "version": "22.2.6",
+      "resolved": "https://registry.npmjs.org/@angular/common/-/common-22.2.6.tgz",
+      "integrity": "sha512-wL7qv2fb/qWIDhq6leX3SFGql76ljCPC6qXHB2KpKJ3GlppuF9fYJwLo+RicRyM72nFu9qQPzd9Zl9k3/eUisQ==",
+      "license": "MIT",
+      "dependencies": {
+        "tslib": "^2.3.0"
+      },
+      "engines": {
+        "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
+      },
+      "peerDependencies": {
+        "@angular/core": "22.2.6",
+        "rxjs": "^6.5.3 || ^7.4.0"
+      }
+    },
+    "node_modules/@angular/compiler": {
+      "version": "22.2.6",
+      "resolved": "https://registry.npmjs.org/@angular/compiler/-/compiler-22.2.6.tgz",
+      "integrity": "sha512-9QNqLAG+bqsTRDZZbggX50sS9NyWx3ACfgeLKUAaHPzebQXtIsAYIT6H8HNpR27GHJ2qJHi9yEm84hAJsKZCuQ==",
+      "license": "MIT",
+      "dependencies": {
+        "tslib": "^2.3.0"
+      },
+      "engines": {
+        "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
+      }
+    },
+    "node_modules/@angular/compiler-cli": {
+      "version": "22.2.6",
+      "resolved": "https://registry.npmjs.org/@angular/compiler-cli/-/compiler-cli-22.2.6.tgz",
+      "integrity": "sha512-9nNettf2g/BsgBLhDF65CAXqc97USoLynC3hkF6DwQxc1syzHQ5XOGpiHTp0YWPbe9/DKBQxOBOROVE0vhYMqw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@babel/core": "8.0.1",
+        "@jridgewell/sourcemap-codec": "^1.6.0",
+        "chokidar": "^5.0.0",
+        "convert-source-map": "^1.5.1",
+        "reflect-metadata": "^0.2.0",
+        "semver": "^7.0.0",
+        "tslib": "^2.3.0",
+        "yargs": "^18.0.0"
+      },
+      "bin": {
+        "ng-xi18n": "bundles/src/bin/ng_xi18n.js",
+        "ngc": "bundles/src/bin/ngc.js"
+      },
+      "engines": {
+        "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
+      },
+      "peerDependencies": {
+        "@angular/compiler": "22.2.6",
+        "typescript": ">=6.0 <6.1"
+      },
+      "peerDependenciesMeta": {
+        "typescript": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@angular/compiler-cli/node_modules/@babel/core": {
+      "version": "8.0.1",
+      "resolved": "https://registry.npmjs.org/@babel/core/-/core-8.0.1.tgz",
+      "integrity": "sha512-5FgxM4dLQpMJHSiVATk8foW263dVHQHBVpXYiimNECVWG01f4nFyEbQixeT6Mwvg7TayREJ2gpKl3o2RoMdnqw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@babel/code-frame": "^8.0.0",
+        "@babel/generator": "^8.0.0",
+        "@babel/helper-compilation-targets": "^8.0.0",
+        "@babel/helpers": "^8.0.0",
+        "@babel/parser": "^8.0.0",
+        "@babel/template": "^8.0.0",
+        "@babel/traverse": "^8.0.0",
+        "@babel/types": "^8.0.0",
+        "@types/gensync": "^1.0.5",
+        "convert-source-map": "^2.0.0",
+        "empathic": "^2.0.1",
+        "gensync": "^1.0.0-beta.2",
+        "import-meta-resolve": "^4.2.0",
+        "json5": "^2.2.3",
+        "obug": "^2.1.1",
+        "semver": "^7.7.3"
+      },
+      "engines": {
+        "node": "^22.18.0 || >=24.11.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/babel"
+      }
+    },
+    "node_modules/@angular/compiler-cli/node_modules/@babel/core/node_modules/convert-source-map": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/convert-source-map/-/convert-source-map-2.0.0.tgz",
+      "integrity": "sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/@angular/core": {
+      "version": "22.2.6",
+      "resolved": "https://registry.npmjs.org/@angular/core/-/core-22.2.6.tgz",
+      "integrity": "sha512-atESNSPsM0dBXU88aDtByBP4W/wb8USbhL16lsePyxBvAWtM1Xn7QBB489QTmHpY6VCXHnqMhXWcrZsDpoIBsw==",
+      "license": "MIT",
+      "dependencies": {
+        "tslib": "^2.3.0"
+      },
+      "engines": {
+        "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
+      },
+      "peerDependencies": {
+        "@angular/compiler": "22.2.6",
+        "rxjs": "^6.5.3 || ^7.4.0",
+        "zone.js": "~0.15.0 || ~0.16.0"
+      },
+      "peerDependenciesMeta": {
+        "@angular/compiler": {
+          "optional": true
+        },
+        "zone.js": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@angular/forms": {
+      "version": "22.2.6",
+      "resolved": "https://registry.npmjs.org/@angular/forms/-/forms-22.2.6.tgz",
+      "integrity": "sha512-W7t8w6l5ftGJSCYvMLfsnpWQclIjNY0zfpZ/B3EIUhEO9gzi13m4GkR43oepyK2/oGPLUNtFnhr+YSFE0BucjQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@standard-schema/spec": "^1.0.0",
+        "tslib": "^2.3.0",
+        "zod": "^4.0.10"
+      },
+      "engines": {
+        "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
+      },
+      "peerDependencies": {
+        "@angular/common": "22.2.6",
+        "@angular/core": "22.2.6",
+        "@angular/platform-browser": "22.2.6",
+        "rxjs": "^6.5.3 || ^7.4.0"
+      }
+    },
+    "node_modules/@angular/platform-browser": {
+      "version": "22.2.6",
+      "resolved": "https://registry.npmjs.org/@angular/platform-browser/-/platform-browser-22.2.6.tgz",
+      "integrity": "sha512-xXSgdnnLLv/3aEC/pqyrUd0xlyYURGZG2HR3sOIN3bsIoctGFvzA5iwt/GEKpIDA1rn+NnKNLK/EKQaPA4YZEw==",
+      "license": "MIT",
+      "dependencies": {
+        "tslib": "^2.3.0"
+      },
+      "engines": {
+        "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
+      },
+      "peerDependencies": {
+        "@angular/animations": "22.2.6",
+        "@angular/common": "22.2.6",
+        "@angular/core": "22.2.6"
+      },
+      "peerDependenciesMeta": {
+        "@angular/animations": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@babel/code-frame": {
+      "version": "8.0.6",
+      "resolved": "https://registry.npmjs.org/@babel/code-frame/-/code-frame-8.0.6.tgz",
+      "integrity": "sha512-uMHhvmDmwFiLuiozaoRYTZHqMFuu3fem/X9JY78lohAuLoh8LSGGC8JqUzo2cVuBsBxkjMZNk56CE7ock8Xxkw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@babel/helper-validator-identifier": "^8.0.6",
+        "js-tokens": "^10.0.0"
+      },
+      "engines": {
+        "node": "^22.18.0 || >=24.11.0"
+      }
+    },
+    "node_modules/@babel/compat-data": {
+      "version": "8.1.2",
+      "resolved": "https://registry.npmjs.org/@babel/compat-data/-/compat-data-8.1.2.tgz",
+      "integrity": "sha512-XvUnYY6D/bJMB88821n7HFmiwFS6feV7vZLxxudRgWnnwAGtOnDa7C+6svNciIN+BAZDY6WEdIeKHaEW9c0LPg==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": "^22.18.0 || >=24.11.0"
+      }
+    },
+    "node_modules/@babel/core": {
+      "version": "8.0.5",
+      "resolved": "https://registry.npmjs.org/@babel/core/-/core-8.0.5.tgz",
+      "integrity": "sha512-2/oWkgTbBYoqioCWAE4XJobOrzwxTDa5/XjDP3tJ1BhDr/owcd9qnXBp4xc3/2G5X4bvXM04nrxbRJxFcXAxFQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@babel/code-frame": "^8.0.0",
+        "@babel/generator": "^8.0.5",
+        "@babel/helper-compilation-targets": "^8.0.5",
+        "@babel/helpers": "^8.0.5",
+        "@babel/parser": "^8.0.5",
+        "@babel/template": "^8.0.0",
+        "@babel/traverse": "^8.0.5",
+        "@babel/types": "^8.0.5",
+        "@types/gensync": "^1.0.5",
+        "convert-source-map": "^2.0.0",
+        "empathic": "^2.0.1",
+        "gensync": "^1.0.0-beta.2",
+        "import-meta-resolve": "^4.2.0",
+        "json5": "^2.2.3",
+        "obug": "^2.1.1",
+        "verkit": "^0.3.2"
+      },
+      "engines": {
+        "node": "^22.18.0 || >=24.11.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/babel"
+      }
+    },
+    "node_modules/@babel/core/node_modules/convert-source-map": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/convert-source-map/-/convert-source-map-2.0.0.tgz",
+      "integrity": "sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/@babel/generator": {
+      "version": "8.1.2",
+      "resolved": "https://registry.npmjs.org/@babel/generator/-/generator-8.1.2.tgz",
+      "integrity": "sha512-tAjURz1NaCZGtdG3hB6gjaIeTVo4XFD4TnbqIEneADVJ1Jpt2NxhPBAjbhius8ulUG5b/P2b56ec1ClJZa2aBQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@babel/parser": "^8.1.2",
+        "@babel/types": "^8.1.2",
+        "@jridgewell/gen-mapping": "0.4.0-beta.0",
+        "@jridgewell/trace-mapping": "^0.3.31",
+        "@types/jsesc": "^2.5.0",
+        "jsesc": "^3.0.2"
+      },
+      "engines": {
+        "node": "^22.18.0 || >=24.11.0"
+      }
+    },
+    "node_modules/@babel/generator/node_modules/@jridgewell/gen-mapping": {
+      "version": "0.4.0-beta.0",
+      "resolved": "https://registry.npmjs.org/@jridgewell/gen-mapping/-/gen-mapping-0.4.0-beta.0.tgz",
+      "integrity": "sha512-JdGNkbE4GlNPYQhM0L95fBQr7ctLZJ276QXQLTad4t1oSdnnCI3fDq9DW3BqYAWv8Wc3+HS+4Gsii1oPMCfz1w==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@jridgewell/sourcemap-codec": "^1.6.0-beta.0",
+        "@jridgewell/trace-mapping": "^0.3.24"
+      }
+    },
+    "node_modules/@babel/helper-compilation-targets": {
+      "version": "8.0.7",
+      "resolved": "https://registry.npmjs.org/@babel/helper-compilation-targets/-/helper-compilation-targets-8.0.7.tgz",
+      "integrity": "sha512-ilAZCdOOlOVA7dQbaFNw2f/59p6GW33NxTopc3DvEE3efp3ZXTrGX/yZScaKw8/vd9bq31Ag0EcXiLw32bAgJg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@babel/compat-data": "^8.0.5",
+        "@babel/helper-validator-option": "^8.0.0",
+        "browserslist": "^4.24.0",
+        "flru": "1.0.2",
+        "verkit": "^0.5.0"
+      },
+      "engines": {
+        "node": "^22.18.0 || >=24.11.0"
+      }
+    },
+    "node_modules/@babel/helper-compilation-targets/node_modules/verkit": {
+      "version": "0.5.0",
+      "resolved": "https://registry.npmjs.org/verkit/-/verkit-0.5.0.tgz",
+      "integrity": "sha512-u4J1hr6Y+C/hit34GwL3eIcUf3wngT8TlYUjK7tk0jxydKLAq3sYvifjdTDA6U3KCKRcQCQDGf/srjxfZF3l7g==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=18.12.0"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sxzz"
+      }
+    },
+    "node_modules/@babel/helper-globals": {
+      "version": "8.0.6",
+      "resolved": "https://registry.npmjs.org/@babel/helper-globals/-/helper-globals-8.0.6.tgz",
+      "integrity": "sha512-OdnA/N52LhzFpeUuVz5YGuSWjc7TPHiFmVYZbPlSgExocO2GwbxVpSni9MVs5wwW+wZ4kPuwBEBN9pIPDYz1mA==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": "^22.18.0 || >=24.11.0"
+      }
+    },
+    "node_modules/@babel/helper-string-parser": {
+      "version": "8.1.2",
+      "resolved": "https://registry.npmjs.org/@babel/helper-string-parser/-/helper-string-parser-8.1.2.tgz",
+      "integrity": "sha512-TRz5Z0MgfIfWqwEIq/pCpUpEXQxUt2Ig2ZbxG3SdmhSbHMAFFYGOix0kI4JLV371/TA+qWnQ4xWHPWjojkyRFA==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": "^22.18.0 || >=24.11.0"
+      }
+    },
+    "node_modules/@babel/helper-validator-identifier": {
+      "version": "8.0.6",
+      "resolved": "https://registry.npmjs.org/@babel/helper-validator-identifier/-/helper-validator-identifier-8.0.6.tgz",
+      "integrity": "sha512-HYx0YmuchRxRSpnjvcNffnPS8DCauKNmnumIuHG3jnQAVewRA7kfJGwF13ayEpSZs7s4R/oBH4eppuXcAQd5JQ==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": "^22.18.0 || >=24.11.0"
+      }
+    },
+    "node_modules/@babel/helper-validator-option": {
+      "version": "8.0.0",
+      "resolved": "https://registry.npmjs.org/@babel/helper-validator-option/-/helper-validator-option-8.0.0.tgz",
+      "integrity": "sha512-U4Dybxh4WESWHt5XhBeExi4DrY0/DNK1aHpQbsrQXCUbFHuMweT0TpLEWKvaraV2Y6fS+ZXunsZ8zIuZIgvF2Q==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": "^22.18.0 || >=24.11.0"
+      }
+    },
+    "node_modules/@babel/helpers": {
+      "version": "8.1.2",
+      "resolved": "https://registry.npmjs.org/@babel/helpers/-/helpers-8.1.2.tgz",
+      "integrity": "sha512-BmtiG8H9OUWSTFOgl9jtPYmfDi6uc21Pf4GUxkgGoZnzMIzpDnhkl5gsGJW6wb1jmKCyU565F8IYe5mwOTctfw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@babel/template": "^8.1.2",
+        "@babel/types": "^8.1.2"
+      },
+      "engines": {
+        "node": "^22.18.0 || >=24.11.0"
+      }
+    },
+    "node_modules/@babel/parser": {
+      "version": "8.1.2",
+      "resolved": "https://registry.npmjs.org/@babel/parser/-/parser-8.1.2.tgz",
+      "integrity": "sha512-ZDKU7vaX0VORd2BhaO+3FKr/30TKjbUy3SMZcydiPngnAb+MesgUoh5SJcE5EwEyBj14M5J6fK56GuBqvYmOpw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@babel/types": "^8.1.2"
+      },
+      "bin": {
+        "parser": "bin/babel-parser.js"
+      },
+      "engines": {
+        "node": "^22.18.0 || >=24.11.0"
+      }
+    },
+    "node_modules/@babel/template": {
+      "version": "8.1.2",
+      "resolved": "https://registry.npmjs.org/@babel/template/-/template-8.1.2.tgz",
+      "integrity": "sha512-9B3FA5HZWK7rTJ7nU2F03qAc/t80O/WB5YQ7NKYdvmMwpq7EUyN04APNQWpkqwSqWtOsuwR0jMSRYLFoAd1m9A==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@babel/code-frame": "^8.0.6",
+        "@babel/parser": "^8.1.2",
+        "@babel/types": "^8.1.2"
+      },
+      "engines": {
+        "node": "^22.18.0 || >=24.11.0"
+      }
+    },
+    "node_modules/@babel/traverse": {
+      "version": "8.1.2",
+      "resolved": "https://registry.npmjs.org/@babel/traverse/-/traverse-8.1.2.tgz",
+      "integrity": "sha512-J8OoydypQO6HGgRYiiHPMj0iBfz2XpSm5hkmd0+OEHWgQFzYL8TEvYq2y4Gu8vxRCa7g06BilFZ0Imiye5jzzg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@babel/code-frame": "^8.0.6",
+        "@babel/generator": "^8.1.2",
+        "@babel/helper-globals": "^8.0.6",
+        "@babel/parser": "^8.1.2",
+        "@babel/template": "^8.1.2",
+        "@babel/types": "^8.1.2",
+        "obug": "^3.0.0"
+      },
+      "engines": {
+        "node": "^22.18.0 || >=24.11.0"
+      }
+    },
+    "node_modules/@babel/traverse/node_modules/obug": {
+      "version": "3.0.0",
+      "resolved": "https://registry.npmjs.org/obug/-/obug-3.0.0.tgz",
+      "integrity": "sha512-5vvB5+W7ePv+p3uqxi+RcW1XAzLW0/hxt3/4X4Lc4qHudzOhmBiBwOY6DRob4WnanAEGvNcLjF+KNOufrUoEQw==",
+      "dev": true,
+      "funding": [
+        "https://github.com/sponsors/sxzz",
+        "https://opencollective.com/debug"
+      ],
+      "license": "MIT",
+      "engines": {
+        "node": ">=12.20.0"
+      }
+    },
+    "node_modules/@babel/types": {
+      "version": "8.1.2",
+      "resolved": "https://registry.npmjs.org/@babel/types/-/types-8.1.2.tgz",
+      "integrity": "sha512-uXt6qt2f5G61jZwNIzK1RKu7l5Xjt1VXtPPOGuVveha9fxbx0QM94U1kM4pFZKTRLjWK+X8vmwjwbIemJjiQTA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@babel/helper-string-parser": "^8.1.2",
+        "@babel/helper-validator-identifier": "^8.0.6"
+      },
+      "engines": {
+        "node": "^22.18.0 || >=24.11.0"
+      }
+    },
+    "node_modules/@bufbuild/protobuf": {
+      "version": "2.17.0",
+      "resolved": "https://registry.npmjs.org/@bufbuild/protobuf/-/protobuf-2.17.0.tgz",
+      "integrity": "sha512-hcPkSz6D7MiTU/5VBBhK+kxaYDoOdQ6yJRFJ3kS8Nydp+VZXfg1vrpABKPNod8bXMufsVCmiUJVIKFzCzta4uw==",
+      "dev": true,
+      "license": "(Apache-2.0 AND BSD-3-Clause)"
+    },
+    "node_modules/@emnapi/core": {
+      "version": "1.11.3",
+      "resolved": "https://registry.npmjs.org/@emnapi/core/-/core-1.11.3.tgz",
+      "integrity": "sha512-zLpS5asjEb7lq8jYLq37N6XKaE41DIexlY1rF/z4/tIl3wo13Sqm28fRyfIsKZD+NZ8mM5RoKkpW/rBcuoSZSg==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "peer": true,
+      "dependencies": {
+        "@emnapi/wasi-threads": "1.2.3",
+        "tslib": "^2.4.0"
+      }
+    },
+    "node_modules/@emnapi/runtime": {
+      "version": "1.11.3",
+      "resolved": "https://registry.npmjs.org/@emnapi/runtime/-/runtime-1.11.3.tgz",
+      "integrity": "sha512-Xz4Tpyki7XyrpbUK1jR1AhdAdaXyhhY4lZ3neLodmhpuWfy2PAQN5B46sAiU4liOXGLkHypn/qU+jvfWSCYYLA==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "peer": true,
+      "dependencies": {
+        "tslib": "^2.4.0"
+      }
+    },
+    "node_modules/@emnapi/wasi-threads": {
+      "version": "1.2.3",
+      "resolved": "https://registry.npmjs.org/@emnapi/wasi-threads/-/wasi-threads-1.2.3.tgz",
+      "integrity": "sha512-ELEBe8PsLvvJ6QMr0zLt8ffvOHW/dc1m3CEzNMg7aJUv3bMaoDtw2TXyDAwkYBuroxxuHEwhRTLJSe5sya547g==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "peer": true,
+      "dependencies": {
+        "tslib": "^2.4.0"
+      }
+    },
+    "node_modules/@esbuild/aix-ppc64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/aix-ppc64/-/aix-ppc64-0.28.2.tgz",
+      "integrity": "sha512-XExcO+dvLKvVtNTibSTBej1NCAbaGhWn9Ww1ZPx80qsahhPFe/8jgWP0IchNe0F3HwkU7n8ejhH8bjonqht8mQ==",
+      "cpu": [
+        "ppc64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "aix"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/android-arm": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/android-arm/-/android-arm-0.28.2.tgz",
+      "integrity": "sha512-kXXoiPVVGQcnIYGOeaovwOURpniDBpSq4A03qkQ+BMQqtGG6HYap3xne9C1O1yo4TR3qxlCX5IqqmX6fFo2Lqg==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "android"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/android-arm64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/android-arm64/-/android-arm64-0.28.2.tgz",
+      "integrity": "sha512-5YfKeeI8qWfBZIX+u2xZC3Zlb3Os/gLS2sbEKM+I4ZOcsWmHS2WLysCcQZDAFRslDUU5Oiq44gf6PYN1vGwG5A==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "android"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/android-x64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/android-x64/-/android-x64-0.28.2.tgz",
+      "integrity": "sha512-O387ite7SzUyCcy3JQX4P4bLtEA7bLLkx+esve5JHnyYfNTxcVpXZo9jhdB0lTKN44gztELTdU7nS8Nr16Fs1Q==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "android"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/darwin-arm64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/darwin-arm64/-/darwin-arm64-0.28.2.tgz",
+      "integrity": "sha512-n4KqkOQrraxHJcgjM1RvwbigfQKIKJVpM7xp+KsxiyUSrRdIXnt73VhrPAx0fV44hgfmIVKjxMN9J1t5jySVkw==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/darwin-x64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/darwin-x64/-/darwin-x64-0.28.2.tgz",
+      "integrity": "sha512-uq6suIWYP37qzGddBKPw5QEQPi6HiLGsO7UmkpfyaYNQ3D+rN6w6WfwH+nuqcGXWvawGwxOEroO4YGnFh95azw==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/freebsd-arm64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/freebsd-arm64/-/freebsd-arm64-0.28.2.tgz",
+      "integrity": "sha512-n+I0BTSRIoy+d6RPKnEVwql5UwBJolytvY4mAOIEJorKlqgPII8ix6slVVrfZ5Tnj7glIZvloylbB/EJPMWEXw==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "freebsd"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/freebsd-x64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/freebsd-x64/-/freebsd-x64-0.28.2.tgz",
+      "integrity": "sha512-78XJTJkvPs0kz2w61301PJjXl4g7q3JqiYMZ/M/yVI73EHBrCRTgkhu9oqG7vPqq+a/yadEW8aD+agKlk5xrmg==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "freebsd"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/linux-arm": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/linux-arm/-/linux-arm-0.28.2.tgz",
+      "integrity": "sha512-XlDnu2q5yoqems+xay6wSAcg9DDD7K9RLKZEBOMZm3ckNpJBvOX20tSfby8KfrrhINDyv9V2YVZKY/SpoGJI8w==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/linux-arm64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/linux-arm64/-/linux-arm64-0.28.2.tgz",
+      "integrity": "sha512-pW4AC0P3it8c7do9MVM4p51FzHzdM/TZrerurgRcHJ2WTa1VQ1CIq18xncfpBJw4ojkiZZrKW2yIBWBP92j6Ug==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/linux-ia32": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/linux-ia32/-/linux-ia32-0.28.2.tgz",
+      "integrity": "sha512-CYbnj78HsIeA+DhgUKgFCfvNsTHFhMMrinUrMZpDXJXKN8T3XViTZ/+wtHeVxEWY8ewSzTFN+nRmSwO2tZaLUQ==",
+      "cpu": [
+        "ia32"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/linux-loong64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/linux-loong64/-/linux-loong64-0.28.2.tgz",
+      "integrity": "sha512-buwkd8nsph4R+ajRvw0qM5Hja/TXQow3ptzWO2EbG/cqcIkHloRrdlBtQlshyYGTNFvfkfJ5tpPLVkY4DtsPfQ==",
+      "cpu": [
+        "loong64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/linux-mips64el": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/linux-mips64el/-/linux-mips64el-0.28.2.tgz",
+      "integrity": "sha512-ZVykbDyk7519VwiNb9Lcj9m8XM6v5V9uKPvrEMkkEedVewf+0itkhahp4HDpgERXhwLRpWFypsGbG/J8s0QjJA==",
+      "cpu": [
+        "mips64el"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/linux-ppc64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/linux-ppc64/-/linux-ppc64-0.28.2.tgz",
+      "integrity": "sha512-CAXl+Dtd9UUuJd8pKKdwh6MLm3MUMiqMPmhZ3tTSXPqfyQ3vDl6R5hZdZ/kYojK4ofXtdfSv1tFq8XzWx3heNQ==",
+      "cpu": [
+        "ppc64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/linux-riscv64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/linux-riscv64/-/linux-riscv64-0.28.2.tgz",
+      "integrity": "sha512-GeXCej4IQtU1B+QlDV8W/RRvbzI3O/Stss+/bCXv4lZls5WGRtu2a+3JkA3i4qIUlMXpcHebWpF8AkJhATowuA==",
+      "cpu": [
+        "riscv64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/linux-s390x": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/linux-s390x/-/linux-s390x-0.28.2.tgz",
+      "integrity": "sha512-3H1weTYZPxt/WOhByszQZybS9w5lKzUn1FDMsgEChbHWQwHYQQRfBxgCcZvPhjHfKyJjIievvMmEUawJrdY9Dg==",
+      "cpu": [
+        "s390x"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/linux-x64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.28.2.tgz",
+      "integrity": "sha512-4xTZr1FUmSoQW4XIWmit3tzQrUTZM+N3P0XV8xROKYF50XfI7xeO90+1bZvNwxIufQ9hDQVRJH5YhgPVF8A/HQ==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/netbsd-arm64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/netbsd-arm64/-/netbsd-arm64-0.28.2.tgz",
+      "integrity": "sha512-sSATRjPeDBg3pdgHoQfoYBob11Kk1FGa9lui5RIHZCoCkJa9QKlvl3/vKz2usCmYYjs7ymJR/2Nnsqe+Hjt5nw==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "netbsd"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/netbsd-x64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/netbsd-x64/-/netbsd-x64-0.28.2.tgz",
+      "integrity": "sha512-lqnzCV+mM0gIADaKihiCg6ifgfU2L3h5E33rNQBN1Y4MaVGnzryzmvvf7UHxprpQdE8hpqLolJ9Rl+SkIRDpyw==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "netbsd"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/openbsd-arm64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/openbsd-arm64/-/openbsd-arm64-0.28.2.tgz",
+      "integrity": "sha512-AL2qJILH7lNjrDmCQDvdxMfAUIv8KMNZOvrwAQ8i8//ntL9FflhOyMJ8OZSMBb8/AWXe3/5v5S20y3zCoZWKoQ==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "openbsd"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/openbsd-x64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/openbsd-x64/-/openbsd-x64-0.28.2.tgz",
+      "integrity": "sha512-QtiuPytchRyC4rwUKhexJdQKvDuZ6hWloi3igqPQNUJCS1/v9EiO3UTOXR6A3FoMo4fnAKbWJdqaIwhOzh8qEw==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "openbsd"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/openharmony-arm64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/openharmony-arm64/-/openharmony-arm64-0.28.2.tgz",
+      "integrity": "sha512-WkhYDmpTjLvGlScA1rwjRUmhl4k8oXR3cIbtqWmELgU/dFeHHlEllxDvdWcNJV9rbzCexB5vz8gtNewWLgCT7Q==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "openharmony"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/sunos-x64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/sunos-x64/-/sunos-x64-0.28.2.tgz",
+      "integrity": "sha512-GPMSkTOtMnv2U2F8gxe4Io6qmVs+YKyp832Etqqxr0hFngmXQ3rzwytelm3GIn7T4VviRUlf3sOgBOiTdvaf7g==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "sunos"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/win32-arm64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/win32-arm64/-/win32-arm64-0.28.2.tgz",
+      "integrity": "sha512-PIhhEkE9uPBleRBrQEJpUn7MBnibZzbGzYWPmY3x+YoVg/95zbjB4CxPPOQ8l5tYYM4mMaCthF8/1DIfBQQyWQ==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/win32-ia32": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/win32-ia32/-/win32-ia32-0.28.2.tgz",
+      "integrity": "sha512-YmJbfTlvU7Sdn9BB+4PRES4oB6pxgS37MAONj+hBr/cpXS1aBPKXxNnDbu+QCWPj0o9dgyxeq79g6c5P8KeuYA==",
+      "cpu": [
+        "ia32"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/win32-x64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/win32-x64/-/win32-x64-0.28.2.tgz",
+      "integrity": "sha512-5ebpxr3nWMzrL/rnUI755Jkuee0bHL/Gq0WTF9lvcpv73wAp5eu8MfBUgWK9bhWvZjj7yX8etf/8tI8Ney695g==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@harperfast/extended-iterable": {
+      "version": "1.0.5",
+      "resolved": "https://registry.npmjs.org/@harperfast/extended-iterable/-/extended-iterable-1.0.5.tgz",
+      "integrity": "sha512-4ScXlphaKEa49RpHmqwATq9QI9aUTdWVYDlJkzxhsD7ShJP+pHCYLznMO9n/wREY8jPjRZ59wLJY6HM5yB5Gkw==",
+      "dev": true,
+      "license": "Apache-2.0",
+      "optional": true
+    },
+    "node_modules/@inquirer/ansi": {
+      "version": "2.1.0",
+      "resolved": "https://registry.npmjs.org/@inquirer/ansi/-/ansi-2.1.0.tgz",
+      "integrity": "sha512-63GU5AD9KhNbWM0jlhHoMJTEFck2upFOPxHlnCKf3xYTV3rjTUUQfodihmTnfYQzMLS29oy8lK/gA1eJgu4bhA==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+      }
+    },
+    "node_modules/@inquirer/checkbox": {
+      "version": "5.3.0",
+      "resolved": "https://registry.npmjs.org/@inquirer/checkbox/-/checkbox-5.3.0.tgz",
+      "integrity": "sha512-3QQSO87A+JoRtOtjtsgX2enwTL+3+VBVrkUpdqrIxMOgn5+W5sE57PcCPAiNUIESHxV4Q6mNEGxq2xLmRa0/yw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@inquirer/ansi": "^2.1.0",
+        "@inquirer/core": "^12.1.0",
+        "@inquirer/figures": "^2.1.0",
+        "@inquirer/type": "4.3.0"
+      },
+      "engines": {
+        "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+      },
+      "peerDependencies": {
+        "@types/node": ">=18"
+      },
+      "peerDependenciesMeta": {
+        "@types/node": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@inquirer/checkbox/node_modules/@inquirer/type": {
+      "version": "4.3.0",
+      "resolved": "https://registry.npmjs.org/@inquirer/type/-/type-4.3.0.tgz",
+      "integrity": "sha512-/IA8q2nyjgyl0NGSjqiRXB8gh3We7Pzx9C0c+6Zoolu905jFc79anerrUG7+n65+qs310DRK43yi2WDI8nY59A==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+      },
+      "peerDependencies": {
+        "@types/node": ">=18"
+      },
+      "peerDependenciesMeta": {
+        "@types/node": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@inquirer/confirm": {
+      "version": "6.3.2",
+      "resolved": "https://registry.npmjs.org/@inquirer/confirm/-/confirm-6.3.2.tgz",
+      "integrity": "sha512-Xvr/0HggjddPtGppuqVmxhTw+Hr8PvsZ/k0HmOEaAqQEt80OITNkFWnsdNmyT0/eM4Ab+iJLx2R8rctlEyfSVg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@inquirer/core": "^12.0.3",
+        "@inquirer/type": "4.1.1"
+      },
+      "engines": {
+        "node": ">=23.5.0 || ^22.13.0 || ^20.17.0"
+      },
+      "peerDependencies": {
+        "@types/node": ">=18"
+      },
+      "peerDependenciesMeta": {
+        "@types/node": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@inquirer/core": {
+      "version": "12.1.0",
+      "resolved": "https://registry.npmjs.org/@inquirer/core/-/core-12.1.0.tgz",
+      "integrity": "sha512-6H7usRWw4Gdjgpaem10CA5MfZ/xoYPGyInriR1Xubqjv+SVo8LIJ1erpFxW5JgCza6VZVZiKLTko7RtUU3AQMg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@inquirer/ansi": "^2.1.0",
+        "@inquirer/figures": "^2.1.0",
+        "@inquirer/type": "4.3.0",
+        "cli-width": "^4.1.0",
+        "fast-wrap-ansi": "^0.2.0",
+        "mute-stream": "^4.0.0",
+        "signal-exit": "^4.1.0"
+      },
+      "engines": {
+        "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+      },
+      "peerDependencies": {
+        "@types/node": ">=18"
+      },
+      "peerDependenciesMeta": {
+        "@types/node": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@inquirer/core/node_modules/@inquirer/type": {
+      "version": "4.3.0",
+      "resolved": "https://registry.npmjs.org/@inquirer/type/-/type-4.3.0.tgz",
+      "integrity": "sha512-/IA8q2nyjgyl0NGSjqiRXB8gh3We7Pzx9C0c+6Zoolu905jFc79anerrUG7+n65+qs310DRK43yi2WDI8nY59A==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+      },
+      "peerDependencies": {
+        "@types/node": ">=18"
+      },
+      "peerDependenciesMeta": {
+        "@types/node": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@inquirer/editor": {
+      "version": "5.4.0",
+      "resolved": "https://registry.npmjs.org/@inquirer/editor/-/editor-5.4.0.tgz",
+      "integrity": "sha512-L7vdCe4jnMpzhDisu1tAnr4WGvfPOVz+vNFXyIIL7O2Ycn/n90sn1ARvg+4cwzLf+us51BE/cX7uhnrLcal3+g==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@inquirer/core": "^12.1.0",
+        "@inquirer/external-editor": "^3.1.0",
+        "@inquirer/type": "4.3.0"
+      },
+      "engines": {
+        "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+      },
+      "peerDependencies": {
+        "@types/node": ">=18"
+      },
+      "peerDependenciesMeta": {
+        "@types/node": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@inquirer/editor/node_modules/@inquirer/type": {
+      "version": "4.3.0",
+      "resolved": "https://registry.npmjs.org/@inquirer/type/-/type-4.3.0.tgz",
+      "integrity": "sha512-/IA8q2nyjgyl0NGSjqiRXB8gh3We7Pzx9C0c+6Zoolu905jFc79anerrUG7+n65+qs310DRK43yi2WDI8nY59A==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+      },
+      "peerDependencies": {
+        "@types/node": ">=18"
+      },
+      "peerDependenciesMeta": {
+        "@types/node": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@inquirer/expand": {
+      "version": "5.2.0",
+      "resolved": "https://registry.npmjs.org/@inquirer/expand/-/expand-5.2.0.tgz",
+      "integrity": "sha512-AOp2KQk7QojUyWOP7VkqdBWmxLRaVH58wQMx3N4//P530EDtpVp1EWIjAJubx9ZohWS/UCEpIkA1TuiNki0iOA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@inquirer/core": "^12.1.0",
+        "@inquirer/type": "4.3.0"
+      },
+      "engines": {
+        "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+      },
+      "peerDependencies": {
+        "@types/node": ">=18"
+      },
+      "peerDependenciesMeta": {
+        "@types/node": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@inquirer/expand/node_modules/@inquirer/type": {
+      "version": "4.3.0",
+      "resolved": "https://registry.npmjs.org/@inquirer/type/-/type-4.3.0.tgz",
+      "integrity": "sha512-/IA8q2nyjgyl0NGSjqiRXB8gh3We7Pzx9C0c+6Zoolu905jFc79anerrUG7+n65+qs310DRK43yi2WDI8nY59A==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+      },
+      "peerDependencies": {
+        "@types/node": ">=18"
+      },
+      "peerDependenciesMeta": {
+        "@types/node": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@inquirer/external-editor": {
+      "version": "3.1.0",
+      "resolved": "https://registry.npmjs.org/@inquirer/external-editor/-/external-editor-3.1.0.tgz",
+      "integrity": "sha512-27JAkF38nXqXaoveU28iA/+Z8nutnF8B3JsbdToPHn9WnkrsMtZ0/YoJ29YwbtFexYIo+tIy6ikMvTdHKjjmGA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "chardet": "^2.1.1",
+        "iconv-lite": "^0.7.2"
+      },
+      "engines": {
+        "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+      },
+      "peerDependencies": {
+        "@types/node": ">=18"
+      },
+      "peerDependenciesMeta": {
+        "@types/node": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@inquirer/figures": {
+      "version": "2.1.0",
+      "resolved": "https://registry.npmjs.org/@inquirer/figures/-/figures-2.1.0.tgz",
+      "integrity": "sha512-CR9u2PME23jxy2SOyTb117efwAAPm98Zr+LoWI+PiQ55D6U8Yeu/HyFTxwytKhPa6oxAGzdsm2Kg7oLS6B9z8w==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+      }
+    },
+    "node_modules/@inquirer/input": {
+      "version": "5.2.0",
+      "resolved": "https://registry.npmjs.org/@inquirer/input/-/input-5.2.0.tgz",
+      "integrity": "sha512-sIUPnN2X7M+7dq3RUd+e9QRacYnM+6B+kSucwQgj5VC5Eo/f+CIr2NyPBumxsViI+wzfokkgop/3x3KfHxNyJw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@inquirer/core": "^12.1.0",
+        "@inquirer/type": "4.3.0"
+      },
+      "engines": {
+        "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+      },
+      "peerDependencies": {
+        "@types/node": ">=18"
+      },
+      "peerDependenciesMeta": {
+        "@types/node": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@inquirer/input/node_modules/@inquirer/type": {
+      "version": "4.3.0",
+      "resolved": "https://registry.npmjs.org/@inquirer/type/-/type-4.3.0.tgz",
+      "integrity": "sha512-/IA8q2nyjgyl0NGSjqiRXB8gh3We7Pzx9C0c+6Zoolu905jFc79anerrUG7+n65+qs310DRK43yi2WDI8nY59A==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+      },
+      "peerDependencies": {
+        "@types/node": ">=18"
+      },
+      "peerDependenciesMeta": {
+        "@types/node": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@inquirer/number": {
+      "version": "4.3.0",
+      "resolved": "https://registry.npmjs.org/@inquirer/number/-/number-4.3.0.tgz",
+      "integrity": "sha512-xYkX4sPVgox0F7yQwpz/MByWjOGdLEf1pdjH+Lji2gAzSs2xezz5bN5YgS1n0tx9wo0mRhGvq1KJGtvDZ9XXcQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@inquirer/core": "^12.1.0",
+        "@inquirer/type": "4.3.0"
+      },
+      "engines": {
+        "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+      },
+      "peerDependencies": {
+        "@types/node": ">=18"
+      },
+      "peerDependenciesMeta": {
+        "@types/node": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@inquirer/number/node_modules/@inquirer/type": {
+      "version": "4.3.0",
+      "resolved": "https://registry.npmjs.org/@inquirer/type/-/type-4.3.0.tgz",
+      "integrity": "sha512-/IA8q2nyjgyl0NGSjqiRXB8gh3We7Pzx9C0c+6Zoolu905jFc79anerrUG7+n65+qs310DRK43yi2WDI8nY59A==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+      },
+      "peerDependencies": {
+        "@types/node": ">=18"
+      },
+      "peerDependenciesMeta": {
+        "@types/node": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@inquirer/password": {
+      "version": "5.3.0",
+      "resolved": "https://registry.npmjs.org/@inquirer/password/-/password-5.3.0.tgz",
+      "integrity": "sha512-KVqW4G/UbMK06uBN76xF89JKYC9YBWU7v+Kc2tUwMCO8pg3ASBr0HVabl1KaSqF94O2KiRu8aKx4EicN78PK+A==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@inquirer/ansi": "^2.1.0",
+        "@inquirer/core": "^12.1.0",
+        "@inquirer/type": "4.3.0"
+      },
+      "engines": {
+        "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+      },
+      "peerDependencies": {
+        "@types/node": ">=18"
+      },
+      "peerDependenciesMeta": {
+        "@types/node": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@inquirer/password/node_modules/@inquirer/type": {
+      "version": "4.3.0",
+      "resolved": "https://registry.npmjs.org/@inquirer/type/-/type-4.3.0.tgz",
+      "integrity": "sha512-/IA8q2nyjgyl0NGSjqiRXB8gh3We7Pzx9C0c+6Zoolu905jFc79anerrUG7+n65+qs310DRK43yi2WDI8nY59A==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+      },
+      "peerDependencies": {
+        "@types/node": ">=18"
+      },
+      "peerDependenciesMeta": {
+        "@types/node": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@inquirer/prompts": {
+      "version": "8.7.2",
+      "resolved": "https://registry.npmjs.org/@inquirer/prompts/-/prompts-8.7.2.tgz",
+      "integrity": "sha512-QoRB4wFIjgH5iOhSjoIKMkTvSHDuV+O3OITlIqAYO0oK5x364GJILXiMBvlPiE+klg7Xx9tq5XVqQHcGUDYYPA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@inquirer/checkbox": "^5.2.5",
+        "@inquirer/confirm": "^6.3.2",
+        "@inquirer/editor": "^5.3.3",
+        "@inquirer/expand": "^5.1.5",
+        "@inquirer/input": "^5.1.6",
+        "@inquirer/number": "^4.2.3",
+        "@inquirer/password": "^5.2.2",
+        "@inquirer/rawlist": "^5.3.5",
+        "@inquirer/search": "^4.3.3",
+        "@inquirer/select": "^5.2.5"
+      },
+      "engines": {
+        "node": ">=23.5.0 || ^22.13.0 || ^20.17.0"
+      },
+      "peerDependencies": {
+        "@types/node": ">=18"
+      },
+      "peerDependenciesMeta": {
+        "@types/node": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@inquirer/rawlist": {
+      "version": "5.4.0",
+      "resolved": "https://registry.npmjs.org/@inquirer/rawlist/-/rawlist-5.4.0.tgz",
+      "integrity": "sha512-x42wcy465GM5/mHNKBFdAJbLlLyzmYqr/DEa6F49nHpI+03EFwRCRKeLGQakx5XqZ4unc2yFuS78qAD4Rb0iFA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@inquirer/core": "^12.1.0",
+        "@inquirer/type": "4.3.0"
+      },
+      "engines": {
+        "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+      },
+      "peerDependencies": {
+        "@types/node": ">=18"
+      },
+      "peerDependenciesMeta": {
+        "@types/node": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@inquirer/rawlist/node_modules/@inquirer/type": {
+      "version": "4.3.0",
+      "resolved": "https://registry.npmjs.org/@inquirer/type/-/type-4.3.0.tgz",
+      "integrity": "sha512-/IA8q2nyjgyl0NGSjqiRXB8gh3We7Pzx9C0c+6Zoolu905jFc79anerrUG7+n65+qs310DRK43yi2WDI8nY59A==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+      },
+      "peerDependencies": {
+        "@types/node": ">=18"
+      },
+      "peerDependenciesMeta": {
+        "@types/node": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@inquirer/search": {
+      "version": "4.4.0",
+      "resolved": "https://registry.npmjs.org/@inquirer/search/-/search-4.4.0.tgz",
+      "integrity": "sha512-UJ+9tkzPT1AjnvjuPFYcOdO3BVeN28bfSXajYRFZTRgA9OiNl4k2Nn2cHHPwiIDyPHlvOnmE9ZOHyXhPHtvb+A==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@inquirer/core": "^12.1.0",
+        "@inquirer/figures": "^2.1.0",
+        "@inquirer/type": "4.3.0"
+      },
+      "engines": {
+        "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+      },
+      "peerDependencies": {
+        "@types/node": ">=18"
+      },
+      "peerDependenciesMeta": {
+        "@types/node": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@inquirer/search/node_modules/@inquirer/type": {
+      "version": "4.3.0",
+      "resolved": "https://registry.npmjs.org/@inquirer/type/-/type-4.3.0.tgz",
+      "integrity": "sha512-/IA8q2nyjgyl0NGSjqiRXB8gh3We7Pzx9C0c+6Zoolu905jFc79anerrUG7+n65+qs310DRK43yi2WDI8nY59A==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+      },
+      "peerDependencies": {
+        "@types/node": ">=18"
+      },
+      "peerDependenciesMeta": {
+        "@types/node": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@inquirer/select": {
+      "version": "5.3.0",
+      "resolved": "https://registry.npmjs.org/@inquirer/select/-/select-5.3.0.tgz",
+      "integrity": "sha512-Fmgfl0qjqCQo+/tjQpgnRXKh5N7/VpYcJh+AlYU2eHmHZLMGUBDzo+Gwc2ODzWJfXNRZmgaMhz4qULcO/C/rXg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@inquirer/ansi": "^2.1.0",
+        "@inquirer/core": "^12.1.0",
+        "@inquirer/figures": "^2.1.0",
+        "@inquirer/type": "4.3.0"
+      },
+      "engines": {
+        "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+      },
+      "peerDependencies": {
+        "@types/node": ">=18"
+      },
+      "peerDependenciesMeta": {
+        "@types/node": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@inquirer/select/node_modules/@inquirer/type": {
+      "version": "4.3.0",
+      "resolved": "https://registry.npmjs.org/@inquirer/type/-/type-4.3.0.tgz",
+      "integrity": "sha512-/IA8q2nyjgyl0NGSjqiRXB8gh3We7Pzx9C0c+6Zoolu905jFc79anerrUG7+n65+qs310DRK43yi2WDI8nY59A==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+      },
+      "peerDependencies": {
+        "@types/node": ">=18"
+      },
+      "peerDependenciesMeta": {
+        "@types/node": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@inquirer/type": {
+      "version": "4.1.1",
+      "resolved": "https://registry.npmjs.org/@inquirer/type/-/type-4.1.1.tgz",
+      "integrity": "sha512-yJoHYrMnxIsJZCY+0Vb66Dy3he3kL3e2wOBKhoSwWWAzZAY82emlxwgprCtp6yRixvNRNq9ztfRWQYPNr3Go7A==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=23.5.0 || ^22.13.0 || ^20.17.0"
+      },
+      "peerDependencies": {
+        "@types/node": ">=18"
+      },
+      "peerDependenciesMeta": {
+        "@types/node": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@jridgewell/gen-mapping": {
+      "version": "0.3.13",
+      "resolved": "https://registry.npmjs.org/@jridgewell/gen-mapping/-/gen-mapping-0.3.13.tgz",
+      "integrity": "sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==",
+      "license": "MIT",
+      "dependencies": {
+        "@jridgewell/sourcemap-codec": "^1.5.0",
+        "@jridgewell/trace-mapping": "^0.3.24"
+      }
+    },
+    "node_modules/@jridgewell/resolve-uri": {
+      "version": "3.1.3",
+      "resolved": "https://registry.npmjs.org/@jridgewell/resolve-uri/-/resolve-uri-3.1.3.tgz",
+      "integrity": "sha512-lhTtjtoEArWBjismtfS761S9Hlyn+nIZqOZVYoZ1Xn82PMNMVnk+jj/NhC4fAXGTs7ydONcJiR5vyQBTMDu27g==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=6.0.0"
+      }
+    },
+    "node_modules/@jridgewell/source-map": {
+      "version": "0.3.11",
+      "resolved": "https://registry.npmjs.org/@jridgewell/source-map/-/source-map-0.3.11.tgz",
+      "integrity": "sha512-ZMp1V8ZFcPG5dIWnQLr3NSI1MiCU7UETdS/A0G8V/XWHvJv3ZsFqutJn1Y5RPmAPX6F3BiE397OqveU/9NCuIA==",
+      "license": "MIT",
+      "dependencies": {
+        "@jridgewell/gen-mapping": "^0.3.5",
+        "@jridgewell/trace-mapping": "^0.3.25"
+      }
+    },
+    "node_modules/@jridgewell/sourcemap-codec": {
+      "version": "1.6.0",
+      "resolved": "https://registry.npmjs.org/@jridgewell/sourcemap-codec/-/sourcemap-codec-1.6.0.tgz",
+      "integrity": "sha512-T7jf+5zgsZHwNJ4lvQ7/aezbyk0nNX+zJVWpmHA7VYsEx7a7qr5Rg5IbtJFqkgze5Y2sruq1RUY8Q837Od7iFw==",
+      "license": "MIT"
+    },
+    "node_modules/@jridgewell/trace-mapping": {
+      "version": "0.3.31",
+      "resolved": "https://registry.npmjs.org/@jridgewell/trace-mapping/-/trace-mapping-0.3.31.tgz",
+      "integrity": "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==",
+      "license": "MIT",
+      "dependencies": {
+        "@jridgewell/resolve-uri": "^3.1.0",
+        "@jridgewell/sourcemap-codec": "^1.4.14"
+      }
+    },
+    "node_modules/@listr2/prompt-adapter-inquirer": {
+      "version": "4.2.7",
+      "resolved": "https://registry.npmjs.org/@listr2/prompt-adapter-inquirer/-/prompt-adapter-inquirer-4.2.7.tgz",
+      "integrity": "sha512-k180vxSv2KqmnDxoato6pCqEJsov4U5C0EVmldZkAdNeVBxY48A/LM6TCNPGIzDK/iZSfsZP0Mw+gbWc5hXLyA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@inquirer/type": "^4.0.7"
+      },
+      "engines": {
+        "node": ">=22.13.0"
+      },
+      "peerDependencies": {
+        "@inquirer/prompts": ">= 3 < 9",
+        "listr2": "11.1.0"
+      }
+    },
+    "node_modules/@lmdb/lmdb-darwin-arm64": {
+      "version": "3.5.6",
+      "resolved": "https://registry.npmjs.org/@lmdb/lmdb-darwin-arm64/-/lmdb-darwin-arm64-3.5.6.tgz",
+      "integrity": "sha512-mY5FG4TjPAkY4P0w+OhHaUka5mDh2TX2WKYIwuKzJ1zeW3VvRgxdam/lGJTquI+bthTx5CSHDW+BAQCnNAzkEA==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ]
+    },
+    "node_modules/@lmdb/lmdb-darwin-x64": {
+      "version": "3.5.6",
+      "resolved": "https://registry.npmjs.org/@lmdb/lmdb-darwin-x64/-/lmdb-darwin-x64-3.5.6.tgz",
+      "integrity": "sha512-foa+pwitysO8k+xhs7psBFfTKnVgR69NlZRRTHaFVDqphh7AdGpLeyRzKw/ofatr/sN6TiHRRW6mmop0ZrrppQ==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ]
+    },
+    "node_modules/@lmdb/lmdb-linux-arm": {
+      "version": "3.5.6",
+      "resolved": "https://registry.npmjs.org/@lmdb/lmdb-linux-arm/-/lmdb-linux-arm-3.5.6.tgz",
+      "integrity": "sha512-QR4YRyR5h5Z8eGXrNQjiyo2NNDfqi3tCc9dQG5Is1blCt+qWw1ZoBWhlWAr5d+jshkifMIJjVHzHGKbkKzF8Tw==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ]
+    },
+    "node_modules/@lmdb/lmdb-linux-arm64": {
+      "version": "3.5.6",
+      "resolved": "https://registry.npmjs.org/@lmdb/lmdb-linux-arm64/-/lmdb-linux-arm64-3.5.6.tgz",
+      "integrity": "sha512-HmiyFFdJa38s1heCMSooSPaBSFTHJ3C+ERPp28xAPlDX1YiALJVOgbry065nXd8Y7KISWjnw05zpG1RX8IfftA==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ]
+    },
+    "node_modules/@lmdb/lmdb-linux-x64": {
+      "version": "3.5.6",
+      "resolved": "https://registry.npmjs.org/@lmdb/lmdb-linux-x64/-/lmdb-linux-x64-3.5.6.tgz",
+      "integrity": "sha512-ADzCuCF2cTNiX9kDScqcz1fjnAkxPpQNneV3KFTdV3wWtVlI2sTGzySoMTgDpinkMMFj1NTJlxA6XR8fwc4hlA==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ]
+    },
+    "node_modules/@lmdb/lmdb-win32-arm64": {
+      "version": "3.5.6",
+      "resolved": "https://registry.npmjs.org/@lmdb/lmdb-win32-arm64/-/lmdb-win32-arm64-3.5.6.tgz",
+      "integrity": "sha512-J7A9aEQsQiv0TYtBGL7NDIPp2lOS8nnl+zm4sWZm1xlsTTaQ4PgD096Adzdrk27rw3UxCkDXdCUa4ax41oztBQ==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ]
+    },
+    "node_modules/@lmdb/lmdb-win32-x64": {
+      "version": "3.5.6",
+      "resolved": "https://registry.npmjs.org/@lmdb/lmdb-win32-x64/-/lmdb-win32-x64-3.5.6.tgz",
+      "integrity": "sha512-1g7G0knRX2iV/voDu54yxrGqw5Dk0w2oIYb7dgJq8IkOi+m7wbD8Q3QpPFjh0C01G58S88dqGn03len6UPCXsg==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ]
+    },
+    "node_modules/@modelcontextprotocol/core": {
+      "version": "2.3.1",
+      "resolved": "https://registry.npmjs.org/@modelcontextprotocol/core/-/core-2.3.1.tgz",
+      "integrity": "sha512-laVmIhPGpWi7rG9q+0UigblRN0Hws/Yjlb6qLFtVqryXVLkc4h+yN8z731POD2LnAGQlFe7/tXhUm7Bi0YB91g==",
+      "dev": true,
+      "license": "Apache-2.0",
+      "dependencies": {
+        "zod": "^4.2.0"
+      },
+      "engines": {
+        "node": ">=20"
+      }
+    },
+    "node_modules/@modelcontextprotocol/server": {
+      "version": "2.3.1",
+      "resolved": "https://registry.npmjs.org/@modelcontextprotocol/server/-/server-2.3.1.tgz",
+      "integrity": "sha512-e59MfWuSssj6DoQ96JCTqdW1AXT5/XtnTl0WWd6MU1Ka434fFUGGosCLJbGNySDhHGvxQWoRWK137FXYFkYNWw==",
+      "dev": true,
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@modelcontextprotocol/core": "2.3.1",
+        "zod": "^4.2.0"
+      },
+      "engines": {
+        "node": ">=20"
+      }
+    },
+    "node_modules/@msgpackr-extract/msgpackr-extract-darwin-arm64": {
+      "version": "3.0.7",
+      "resolved": "https://registry.npmjs.org/@msgpackr-extract/msgpackr-extract-darwin-arm64/-/msgpackr-extract-darwin-arm64-3.0.7.tgz",
+      "integrity": "sha512-2zPHLn+MuGJ6GP/5jDrwa9Jy0CI+D3Ibpvopf5SFfmc1G9gdofR4uB7YrJAAp4vodn/7iDOciyv8bgkRPLw7cA==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ]
+    },
+    "node_modules/@msgpackr-extract/msgpackr-extract-darwin-x64": {
+      "version": "3.0.7",
+      "resolved": "https://registry.npmjs.org/@msgpackr-extract/msgpackr-extract-darwin-x64/-/msgpackr-extract-darwin-x64-3.0.7.tgz",
+      "integrity": "sha512-of1miwFfEdgs5nythewsEoocfpbjzUf8PC996YDe3kAyv0ZJiMJs5NXlYhE6IdjxfNEPqUXj/BYBnpD8kRdfeQ==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ]
+    },
+    "node_modules/@msgpackr-extract/msgpackr-extract-linux-arm": {
+      "version": "3.0.7",
+      "resolved": "https://registry.npmjs.org/@msgpackr-extract/msgpackr-extract-linux-arm/-/msgpackr-extract-linux-arm-3.0.7.tgz",
+      "integrity": "sha512-aDPbiEkFHs3H68705JKxJ15IT41wFdvDhba1pL8ygfdoshboL5dsXtiu76/CqhLWYneE+9hwBE+0abqNOiQ4Bw==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ]
+    },
+    "node_modules/@msgpackr-extract/msgpackr-extract-linux-arm64": {
+      "version": "3.0.7",
+      "resolved": "https://registry.npmjs.org/@msgpackr-extract/msgpackr-extract-linux-arm64/-/msgpackr-extract-linux-arm64-3.0.7.tgz",
+      "integrity": "sha512-jcRydYARTW0gX5idJhxV7m3KkRUD7KtZLYFF1ZY18HrPqpGY0TCqPUTJCwka2kVfVOwfKs3ZmlPSmQb4S6xj7w==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ]
+    },
+    "node_modules/@msgpackr-extract/msgpackr-extract-linux-x64": {
+      "version": "3.0.7",
+      "resolved": "https://registry.npmjs.org/@msgpackr-extract/msgpackr-extract-linux-x64/-/msgpackr-extract-linux-x64-3.0.7.tgz",
+      "integrity": "sha512-A9xOmARctmUvHrBj5GGzGAigsZFnqE4kld5oprX3PyPbkVALV4jwBc17gPZrhSOvnXQc81hE9K7S2hDUCgialA==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ]
+    },
+    "node_modules/@msgpackr-extract/msgpackr-extract-win32-x64": {
+      "version": "3.0.7",
+      "resolved": "https://registry.npmjs.org/@msgpackr-extract/msgpackr-extract-win32-x64/-/msgpackr-extract-win32-x64-3.0.7.tgz",
+      "integrity": "sha512-PRBiOqK4mcR0rvm6nybO7pSOYRR2Zza0+43UK2IvbVGelzMqZViiZJmOWGuWOX678QKESO6YrHx36z43nSS6iQ==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ]
+    },
+    "node_modules/@napi-rs/nice": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@napi-rs/nice/-/nice-1.1.1.tgz",
+      "integrity": "sha512-xJIPs+bYuc9ASBl+cvGsKbGrJmS6fAKaSZCnT0lhahT5rhA2VVy9/EcIgd2JhtEuFOJNx7UHNn/qiTPTY4nrQw==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "engines": {
+        "node": ">= 10"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/Brooooooklyn"
+      },
+      "optionalDependencies": {
+        "@napi-rs/nice-android-arm-eabi": "1.1.1",
+        "@napi-rs/nice-android-arm64": "1.1.1",
+        "@napi-rs/nice-darwin-arm64": "1.1.1",
+        "@napi-rs/nice-darwin-x64": "1.1.1",
+        "@napi-rs/nice-freebsd-x64": "1.1.1",
+        "@napi-rs/nice-linux-arm-gnueabihf": "1.1.1",
+        "@napi-rs/nice-linux-arm64-gnu": "1.1.1",
+        "@napi-rs/nice-linux-arm64-musl": "1.1.1",
+        "@napi-rs/nice-linux-ppc64-gnu": "1.1.1",
+        "@napi-rs/nice-linux-riscv64-gnu": "1.1.1",
+        "@napi-rs/nice-linux-s390x-gnu": "1.1.1",
+        "@napi-rs/nice-linux-x64-gnu": "1.1.1",
+        "@napi-rs/nice-linux-x64-musl": "1.1.1",
+        "@napi-rs/nice-openharmony-arm64": "1.1.1",
+        "@napi-rs/nice-win32-arm64-msvc": "1.1.1",
+        "@napi-rs/nice-win32-ia32-msvc": "1.1.1",
+        "@napi-rs/nice-win32-x64-msvc": "1.1.1"
+      }
+    },
+    "node_modules/@napi-rs/nice-android-arm-eabi": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@napi-rs/nice-android-arm-eabi/-/nice-android-arm-eabi-1.1.1.tgz",
+      "integrity": "sha512-kjirL3N6TnRPv5iuHw36wnucNqXAO46dzK9oPb0wj076R5Xm8PfUVA9nAFB5ZNMmfJQJVKACAPd/Z2KYMppthw==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "android"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@napi-rs/nice-android-arm64": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@napi-rs/nice-android-arm64/-/nice-android-arm64-1.1.1.tgz",
+      "integrity": "sha512-blG0i7dXgbInN5urONoUCNf+DUEAavRffrO7fZSeoRMJc5qD+BJeNcpr54msPF6qfDD6kzs9AQJogZvT2KD5nw==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "android"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@napi-rs/nice-darwin-arm64": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@napi-rs/nice-darwin-arm64/-/nice-darwin-arm64-1.1.1.tgz",
+      "integrity": "sha512-s/E7w45NaLqTGuOjC2p96pct4jRfo61xb9bU1unM/MJ/RFkKlJyJDx7OJI/O0ll/hrfpqKopuAFDV8yo0hfT7A==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@napi-rs/nice-darwin-x64": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@napi-rs/nice-darwin-x64/-/nice-darwin-x64-1.1.1.tgz",
+      "integrity": "sha512-dGoEBnVpsdcC+oHHmW1LRK5eiyzLwdgNQq3BmZIav+9/5WTZwBYX7r5ZkQC07Nxd3KHOCkgbHSh4wPkH1N1LiQ==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@napi-rs/nice-freebsd-x64": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@napi-rs/nice-freebsd-x64/-/nice-freebsd-x64-1.1.1.tgz",
+      "integrity": "sha512-kHv4kEHAylMYmlNwcQcDtXjklYp4FCf0b05E+0h6nDHsZ+F0bDe04U/tXNOqrx5CmIAth4vwfkjjUmp4c4JktQ==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "freebsd"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@napi-rs/nice-linux-arm-gnueabihf": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@napi-rs/nice-linux-arm-gnueabihf/-/nice-linux-arm-gnueabihf-1.1.1.tgz",
+      "integrity": "sha512-E1t7K0efyKXZDoZg1LzCOLxgolxV58HCkaEkEvIYQx12ht2pa8hoBo+4OB3qh7e+QiBlp1SRf+voWUZFxyhyqg==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@napi-rs/nice-linux-arm64-gnu": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@napi-rs/nice-linux-arm64-gnu/-/nice-linux-arm64-gnu-1.1.1.tgz",
+      "integrity": "sha512-CIKLA12DTIZlmTaaKhQP88R3Xao+gyJxNWEn04wZwC2wmRapNnxCUZkVwggInMJvtVElA+D4ZzOU5sX4jV+SmQ==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@napi-rs/nice-linux-arm64-musl": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@napi-rs/nice-linux-arm64-musl/-/nice-linux-arm64-musl-1.1.1.tgz",
+      "integrity": "sha512-+2Rzdb3nTIYZ0YJF43qf2twhqOCkiSrHx2Pg6DJaCPYhhaxbLcdlV8hCRMHghQ+EtZQWGNcS2xF4KxBhSGeutg==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "libc": [
+        "musl"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@napi-rs/nice-linux-ppc64-gnu": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@napi-rs/nice-linux-ppc64-gnu/-/nice-linux-ppc64-gnu-1.1.1.tgz",
+      "integrity": "sha512-4FS8oc0GeHpwvv4tKciKkw3Y4jKsL7FRhaOeiPei0X9T4Jd619wHNe4xCLmN2EMgZoeGg+Q7GY7BsvwKpL22Tg==",
+      "cpu": [
+        "ppc64"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@napi-rs/nice-linux-riscv64-gnu": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@napi-rs/nice-linux-riscv64-gnu/-/nice-linux-riscv64-gnu-1.1.1.tgz",
+      "integrity": "sha512-HU0nw9uD4FO/oGCCk409tCi5IzIZpH2agE6nN4fqpwVlCn5BOq0MS1dXGjXaG17JaAvrlpV5ZeyZwSon10XOXw==",
+      "cpu": [
+        "riscv64"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@napi-rs/nice-linux-s390x-gnu": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@napi-rs/nice-linux-s390x-gnu/-/nice-linux-s390x-gnu-1.1.1.tgz",
+      "integrity": "sha512-2YqKJWWl24EwrX0DzCQgPLKQBxYDdBxOHot1KWEq7aY2uYeX+Uvtv4I8xFVVygJDgf6/92h9N3Y43WPx8+PAgQ==",
+      "cpu": [
+        "s390x"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@napi-rs/nice-linux-x64-gnu": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@napi-rs/nice-linux-x64-gnu/-/nice-linux-x64-gnu-1.1.1.tgz",
+      "integrity": "sha512-/gaNz3R92t+dcrfCw/96pDopcmec7oCcAQ3l/M+Zxr82KT4DljD37CpgrnXV+pJC263JkW572pdbP3hP+KjcIg==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@napi-rs/nice-linux-x64-musl": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@napi-rs/nice-linux-x64-musl/-/nice-linux-x64-musl-1.1.1.tgz",
+      "integrity": "sha512-xScCGnyj/oppsNPMnevsBe3pvNaoK7FGvMjT35riz9YdhB2WtTG47ZlbxtOLpjeO9SqqQ2J2igCmz6IJOD5JYw==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "libc": [
+        "musl"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@napi-rs/nice-openharmony-arm64": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@napi-rs/nice-openharmony-arm64/-/nice-openharmony-arm64-1.1.1.tgz",
+      "integrity": "sha512-6uJPRVwVCLDeoOaNyeiW0gp2kFIM4r7PL2MczdZQHkFi9gVlgm+Vn+V6nTWRcu856mJ2WjYJiumEajfSm7arPQ==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "openharmony"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@napi-rs/nice-win32-arm64-msvc": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@napi-rs/nice-win32-arm64-msvc/-/nice-win32-arm64-msvc-1.1.1.tgz",
+      "integrity": "sha512-uoTb4eAvM5B2aj/z8j+Nv8OttPf2m+HVx3UjA5jcFxASvNhQriyCQF1OB1lHL43ZhW+VwZlgvjmP5qF3+59atA==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@napi-rs/nice-win32-ia32-msvc": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@napi-rs/nice-win32-ia32-msvc/-/nice-win32-ia32-msvc-1.1.1.tgz",
+      "integrity": "sha512-CNQqlQT9MwuCsg1Vd/oKXiuH+TcsSPJmlAFc5frFyX/KkOh0UpBLEj7aoY656d5UKZQMQFP7vJNa1DNUNORvug==",
+      "cpu": [
+        "ia32"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@napi-rs/nice-win32-x64-msvc": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@napi-rs/nice-win32-x64-msvc/-/nice-win32-x64-msvc-1.1.1.tgz",
+      "integrity": "sha512-vB+4G/jBQCAh0jelMTY3+kgFy00Hlx2f2/1zjMoH821IbplbWZOkLiTYXQkygNTzQJTq5cvwBDgn2ppHD+bglQ==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@napi-rs/wasm-runtime": {
+      "version": "1.2.7",
+      "resolved": "https://registry.npmjs.org/@napi-rs/wasm-runtime/-/wasm-runtime-1.2.7.tgz",
+      "integrity": "sha512-zJccwplOAbgfZju95IUHazLnx9RAPtPN2YGJXI6UbrgeaR9QfPjGrQL6ERkSAtnVCA4Q+83ApGyaX5zdpCaKkQ==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "dependencies": {
+        "@tybys/wasm-util": "^0.10.3"
+      },
+      "engines": {
+        "node": "^20.19.0 || ^22.13.0 || >=23.5.0"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/Brooooooklyn"
+      },
+      "peerDependencies": {
+        "@emnapi/core": "^1.7.1 || 2.0.0-beta.2 || 2.0.0-beta.3",
+        "@emnapi/runtime": "^1.7.1 || 2.0.0-beta.2 || 2.0.0-beta.3"
+      }
+    },
+    "node_modules/@oxc-parser/binding-android-arm-eabi": {
+      "version": "0.156.0",
+      "resolved": "https://registry.npmjs.org/@oxc-parser/binding-android-arm-eabi/-/binding-android-arm-eabi-0.156.0.tgz",
+      "integrity": "sha512-RMq7DKNzEp1T51QKNLTn0NryNEt2IYfh7mZBlIdi2Ju52ltOEDMeIXv0XBpA6dL7j7ChjlcovtGcc1Jv4qMipg==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "android"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@oxc-parser/binding-android-arm64": {
+      "version": "0.156.0",
+      "resolved": "https://registry.npmjs.org/@oxc-parser/binding-android-arm64/-/binding-android-arm64-0.156.0.tgz",
+      "integrity": "sha512-mwkWKhOBpmh8fWc3m4MiLsmEAtx0YuHmvyo9ff557cnb3QZ2kt2eauSz75wCGIpiZG3gUsJ4WwzEjm4R4/BHig==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "android"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@oxc-parser/binding-darwin-arm64": {
+      "version": "0.156.0",
+      "resolved": "https://registry.npmjs.org/@oxc-parser/binding-darwin-arm64/-/binding-darwin-arm64-0.156.0.tgz",
+      "integrity": "sha512-6pGR5fUszM9M4eBBapqpGjCRJolFwuCldx8bRQjqXyM09cQysBTWVF2Ttg4UNJVxYSaw5RRINbveCOOCrsuGvA==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@oxc-parser/binding-darwin-x64": {
+      "version": "0.156.0",
+      "resolved": "https://registry.npmjs.org/@oxc-parser/binding-darwin-x64/-/binding-darwin-x64-0.156.0.tgz",
+      "integrity": "sha512-M9QghL7uCAqMKjYJv1rDGblfEvkeQu3QzTPd7Uwo16gG3uO7m9ikVQ9OL8FZTnKzU4vbCEby6kTlEkqN+JeEMA==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@oxc-parser/binding-freebsd-x64": {
+      "version": "0.156.0",
+      "resolved": "https://registry.npmjs.org/@oxc-parser/binding-freebsd-x64/-/binding-freebsd-x64-0.156.0.tgz",
+      "integrity": "sha512-lX0ANxSwAOrpOT7NHB+YsrBqDJ8sOVon5m7GS9eQtkuUeNzQMMGpFsJLsStawTbrdwOF5KDVxgPWcKmt/DIZUQ==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "freebsd"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@oxc-parser/binding-linux-arm-gnueabihf": {
+      "version": "0.156.0",
+      "resolved": "https://registry.npmjs.org/@oxc-parser/binding-linux-arm-gnueabihf/-/binding-linux-arm-gnueabihf-0.156.0.tgz",
+      "integrity": "sha512-iPgYpasRcqk7X3TGncQg7B+6RotDvG8weug0UrgF+FXLf4KmaNDyT91BKONlqbHcNgK9Nryp7AEZGuQn32fP6g==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@oxc-parser/binding-linux-arm-musleabihf": {
+      "version": "0.156.0",
+      "resolved": "https://registry.npmjs.org/@oxc-parser/binding-linux-arm-musleabihf/-/binding-linux-arm-musleabihf-0.156.0.tgz",
+      "integrity": "sha512-sJqJDEZevtkEfoxrXfaRTkSt6Itckr549cIfBbs11UgXv8bFyqQsXTQa6iKm8mTiWYmCDDFJf7TLnqxcbqzPOw==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@oxc-parser/binding-linux-arm64-gnu": {
+      "version": "0.156.0",
+      "resolved": "https://registry.npmjs.org/@oxc-parser/binding-linux-arm64-gnu/-/binding-linux-arm64-gnu-0.156.0.tgz",
+      "integrity": "sha512-mrQs5OdRiqKskRuWEORPKT6YGIFhrpVvCvL9hqVaIh60EzgR4qjPvSsV6hWZcOfyWHBTbdEvfnDJPh/eQlxPRQ==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@oxc-parser/binding-linux-arm64-musl": {
+      "version": "0.156.0",
+      "resolved": "https://registry.npmjs.org/@oxc-parser/binding-linux-arm64-musl/-/binding-linux-arm64-musl-0.156.0.tgz",
+      "integrity": "sha512-ZtPqgCU3+wpU7dvX7YbaEiw71r0UdguzuPhcx4PIEZSs4XFqc6F5wXCtNdb6M7m3DMErlxrwosryoXrzYOY/Gg==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "libc": [
+        "musl"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@oxc-parser/binding-linux-ppc64-gnu": {
+      "version": "0.156.0",
+      "resolved": "https://registry.npmjs.org/@oxc-parser/binding-linux-ppc64-gnu/-/binding-linux-ppc64-gnu-0.156.0.tgz",
+      "integrity": "sha512-ZuGRT/adReZZJn3PYNneb1HQIOH0iIZ2fzFgC1/XJYpMQ5KsRKmWIEzy3wEFsUwIOTomCmnmTZ/zbFYo9z9VeA==",
+      "cpu": [
+        "ppc64"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@oxc-parser/binding-linux-riscv64-gnu": {
+      "version": "0.156.0",
+      "resolved": "https://registry.npmjs.org/@oxc-parser/binding-linux-riscv64-gnu/-/binding-linux-riscv64-gnu-0.156.0.tgz",
+      "integrity": "sha512-T+iWCeAOoEAJpHqr6/pogHIv98g9p8Ctccysm/h962hG4ayX5OL2c0Ih4oYe+JuFndLXy/OASvwMlTPe76sIiw==",
+      "cpu": [
+        "riscv64"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@oxc-parser/binding-linux-riscv64-musl": {
+      "version": "0.156.0",
+      "resolved": "https://registry.npmjs.org/@oxc-parser/binding-linux-riscv64-musl/-/binding-linux-riscv64-musl-0.156.0.tgz",
+      "integrity": "sha512-wL55bI2kVKfwdxScbw60zVgzAqbQbmE5zpSPWPZoZ9RSG8egm6ITE/UWE5mDWlglxz1QElJCcUbpaJCtHD11BQ==",
+      "cpu": [
+        "riscv64"
+      ],
+      "dev": true,
+      "libc": [
+        "musl"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@oxc-parser/binding-linux-s390x-gnu": {
+      "version": "0.156.0",
+      "resolved": "https://registry.npmjs.org/@oxc-parser/binding-linux-s390x-gnu/-/binding-linux-s390x-gnu-0.156.0.tgz",
+      "integrity": "sha512-+D+JilhLqwrDLODYEl4qtovVwgxKALb23FkAWBiPvgmUWYgjCV83KKuwwxZJM8GCdKlNA1vt3iKtow8HUFjXtg==",
+      "cpu": [
+        "s390x"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@oxc-parser/binding-linux-x64-gnu": {
+      "version": "0.156.0",
+      "resolved": "https://registry.npmjs.org/@oxc-parser/binding-linux-x64-gnu/-/binding-linux-x64-gnu-0.156.0.tgz",
+      "integrity": "sha512-jRfwpN4xKrsEpC+SgrUPY5k0mINYZn7aLrt22I3uQFoumiSgHgsLYgS9f84ntbkvSydH4HiwGuDa2b1XCHaJzw==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@oxc-parser/binding-linux-x64-musl": {
+      "version": "0.156.0",
+      "resolved": "https://registry.npmjs.org/@oxc-parser/binding-linux-x64-musl/-/binding-linux-x64-musl-0.156.0.tgz",
+      "integrity": "sha512-P/ajnypgLmxmuRRyCIZcp2o4lOwmCaXYH5+eqDTcCW+MCTI+csKSw/Zc6GB67jZoVa4ey3q1jXEt7S60adBEMQ==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "libc": [
+        "musl"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@oxc-parser/binding-openharmony-arm64": {
+      "version": "0.156.0",
+      "resolved": "https://registry.npmjs.org/@oxc-parser/binding-openharmony-arm64/-/binding-openharmony-arm64-0.156.0.tgz",
+      "integrity": "sha512-WSN6rQZZc9KqgZ4lMfjVDvqKhVOCjey/YEZIPisGXmwBqwgWOzru207dyiH50LHcf1n9LO2oceGk/id6RL9v0g==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "openharmony"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@oxc-parser/binding-wasm32-wasi": {
+      "version": "0.156.0",
+      "resolved": "https://registry.npmjs.org/@oxc-parser/binding-wasm32-wasi/-/binding-wasm32-wasi-0.156.0.tgz",
+      "integrity": "sha512-FWs20Zd4XCqpVwiTgKhyXWplIliulfwJMCI+POY2z1YF9IFr91qDLa7Jfqu0f1i95GFOy0GUGx8s6C4EtfFM3g==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "dependencies": {
+        "@emnapi/core": "2.0.0-alpha.6",
+        "@emnapi/runtime": "2.0.0-alpha.6",
+        "@napi-rs/wasm-runtime": "~1.2.6"
+      },
+      "engines": {
+        "node": "^20.19.0 || ^22.13.0 || >=23.5.0"
+      }
+    },
+    "node_modules/@oxc-parser/binding-wasm32-wasi/node_modules/@emnapi/core": {
+      "version": "2.0.0-alpha.6",
+      "resolved": "https://registry.npmjs.org/@emnapi/core/-/core-2.0.0-alpha.6.tgz",
+      "integrity": "sha512-MNVvMV7WtEJMgqaWJMvCyupK7Oi8sZctUIgPRZTsiS3cVvefk8DXPflOU3MSBddtj/rrYHygpYgpHDgwXnI3+w==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "dependencies": {
+        "@emnapi/wasi-threads": "2.2.0",
+        "tslib": "^2.4.0"
+      }
+    },
+    "node_modules/@oxc-parser/binding-wasm32-wasi/node_modules/@emnapi/runtime": {
+      "version": "2.0.0-alpha.6",
+      "resolved": "https://registry.npmjs.org/@emnapi/runtime/-/runtime-2.0.0-alpha.6.tgz",
+      "integrity": "sha512-5ZR49ZsZ3cLvu5lkrVj6CMpHRgZjYz7XSlqK23GYYpyEqp749RVuIH0bEUKaGNghMh2pXRhIC3cnVrH28Y1j1Q==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "dependencies": {
+        "tslib": "^2.4.0"
+      }
+    },
+    "node_modules/@oxc-parser/binding-wasm32-wasi/node_modules/@emnapi/wasi-threads": {
+      "version": "2.2.0",
+      "resolved": "https://registry.npmjs.org/@emnapi/wasi-threads/-/wasi-threads-2.2.0.tgz",
+      "integrity": "sha512-JP7OYH38Q7+pyTAe14raZHLQIK7BDKbdwji+Xi3pcd/6QkJYQH3SX4wu6EplGrGJWRepoNzedfm0G3B9Z4e9Rw==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "dependencies": {
+        "tslib": "^2.4.0"
+      }
+    },
+    "node_modules/@oxc-parser/binding-win32-arm64-msvc": {
+      "version": "0.156.0",
+      "resolved": "https://registry.npmjs.org/@oxc-parser/binding-win32-arm64-msvc/-/binding-win32-arm64-msvc-0.156.0.tgz",
+      "integrity": "sha512-l21Tz6tjraGBC3JefVeJZ9pojD0fCiB62PydAv+i9nrqJX7z/pDmyDNYLamDr/PRcQ4UQbFwkSnz7NKBB9UMLw==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@oxc-parser/binding-win32-ia32-msvc": {
+      "version": "0.156.0",
+      "resolved": "https://registry.npmjs.org/@oxc-parser/binding-win32-ia32-msvc/-/binding-win32-ia32-msvc-0.156.0.tgz",
+      "integrity": "sha512-CUq0ZFl/RODqPiIgfNNSamkpTj5x8AjBTkR/y1DNVIQiTGnmWqjHcn3o08ZW3q/LgkI4g9G9g6UirmmQFvuOZw==",
+      "cpu": [
+        "ia32"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@oxc-parser/binding-win32-x64-msvc": {
+      "version": "0.156.0",
+      "resolved": "https://registry.npmjs.org/@oxc-parser/binding-win32-x64-msvc/-/binding-win32-x64-msvc-0.156.0.tgz",
+      "integrity": "sha512-dcpx5Y1x2v/cs7U/q3SZMvmxfyXjVvqC86jMuw2ZZUbHDd7W2cW7uSMQfg3GLVaE68Su3H9xd/Pc4v6QNyeSRg==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@oxc-project/types": {
+      "version": "0.156.0",
+      "resolved": "https://registry.npmjs.org/@oxc-project/types/-/types-0.156.0.tgz",
+      "integrity": "sha512-1Duyg48TdJNdyhEB8Xn1L36bT9Pv6GUtlKjHxOys8xkaF/rQq3XJE+bAurSK/AgIz5mGFsb77cn9Pb20+WCScw==",
+      "dev": true,
+      "license": "MIT",
+      "funding": {
+        "url": "https://github.com/sponsors/oxc-project"
+      }
+    },
+    "node_modules/@parcel/watcher": {
+      "version": "2.6.0",
+      "resolved": "https://registry.npmjs.org/@parcel/watcher/-/watcher-2.6.0.tgz",
+      "integrity": "sha512-7FNeNl8NCE7aINx7WXiKQrPYZWC/hvrTsmk6zmxbI7LTXE7hVek/n8AfVgpe2y82zl3w0HvCHN0bVKMBoJcC0w==",
+      "dev": true,
+      "hasInstallScript": true,
+      "license": "MIT",
+      "dependencies": {
+        "detect-libc": "^2.0.3",
+        "is-glob": "^4.0.3",
+        "node-addon-api": "^7.0.0",
+        "picomatch": "^4.0.4"
+      },
+      "engines": {
+        "node": ">= 10.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      },
+      "optionalDependencies": {
+        "@parcel/watcher-android-arm64": "2.6.0",
+        "@parcel/watcher-darwin-arm64": "2.6.0",
+        "@parcel/watcher-darwin-x64": "2.6.0",
+        "@parcel/watcher-freebsd-x64": "2.6.0",
+        "@parcel/watcher-linux-arm-glibc": "2.6.0",
+        "@parcel/watcher-linux-arm-musl": "2.6.0",
+        "@parcel/watcher-linux-arm64-glibc": "2.6.0",
+        "@parcel/watcher-linux-arm64-musl": "2.6.0",
+        "@parcel/watcher-linux-x64-glibc": "2.6.0",
+        "@parcel/watcher-linux-x64-musl": "2.6.0",
+        "@parcel/watcher-win32-arm64": "2.6.0",
+        "@parcel/watcher-win32-x64": "2.6.0"
+      }
+    },
+    "node_modules/@parcel/watcher-android-arm64": {
+      "version": "2.6.0",
+      "resolved": "https://registry.npmjs.org/@parcel/watcher-android-arm64/-/watcher-android-arm64-2.6.0.tgz",
+      "integrity": "sha512-trgpLSCKRC/huFjXX/Smh+0sWe4+YtKfktIToiMl59ghz7z+qkH6kMvNnUbLyRs9N11t8l4svSCs1+5B3rOAhA==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "android"
+      ],
+      "engines": {
+        "node": ">= 10.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/@parcel/watcher-darwin-arm64": {
+      "version": "2.6.0",
+      "resolved": "https://registry.npmjs.org/@parcel/watcher-darwin-arm64/-/watcher-darwin-arm64-2.6.0.tgz",
+      "integrity": "sha512-Y3QV0gl7Q1zbfueunkWIERICbEojQFCgpyG7YqOGNFLsckXyI1xu9mAIUpKY9QBYzBtSkN8dBPwd3yiAO9ovMw==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": ">= 10.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/@parcel/watcher-darwin-x64": {
+      "version": "2.6.0",
+      "resolved": "https://registry.npmjs.org/@parcel/watcher-darwin-x64/-/watcher-darwin-x64-2.6.0.tgz",
+      "integrity": "sha512-Ohv6OpzhUfKYD7Beb8kDvG0jbIxORCYY1JRdZnaBtnjjkJxgD7ZVL0nw2sCYd0yTMKTvz3nnTnOF3cDifK+kvw==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": ">= 10.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/@parcel/watcher-freebsd-x64": {
+      "version": "2.6.0",
+      "resolved": "https://registry.npmjs.org/@parcel/watcher-freebsd-x64/-/watcher-freebsd-x64-2.6.0.tgz",
+      "integrity": "sha512-5HmXvDgs8VK+74jF9y9/2FE3/OnlcKmc56tjmSrEuZjpSZOGL+fvAu+HKJBdPs9uwoP2hE6TlSUpXZ/C5jUFmQ==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "freebsd"
+      ],
+      "engines": {
+        "node": ">= 10.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/@parcel/watcher-linux-arm-glibc": {
+      "version": "2.6.0",
+      "resolved": "https://registry.npmjs.org/@parcel/watcher-linux-arm-glibc/-/watcher-linux-arm-glibc-2.6.0.tgz",
+      "integrity": "sha512-Ps/hui3A+vMbjdqlqAowK2ZL8+BO8dBjxeWXj6npTBs3jx4wWmbPpaLuqwrQrSqIVMCnpWo238bJ1U37GhQOYg==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 10.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/@parcel/watcher-linux-arm-musl": {
+      "version": "2.6.0",
+      "resolved": "https://registry.npmjs.org/@parcel/watcher-linux-arm-musl/-/watcher-linux-arm-musl-2.6.0.tgz",
+      "integrity": "sha512-9c6AUHgHoG+IY88MRIHupztQiQnrbqHYQjkM2btA+Bf/wQnQMuiD0Wfk1EVv3TlNT3x41uU71rn6E4xh/+zvkw==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "libc": [
+        "musl"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 10.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/@parcel/watcher-linux-arm64-glibc": {
+      "version": "2.6.0",
+      "resolved": "https://registry.npmjs.org/@parcel/watcher-linux-arm64-glibc/-/watcher-linux-arm64-glibc-2.6.0.tgz",
+      "integrity": "sha512-yHRqS2owEXe6Hic9z6Mh1ECsCd+ODVOGvZDyciqRd21+v+o+DnXMOrw50DSpIG2sb8GPEaPPmfeCAWKPJdq46g==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 10.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/@parcel/watcher-linux-arm64-musl": {
+      "version": "2.6.0",
+      "resolved": "https://registry.npmjs.org/@parcel/watcher-linux-arm64-musl/-/watcher-linux-arm64-musl-2.6.0.tgz",
+      "integrity": "sha512-WhB2e/V7rqdHHWZusBSPuy5Ei8S6lSz6FE5TKKQz5h3a0O+C+mhY7vxU9b/stqvMb8beLnPY82ZrFTLKs+SrKA==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "libc": [
+        "musl"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 10.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/@parcel/watcher-linux-x64-glibc": {
+      "version": "2.6.0",
+      "resolved": "https://registry.npmjs.org/@parcel/watcher-linux-x64-glibc/-/watcher-linux-x64-glibc-2.6.0.tgz",
+      "integrity": "sha512-ulGE6x6Oz6iAwg75T8YQSoguBWasniIbX+QWpaYPcCnDOpdWX3k+4xbEYPZVLxOuoJI+svJJPD3sEj8G7lrQ3A==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 10.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/@parcel/watcher-linux-x64-musl": {
+      "version": "2.6.0",
+      "resolved": "https://registry.npmjs.org/@parcel/watcher-linux-x64-musl/-/watcher-linux-x64-musl-2.6.0.tgz",
+      "integrity": "sha512-tkBYKt7YQrjIJWYDnto2YgO8MRkjlMTSNoRHzsXinBqbLdeOM3L32wPZJvIZxqaLMfSlS/4sUjH/6STVP/XDLw==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "libc": [
+        "musl"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 10.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/@parcel/watcher-win32-arm64": {
+      "version": "2.6.0",
+      "resolved": "https://registry.npmjs.org/@parcel/watcher-win32-arm64/-/watcher-win32-arm64-2.6.0.tgz",
+      "integrity": "sha512-gIZAP23jaHjGWasY/TY6yL7NHFClf0Ga7FN+iINvk+KN94rhm94lYZhFsbYFNcA04/onvGD9kKmiJLJB2HbNwQ==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">= 10.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/@parcel/watcher-win32-x64": {
+      "version": "2.6.0",
+      "resolved": "https://registry.npmjs.org/@parcel/watcher-win32-x64/-/watcher-win32-x64-2.6.0.tgz",
+      "integrity": "sha512-cA+/pXV2YkfxlIcXOQ5fSWqAzzPyD78/x5qbK/I0vUkrlYHA8TIz+MXjAbGouguKVSI4bOmkTSJ1/poVSsgt+A==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">= 10.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/@rolldown/binding-android-arm-eabi": {
+      "version": "1.2.16",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-android-arm-eabi/-/binding-android-arm-eabi-1.2.16.tgz",
+      "integrity": "sha512-ia3DwAs0OsMGS7+IConptSiyk9pEXkOx/AbJ2n/lAGxH3QkWQus1t8d7gnAT38FCU2sQu8lUbeR6AiZFv4JxaA==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "android"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-android-arm64": {
+      "version": "1.2.16",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-android-arm64/-/binding-android-arm64-1.2.16.tgz",
+      "integrity": "sha512-kx5wBiMB6E7TEvpl2B9gjLU004BkvEm2Dr941BFjx/SontPwSzNuQUIoVKxHHoSjpFIfHMmcguyLOtyn0hObRg==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "android"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-darwin-arm64": {
+      "version": "1.2.16",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-darwin-arm64/-/binding-darwin-arm64-1.2.16.tgz",
+      "integrity": "sha512-qslZrXnKJU4cUpjoAmtAo/KQM9e2IRMlmpig6Zpwj+8KWxW8v+nkAf9216Bsek9lOC1jvg2yCjygCFo2f83msQ==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-darwin-x64": {
+      "version": "1.2.16",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-darwin-x64/-/binding-darwin-x64-1.2.16.tgz",
+      "integrity": "sha512-FdF+y48ND13eAyM2mQn+85kvAqNlvRWROy2rhgA463X/0Gv4vGtazZtfaF1mRBLscYvtOlh4QnLjOWiFzX69OQ==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-freebsd-x64": {
+      "version": "1.2.16",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-freebsd-x64/-/binding-freebsd-x64-1.2.16.tgz",
+      "integrity": "sha512-ddjqFM5e95AgLbUPtKIS7V1KTVlA0RUgCVr5mn+/IEhsdy3pr+Vuj/HZ7nlMN2FyxIwUktOH1LEPIQXO1v9y1Q==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "freebsd"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-linux-arm-gnueabihf": {
+      "version": "1.2.16",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-arm-gnueabihf/-/binding-linux-arm-gnueabihf-1.2.16.tgz",
+      "integrity": "sha512-tHdKWbFkFBI687iim3LIyIvyL7j66VvQYkDPss5Stn/qyE2tWkR1YD0dXmXPFKKqT/o5ZEJVsaRsWS2meQwGOA==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-linux-arm64-gnu": {
+      "version": "1.2.16",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-arm64-gnu/-/binding-linux-arm64-gnu-1.2.16.tgz",
+      "integrity": "sha512-FJiLGAblPBMlBEdbOqw6kW6QcXDWAf/oJu7gYs9ZJZwmg+K+/zjFLxPTIY9izJUzxzc24FHvmseyA0IvJSl17w==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-linux-arm64-musl": {
+      "version": "1.2.16",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-arm64-musl/-/binding-linux-arm64-musl-1.2.16.tgz",
+      "integrity": "sha512-hrJpblMsrQ58U9veWpbXzkhV5zStunds6HWLprqq1qauvgBr1E6P+24kLj6lSLI9vjRn/RYpjprhkHQPKGWpNg==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "libc": [
+        "musl"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-linux-ppc64-gnu": {
+      "version": "1.2.16",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-ppc64-gnu/-/binding-linux-ppc64-gnu-1.2.16.tgz",
+      "integrity": "sha512-qJd/dC6j6CwLG9/s/RP2nb1RZ0GIgj7Ioj7x/SYa3RzjVrlzrmH0fhIOpfvqQDeIsdP0loi+kHaMhJzY1PBIaA==",
+      "cpu": [
+        "ppc64"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-linux-s390x-gnu": {
+      "version": "1.2.16",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-s390x-gnu/-/binding-linux-s390x-gnu-1.2.16.tgz",
+      "integrity": "sha512-Vx7Xg5uUJuNcujJjI70OICaH0EYj80BtOLZTSN7uOYg8QOLlyKnaG0IW7Fn/J0IpJsaKzmDKMhOQv1JBM9m9vg==",
+      "cpu": [
+        "s390x"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-linux-x64-gnu": {
+      "version": "1.2.16",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-x64-gnu/-/binding-linux-x64-gnu-1.2.16.tgz",
+      "integrity": "sha512-TNKhgE3uJTsTzatUSSYt0Kgo+Oa2uSlSjz4r1aEIea7HX6ULBym4fAlYUhG1i6pjNf2njfCUAfKwr6C3E9Xg1w==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-linux-x64-musl": {
+      "version": "1.2.16",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-x64-musl/-/binding-linux-x64-musl-1.2.16.tgz",
+      "integrity": "sha512-7chXdpjXZ8qG0+mIxECN3cT9kvhZ3/oZhMX6Pp876P7CDrIy8nJswva6Mq357JR7eYXfuskwZxMeV1SzoZdHrA==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "libc": [
+        "musl"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-openharmony-arm64": {
+      "version": "1.2.16",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-openharmony-arm64/-/binding-openharmony-arm64-1.2.16.tgz",
+      "integrity": "sha512-Kwjt+7uNTJK5/MDkGWGVO2KQPnj8yAV75dMpfwyHZrJSXWHrniOB0aUEWlVYf3H1hOqFLIStLdM5QXq6bnKmOQ==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "openharmony"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-win32-arm64-msvc": {
+      "version": "1.2.16",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-win32-arm64-msvc/-/binding-win32-arm64-msvc-1.2.16.tgz",
+      "integrity": "sha512-/LH6WfjDRXXJz/p5xl4TmU+jpcnwcxbKEQBW/GZE0JHfN0lGIyTtsUEGaQ/q/GikkGJ2yLKe6pwm7AnEWO8pdw==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/binding-win32-x64-msvc": {
+      "version": "1.2.16",
+      "resolved": "https://registry.npmjs.org/@rolldown/binding-win32-x64-msvc/-/binding-win32-x64-msvc-1.2.16.tgz",
+      "integrity": "sha512-1lv1KvX0Z871zfk7vw+dnXMMnHNyDwMzWG8Kv3HxDXMOhzCX4SHc7HK319fInP0i+0p9D8brkfzL7pJOaGl+tw==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      }
+    },
+    "node_modules/@rolldown/pluginutils": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@rolldown/pluginutils/-/pluginutils-1.1.1.tgz",
+      "integrity": "sha512-glFIJDvLNDtJhT9qrMFWLPbvS+skxgt4L0K8Ei2YtnhPysAJnsI7nyxSJxKj4ADeKX0OLjC4ntRkwpLOoS3rwA==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/@schematics/angular": {
+      "version": "22.2.6",
+      "resolved": "https://registry.npmjs.org/@schematics/angular/-/angular-22.2.6.tgz",
+      "integrity": "sha512-3cxjqMvarqAexIwes4VLAIbJawlkiuc/o/THS1Ol/4RsRZzpjcM+lxcEqer8SnAK6M+rxw3S/0sPjfCSl29zpg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@angular-devkit/core": "22.2.6",
+        "@angular-devkit/schematics": "22.2.6",
+        "jsonc-parser": "3.3.1",
+        "oxc-parser": "0.156.0",
+        "typescript": "6.0.3"
+      },
+      "engines": {
+        "node": "^22.22.3 || ^24.15.0 || >=26.0.0",
+        "npm": "^6.11.0 || ^7.5.6 || >=8.0.0",
+        "yarn": ">= 1.13.0"
+      }
+    },
+    "node_modules/@searchstax-inc/searchstudio-ux-angular": {
+      "version": "4.2.70",
+      "resolved": "https://registry.npmjs.org/@searchstax-inc/searchstudio-ux-angular/-/searchstudio-ux-angular-4.2.70.tgz",
+      "integrity": "sha512-qBM9pqogmtAXMZ+2LYjcvQlwrCadgRKZ17yauzDPWvdQyX87GYW78b2bqxBmH+GngwqA1v7KsOqoo2szZP8PaA==",
+      "dependencies": {
+        "@searchstax-inc/searchstudio-ux-js": "npm:@searchstax-inc/searchstudio-ux-js@^4.2.70",
+        "tslib": "^2.3.0"
+      },
+      "peerDependencies": {
+        "@angular/common": ">=17 <23",
+        "@angular/core": ">=17 <23"
+      }
+    },
+    "node_modules/@searchstax-inc/searchstudio-ux-js": {
+      "version": "4.2.70",
+      "resolved": "https://registry.npmjs.org/@searchstax-inc/searchstudio-ux-js/-/searchstudio-ux-js-4.2.70.tgz",
+      "integrity": "sha512-cpYSZmEuhNUgsDSKMx0dk4Gp1MbAImrEcSYbKzC50n97SNQLvrhCEqFlBPta2mz6ELzG9hqPQ0gGsyCcyvq7mQ==",
+      "dependencies": {
+        "dompurify": "^3.2.5",
+        "eventsource": "^3.0.5",
+        "marked": "^15.0.11",
+        "mustache": "^4.2.0",
+        "terser": "^5.44.0"
+      },
+      "engines": {
+        "node": ">=20.19.0"
+      }
+    },
+    "node_modules/@standard-schema/spec": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/@standard-schema/spec/-/spec-1.1.0.tgz",
+      "integrity": "sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==",
+      "license": "MIT"
+    },
+    "node_modules/@tybys/wasm-util": {
+      "version": "0.10.5",
+      "resolved": "https://registry.npmjs.org/@tybys/wasm-util/-/wasm-util-0.10.5.tgz",
+      "integrity": "sha512-dOGOPxlaNV+G046mZzN+9C0dAcQZeSKcXiVaM0TYy/LM4ttTmgSBDxYfovcYI8Em3+eAbiAYpvWLOv8+ZVRJKA==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "dependencies": {
+        "tslib": "^2.4.0"
+      }
+    },
+    "node_modules/@types/gensync": {
+      "version": "1.0.5",
+      "resolved": "https://registry.npmjs.org/@types/gensync/-/gensync-1.0.5.tgz",
+      "integrity": "sha512-MbsRCT7mTikHwKZ0X+LVUTLRrZZRLipTuXEO9qOYO+zmjMVk81axyClMROf6uoPD9MRVu46bx8zoR0Ad9q3NAg==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/@types/jsesc": {
+      "version": "2.5.1",
+      "resolved": "https://registry.npmjs.org/@types/jsesc/-/jsesc-2.5.1.tgz",
+      "integrity": "sha512-9VN+6yxLOPLOav+7PwjZbxiID2bVaeq0ED4qSQmdQTdjnXJSaCVKTR58t15oqH1H5t8Ng2ZX1SabJVoN9Q34bw==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/@types/trusted-types": {
+      "version": "2.0.7",
+      "resolved": "https://registry.npmjs.org/@types/trusted-types/-/trusted-types-2.0.7.tgz",
+      "integrity": "sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==",
+      "license": "MIT",
+      "optional": true
+    },
+    "node_modules/@vitejs/plugin-basic-ssl": {
+      "version": "2.3.0",
+      "resolved": "https://registry.npmjs.org/@vitejs/plugin-basic-ssl/-/plugin-basic-ssl-2.3.0.tgz",
+      "integrity": "sha512-bdyo8rB3NnQbikdMpHaML9Z1OZPBu6fFOBo+OtxsBlvMJtysWskmBcnbIDhUqgC8tcxNv/a+BcV5U+2nQMm1OQ==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": "^18.0.0 || ^20.0.0 || >=22.0.0"
+      },
+      "peerDependencies": {
+        "vite": "^6.0.0 || ^7.0.0 || ^8.0.0"
+      }
+    },
+    "node_modules/acorn": {
+      "version": "8.19.0",
+      "resolved": "https://registry.npmjs.org/acorn/-/acorn-8.19.0.tgz",
+      "integrity": "sha512-oJlA3XiRm7Cyk6qFD2Jn8ak9B7jSy0qy00ADO3+8dpT0LSjFihQYv4C02LFCSYJV3Q37xYwwRy5m+IpIiUzqWw==",
+      "license": "MIT",
+      "bin": {
+        "acorn": "bin/acorn"
+      },
+      "engines": {
+        "node": ">=0.4.0"
+      }
+    },
+    "node_modules/agent-base": {
+      "version": "9.0.0",
+      "resolved": "https://registry.npmjs.org/agent-base/-/agent-base-9.0.0.tgz",
+      "integrity": "sha512-TQf59BsZnytt8GdJKLPfUZ54g/iaUL2OWDSFCCvMOhsHduDQxO8xC4PNeyIkVcA5KwL2phPSv0douC0fgWzmnA==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">= 20"
+      }
+    },
+    "node_modules/ajv": {
+      "version": "8.20.0",
+      "resolved": "https://registry.npmjs.org/ajv/-/ajv-8.20.0.tgz",
+      "integrity": "sha512-Thbli+OlOj+iMPYFBVBfJ3OmCAnaSyNn4M1vz9T6Gka5Jt9ba/HIR56joy65tY6kx/FCF5VXNB819Y7/GUrBGA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "fast-deep-equal": "^3.1.3",
+        "fast-uri": "^3.0.1",
+        "json-schema-traverse": "^1.0.0",
+        "require-from-string": "^2.0.2"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/epoberezkin"
+      }
+    },
+    "node_modules/ajv-formats": {
+      "version": "3.0.1",
+      "resolved": "https://registry.npmjs.org/ajv-formats/-/ajv-formats-3.0.1.tgz",
+      "integrity": "sha512-8iUql50EUR+uUcdRQ3HDqa6EVyo3docL8g5WJ3FNcWmu62IbkGUue/pEyLBW8VGKKucTPgqeks4fIU1DA4yowQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "ajv": "^8.0.0"
+      },
+      "peerDependencies": {
+        "ajv": "^8.0.0"
+      },
+      "peerDependenciesMeta": {
+        "ajv": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/ansi-escapes": {
+      "version": "7.3.0",
+      "resolved": "https://registry.npmjs.org/ansi-escapes/-/ansi-escapes-7.3.0.tgz",
+      "integrity": "sha512-BvU8nYgGQBxcmMuEeUEmNTvrMVjJNSH7RgW24vXexN4Ven6qCvy4TntnvlnwnMLTVlcRQQdbRY8NKnaIoeWDNg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "environment": "^1.0.0"
+      },
+      "engines": {
+        "node": ">=18"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/ansi-regex": {
+      "version": "6.6.0",
+      "resolved": "https://registry.npmjs.org/ansi-regex/-/ansi-regex-6.6.0.tgz",
+      "integrity": "sha512-XZ5apbzreCbXSKwPjJstu8R0zOi247w3XYwWxtwBXgpZrCyc1Ka7p9/xY0A9/diMewmHbEKz+FIraWaEWjlN5g==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=12"
+      },
+      "funding": {
+        "url": "https://github.com/chalk/ansi-regex?sponsor=1"
+      }
+    },
+    "node_modules/ansi-styles": {
+      "version": "7.0.0",
+      "resolved": "https://registry.npmjs.org/ansi-styles/-/ansi-styles-7.0.0.tgz",
+      "integrity": "sha512-kKvt3m4uwzqL0wlkPd09CmljPJGOZZ4D0fP65sqFSvPkMRKhNi+74MgIJ5QxE6SxqB4t4KyUFGg8+n5zjo6hew==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=22"
+      },
+      "funding": {
+        "url": "https://github.com/chalk/ansi-styles?sponsor=1"
+      }
+    },
+    "node_modules/baseline-browser-mapping": {
+      "version": "2.11.38",
+      "resolved": "https://registry.npmjs.org/baseline-browser-mapping/-/baseline-browser-mapping-2.11.38.tgz",
+      "integrity": "sha512-rMgy5YW7x28SMfXHLlVZDBqlWzYZ0x2rVR/6FWrNBF0chjigARK1H6nM0hKA1Um3kPOlkQFVtjJs00d2N1ezuw==",
+      "dev": true,
+      "license": "Apache-2.0",
+      "bin": {
+        "baseline-browser-mapping": "dist/cli.cjs"
+      },
+      "engines": {
+        "node": ">=6.0.0"
+      }
+    },
+    "node_modules/beasties": {
+      "version": "0.5.4",
+      "resolved": "https://registry.npmjs.org/beasties/-/beasties-0.5.4.tgz",
+      "integrity": "sha512-8/lOOjT+PElYCnaUbmhgd3Uad5R1VTQ4Wg0k4rK8bX04m5WEqHNmnlLy3Q/lJ7dk25XA+72gayzc/skTfKKpcA==",
+      "dev": true,
+      "license": "Apache-2.0",
+      "dependencies": {
+        "css-select": "^7.0.0",
+        "css-what": "^8.0.0",
+        "dom-serializer": "^3.0.0",
+        "domhandler": "^6.0.0",
+        "htmlparser2": "^12.0.0",
+        "picocolors": "^1.1.1",
+        "postcss": "^8.4.49",
+        "postcss-media-query-parser": "^0.2.3",
+        "postcss-safe-parser": "^7.0.1"
+      },
+      "engines": {
+        "node": ">=20.19.0"
+      }
+    },
+    "node_modules/boolbase": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/boolbase/-/boolbase-2.0.0.tgz",
+      "integrity": "sha512-DkVaaQHymRhpYEYo9x1oo7Q7B0Y6KJUsjm3c9eTyFDby4MHLBTwZ6ZDWBel5zrYxj1WsZgC5oLpiz+93MluXeA==",
+      "dev": true,
+      "license": "ISC",
+      "engines": {
+        "node": ">=20.19.0"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/fb55"
+      }
+    },
+    "node_modules/browserslist": {
+      "version": "4.29.6",
+      "resolved": "https://registry.npmjs.org/browserslist/-/browserslist-4.29.6.tgz",
+      "integrity": "sha512-CmVVIQ3RVc5HxYEc9X84GvxK/C8C1wH8TlKAiO7uTxF8PDwt7r8t9Qk3J9NkMOVzX5O/HbLv3yzxZg9HPrnI9w==",
+      "dev": true,
+      "funding": [
+        {
+          "type": "opencollective",
+          "url": "https://opencollective.com/browserslist"
+        },
+        {
+          "type": "tidelift",
+          "url": "https://tidelift.com/funding/github/npm/browserslist"
+        },
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/ai"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "baseline-browser-mapping": "^2.11.37",
+        "caniuse-lite": "^1.0.30001826",
+        "electron-to-chromium": "^1.5.486",
+        "node-releases": "^2.0.64",
+        "update-browserslist-db": "^1.4.0"
+      },
+      "bin": {
+        "browserslist": "cli.js"
+      },
+      "engines": {
+        "node": "^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7"
+      }
+    },
+    "node_modules/buffer-from": {
+      "version": "1.1.2",
+      "resolved": "https://registry.npmjs.org/buffer-from/-/buffer-from-1.1.2.tgz",
+      "integrity": "sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==",
+      "license": "MIT"
+    },
+    "node_modules/caniuse-lite": {
+      "version": "1.0.30001826",
+      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001826.tgz",
+      "integrity": "sha512-wTB+9tIbLro/BCXwLuNV1meHE4L9dS6dArMDwgYfNBPMYScqClHyGunhkCSDtHhe/69Xl0sHlKgBVZ+fNsYtWA==",
+      "dev": true,
+      "funding": [
+        {
+          "type": "opencollective",
+          "url": "https://opencollective.com/browserslist"
+        },
+        {
+          "type": "tidelift",
+          "url": "https://tidelift.com/funding/github/npm/caniuse-lite"
+        },
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/ai"
+        }
+      ],
+      "license": "CC-BY-4.0"
+    },
+    "node_modules/chalk": {
+      "version": "5.6.2",
+      "resolved": "https://registry.npmjs.org/chalk/-/chalk-5.6.2.tgz",
+      "integrity": "sha512-7NzBL0rN6fMUW+f7A6Io4h40qQlG+xGmtMxfbnH/K7TAtt8JQWVQK+6g0UXKMeVJoyV5EkkNsErQ8pVD3bLHbA==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": "^12.17.0 || ^14.13 || >=16.0.0"
+      },
+      "funding": {
+        "url": "https://github.com/chalk/chalk?sponsor=1"
+      }
+    },
+    "node_modules/chardet": {
+      "version": "2.2.0",
+      "resolved": "https://registry.npmjs.org/chardet/-/chardet-2.2.0.tgz",
+      "integrity": "sha512-rddelWYNPRrXq6PtNEN2S3f6t9ILzvqaN5pVgi4kqt9jHQaXIial9PznB5iSPVlQSLNaaH22ItWz3EJtQ10+OA==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/chokidar": {
+      "version": "5.0.0",
+      "resolved": "https://registry.npmjs.org/chokidar/-/chokidar-5.0.0.tgz",
+      "integrity": "sha512-TQMmc3w+5AxjpL8iIiwebF73dRDF4fBIieAqGn9RGCWaEVwQ6Fb2cGe31Yns0RRIzii5goJ1Y7xbMwo1TxMplw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "readdirp": "^5.0.0"
+      },
+      "engines": {
+        "node": ">= 20.19.0"
+      },
+      "funding": {
+        "url": "https://paulmillr.com/funding/"
+      }
+    },
+    "node_modules/cli-cursor": {
+      "version": "5.0.0",
+      "resolved": "https://registry.npmjs.org/cli-cursor/-/cli-cursor-5.0.0.tgz",
+      "integrity": "sha512-aCj4O5wKyszjMmDT4tZj93kxyydN/K5zPWSCe6/0AV/AA1pqe5ZBIw0a2ZfPQV7lL5/yb5HsUreJ6UFAF1tEQw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "restore-cursor": "^5.0.0"
+      },
+      "engines": {
+        "node": ">=18"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/cli-spinners": {
+      "version": "3.4.0",
+      "resolved": "https://registry.npmjs.org/cli-spinners/-/cli-spinners-3.4.0.tgz",
+      "integrity": "sha512-bXfOC4QcT1tKXGorxL3wbJm6XJPDqEnij2gQ2m7ESQuE+/z9YFIWnl/5RpTiKWbMq3EVKR4fRLJGn6DVfu0mpw==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=18.20"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/cli-truncate": {
+      "version": "6.2.0",
+      "resolved": "https://registry.npmjs.org/cli-truncate/-/cli-truncate-6.2.0.tgz",
+      "integrity": "sha512-5uyZew3nYoDgyltqSI8OER6DuyecorYOSVDAXl9wQ9Y8Re/HaQ/5qP0HmTUOUQqmvtpB+mlsf1gG/FUS3U1gLQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "slice-ansi": "^10.0.0",
+        "string-width": "^8.3.0"
+      },
+      "engines": {
+        "node": ">=22"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/cli-width": {
+      "version": "4.1.0",
+      "resolved": "https://registry.npmjs.org/cli-width/-/cli-width-4.1.0.tgz",
+      "integrity": "sha512-ouuZd4/dm2Sw5Gmqy6bGyNNNe1qt9RpmxveLSO7KcgsTnU7RXfsw+/bukWGo1abgBiMAic068rclZsO4IWmmxQ==",
+      "dev": true,
+      "license": "ISC",
+      "engines": {
+        "node": ">= 12"
+      }
+    },
+    "node_modules/cliui": {
+      "version": "9.0.1",
+      "resolved": "https://registry.npmjs.org/cliui/-/cliui-9.0.1.tgz",
+      "integrity": "sha512-k7ndgKhwoQveBL+/1tqGJYNz097I7WOvwbmmU2AR5+magtbjPWQTS1C5vzGkBC8Ym8UWRzfKUzUUqFLypY4Q+w==",
+      "dev": true,
+      "license": "ISC",
+      "dependencies": {
+        "string-width": "^7.2.0",
+        "strip-ansi": "^7.1.0",
+        "wrap-ansi": "^9.0.0"
+      },
+      "engines": {
+        "node": ">=20"
+      }
+    },
+    "node_modules/cliui/node_modules/ansi-styles": {
+      "version": "6.2.3",
+      "resolved": "https://registry.npmjs.org/ansi-styles/-/ansi-styles-6.2.3.tgz",
+      "integrity": "sha512-4Dj6M28JB+oAH8kFkTLUo+a2jwOFkuqb3yucU0CANcRRUbxS0cP0nZYCGjcc3BNXwRIsUVmDGgzawme7zvJHvg==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=12"
+      },
+      "funding": {
+        "url": "https://github.com/chalk/ansi-styles?sponsor=1"
+      }
+    },
+    "node_modules/cliui/node_modules/string-width": {
+      "version": "7.2.0",
+      "resolved": "https://registry.npmjs.org/string-width/-/string-width-7.2.0.tgz",
+      "integrity": "sha512-tsaTIkKW9b4N+AEj+SVA+WhJzV7/zMhcSu78mLKWSk7cXMOSHsBKFWUs0fWwq8QyK3MgJBQRX6Gbi4kYbdvGkQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "emoji-regex": "^10.3.0",
+        "get-east-asian-width": "^1.0.0",
+        "strip-ansi": "^7.1.0"
+      },
+      "engines": {
+        "node": ">=18"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/cliui/node_modules/wrap-ansi": {
+      "version": "9.0.2",
+      "resolved": "https://registry.npmjs.org/wrap-ansi/-/wrap-ansi-9.0.2.tgz",
+      "integrity": "sha512-42AtmgqjV+X1VpdOfyTGOYRi0/zsoLqtXQckTmqTeybT+BDIbM/Guxo7x3pE2vtpr1ok6xRqM9OpBe+Jyoqyww==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "ansi-styles": "^6.2.1",
+        "string-width": "^7.0.0",
+        "strip-ansi": "^7.1.0"
+      },
+      "engines": {
+        "node": ">=18"
+      },
+      "funding": {
+        "url": "https://github.com/chalk/wrap-ansi?sponsor=1"
+      }
+    },
+    "node_modules/colorjs.io": {
+      "version": "0.7.1",
+      "resolved": "https://registry.npmjs.org/colorjs.io/-/colorjs.io-0.7.1.tgz",
+      "integrity": "sha512-LY7OHnJZxHwT5UlzNa9bbhHHDbzB6yE5+3MIPwJEQKRvSCt/T4G7epsj+9j2BExUIIfXFIJGsIXUKdfrK9Q5tA==",
+      "dev": true,
+      "license": "MIT",
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/color"
+      }
+    },
+    "node_modules/commander": {
+      "version": "2.20.3",
+      "resolved": "https://registry.npmjs.org/commander/-/commander-2.20.3.tgz",
+      "integrity": "sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==",
+      "license": "MIT"
+    },
+    "node_modules/convert-source-map": {
+      "version": "1.9.0",
+      "resolved": "https://registry.npmjs.org/convert-source-map/-/convert-source-map-1.9.0.tgz",
+      "integrity": "sha512-ASFBup0Mz1uyiIjANan1jzLQami9z1PoYSZCiiYW2FczPbenXc45FZdBZLzOT+r6+iciuEModtmCti+hjaAk0A==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/css-select": {
+      "version": "7.0.0",
+      "resolved": "https://registry.npmjs.org/css-select/-/css-select-7.0.0.tgz",
+      "integrity": "sha512-snmjEVXy+1LnwXdxhYvTMj1d9tOh4HxkA1YmoayVBeeyR2C14Pum7fcxJIm4SswYspVy866eYNwlH6xC3/VH5g==",
+      "dev": true,
+      "license": "BSD-2-Clause",
+      "dependencies": {
+        "boolbase": "^2.0.0",
+        "css-what": "^8.0.0",
+        "domhandler": "^6.0.1",
+        "domutils": "^4.0.2",
+        "nth-check": "^3.0.1"
+      },
+      "engines": {
+        "node": ">=20.19.0"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/fb55"
+      }
+    },
+    "node_modules/css-what": {
+      "version": "8.0.0",
+      "resolved": "https://registry.npmjs.org/css-what/-/css-what-8.0.0.tgz",
+      "integrity": "sha512-DH0Bqq3DNp5tdOReuNyAA+Ev4Y2GS5FMbZpeTLP6C4CDi0h5nL0BmUPChXw3o/qbHLDWHl49sbNqQVY7bMSDdw==",
+      "dev": true,
+      "license": "BSD-2-Clause",
+      "engines": {
+        "node": ">=20.19.0"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/fb55"
+      }
+    },
+    "node_modules/debug": {
+      "version": "4.4.3",
+      "resolved": "https://registry.npmjs.org/debug/-/debug-4.4.3.tgz",
+      "integrity": "sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "ms": "^2.1.3"
+      },
+      "engines": {
+        "node": ">=6.0"
+      },
+      "peerDependenciesMeta": {
+        "supports-color": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/detect-libc": {
+      "version": "2.1.2",
+      "resolved": "https://registry.npmjs.org/detect-libc/-/detect-libc-2.1.2.tgz",
+      "integrity": "sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==",
+      "dev": true,
+      "license": "Apache-2.0",
+      "engines": {
+        "node": ">=8"
+      }
+    },
+    "node_modules/dom-serializer": {
+      "version": "3.1.1",
+      "resolved": "https://registry.npmjs.org/dom-serializer/-/dom-serializer-3.1.1.tgz",
+      "integrity": "sha512-4MEa38/QexBob6gFNwu+EGdWvhJ1OKuNwdYY3Y3NyeWDQfnGeDYQUDfIRzWu5B5gsv03so2Uxd28YC6zrsx3Lw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "domelementtype": "^3.0.0",
+        "domhandler": "^6.0.0",
+        "entities": "^8.0.0"
+      },
+      "engines": {
+        "node": ">=20.19.0"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/cheeriojs/dom-serializer?sponsor=1"
+      }
+    },
+    "node_modules/domelementtype": {
+      "version": "3.0.0",
+      "resolved": "https://registry.npmjs.org/domelementtype/-/domelementtype-3.0.0.tgz",
+      "integrity": "sha512-umCQid3jKbDmVjx8jGaW7uUykm4DEUeyV21hPxNMo2nV955DhUThwqyOIDtreepP31hl84X7G5U9ZfsWvIB3Pg==",
+      "dev": true,
+      "funding": [
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/fb55"
+        }
+      ],
+      "license": "BSD-2-Clause",
+      "engines": {
+        "node": ">=20.19.0"
+      }
+    },
+    "node_modules/domhandler": {
+      "version": "6.0.1",
+      "resolved": "https://registry.npmjs.org/domhandler/-/domhandler-6.0.1.tgz",
+      "integrity": "sha512-gYzvtM72ZtxQO0T048kd6HWSbbGCNOUwcnfQ01cqIJ4X2IYKFFHZ5mKvrQETcFXxsRObZulDaKmy//R7TPtsBg==",
+      "dev": true,
+      "license": "BSD-2-Clause",
+      "dependencies": {
+        "domelementtype": "^3.0.0"
+      },
+      "engines": {
+        "node": ">=20.19.0"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/fb55/domhandler?sponsor=1"
+      }
+    },
+    "node_modules/dompurify": {
+      "version": "3.4.18",
+      "resolved": "https://registry.npmjs.org/dompurify/-/dompurify-3.4.18.tgz",
+      "integrity": "sha512-ofe3wI/uNm68HInABYFJYqQxRw1EaKAjNdrFVKqjUY+UZurvNd2L/HuQe097s/4RivWiZyP6tT7aoT8atjfhwg==",
+      "license": "(MPL-2.0 OR Apache-2.0)",
+      "optionalDependencies": {
+        "@types/trusted-types": "^2.0.7"
+      }
+    },
+    "node_modules/domutils": {
+      "version": "4.0.2",
+      "resolved": "https://registry.npmjs.org/domutils/-/domutils-4.0.2.tgz",
+      "integrity": "sha512-qI4JLRKnSzqFqr7hAlS5xQDusBCjKSEG4t4+7aNrIQMHBcsC2TGEhuyABJdYkgSewL57PNLYEiibY2iPKhKpaA==",
+      "dev": true,
+      "license": "BSD-2-Clause",
+      "dependencies": {
+        "dom-serializer": "^3.0.0",
+        "domelementtype": "^3.0.0",
+        "domhandler": "^6.0.0"
+      },
+      "engines": {
+        "node": ">=20.19.0"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/fb55/domutils?sponsor=1"
+      }
+    },
+    "node_modules/electron-to-chromium": {
+      "version": "1.5.489",
+      "resolved": "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.5.489.tgz",
+      "integrity": "sha512-1cF87WItryk9lj5wg5SLsNegUihdkcHuOfrANPpO02y/d2krm1Oc3GjA9KBwlT5o145FTa1bbjdLc7pZnvtnYQ==",
+      "dev": true,
+      "license": "ISC"
+    },
+    "node_modules/emoji-regex": {
+      "version": "10.6.0",
+      "resolved": "https://registry.npmjs.org/emoji-regex/-/emoji-regex-10.6.0.tgz",
+      "integrity": "sha512-toUI84YS5YmxW219erniWD0CIVOo46xGKColeNQRgOzDorgBi1v4D71/OFzgD9GO2UGKIv1C3Sp8DAn0+j5w7A==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/empathic": {
+      "version": "2.1.0",
+      "resolved": "https://registry.npmjs.org/empathic/-/empathic-2.1.0.tgz",
+      "integrity": "sha512-AnfC1ATldl49/cvZdLPDjBfrRNwbDO05aibiOtzQu3qtlbJtomNLhF30HEtn/7iBz50dlMECqATo3fG0LrdEgw==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=14"
+      }
+    },
+    "node_modules/entities": {
+      "version": "8.1.0",
+      "resolved": "https://registry.npmjs.org/entities/-/entities-8.1.0.tgz",
+      "integrity": "sha512-kxL7msIffSuh9aaFAMD7rxAIuTRMAHMeBtgHW2yUdWw732ZNh4MehkF2gdjvtdmikkaIP9bFDDJOPlsvm7avrA==",
+      "dev": true,
+      "license": "BSD-2-Clause",
+      "engines": {
+        "node": ">=20.19.0"
+      },
+      "funding": {
+        "url": "https://github.com/fb55/entities?sponsor=1"
+      }
+    },
+    "node_modules/environment": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/environment/-/environment-1.1.0.tgz",
+      "integrity": "sha512-xUtoPkMggbz0MPyPiIWr1Kp4aeWJjDZ6SMvURhimjdZgsRuDplF5/s9hcgGhyXMhs+6vpnuoiZ2kFiu3FMnS8Q==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=18"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/esbuild": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/esbuild/-/esbuild-0.28.2.tgz",
+      "integrity": "sha512-HKVLS8dvII+xoKW9kmqxbRKrnWEXfJJr/FZhhJmiqIB0e053QNYFqOBouTMO/k5sID4MvCiUCvv8b9M4h32wIA==",
+      "dev": true,
+      "hasInstallScript": true,
+      "license": "MIT",
+      "bin": {
+        "esbuild": "bin/esbuild"
+      },
+      "engines": {
+        "node": ">=18"
+      },
+      "optionalDependencies": {
+        "@esbuild/aix-ppc64": "0.28.2",
+        "@esbuild/android-arm": "0.28.2",
+        "@esbuild/android-arm64": "0.28.2",
+        "@esbuild/android-x64": "0.28.2",
+        "@esbuild/darwin-arm64": "0.28.2",
+        "@esbuild/darwin-x64": "0.28.2",
+        "@esbuild/freebsd-arm64": "0.28.2",
+        "@esbuild/freebsd-x64": "0.28.2",
+        "@esbuild/linux-arm": "0.28.2",
+        "@esbuild/linux-arm64": "0.28.2",
+        "@esbuild/linux-ia32": "0.28.2",
+        "@esbuild/linux-loong64": "0.28.2",
+        "@esbuild/linux-mips64el": "0.28.2",
+        "@esbuild/linux-ppc64": "0.28.2",
+        "@esbuild/linux-riscv64": "0.28.2",
+        "@esbuild/linux-s390x": "0.28.2",
+        "@esbuild/linux-x64": "0.28.2",
+        "@esbuild/netbsd-arm64": "0.28.2",
+        "@esbuild/netbsd-x64": "0.28.2",
+        "@esbuild/openbsd-arm64": "0.28.2",
+        "@esbuild/openbsd-x64": "0.28.2",
+        "@esbuild/openharmony-arm64": "0.28.2",
+        "@esbuild/sunos-x64": "0.28.2",
+        "@esbuild/win32-arm64": "0.28.2",
+        "@esbuild/win32-ia32": "0.28.2",
+        "@esbuild/win32-x64": "0.28.2"
+      }
+    },
+    "node_modules/escalade": {
+      "version": "3.2.0",
+      "resolved": "https://registry.npmjs.org/escalade/-/escalade-3.2.0.tgz",
+      "integrity": "sha512-WUj2qlxaQtO4g6Pq5c29GTcWGDyd8itL8zTlipgECz3JesAiiOKotd8JU6otB3PACgG6xkJUyVhboMS+bje/jA==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=6"
+      }
+    },
+    "node_modules/eventsource": {
+      "version": "3.0.7",
+      "resolved": "https://registry.npmjs.org/eventsource/-/eventsource-3.0.7.tgz",
+      "integrity": "sha512-CRT1WTyuQoD771GW56XEZFQ/ZoSfWid1alKGDYMmkt2yl8UXrVR4pspqWNEcqKvVIzg6PAltWjxcSSPrboA4iA==",
+      "license": "MIT",
+      "dependencies": {
+        "eventsource-parser": "^3.0.1"
+      },
+      "engines": {
+        "node": ">=18.0.0"
+      }
+    },
+    "node_modules/eventsource-parser": {
+      "version": "3.1.1",
+      "resolved": "https://registry.npmjs.org/eventsource-parser/-/eventsource-parser-3.1.1.tgz",
+      "integrity": "sha512-EKN1vKAMcZ8MlYMpaNuxN6R9yakzH6uajHcHVTqWJzvu5pWw9DyhbP35HH8MVBQ+dZjAfDxk+A8NiR9KWaXiyQ==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=18.0.0"
+      }
+    },
+    "node_modules/fast-deep-equal": {
+      "version": "3.1.3",
+      "resolved": "https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz",
+      "integrity": "sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/fast-string-truncated-width": {
+      "version": "3.0.3",
+      "resolved": "https://registry.npmjs.org/fast-string-truncated-width/-/fast-string-truncated-width-3.0.3.tgz",
+      "integrity": "sha512-0jjjIEL6+0jag3l2XWWizO64/aZVtpiGE3t0Zgqxv0DPuxiMjvB3M24fCyhZUO4KomJQPj3LTSUnDP3GpdwC0g==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/fast-string-width": {
+      "version": "3.0.2",
+      "resolved": "https://registry.npmjs.org/fast-string-width/-/fast-string-width-3.0.2.tgz",
+      "integrity": "sha512-gX8LrtNEI5hq8DVUfRQMbr5lpaS4nMIWV+7XEbXk2b8kiQIizgnlr12B4dA3ZEx3308ze0O4Q1R+cHts8kyUJg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "fast-string-truncated-width": "^3.0.2"
+      }
+    },
+    "node_modules/fast-uri": {
+      "version": "3.1.9",
+      "resolved": "https://registry.npmjs.org/fast-uri/-/fast-uri-3.1.9.tgz",
+      "integrity": "sha512-hS/0Wt3Ya043oKXs0sIxrMpKQITXhMLIrVAKKXi4gozGC9v7YRWVnXIZzjNPTO02M9BdxLCWqK1yRXgNziVyJQ==",
+      "dev": true,
+      "funding": [
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/fastify"
+        },
+        {
+          "type": "opencollective",
+          "url": "https://opencollective.com/fastify"
+        }
+      ],
+      "license": "BSD-3-Clause"
+    },
+    "node_modules/fast-wrap-ansi": {
+      "version": "0.2.2",
+      "resolved": "https://registry.npmjs.org/fast-wrap-ansi/-/fast-wrap-ansi-0.2.2.tgz",
+      "integrity": "sha512-7F2Fl+TjRSenLqlU3UjSH0iyqopqoZIu7eZVpEirP2g1GtWa2G/ecEmBdgz31+Mxr+ELclgg6sokpSFIQiZ02Q==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "fast-string-width": "^3.0.2"
+      }
+    },
+    "node_modules/fdir": {
+      "version": "6.5.0",
+      "resolved": "https://registry.npmjs.org/fdir/-/fdir-6.5.0.tgz",
+      "integrity": "sha512-tIbYtZbucOs0BRGqPJkshJUYdL+SDH7dVM8gjy+ERp3WAUjLEFJE+02kanyHtwjWOnwrKYBiwAmM0p4kLJAnXg==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=12.0.0"
+      },
+      "peerDependencies": {
+        "picomatch": "^3 || ^4"
+      },
+      "peerDependenciesMeta": {
+        "picomatch": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/flru": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/flru/-/flru-1.0.2.tgz",
+      "integrity": "sha512-kWyh8ADvHBFz6ua5xYOPnUroZTT/bwWfrCeL0Wj1dzG4/YOmOcfJ99W8dOVyyynJN35rZ9aCOtHChqQovV7yog==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=6"
+      }
+    },
+    "node_modules/fsevents": {
+      "version": "2.3.3",
+      "resolved": "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz",
+      "integrity": "sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==",
+      "dev": true,
+      "hasInstallScript": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": "^8.16.0 || ^10.6.0 || >=11.0.0"
+      }
+    },
+    "node_modules/gensync": {
+      "version": "1.0.0-beta.2",
+      "resolved": "https://registry.npmjs.org/gensync/-/gensync-1.0.0-beta.2.tgz",
+      "integrity": "sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=6.9.0"
+      }
+    },
+    "node_modules/get-caller-file": {
+      "version": "2.0.5",
+      "resolved": "https://registry.npmjs.org/get-caller-file/-/get-caller-file-2.0.5.tgz",
+      "integrity": "sha512-DyFP3BM/3YHTQOCUL/w0OZHR0lpKeGrxotcHWcqNEdnltqFwXVfhEBQ94eIo34AfQpo0rGki4cyIiftY06h2Fg==",
+      "dev": true,
+      "license": "ISC",
+      "engines": {
+        "node": "6.* || 8.* || >= 10.*"
+      }
+    },
+    "node_modules/get-east-asian-width": {
+      "version": "1.7.0",
+      "resolved": "https://registry.npmjs.org/get-east-asian-width/-/get-east-asian-width-1.7.0.tgz",
+      "integrity": "sha512-XjH1AECxf0giL2V1aU8vKyRR2ppRUb5c0EvT7zuJTokQ74bNo52zOtghqdWIqrhUD79fo3x0WfKZdOqxF6LG1Q==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=18"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/has-flag": {
+      "version": "4.0.0",
+      "resolved": "https://registry.npmjs.org/has-flag/-/has-flag-4.0.0.tgz",
+      "integrity": "sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=8"
+      }
+    },
+    "node_modules/hosted-git-info": {
+      "version": "10.1.1",
+      "resolved": "https://registry.npmjs.org/hosted-git-info/-/hosted-git-info-10.1.1.tgz",
+      "integrity": "sha512-DeOnSPAvOndYKfw075gt8yZzQ7S2hNztw34zBTfhIzLhmBTswIBg5/y+pqu/VD5cYWm5goAFTusDmUEmKZ0PEQ==",
+      "dev": true,
+      "license": "ISC",
+      "dependencies": {
+        "lru-cache": "^11.1.0"
+      },
+      "engines": {
+        "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+      }
+    },
+    "node_modules/htmlparser2": {
+      "version": "12.0.0",
+      "resolved": "https://registry.npmjs.org/htmlparser2/-/htmlparser2-12.0.0.tgz",
+      "integrity": "sha512-Tz7u1i95/g2x2jz81+x0FBVhBhY5aRTvD3tXXdFaljuNdzDLJ8UGNRrTcj2cgQvAg3iW/h77Fz15nLW0L0CrZw==",
+      "dev": true,
+      "funding": [
+        "https://github.com/fb55/htmlparser2?sponsor=1",
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/fb55"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "domelementtype": "^3.0.0",
+        "domhandler": "^6.0.0",
+        "domutils": "^4.0.2",
+        "entities": "^8.0.0"
+      },
+      "engines": {
+        "node": ">=20.19.0"
+      }
+    },
+    "node_modules/https-proxy-agent": {
+      "version": "9.1.0",
+      "resolved": "https://registry.npmjs.org/https-proxy-agent/-/https-proxy-agent-9.1.0.tgz",
+      "integrity": "sha512-ag87y7cJJ9/3+GxFr8Oy4O5faDsGRGnBGsJj/YjOSsSx/5eadKLYTMPlzuR6obgoCDDm0abAAZitXXQkMOPSpA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "agent-base": "9.0.0",
+        "debug": "^4.3.4",
+        "proxy-agent-negotiate": "1.1.0"
+      },
+      "engines": {
+        "node": ">= 20"
+      }
+    },
+    "node_modules/iconv-lite": {
+      "version": "0.7.3",
+      "resolved": "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.7.3.tgz",
+      "integrity": "sha512-IKXpvIzjnC9XTAUbVBcMfGS0EPaIXtW6v+zr+RRp+hqULEpo0owZax6wyRwPOJbWbzjYspQwusTsfVr0ifh4uQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "safer-buffer": ">= 2.1.2 < 3.0.0"
+      },
+      "engines": {
+        "node": ">=0.10.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/express"
+      }
+    },
+    "node_modules/immutable": {
+      "version": "5.2.1",
+      "resolved": "https://registry.npmjs.org/immutable/-/immutable-5.2.1.tgz",
+      "integrity": "sha512-CgXNM1BhKqpMjFHTyqQSk09OWqzHNJ/U4BdeBgXoBdR2DdgBdOSv131cO1/YMgzopqnka3B/i949UaMLEKUxOA==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/import-meta-resolve": {
+      "version": "4.2.0",
+      "resolved": "https://registry.npmjs.org/import-meta-resolve/-/import-meta-resolve-4.2.0.tgz",
+      "integrity": "sha512-Iqv2fzaTQN28s/FwZAoFq0ZSs/7hMAHJVX+w8PZl3cY19Pxk6jFFalxQoIfW2826i/fDLXv8IiEZRIT0lDuWcg==",
+      "dev": true,
+      "license": "MIT",
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/is-extglob": {
+      "version": "2.1.1",
+      "resolved": "https://registry.npmjs.org/is-extglob/-/is-extglob-2.1.1.tgz",
+      "integrity": "sha512-SbKbANkN603Vi4jEZv49LeVJMn4yGwsbzZworEoyEiutsN3nJYdbO36zfhGJ6QEDpOZIFkDtnq5JRxmvl3jsoQ==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=0.10.0"
+      }
+    },
+    "node_modules/is-fullwidth-code-point": {
+      "version": "5.1.0",
+      "resolved": "https://registry.npmjs.org/is-fullwidth-code-point/-/is-fullwidth-code-point-5.1.0.tgz",
+      "integrity": "sha512-5XHYaSyiqADb4RnZ1Bdad6cPp8Toise4TzEjcOYDHZkTCbKgiUl7WTUCpNWHuxmDt91wnsZBc9xinNzopv3JMQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "get-east-asian-width": "^1.3.1"
+      },
+      "engines": {
+        "node": ">=18"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/is-glob": {
+      "version": "4.0.3",
+      "resolved": "https://registry.npmjs.org/is-glob/-/is-glob-4.0.3.tgz",
+      "integrity": "sha512-xelSayHH36ZgE7ZWhli7pW34hNbNl8Ojv5KVmkJD4hBdD3th8Tfk9vYasLM+mXWOZhFkgZfxhLSnrwRr4elSSg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "is-extglob": "^2.1.1"
+      },
+      "engines": {
+        "node": ">=0.10.0"
+      }
+    },
+    "node_modules/is-interactive": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/is-interactive/-/is-interactive-2.0.0.tgz",
+      "integrity": "sha512-qP1vozQRI+BMOPcjFzrjXuQvdak2pHNUMZoeG2eRbiSqyvbEf/wQtEOTOX1guk6E3t36RkaqiSt8A/6YElNxLQ==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=12"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/is-unicode-supported": {
+      "version": "2.1.0",
+      "resolved": "https://registry.npmjs.org/is-unicode-supported/-/is-unicode-supported-2.1.0.tgz",
+      "integrity": "sha512-mE00Gnza5EEB3Ds0HfMyllZzbBrmLOX3vfWoj9A9PEnTfratQ/BcaJOuMhnkhjXvb2+FkY3VuHqtAGpTPmglFQ==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=18"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/js-tokens": {
+      "version": "10.0.0",
+      "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-10.0.0.tgz",
+      "integrity": "sha512-lM/UBzQmfJRo9ABXbPWemivdCW8V2G8FHaHdypQaIy523snUjog0W71ayWXTjiR+ixeMyVHN2XcpnTd/liPg/Q==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/jsesc": {
+      "version": "3.1.0",
+      "resolved": "https://registry.npmjs.org/jsesc/-/jsesc-3.1.0.tgz",
+      "integrity": "sha512-/sM3dO2FOzXjKQhJuo0Q173wf2KOo8t4I8vHy6lF9poUp7bKT0/NHE8fPX23PwfhnykfqnC2xRxOnVw5XuGIaA==",
+      "dev": true,
+      "license": "MIT",
+      "bin": {
+        "jsesc": "bin/jsesc"
+      },
+      "engines": {
+        "node": ">=6"
+      }
+    },
+    "node_modules/json-schema-traverse": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/json-schema-traverse/-/json-schema-traverse-1.0.0.tgz",
+      "integrity": "sha512-NM8/P9n3XjXhIZn1lLhkFaACTOURQXjWhV4BA/RnOv8xvgqtqpAX9IO4mRQxSx1Rlo4tqzeqb0sOlruaOy3dug==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/json5": {
+      "version": "2.2.3",
+      "resolved": "https://registry.npmjs.org/json5/-/json5-2.2.3.tgz",
+      "integrity": "sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==",
+      "dev": true,
+      "license": "MIT",
+      "bin": {
+        "json5": "lib/cli.js"
+      },
+      "engines": {
+        "node": ">=6"
+      }
+    },
+    "node_modules/jsonc-parser": {
+      "version": "3.3.1",
+      "resolved": "https://registry.npmjs.org/jsonc-parser/-/jsonc-parser-3.3.1.tgz",
+      "integrity": "sha512-HUgH65KyejrUFPvHFPbqOY0rsFip3Bo5wb4ngvdi1EpCYWUQDC5V+Y7mZws+DLkr4M//zQJoanu1SP+87Dv1oQ==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/lightningcss": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss/-/lightningcss-1.33.0.tgz",
+      "integrity": "sha512-WkUDrojuJs0xkgGf2udWxa3yGBRxPtxUkB79i6aCZLRgc7PM8fZe9TosfPDcvEpQZbuFASnHYmRLBLUbmLOIIA==",
+      "dev": true,
+      "license": "MPL-2.0",
+      "dependencies": {
+        "detect-libc": "^2.0.3"
+      },
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      },
+      "optionalDependencies": {
+        "lightningcss-android-arm64": "1.33.0",
+        "lightningcss-darwin-arm64": "1.33.0",
+        "lightningcss-darwin-x64": "1.33.0",
+        "lightningcss-freebsd-x64": "1.33.0",
+        "lightningcss-linux-arm-gnueabihf": "1.33.0",
+        "lightningcss-linux-arm64-gnu": "1.33.0",
+        "lightningcss-linux-arm64-musl": "1.33.0",
+        "lightningcss-linux-x64-gnu": "1.33.0",
+        "lightningcss-linux-x64-musl": "1.33.0",
+        "lightningcss-win32-arm64-msvc": "1.33.0",
+        "lightningcss-win32-x64-msvc": "1.33.0"
+      }
+    },
+    "node_modules/lightningcss-android-arm64": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-android-arm64/-/lightningcss-android-arm64-1.33.0.tgz",
+      "integrity": "sha512-gEpRTalKdosp4Bb8qWtc2iOgE5SeIHlpS1up9bFq2wAyYhl1UdTObYiHe98zEM9SQvSoqQZ1IQD0JNpg3Ml5pg==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "android"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-darwin-arm64": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-darwin-arm64/-/lightningcss-darwin-arm64-1.33.0.tgz",
+      "integrity": "sha512-Sciaz8eenNTKn9b3t7+xr0ipTp9YxKQY4npwQ3mrRuL0BAVHBLyZxofhaKBAVtzmtRZ/zTyo0/to4B1uWG/Djg==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-darwin-x64": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-darwin-x64/-/lightningcss-darwin-x64-1.33.0.tgz",
+      "integrity": "sha512-Z5UPAxzrjlWNNyGy6i65cJzzvgJ5D3T6wMvs+gWpY9d7qRhANrxqAp6LhxIgZhWEw18RfJTGcRxjuLIBr+m8XQ==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-freebsd-x64": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-freebsd-x64/-/lightningcss-freebsd-x64-1.33.0.tgz",
+      "integrity": "sha512-QQM/Ti/hQajJwCY+RiWuCZ9sdtI/XQk7nDK5vC8kkdwixezOlDgvDx7+RT+QjK6FcFT4MpsuoBnHIo/O3StRRg==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "freebsd"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-linux-arm-gnueabihf": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm-gnueabihf/-/lightningcss-linux-arm-gnueabihf-1.33.0.tgz",
+      "integrity": "sha512-N7FVBe6iS24MlM6R/4RBTxGhQheZGs7tiQ9U32UtF75NzP5Q7xWPRqLBCKxlRQRk3rY1jCIPLzx7WzOhuUIRLQ==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-linux-arm64-gnu": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm64-gnu/-/lightningcss-linux-arm64-gnu-1.33.0.tgz",
+      "integrity": "sha512-j2v/itmy4HlNxlc6voKXYgBqNi0Ng2LShg4z7GufpEgs05P+2suBVyi9I6YHq5uoVFx9ETin3eCEhLVyXGQnKg==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-linux-arm64-musl": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm64-musl/-/lightningcss-linux-arm64-musl-1.33.0.tgz",
+      "integrity": "sha512-yiO5ROMuYQgXbC60yjZU5CYSFZGKXL0HFATXt9mHJn1+zW55oCtMI9NfcVhYLMFDL7gV7oBPon/EmMMGg2OvtQ==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "libc": [
+        "musl"
+      ],
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-linux-x64-gnu": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-linux-x64-gnu/-/lightningcss-linux-x64-gnu-1.33.0.tgz",
+      "integrity": "sha512-ar+Ju7LmcN0Jo4FpL4hpFybwNG9/3A/Br5KW2n2jyODg3MEZXaDYADdemoNS+BDNfMgKvylJLj4S5tyRActuAg==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "libc": [
+        "glibc"
+      ],
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-linux-x64-musl": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-linux-x64-musl/-/lightningcss-linux-x64-musl-1.33.0.tgz",
+      "integrity": "sha512-RYiYbkokw0trfKqqzfF55lginwEPrD3OJDfTuJzFs1MK6iFnDenaz1fqLLtX4ITG3OktJQXOeTaw1awrBAlZPw==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "libc": [
+        "musl"
+      ],
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-win32-arm64-msvc": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-win32-arm64-msvc/-/lightningcss-win32-arm64-msvc-1.33.0.tgz",
+      "integrity": "sha512-1K+MPfLSFVpphzpdbfkhlWk6wBrTObBzS2T6db10PNOZgR9GoVsAWzwNyuhUYYbTp23j+4RrncfujZ4uAzXvwA==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-win32-x64-msvc": {
+      "version": "1.33.0",
+      "resolved": "https://registry.npmjs.org/lightningcss-win32-x64-msvc/-/lightningcss-win32-x64-msvc-1.33.0.tgz",
+      "integrity": "sha512-OlEICDx/Xl0FqSp4bry8zFnCvGpig3Gl4gCquvYwHuqJKEC1+n9NgDniFvqHGmMv1ZkqDJrDqKKSykTDX+ehuA==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/listr2": {
+      "version": "11.1.0",
+      "resolved": "https://registry.npmjs.org/listr2/-/listr2-11.1.0.tgz",
+      "integrity": "sha512-xsuczF6mWkEo/E80QHaEokQzKmTy7m80KcLRnkUt9wrcePres2w7dbQi5zOsWtDUg8Dac4gPFyu4EJ/IvKwTOg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "cli-truncate": "^6.1.1",
+        "log-update": "^8.0.0",
+        "wrap-ansi": "^10.0.1"
+      },
+      "engines": {
+        "node": ">=22.13.0"
+      }
+    },
+    "node_modules/lmdb": {
+      "version": "3.5.6",
+      "resolved": "https://registry.npmjs.org/lmdb/-/lmdb-3.5.6.tgz",
+      "integrity": "sha512-j3uE8ReKNyUWDjhfEFSJqE/1DLtfTR5Z8yFzVHvBjAk37wNg7HdScjcv8ttPHRvrdgPQMPWxFFI0SsdBzI5lBw==",
+      "dev": true,
+      "hasInstallScript": true,
+      "license": "MIT",
+      "optional": true,
+      "dependencies": {
+        "@harperfast/extended-iterable": "^1.0.3",
+        "msgpackr": "^1.11.2",
+        "node-addon-api": "^6.1.0",
+        "node-gyp-build-optional-packages": "5.2.2",
+        "ordered-binary": "^1.5.3",
+        "weak-lru-cache": "^1.2.2"
+      },
+      "bin": {
+        "download-lmdb-prebuilds": "bin/download-prebuilds.js"
+      },
+      "optionalDependencies": {
+        "@lmdb/lmdb-darwin-arm64": "3.5.6",
+        "@lmdb/lmdb-darwin-x64": "3.5.6",
+        "@lmdb/lmdb-linux-arm": "3.5.6",
+        "@lmdb/lmdb-linux-arm64": "3.5.6",
+        "@lmdb/lmdb-linux-x64": "3.5.6",
+        "@lmdb/lmdb-win32-arm64": "3.5.6",
+        "@lmdb/lmdb-win32-x64": "3.5.6"
+      }
+    },
+    "node_modules/lmdb/node_modules/node-addon-api": {
+      "version": "6.1.0",
+      "resolved": "https://registry.npmjs.org/node-addon-api/-/node-addon-api-6.1.0.tgz",
+      "integrity": "sha512-+eawOlIgy680F0kBzPUNFhMZGtJ1YmqM6l4+Crf4IkImjYrO/mqPwRMh352g23uIaQKFItcQ64I7KMaJxHgAVA==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true
+    },
+    "node_modules/log-symbols": {
+      "version": "7.0.1",
+      "resolved": "https://registry.npmjs.org/log-symbols/-/log-symbols-7.0.1.tgz",
+      "integrity": "sha512-ja1E3yCr9i/0hmBVaM0bfwDjnGy8I/s6PP4DFp+yP+a+mrHO4Rm7DtmnqROTUkHIkqffC84YY7AeqX6oFk0WFg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "is-unicode-supported": "^2.0.0",
+        "yoctocolors": "^2.1.1"
+      },
+      "engines": {
+        "node": ">=18"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/log-update": {
+      "version": "8.0.0",
+      "resolved": "https://registry.npmjs.org/log-update/-/log-update-8.0.0.tgz",
+      "integrity": "sha512-lddSgOt3bPASrylL54ZSpy8nBHns+vBVSoILlVOx+dei300pnLRN958rj/EdlVLKuWlSESU3qdnDZdAI7FXYGg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "ansi-escapes": "^7.3.0",
+        "cli-cursor": "^5.0.0",
+        "slice-ansi": "^9.0.0",
+        "string-width": "^8.2.0",
+        "strip-ansi": "^7.2.0",
+        "wrap-ansi": "^10.0.0"
+      },
+      "engines": {
+        "node": ">=22"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/log-update/node_modules/ansi-styles": {
+      "version": "6.2.3",
+      "resolved": "https://registry.npmjs.org/ansi-styles/-/ansi-styles-6.2.3.tgz",
+      "integrity": "sha512-4Dj6M28JB+oAH8kFkTLUo+a2jwOFkuqb3yucU0CANcRRUbxS0cP0nZYCGjcc3BNXwRIsUVmDGgzawme7zvJHvg==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=12"
+      },
+      "funding": {
+        "url": "https://github.com/chalk/ansi-styles?sponsor=1"
+      }
+    },
+    "node_modules/log-update/node_modules/slice-ansi": {
+      "version": "9.0.1",
+      "resolved": "https://registry.npmjs.org/slice-ansi/-/slice-ansi-9.0.1.tgz",
+      "integrity": "sha512-aBY19bn/XA+hKOKX0qL7Z0UfdBsbQvc9hn993U8ALUjzxCvDcuZqLoRXjGJrUARWAlwMnsRVD9sw2AFNOYvalA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "ansi-styles": "^6.2.3",
+        "is-fullwidth-code-point": "^5.1.0"
+      },
+      "engines": {
+        "node": ">=22"
+      },
+      "funding": {
+        "url": "https://github.com/chalk/slice-ansi?sponsor=1"
+      }
+    },
+    "node_modules/lru-cache": {
+      "version": "11.5.3",
+      "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-11.5.3.tgz",
+      "integrity": "sha512-U4N8FgzmWxc8k1VH8Kr6lQg18U7Fjvby6wXHVRX/ZZ7IwWbRMgrRbP0Wrb5q5NVinryp4SQampHKdvtecItxUg==",
+      "dev": true,
+      "license": "BlueOak-1.0.0",
+      "engines": {
+        "node": "20 || >=22"
+      }
+    },
+    "node_modules/magic-string": {
+      "version": "1.4.1",
+      "resolved": "https://registry.npmjs.org/magic-string/-/magic-string-1.4.1.tgz",
+      "integrity": "sha512-8lyCu36ErXR0J9uaGKlKQoiLZKmtI63YGLE8G2o9jyRPdr4X47LusSOwgOJOzcVtp81fTAAjxR7BwKz682Jhow==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@jridgewell/sourcemap-codec": "^1.6.0"
+      }
+    },
+    "node_modules/marked": {
+      "version": "15.0.12",
+      "resolved": "https://registry.npmjs.org/marked/-/marked-15.0.12.tgz",
+      "integrity": "sha512-8dD6FusOQSrpv9Z1rdNMdlSgQOIP880DHqnohobOmYLElGEqAL/JvxvuxZO16r4HtjTlfPRDC1hbvxC9dPN2nA==",
+      "license": "MIT",
+      "bin": {
+        "marked": "bin/marked.js"
+      },
+      "engines": {
+        "node": ">= 18"
+      }
+    },
+    "node_modules/mimic-function": {
+      "version": "5.0.1",
+      "resolved": "https://registry.npmjs.org/mimic-function/-/mimic-function-5.0.1.tgz",
+      "integrity": "sha512-VP79XUPxV2CigYP3jWwAUFSku2aKqBH7uTAapFWCBqutsbmDo96KY5o8uh6U+/YSIn5OxJnXp73beVkpqMIGhA==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=18"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/mrmime": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/mrmime/-/mrmime-2.0.1.tgz",
+      "integrity": "sha512-Y3wQdFg2Va6etvQ5I82yUhGdsKrcYox6p7FfL1LbK2J4V01F9TGlepTIhnK24t7koZibmg82KGglhA1XK5IsLQ==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=10"
+      }
+    },
+    "node_modules/ms": {
+      "version": "2.1.3",
+      "resolved": "https://registry.npmjs.org/ms/-/ms-2.1.3.tgz",
+      "integrity": "sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/msgpackr": {
+      "version": "1.12.1",
+      "resolved": "https://registry.npmjs.org/msgpackr/-/msgpackr-1.12.1.tgz",
+      "integrity": "sha512-4EUH9tQHnMmEgzW/MdAP0KIfa1T9AF+htl0ffe2n5vb2EKn9y2co8ccpgWko6S52Jy1PQZKwRnx5/KkYjtd9MQ==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "optionalDependencies": {
+        "msgpackr-extract": "^3.0.2"
+      }
+    },
+    "node_modules/msgpackr-extract": {
+      "version": "3.0.7",
+      "resolved": "https://registry.npmjs.org/msgpackr-extract/-/msgpackr-extract-3.0.7.tgz",
+      "integrity": "sha512-/dOQboWnkR1cjm88XyH/cGSivECGgyQu3814+bNUAq5wACQC8Ya/CViB9WApvWJ5Hya/JJQQmUeBFOZj8MLjGA==",
+      "dev": true,
+      "hasInstallScript": true,
+      "license": "MIT",
+      "optional": true,
+      "dependencies": {
+        "node-gyp-build-optional-packages": "5.2.2"
+      },
+      "bin": {
+        "download-msgpackr-prebuilds": "bin/download-prebuilds.js"
+      },
+      "optionalDependencies": {
+        "@msgpackr-extract/msgpackr-extract-darwin-arm64": "3.0.7",
+        "@msgpackr-extract/msgpackr-extract-darwin-x64": "3.0.7",
+        "@msgpackr-extract/msgpackr-extract-linux-arm": "3.0.7",
+        "@msgpackr-extract/msgpackr-extract-linux-arm64": "3.0.7",
+        "@msgpackr-extract/msgpackr-extract-linux-x64": "3.0.7",
+        "@msgpackr-extract/msgpackr-extract-win32-x64": "3.0.7"
+      }
+    },
+    "node_modules/mustache": {
+      "version": "4.2.0",
+      "resolved": "https://registry.npmjs.org/mustache/-/mustache-4.2.0.tgz",
+      "integrity": "sha512-71ippSywq5Yb7/tVYyGbkBggbU8H3u5Rz56fH60jGFgr8uHwxs+aSKeqmluIVzM0m0kB7xQjKS6qPfd0b2ZoqQ==",
+      "license": "MIT",
+      "bin": {
+        "mustache": "bin/mustache"
+      }
+    },
+    "node_modules/mute-stream": {
+      "version": "4.0.0",
+      "resolved": "https://registry.npmjs.org/mute-stream/-/mute-stream-4.0.0.tgz",
+      "integrity": "sha512-gSrprq0fJ3EiOErzjdIZrjysVVmJ4uu1QWfCDss5LypA5OXvrMje5Ym5z6V6RLyJ2eF87lasX7t6a0AnFvZblg==",
+      "dev": true,
+      "license": "ISC",
+      "engines": {
+        "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+      }
+    },
+    "node_modules/nanoid": {
+      "version": "3.3.20",
+      "resolved": "https://registry.npmjs.org/nanoid/-/nanoid-3.3.20.tgz",
+      "integrity": "sha512-uKdg2G3GNCKQn9byYOpxbGqrT2fGO5KRt5J/8b3pok8rT6qxGWF6hxMyJiEYtAf+FVyYuD9hRaDqX5uPFYJ4ZQ==",
+      "dev": true,
+      "funding": [
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/ai"
+        }
+      ],
+      "license": "MIT",
+      "bin": {
+        "nanoid": "bin/nanoid.cjs"
+      },
+      "engines": {
+        "node": "^10 || ^12 || ^13.7 || ^14 || >=15.0.1"
+      }
+    },
+    "node_modules/node-addon-api": {
+      "version": "7.1.1",
+      "resolved": "https://registry.npmjs.org/node-addon-api/-/node-addon-api-7.1.1.tgz",
+      "integrity": "sha512-5m3bsyrjFWE1xf7nz7YXdN4udnVtXK6/Yfgn5qnahL6bCkf2yKt4k3nuTKAtT4r3IG8JNR2ncsIMdZuAzJjHQQ==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/node-gyp-build-optional-packages": {
+      "version": "5.2.2",
+      "resolved": "https://registry.npmjs.org/node-gyp-build-optional-packages/-/node-gyp-build-optional-packages-5.2.2.tgz",
+      "integrity": "sha512-s+w+rBWnpTMwSFbaE0UXsRlg7hU4FjekKU4eyAih5T8nJuNZT1nNsskXpxmeqSK9UzkBl6UgRlnKc8hz8IEqOw==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "dependencies": {
+        "detect-libc": "^2.0.1"
+      },
+      "bin": {
+        "node-gyp-build-optional-packages": "bin.js",
+        "node-gyp-build-optional-packages-optional": "optional.js",
+        "node-gyp-build-optional-packages-test": "build-test.js"
+      }
+    },
+    "node_modules/node-releases": {
+      "version": "2.0.65",
+      "resolved": "https://registry.npmjs.org/node-releases/-/node-releases-2.0.65.tgz",
+      "integrity": "sha512-PfvofsGQ+MiOQIPkX9fU8ELUWmy5zL74CdQaph/ismKszfFkfwXaw0cGiwbwym2hT9k5+mdyl8O5WQ1MD8EHmA==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/npm-package-arg": {
+      "version": "14.0.0",
+      "resolved": "https://registry.npmjs.org/npm-package-arg/-/npm-package-arg-14.0.0.tgz",
+      "integrity": "sha512-69XQh3k+dtGa1p+7RaR57IuG3rCko96xr/nUfN4yDYBXbTYICiWcOpsFKLN2GtGE9cyIljE+f1exnaYt9MvM+Q==",
+      "dev": true,
+      "license": "ISC",
+      "dependencies": {
+        "hosted-git-info": "^10.1.0",
+        "proc-log": "^7.0.0",
+        "semver": "^7.3.5",
+        "validate-npm-package-name": "^8.0.0"
+      },
+      "engines": {
+        "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+      }
+    },
+    "node_modules/nth-check": {
+      "version": "3.0.1",
+      "resolved": "https://registry.npmjs.org/nth-check/-/nth-check-3.0.1.tgz",
+      "integrity": "sha512-GX0gsdbGVCgnRgbeGaubfjpBXyYRWOOCVeYh08bSQvDZqxz5ndXs1OTfAt/h36G1xvI94YIspsI0sVFqAV9+RQ==",
+      "dev": true,
+      "license": "BSD-2-Clause",
+      "dependencies": {
+        "boolbase": "^2.0.0"
+      },
+      "engines": {
+        "node": ">=20.19.0"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/fb55/nth-check?sponsor=1"
+      }
+    },
+    "node_modules/obug": {
+      "version": "2.2.1",
+      "resolved": "https://registry.npmjs.org/obug/-/obug-2.2.1.tgz",
+      "integrity": "sha512-XrsrhT5sybtKI6wakr2SPOlGZWWYbUXZ7a0jT8/QOeAPau+1X/bSegNe5YR75oJmEZQbKningirmGOEJCIk61Q==",
+      "dev": true,
+      "funding": [
+        "https://github.com/sponsors/sxzz",
+        "https://opencollective.com/debug"
+      ],
+      "license": "MIT",
+      "engines": {
+        "node": ">=12.20.0"
+      }
+    },
+    "node_modules/onetime": {
+      "version": "7.0.0",
+      "resolved": "https://registry.npmjs.org/onetime/-/onetime-7.0.0.tgz",
+      "integrity": "sha512-VXJjc87FScF88uafS3JllDgvAm+c/Slfz06lorj2uAY34rlUu0Nt+v8wreiImcrgAjjIHp1rXpTDlLOGw29WwQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "mimic-function": "^5.0.0"
+      },
+      "engines": {
+        "node": ">=18"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/ora": {
+      "version": "9.4.1",
+      "resolved": "https://registry.npmjs.org/ora/-/ora-9.4.1.tgz",
+      "integrity": "sha512-6VlU9MLXbjVQD04AZCMX28hVtA5bUoadvUqO76MUCVA0ilwJbMiHsITRPfyVm6p/BC0Av/BXMujx39WCe1LEqw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "chalk": "^5.6.2",
+        "cli-cursor": "^5.0.0",
+        "cli-spinners": "^3.2.0",
+        "is-interactive": "^2.0.0",
+        "is-unicode-supported": "^2.1.0",
+        "log-symbols": "^7.0.1",
+        "stdin-discarder": "^0.3.2",
+        "string-width": "^8.1.0"
+      },
+      "engines": {
+        "node": ">=20"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/ordered-binary": {
+      "version": "1.6.3",
+      "resolved": "https://registry.npmjs.org/ordered-binary/-/ordered-binary-1.6.3.tgz",
+      "integrity": "sha512-Bc8LnA2x4ZHRQ9LjCm/NOdD3+CTQPhGNu8m7/6+ERtiB6Bb/fn7nCySwcmAC+5WCqwelpSAQgo1VX9BGpsC0tQ==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true
+    },
+    "node_modules/oxc-parser": {
+      "version": "0.156.0",
+      "resolved": "https://registry.npmjs.org/oxc-parser/-/oxc-parser-0.156.0.tgz",
+      "integrity": "sha512-7JhjgOfZjrIFJH5TlHrpRua864Si5GvwrPr5+eIRCY2sszhKXo6pyhP0HQKOGTtfO4UowwZ72XTGba0+lZphOQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@oxc-project/types": "^0.156.0"
+      },
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/oxc-project"
+      },
+      "optionalDependencies": {
+        "@oxc-parser/binding-android-arm-eabi": "0.156.0",
+        "@oxc-parser/binding-android-arm64": "0.156.0",
+        "@oxc-parser/binding-darwin-arm64": "0.156.0",
+        "@oxc-parser/binding-darwin-x64": "0.156.0",
+        "@oxc-parser/binding-freebsd-x64": "0.156.0",
+        "@oxc-parser/binding-linux-arm-gnueabihf": "0.156.0",
+        "@oxc-parser/binding-linux-arm-musleabihf": "0.156.0",
+        "@oxc-parser/binding-linux-arm64-gnu": "0.156.0",
+        "@oxc-parser/binding-linux-arm64-musl": "0.156.0",
+        "@oxc-parser/binding-linux-ppc64-gnu": "0.156.0",
+        "@oxc-parser/binding-linux-riscv64-gnu": "0.156.0",
+        "@oxc-parser/binding-linux-riscv64-musl": "0.156.0",
+        "@oxc-parser/binding-linux-s390x-gnu": "0.156.0",
+        "@oxc-parser/binding-linux-x64-gnu": "0.156.0",
+        "@oxc-parser/binding-linux-x64-musl": "0.156.0",
+        "@oxc-parser/binding-openharmony-arm64": "0.156.0",
+        "@oxc-parser/binding-win32-arm64-msvc": "0.156.0",
+        "@oxc-parser/binding-win32-ia32-msvc": "0.156.0",
+        "@oxc-parser/binding-win32-x64-msvc": "0.156.0"
+      }
+    },
+    "node_modules/parse5": {
+      "version": "8.1.1",
+      "resolved": "https://registry.npmjs.org/parse5/-/parse5-8.1.1.tgz",
+      "integrity": "sha512-EcR/6WDcU7b2N3vQSxKALCk9lXGtUMQxXio008OEMBE0kavu/7JLfBEeFPzi43nMqVDSbEn3QCK+BMCc9zO//w==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "entities": "^9.0.0"
+      },
+      "funding": {
+        "url": "https://github.com/inikulin/parse5?sponsor=1"
+      }
+    },
+    "node_modules/parse5-html-rewriting-stream": {
+      "version": "8.0.1",
+      "resolved": "https://registry.npmjs.org/parse5-html-rewriting-stream/-/parse5-html-rewriting-stream-8.0.1.tgz",
+      "integrity": "sha512-NaRku2aMpUN1Sh1Gyk1KWUh2A7EJx2c6qYzvwsPtqhoHoaURshdrceYK3LunVCm3WHhm6FS7Vcczbvdh3/UIVw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "entities": "^8.0.0",
+        "parse5": "^8.0.0",
+        "parse5-sax-parser": "^8.0.0"
+      },
+      "funding": {
+        "url": "https://github.com/inikulin/parse5?sponsor=1"
+      }
+    },
+    "node_modules/parse5-sax-parser": {
+      "version": "8.0.1",
+      "resolved": "https://registry.npmjs.org/parse5-sax-parser/-/parse5-sax-parser-8.0.1.tgz",
+      "integrity": "sha512-6eHc4FeWwv8uBX1yMZ8Vl5zcT61k8EpK/rgRwNl/BLY4pOkUqXI1RIwGSIvxyBXzl5TGj4TvIQBJGwTU4P+ddg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "parse5": "^8.1.1"
+      },
+      "funding": {
+        "url": "https://github.com/inikulin/parse5?sponsor=1"
+      }
+    },
+    "node_modules/parse5/node_modules/entities": {
+      "version": "9.0.0",
+      "resolved": "https://registry.npmjs.org/entities/-/entities-9.0.0.tgz",
+      "integrity": "sha512-oJFNDJg3kTPwAD1cNn2+WmUq4wFoo09npc3Ydf1D7ED4smRiWrsKnaLxykrTWgyGEcusc87P5dxlAleol9kpkg==",
+      "dev": true,
+      "license": "BSD-2-Clause",
+      "engines": {
+        "node": ">=20.19.0"
+      },
+      "funding": {
+        "url": "https://github.com/fb55/entities?sponsor=1"
+      }
+    },
+    "node_modules/picocolors": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/picocolors/-/picocolors-1.1.1.tgz",
+      "integrity": "sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==",
+      "dev": true,
+      "license": "ISC"
+    },
+    "node_modules/picomatch": {
+      "version": "4.0.7",
+      "resolved": "https://registry.npmjs.org/picomatch/-/picomatch-4.0.7.tgz",
+      "integrity": "sha512-qcJu88Q2IWqJsDD529JKMdwGm/dvInW4HvQnRwiH9JtihJvzGOscDtHE3x1pBKeUOTysQ8kVmLnJ2kJu7yhcGA==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=12"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/jonschlinkert"
+      }
+    },
+    "node_modules/piscina": {
+      "version": "5.3.2",
+      "resolved": "https://registry.npmjs.org/piscina/-/piscina-5.3.2.tgz",
+      "integrity": "sha512-vv7l/mM7B9WgrhDaudIqv1x6v4LOBRYYmpWGdWushhpbCmVHp11sUB2v4hj1CAeTGXVxuZFz6xOU1RalAiPKfQ==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=20.x"
+      },
+      "optionalDependencies": {
+        "@napi-rs/nice": "^1.0.4"
+      }
+    },
+    "node_modules/postcss": {
+      "version": "8.5.33",
+      "resolved": "https://registry.npmjs.org/postcss/-/postcss-8.5.33.tgz",
+      "integrity": "sha512-RVHEU9/Pp1Fnjr/MpAJsZoADukCKhfIi15OunEYiGktIkYLkPVvC1sioWolGDS7XByMTx9m/IGbro0Js13zhnQ==",
+      "dev": true,
+      "funding": [
+        {
+          "type": "opencollective",
+          "url": "https://opencollective.com/postcss/"
+        },
+        {
+          "type": "tidelift",
+          "url": "https://tidelift.com/funding/github/npm/postcss"
+        },
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/ai"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "nanoid": "^3.3.20",
+        "picocolors": "^1.1.1",
+        "source-map-js": "^1.2.2"
+      },
+      "engines": {
+        "node": "^10 || ^12 || >=14"
+      }
+    },
+    "node_modules/postcss-media-query-parser": {
+      "version": "0.2.3",
+      "resolved": "https://registry.npmjs.org/postcss-media-query-parser/-/postcss-media-query-parser-0.2.3.tgz",
+      "integrity": "sha512-3sOlxmbKcSHMjlUXQZKQ06jOswE7oVkXPxmZdoB1r5l0q6gTFTQSHxNxOrCccElbW7dxNytifNEo8qidX2Vsig==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/postcss-safe-parser": {
+      "version": "7.1.0",
+      "resolved": "https://registry.npmjs.org/postcss-safe-parser/-/postcss-safe-parser-7.1.0.tgz",
+      "integrity": "sha512-1WzZxRLaAFwEh6Do+zyGpjWV3nGJNxxhuh7Ubu/q1ICImMgZJnLwhoaEpRbG4pJppp2Y1ncL9ffA2f+LhrefQg==",
+      "dev": true,
+      "funding": [
+        {
+          "type": "opencollective",
+          "url": "https://opencollective.com/postcss/"
+        },
+        {
+          "type": "tidelift",
+          "url": "https://tidelift.com/funding/github/npm/postcss-safe-parser"
+        },
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/ai"
+        }
+      ],
+      "license": "MIT",
+      "engines": {
+        "node": ">=18.0"
+      },
+      "peerDependencies": {
+        "postcss": "^8.4.31"
+      }
+    },
+    "node_modules/proc-log": {
+      "version": "7.0.0",
+      "resolved": "https://registry.npmjs.org/proc-log/-/proc-log-7.0.0.tgz",
+      "integrity": "sha512-FYgfaA69XZ93zaXLoMNQ+ViDXGGBgR8aLh03txzcFhV+9xOXx7+8DLCULrKKpR9+GsH9ZfHm82aSUPpozX0Ztg==",
+      "dev": true,
+      "license": "ISC",
+      "engines": {
+        "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+      }
+    },
+    "node_modules/proxy-agent-negotiate": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/proxy-agent-negotiate/-/proxy-agent-negotiate-1.1.0.tgz",
+      "integrity": "sha512-N8IBcM3UgCVzz2L2Lqv8DVntDnnC8/hiV4nEDUPkqq72TPUgYWjQc+bdZlBPZK9LzPAvOY//gAt0S0DApoOXWQ==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">= 20"
+      },
+      "peerDependencies": {
+        "kerberos": "^2.0.0"
+      },
+      "peerDependenciesMeta": {
+        "kerberos": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/readdirp": {
+      "version": "5.1.1",
+      "resolved": "https://registry.npmjs.org/readdirp/-/readdirp-5.1.1.tgz",
+      "integrity": "sha512-Kko+Y5XQ6fM+Ce3dq3m9YGxnacYZYl9cA1wZjaF3Vbry2L3i1qVg8+CAgNPsXRArPMUMCaOR7oa9Nqntc43JKA==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">= 20.19.0"
+      },
+      "funding": {
+        "type": "individual",
+        "url": "https://paulmillr.com/funding/"
+      }
+    },
+    "node_modules/reflect-metadata": {
+      "version": "0.2.2",
+      "resolved": "https://registry.npmjs.org/reflect-metadata/-/reflect-metadata-0.2.2.tgz",
+      "integrity": "sha512-urBwgfrvVP/eAyXx4hluJivBKzuEbSQs9rKWCrCkbSxNv8mxPcUZKeuoF3Uy4mJl3Lwprp6yy5/39VWigZ4K6Q==",
+      "dev": true,
+      "license": "Apache-2.0"
+    },
+    "node_modules/require-from-string": {
+      "version": "2.0.2",
+      "resolved": "https://registry.npmjs.org/require-from-string/-/require-from-string-2.0.2.tgz",
+      "integrity": "sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=0.10.0"
+      }
+    },
+    "node_modules/restore-cursor": {
+      "version": "5.1.0",
+      "resolved": "https://registry.npmjs.org/restore-cursor/-/restore-cursor-5.1.0.tgz",
+      "integrity": "sha512-oMA2dcrw6u0YfxJQXm342bFKX/E4sG9rbTzO9ptUcR/e8A33cHuvStiYOwH7fszkZlZ1z/ta9AAoPk2F4qIOHA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "onetime": "^7.0.0",
+        "signal-exit": "^4.1.0"
+      },
+      "engines": {
+        "node": ">=18"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/rolldown": {
+      "version": "1.2.16",
+      "resolved": "https://registry.npmjs.org/rolldown/-/rolldown-1.2.16.tgz",
+      "integrity": "sha512-bWvlMpFKiTfDKfnK7FC2MPgPeWCf/Kpwsq49ApdW+FQaBZb6O6dZ4MAPbPUjp7hYQrw/RobqCzn64BRrQecGHw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@oxc-project/types": "=0.156.0",
+        "@rolldown/pluginutils": "^1.0.0"
+      },
+      "bin": {
+        "rolldown": "bin/cli.mjs"
+      },
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      },
+      "optionalDependencies": {
+        "@rolldown/binding-android-arm-eabi": "1.2.16",
+        "@rolldown/binding-android-arm64": "1.2.16",
+        "@rolldown/binding-darwin-arm64": "1.2.16",
+        "@rolldown/binding-darwin-x64": "1.2.16",
+        "@rolldown/binding-freebsd-x64": "1.2.16",
+        "@rolldown/binding-linux-arm-gnueabihf": "1.2.16",
+        "@rolldown/binding-linux-arm64-gnu": "1.2.16",
+        "@rolldown/binding-linux-arm64-musl": "1.2.16",
+        "@rolldown/binding-linux-ppc64-gnu": "1.2.16",
+        "@rolldown/binding-linux-s390x-gnu": "1.2.16",
+        "@rolldown/binding-linux-x64-gnu": "1.2.16",
+        "@rolldown/binding-linux-x64-musl": "1.2.16",
+        "@rolldown/binding-openharmony-arm64": "1.2.16",
+        "@rolldown/binding-win32-arm64-msvc": "1.2.16",
+        "@rolldown/binding-win32-x64-msvc": "1.2.16"
+      }
+    },
+    "node_modules/rxjs": {
+      "version": "7.8.2",
+      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-7.8.2.tgz",
+      "integrity": "sha512-dhKf903U/PQZY6boNNtAGdWbG85WAbjT/1xYoZIC7FAY0yWapOBQVsVrDl58W86//e1VpMNBtRV4MaXfdMySFA==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "tslib": "^2.1.0"
+      }
+    },
+    "node_modules/safer-buffer": {
+      "version": "2.1.2",
+      "resolved": "https://registry.npmjs.org/safer-buffer/-/safer-buffer-2.1.2.tgz",
+      "integrity": "sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/sass": {
+      "version": "1.104.1",
+      "resolved": "https://registry.npmjs.org/sass/-/sass-1.104.1.tgz",
+      "integrity": "sha512-yDA+1aIG3EHgN4V/BvuhCvu61FF6hEd4e+9DxikUm9U0CAGuvdIZ/UYy7qbOxjhbbWQraoyLlMuzdRGOSV5Bmw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "chokidar": "^5.0.0",
+        "immutable": "^5.1.5",
+        "source-map-js": ">=0.6.2 <2.0.0"
+      },
+      "bin": {
+        "sass": "sass.js"
+      },
+      "engines": {
+        "node": ">=20.19.0"
+      },
+      "optionalDependencies": {
+        "@parcel/watcher": "^2.4.1"
+      }
+    },
+    "node_modules/sass-embedded": {
+      "version": "1.104.1",
+      "resolved": "https://registry.npmjs.org/sass-embedded/-/sass-embedded-1.104.1.tgz",
+      "integrity": "sha512-7LxbtPJ1MWKVbhzOnGx1sHTkHTcHVJ9hbgVsU29p/8gY1VeXt19fcJFr5xsx2f6zfrrR3FeOcYMt0uYDLAxpgw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@bufbuild/protobuf": "^2.5.0",
+        "colorjs.io": "^0.7.0",
+        "immutable": "^5.1.5",
+        "rxjs": "^7.4.0",
+        "supports-color": "^8.1.1",
+        "sync-child-process": "^1.0.2",
+        "varint": "^6.0.0"
+      },
+      "bin": {
+        "sass": "dist/bin/sass.js"
+      },
+      "engines": {
+        "node": ">=20.19.0"
+      },
+      "optionalDependencies": {
+        "sass-embedded-all-unknown": "1.104.1",
+        "sass-embedded-android-arm": "1.104.1",
+        "sass-embedded-android-arm64": "1.104.1",
+        "sass-embedded-android-riscv64": "1.104.1",
+        "sass-embedded-android-x64": "1.104.1",
+        "sass-embedded-darwin-arm64": "1.104.1",
+        "sass-embedded-darwin-x64": "1.104.1",
+        "sass-embedded-linux-arm": "1.104.1",
+        "sass-embedded-linux-arm64": "1.104.1",
+        "sass-embedded-linux-musl-arm": "1.104.1",
+        "sass-embedded-linux-musl-arm64": "1.104.1",
+        "sass-embedded-linux-musl-riscv64": "1.104.1",
+        "sass-embedded-linux-musl-x64": "1.104.1",
+        "sass-embedded-linux-riscv64": "1.104.1",
+        "sass-embedded-linux-x64": "1.104.1",
+        "sass-embedded-unknown-all": "1.104.1",
+        "sass-embedded-win32-arm64": "1.104.1",
+        "sass-embedded-win32-x64": "1.104.1"
+      }
+    },
+    "node_modules/sass-embedded-all-unknown": {
+      "version": "1.104.1",
+      "resolved": "https://registry.npmjs.org/sass-embedded-all-unknown/-/sass-embedded-all-unknown-1.104.1.tgz",
+      "integrity": "sha512-toyMCyUKkT6DsYlHuKZGjd8T6WltaW4TGX07F7HnF4tNJM5m/8VaVsd74zrq3QSPqGE9JjxIDK4NrNc/QY9pkA==",
+      "cpu": [
+        "!arm",
+        "!arm64",
+        "!riscv64",
+        "!x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "dependencies": {
+        "sass": "1.104.1"
+      }
+    },
+    "node_modules/sass-embedded-android-arm": {
+      "version": "1.104.1",
+      "resolved": "https://registry.npmjs.org/sass-embedded-android-arm/-/sass-embedded-android-arm-1.104.1.tgz",
+      "integrity": "sha512-g/XPAJYAzSSQZFP4xCdGD0HLKB4mf24cJ/+5Nls8rMool3jNkBv9+AFO4EV0b+RxN8rLcEsMccH1CR64yIFYcQ==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "android"
+      ],
+      "engines": {
+        "node": ">=14.0.0"
+      }
+    },
+    "node_modules/sass-embedded-android-arm64": {
+      "version": "1.104.1",
+      "resolved": "https://registry.npmjs.org/sass-embedded-android-arm64/-/sass-embedded-android-arm64-1.104.1.tgz",
+      "integrity": "sha512-yW3BVW4YFpN2vu2cVQ+Pz5JrRTvoIz36aCdo+J/Mo1A9gEN8eVPV/AL7aeZ803YdKgIitd3qw3pY4wpmT6TXNg==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "android"
+      ],
+      "engines": {
+        "node": ">=14.0.0"
+      }
+    },
+    "node_modules/sass-embedded-android-riscv64": {
+      "version": "1.104.1",
+      "resolved": "https://registry.npmjs.org/sass-embedded-android-riscv64/-/sass-embedded-android-riscv64-1.104.1.tgz",
+      "integrity": "sha512-ZYY8oMKQS7Q/6FBoC8w3T16O3MucDe3xv8iKym41Nht5uvLCGGpm4fC4OF5nlv7wQkJv8oactYddGG3Wd0Rqkg==",
+      "cpu": [
+        "riscv64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "android"
+      ],
+      "engines": {
+        "node": ">=14.0.0"
+      }
+    },
+    "node_modules/sass-embedded-android-x64": {
+      "version": "1.104.1",
+      "resolved": "https://registry.npmjs.org/sass-embedded-android-x64/-/sass-embedded-android-x64-1.104.1.tgz",
+      "integrity": "sha512-5WZKC4lSfjMIjzZdQUlYQUAV+UiatBhD8w28U7cYLLj4/dMgEPOBd4g3VMv0BwpgH2JOaycMS42dXq29W2bcDg==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "android"
+      ],
+      "engines": {
+        "node": ">=14.0.0"
+      }
+    },
+    "node_modules/sass-embedded-darwin-arm64": {
+      "version": "1.104.1",
+      "resolved": "https://registry.npmjs.org/sass-embedded-darwin-arm64/-/sass-embedded-darwin-arm64-1.104.1.tgz",
+      "integrity": "sha512-oatuHzn0NsEg0d9Dcze6CuWUPvuETtMxRK4cv0eRAg7p6R0vHnv5GZRyWG6gEy3nc/ha/L+GtTasWVU82f4jrQ==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": ">=14.0.0"
+      }
+    },
+    "node_modules/sass-embedded-darwin-x64": {
+      "version": "1.104.1",
+      "resolved": "https://registry.npmjs.org/sass-embedded-darwin-x64/-/sass-embedded-darwin-x64-1.104.1.tgz",
+      "integrity": "sha512-gql/5sHGzUTVwuHfM3QLCDeb6NYwen+LLj22gz81C2NKHF/4nUtDyh4N+fURWdT7J0/EhtMOd0+FLML3sGNP7g==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": ">=14.0.0"
+      }
+    },
+    "node_modules/sass-embedded-linux-arm": {
+      "version": "1.104.1",
+      "resolved": "https://registry.npmjs.org/sass-embedded-linux-arm/-/sass-embedded-linux-arm-1.104.1.tgz",
+      "integrity": "sha512-WfmshPJOp9vUKxgp8wZ2ncaKBbyrlW9J51M2aUQHWECjMNxTULnGOHWSmD7FViXv4zwn1Co5FIFQUipW7RCxtA==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "libc": "glibc",
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=14.0.0"
+      }
+    },
+    "node_modules/sass-embedded-linux-arm64": {
+      "version": "1.104.1",
+      "resolved": "https://registry.npmjs.org/sass-embedded-linux-arm64/-/sass-embedded-linux-arm64-1.104.1.tgz",
+      "integrity": "sha512-sVWUKXNTu8sP3X95Df0xo/t49Ce5IseTIMqXHxhFBKVmx7gf7kBWNLK0wH5ym+4khc+B5nNJPgq4IxpelG8tMQ==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "libc": "glibc",
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=14.0.0"
+      }
+    },
+    "node_modules/sass-embedded-linux-musl-arm": {
+      "version": "1.104.1",
+      "resolved": "https://registry.npmjs.org/sass-embedded-linux-musl-arm/-/sass-embedded-linux-musl-arm-1.104.1.tgz",
+      "integrity": "sha512-k0cQ/CxBzFVYiQEObg6CpF6CUglkdEhi/DZgZXQbwC27kbGGY+fatmIs/cFPJL2z1ulACwoAr86RQUFzYvw5eg==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "libc": "musl",
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=14.0.0"
+      }
+    },
+    "node_modules/sass-embedded-linux-musl-arm64": {
+      "version": "1.104.1",
+      "resolved": "https://registry.npmjs.org/sass-embedded-linux-musl-arm64/-/sass-embedded-linux-musl-arm64-1.104.1.tgz",
+      "integrity": "sha512-H7b+LzZ/w8pwNExInM8HDHraqvxCMdUc5ZRGU/aSJJhZ9HjeRKBjF3GxaisVHnx7o18j1l4VQ5cLBL9tTmNzZw==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "libc": "musl",
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=14.0.0"
+      }
+    },
+    "node_modules/sass-embedded-linux-musl-riscv64": {
+      "version": "1.104.1",
+      "resolved": "https://registry.npmjs.org/sass-embedded-linux-musl-riscv64/-/sass-embedded-linux-musl-riscv64-1.104.1.tgz",
+      "integrity": "sha512-9DYdn4wfrkidjxJVtEd2iCx8HKdZe+uF82GDmrYEZhgu4NjVE6a4fQyW7OLwzn3erZMHKBaObBOH1d37DnXI1A==",
+      "cpu": [
+        "riscv64"
+      ],
+      "dev": true,
+      "libc": "musl",
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=14.0.0"
+      }
+    },
+    "node_modules/sass-embedded-linux-musl-x64": {
+      "version": "1.104.1",
+      "resolved": "https://registry.npmjs.org/sass-embedded-linux-musl-x64/-/sass-embedded-linux-musl-x64-1.104.1.tgz",
+      "integrity": "sha512-5xz+nAr01b6yaRdrGVgE7lNvm1lGFjwNdUvnz+teidvHCbD5oTcbhrRVrnDoLHHvq5n3Jve9TzWaaHhezaEfHA==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "libc": "musl",
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=14.0.0"
+      }
+    },
+    "node_modules/sass-embedded-linux-riscv64": {
+      "version": "1.104.1",
+      "resolved": "https://registry.npmjs.org/sass-embedded-linux-riscv64/-/sass-embedded-linux-riscv64-1.104.1.tgz",
+      "integrity": "sha512-oWryPJWTXK5adtlz/FD7wd2kS4I0CEgp6mWLUVb4oMFURMLz9bA9fO87D7lc4SV++lds7T51PU1kykCbOvNHMg==",
+      "cpu": [
+        "riscv64"
+      ],
+      "dev": true,
+      "libc": "glibc",
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=14.0.0"
+      }
+    },
+    "node_modules/sass-embedded-linux-x64": {
+      "version": "1.104.1",
+      "resolved": "https://registry.npmjs.org/sass-embedded-linux-x64/-/sass-embedded-linux-x64-1.104.1.tgz",
+      "integrity": "sha512-j/sX/yKTx/wJKepC5/ISlR6kPeSuHKThf76D2za5i2VnbHg0MN19jQq3WMorowR3kRghqt6azs3awogG+e7IRA==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "libc": "glibc",
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=14.0.0"
+      }
+    },
+    "node_modules/sass-embedded-unknown-all": {
+      "version": "1.104.1",
+      "resolved": "https://registry.npmjs.org/sass-embedded-unknown-all/-/sass-embedded-unknown-all-1.104.1.tgz",
+      "integrity": "sha512-RaMsYZB5mRioL4qhoI7T5mmNb2OunakbPTJW2cuu3MeIULnGoxo7Wd5QKFxeQvF7sSQL57RuaQ+q9pH+/pQ9Fg==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "!android",
+        "!darwin",
+        "!linux",
+        "!win32"
+      ],
+      "dependencies": {
+        "sass": "1.104.1"
+      }
+    },
+    "node_modules/sass-embedded-win32-arm64": {
+      "version": "1.104.1",
+      "resolved": "https://registry.npmjs.org/sass-embedded-win32-arm64/-/sass-embedded-win32-arm64-1.104.1.tgz",
+      "integrity": "sha512-fS6DL7lcnTPclqGLF4xRt8egZlFY9cU23d57ufbWqaUbCFu9JTu0+8qB4jMxfx1la6byi3GoSTfbnNOLfWv8sw==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">=14.0.0"
+      }
+    },
+    "node_modules/sass-embedded-win32-x64": {
+      "version": "1.104.1",
+      "resolved": "https://registry.npmjs.org/sass-embedded-win32-x64/-/sass-embedded-win32-x64-1.104.1.tgz",
+      "integrity": "sha512-/c4N2A93Ckms6DuRFVftKYISuI1tyC8gmlVJ8WaWFzgCBN/Swq2rARJIBUNeuxlmxjmYXfd3+2f/u887K63wbA==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">=14.0.0"
+      }
+    },
+    "node_modules/semver": {
+      "version": "7.8.5",
+      "resolved": "https://registry.npmjs.org/semver/-/semver-7.8.5.tgz",
+      "integrity": "sha512-Y7/KDsb8LjooZpwaqGyulO6DQlksgCncchHGk+sZIY4SBvUocMBEFH5Ur1fI4dV+Jvl0w6cjvucaIi40puRioA==",
+      "dev": true,
+      "license": "ISC",
+      "bin": {
+        "semver": "bin/semver.js"
+      },
+      "engines": {
+        "node": ">=10"
+      }
+    },
+    "node_modules/signal-exit": {
+      "version": "4.1.0",
+      "resolved": "https://registry.npmjs.org/signal-exit/-/signal-exit-4.1.0.tgz",
+      "integrity": "sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==",
+      "dev": true,
+      "license": "ISC",
+      "engines": {
+        "node": ">=14"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/isaacs"
+      }
+    },
+    "node_modules/slice-ansi": {
+      "version": "10.0.1",
+      "resolved": "https://registry.npmjs.org/slice-ansi/-/slice-ansi-10.0.1.tgz",
+      "integrity": "sha512-CJKEH3zwVX4bOnE+bFbmh+JK/YMT9VAazqBsVBTesnYKXlNtz6oVmrhNp1jHrxHzscuUkWiKZpzNzFraZcrorg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "ansi-styles": "^7.0.0",
+        "string-width": "^8.3.0"
+      },
+      "engines": {
+        "node": ">=22"
+      },
+      "funding": {
+        "url": "https://github.com/chalk/slice-ansi?sponsor=1"
+      }
+    },
+    "node_modules/source-map": {
+      "version": "0.8.0",
+      "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.8.0.tgz",
+      "integrity": "sha512-d8EqvL+k/SOXCreS/SUzg2ciyHqBBLcN/yuRjFsbvVhHTE2pgei7oAhmPM7kWFbkX6OSMQfUq4KbkF3au9lhYQ==",
+      "dev": true,
+      "license": "BSD-3-Clause",
+      "engines": {
+        "node": ">= 12"
+      }
+    },
+    "node_modules/source-map-js": {
+      "version": "1.2.2",
+      "resolved": "https://registry.npmjs.org/source-map-js/-/source-map-js-1.2.2.tgz",
+      "integrity": "sha512-KGj/8Y43x35aZVDtt+J4mK1hoLGHULMYfSkODJNQjNDC3oW1PqPoxMwo0pLUsWM/UEGzON/NxeHywEfNXNP3Vw==",
+      "dev": true,
+      "license": "BSD-3-Clause",
+      "engines": {
+        "node": ">=0.10.0"
+      }
+    },
+    "node_modules/source-map-support": {
+      "version": "0.5.21",
+      "resolved": "https://registry.npmjs.org/source-map-support/-/source-map-support-0.5.21.tgz",
+      "integrity": "sha512-uBHU3L3czsIyYXKX88fdrGovxdSCoTGDRZ6SYXtSRxLZUzHg5P/66Ht6uoUlHu9EZod+inXhKo3qQgwXUT/y1w==",
+      "license": "MIT",
+      "dependencies": {
+        "buffer-from": "^1.0.0",
+        "source-map": "^0.6.0"
+      }
+    },
+    "node_modules/source-map-support/node_modules/source-map": {
+      "version": "0.6.1",
+      "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.6.1.tgz",
+      "integrity": "sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==",
+      "license": "BSD-3-Clause",
+      "engines": {
+        "node": ">=0.10.0"
+      }
+    },
+    "node_modules/stdin-discarder": {
+      "version": "0.3.2",
+      "resolved": "https://registry.npmjs.org/stdin-discarder/-/stdin-discarder-0.3.2.tgz",
+      "integrity": "sha512-eCPu1qRxPVkl5605OTWF8Wz40b4Mf45NY5LQmVPQ599knfs5QhASUm9GbJ5BDMDOXgrnh0wyEdvzmL//YMlw0A==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=18"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/string-width": {
+      "version": "8.3.0",
+      "resolved": "https://registry.npmjs.org/string-width/-/string-width-8.3.0.tgz",
+      "integrity": "sha512-ZbmZM0JCihQN91dWnxoipT2KOEyHqEyfRXUyjuRhW8b/xnqPDoq4gWEVApTVa9db2wN8mmoikgFBbjh71+cGeQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "get-east-asian-width": "^1.5.0",
+        "strip-ansi": "^7.1.2"
+      },
+      "engines": {
+        "node": ">=20"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/strip-ansi": {
+      "version": "7.2.0",
+      "resolved": "https://registry.npmjs.org/strip-ansi/-/strip-ansi-7.2.0.tgz",
+      "integrity": "sha512-yDPMNjp4WyfYBkHnjIRLfca1i6KMyGCtsVgoKe/z1+6vukgaENdgGBZt+ZmKPc4gavvEZ5OgHfHdrazhgNyG7w==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "ansi-regex": "^6.2.2"
+      },
+      "engines": {
+        "node": ">=12"
+      },
+      "funding": {
+        "url": "https://github.com/chalk/strip-ansi?sponsor=1"
+      }
+    },
+    "node_modules/supports-color": {
+      "version": "8.1.1",
+      "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-8.1.1.tgz",
+      "integrity": "sha512-MpUEN2OodtUzxvKQl72cUF7RQ5EiHsGvSsVG0ia9c5RbWGL2CI4C7EpPS8UTBIplnlzZiNuV56w+FuNxy3ty2Q==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "has-flag": "^4.0.0"
+      },
+      "engines": {
+        "node": ">=10"
+      },
+      "funding": {
+        "url": "https://github.com/chalk/supports-color?sponsor=1"
+      }
+    },
+    "node_modules/sync-child-process": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/sync-child-process/-/sync-child-process-1.1.1.tgz",
+      "integrity": "sha512-54zMOnH5qgjdKW8SGpCx3daSP+v+TtTfOxgPdhUE3P0hytMMpknZfP67S4JeRcx5IQRWJERz6890yO4dkTywww==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "sync-message-port": "^1.0.0"
+      },
+      "engines": {
+        "node": ">=16.0.0"
+      }
+    },
+    "node_modules/sync-message-port": {
+      "version": "1.2.0",
+      "resolved": "https://registry.npmjs.org/sync-message-port/-/sync-message-port-1.2.0.tgz",
+      "integrity": "sha512-gAQ9qrUN/UCypHtGFbbe7Rc/f9bzO88IwrG8TDo/aMKAApKyD6E3W4Cm0EfhfBb6Z6SKt59tTCTfD+n1xmAvMg==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=16.0.0"
+      }
+    },
+    "node_modules/terser": {
+      "version": "5.51.2",
+      "resolved": "https://registry.npmjs.org/terser/-/terser-5.51.2.tgz",
+      "integrity": "sha512-bWnjSNscmuI+GJze6ZupnHP8G/cTcsJF+bXCeQknk2SHQsgbNJnLrqiH9jZ2W4STPVXH2mDKKRX3iwPhc9Cn/Q==",
+      "license": "BSD-2-Clause",
+      "dependencies": {
+        "@jridgewell/source-map": "^0.3.3",
+        "acorn": "^8.15.0",
+        "commander": "^2.20.0",
+        "source-map-support": "~0.5.20"
+      },
+      "bin": {
+        "terser": "bin/terser"
+      },
+      "engines": {
+        "node": ">=10"
+      }
+    },
+    "node_modules/tinyglobby": {
+      "version": "0.2.17",
+      "resolved": "https://registry.npmjs.org/tinyglobby/-/tinyglobby-0.2.17.tgz",
+      "integrity": "sha512-wXR/dYpcqKmfWpEdZjiKJOwCNFndD0DMnrW/cYjVGttEkBfVgcLFHoNrlj47mjOVic9yyNu65alsgF4NQyTa2g==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "fdir": "^6.5.0",
+        "picomatch": "^4.0.4"
+      },
+      "engines": {
+        "node": ">=12.0.0"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/SuperchupuDev"
+      }
+    },
+    "node_modules/tslib": {
+      "version": "2.8.1",
+      "resolved": "https://registry.npmjs.org/tslib/-/tslib-2.8.1.tgz",
+      "integrity": "sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==",
+      "license": "0BSD"
+    },
+    "node_modules/typescript": {
+      "version": "6.0.3",
+      "resolved": "https://registry.npmjs.org/typescript/-/typescript-6.0.3.tgz",
+      "integrity": "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==",
+      "dev": true,
+      "license": "Apache-2.0",
+      "bin": {
+        "tsc": "bin/tsc",
+        "tsserver": "bin/tsserver"
+      },
+      "engines": {
+        "node": ">=14.17"
+      }
+    },
+    "node_modules/update-browserslist-db": {
+      "version": "1.4.0",
+      "resolved": "https://registry.npmjs.org/update-browserslist-db/-/update-browserslist-db-1.4.0.tgz",
+      "integrity": "sha512-WPJuOnjI9FWDct4fB+ej4Mz8opLaw5CDcZ2t44tFZ0vIQVYWzBhWR3mkixuUj/A7+vY4V9+ApOZ2YYLwdgq46w==",
+      "dev": true,
+      "funding": [
+        {
+          "type": "opencollective",
+          "url": "https://opencollective.com/browserslist"
+        },
+        {
+          "type": "tidelift",
+          "url": "https://tidelift.com/funding/github/npm/browserslist"
+        },
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/ai"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "escalade": "^3.2.0",
+        "picocolors": "^1.1.1"
+      },
+      "bin": {
+        "update-browserslist-db": "cli.js"
+      },
+      "peerDependencies": {
+        "browserslist": ">= 4.21.0"
+      }
+    },
+    "node_modules/validate-npm-package-name": {
+      "version": "8.0.0",
+      "resolved": "https://registry.npmjs.org/validate-npm-package-name/-/validate-npm-package-name-8.0.0.tgz",
+      "integrity": "sha512-SCv6OOV6Xj2/3cXy3dGmADluJTNcL3o7hZAglNPTe+WYuEuvxgJzxPrSDLZhF+CwyQOubqgecjMmTJGMVLWjYQ==",
+      "dev": true,
+      "license": "ISC",
+      "engines": {
+        "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+      }
+    },
+    "node_modules/varint": {
+      "version": "6.0.0",
+      "resolved": "https://registry.npmjs.org/varint/-/varint-6.0.0.tgz",
+      "integrity": "sha512-cXEIW6cfr15lFv563k4GuVuW/fiwjknytD37jIOLSdSWuOI6WnO/oKwmP2FQTU2l01LP8/M5TSAJpzUaGe3uWg==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/verkit": {
+      "version": "0.3.2",
+      "resolved": "https://registry.npmjs.org/verkit/-/verkit-0.3.2.tgz",
+      "integrity": "sha512-zj/ob3UsvJGN0whEAKFp53REA5X66hvffVqoCtVQAakJKnKlH+/PcOfMoFwIG/o4rElqLv/ycAFlx8ZlXUorCg==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=18.12.0"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sxzz"
+      }
+    },
+    "node_modules/vite": {
+      "version": "8.3.5",
+      "resolved": "https://registry.npmjs.org/vite/-/vite-8.3.5.tgz",
+      "integrity": "sha512-z1YpjieJ9g0ebTmQpLBv/oq9E3F9EIlOe+7LahW8SrE3LTiG3udBRUXQOlYXP9b+IC2q2phHeVxj9xGlw34OEQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "lightningcss": "^1.33.0",
+        "picomatch": "^4.0.7",
+        "postcss": "^8.5.30",
+        "rolldown": "~1.2.14",
+        "tinyglobby": "^0.2.17"
+      },
+      "bin": {
+        "vite": "bin/vite.js"
+      },
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      },
+      "funding": {
+        "url": "https://github.com/vitejs/vite?sponsor=1"
+      },
+      "optionalDependencies": {
+        "fsevents": "~2.3.3"
+      },
+      "peerDependencies": {
+        "@types/node": "^20.19.0 || >=22.12.0",
+        "@vitejs/devtools": "^0.7.1 || ^0.8.0",
+        "esbuild": "^0.27.0 || ^0.28.0",
+        "jiti": ">=1.21.0",
+        "less": "^4.0.0",
+        "sass": "^1.70.0",
+        "sass-embedded": "^1.70.0",
+        "stylus": ">=0.54.8",
+        "sugarss": "^5.0.0",
+        "terser": "^5.16.0",
+        "tsx": "^4.8.1",
+        "yaml": "^2.4.2"
+      },
+      "peerDependenciesMeta": {
+        "@types/node": {
+          "optional": true
+        },
+        "@vitejs/devtools": {
+          "optional": true
+        },
+        "esbuild": {
+          "optional": true
+        },
+        "jiti": {
+          "optional": true
+        },
+        "less": {
+          "optional": true
+        },
+        "sass": {
+          "optional": true
+        },
+        "sass-embedded": {
+          "optional": true
+        },
+        "stylus": {
+          "optional": true
+        },
+        "sugarss": {
+          "optional": true
+        },
+        "terser": {
+          "optional": true
+        },
+        "tsx": {
+          "optional": true
+        },
+        "yaml": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/weak-lru-cache": {
+      "version": "1.2.3",
+      "resolved": "https://registry.npmjs.org/weak-lru-cache/-/weak-lru-cache-1.2.3.tgz",
+      "integrity": "sha512-pF0uTATIDYJFeEX4GDD5zjOe2jU9EJbBRcpcGPonUcao7eSp2hl6VA0b2Ims9jisMX33x6zgnozvaBCEsXNGPw==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true
+    },
+    "node_modules/wrap-ansi": {
+      "version": "10.0.2",
+      "resolved": "https://registry.npmjs.org/wrap-ansi/-/wrap-ansi-10.0.2.tgz",
+      "integrity": "sha512-6OLRNZqRntVGBm26ghZ5eZhCuWWyOkRCSn8XsOIuq5stpCE/tjLbdozd93naILZig0lmD8ANfRwnhn0DLeXGlg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "ansi-styles": "^6.2.3",
+        "string-width": "^8.2.0"
+      },
+      "engines": {
+        "node": ">=20"
+      },
+      "funding": {
+        "url": "https://github.com/chalk/wrap-ansi?sponsor=1"
+      }
+    },
+    "node_modules/wrap-ansi/node_modules/ansi-styles": {
+      "version": "6.2.3",
+      "resolved": "https://registry.npmjs.org/ansi-styles/-/ansi-styles-6.2.3.tgz",
+      "integrity": "sha512-4Dj6M28JB+oAH8kFkTLUo+a2jwOFkuqb3yucU0CANcRRUbxS0cP0nZYCGjcc3BNXwRIsUVmDGgzawme7zvJHvg==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=12"
+      },
+      "funding": {
+        "url": "https://github.com/chalk/ansi-styles?sponsor=1"
+      }
+    },
+    "node_modules/xxhash-wasm": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/xxhash-wasm/-/xxhash-wasm-1.1.0.tgz",
+      "integrity": "sha512-147y/6YNh+tlp6nd/2pWq38i9h6mz/EuQ6njIrmW8D1BS5nCqs0P6DG+m6zTGnNz5I+uhZ0SHxBs9BsPrwcKDA==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/y18n": {
+      "version": "5.0.8",
+      "resolved": "https://registry.npmjs.org/y18n/-/y18n-5.0.8.tgz",
+      "integrity": "sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA==",
+      "dev": true,
+      "license": "ISC",
+      "engines": {
+        "node": ">=10"
+      }
+    },
+    "node_modules/yargs": {
+      "version": "18.1.0",
+      "resolved": "https://registry.npmjs.org/yargs/-/yargs-18.1.0.tgz",
+      "integrity": "sha512-2rAgRKu54VsHkqI0/tYkmluGXHD4KW7yZoycuqDQ15QOTnc2VVfy0nN/1eMhnQLO00A+dwtK20xuCnc1YGeUyg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "cliui": "^9.0.1",
+        "escalade": "^3.1.1",
+        "get-caller-file": "^2.0.5",
+        "string-width": "^8.2.1",
+        "y18n": "^5.0.5",
+        "yargs-parser": "^22.0.0"
+      },
+      "engines": {
+        "node": "^20.19.0 || ^22.12.0 || >=23"
+      }
+    },
+    "node_modules/yargs-parser": {
+      "version": "22.0.0",
+      "resolved": "https://registry.npmjs.org/yargs-parser/-/yargs-parser-22.0.0.tgz",
+      "integrity": "sha512-rwu/ClNdSMpkSrUb+d6BRsSkLUq1fmfsY6TOpYzTwvwkg1/NRG85KBy3kq++A8LKQwX6lsu+aWad+2khvuXrqw==",
+      "dev": true,
+      "license": "ISC",
+      "engines": {
+        "node": "^20.19.0 || ^22.12.0 || >=23"
+      }
+    },
+    "node_modules/yoctocolors": {
+      "version": "2.2.0",
+      "resolved": "https://registry.npmjs.org/yoctocolors/-/yoctocolors-2.2.0.tgz",
+      "integrity": "sha512-xYqdZFUK/VYazNl/oCDYN+3WloWQwMfZxBoiNt6qNyk+xfOdi598muWE42rNZFp1kNOiqW936q5RhUdnpqElSg==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=18"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/zod": {
+      "version": "4.6.6",
+      "resolved": "https://registry.npmjs.org/zod/-/zod-4.6.6.tgz",
+      "integrity": "sha512-4UmzQUF5fxvfcYHlbjBmejU+w+hbDnWFx4aS8kBx7nPBHcO2SqPbpAG8snbdg+Xse4pRefR98hgjFgIMCI/UhA==",
+      "license": "MIT",
+      "funding": {
+        "url": "https://github.com/sponsors/colinhacks"
+      }
+    }
+  }
+}
+`,Ze=`{
+  "version": 1,
+  "cli": { "analytics": false },
+  "projects": {
+    "starter": {
+      "projectType": "application",
+      "root": "",
+      "sourceRoot": "src",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": "dist/starter",
+            "index": "src/index.html",
+            "browser": "src/main.ts",
+            "tsConfig": "tsconfig.json",
+            "assets": [{ "glob": "**/*", "input": "public", "output": "/" }],
+            "styles": ["search.css"]
+          },
+          "configurations": {
+            "development": { "optimization": false, "sourceMap": true }
+          }
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "options": { "buildTarget": "starter:build:development" }
+        }
+      }
+    }
+  }
+}
+`,Qe=`{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "experimentalDecorators": true,
+    "allowJs": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "useDefineForClassFields": false
+  },
+  "angularCompilerOptions": { "strictTemplates": true },
+  "files": ["src/main.ts"]
+}
+`,$e=`import { bootstrapApplication } from '@angular/platform-browser';
+import { SearchApp } from './search-app';
+
+bootstrapApplication(SearchApp).catch(() => {
+  const host = document.querySelector('search-app');
+  if (host) host.textContent = 'Couldn’t start search. Check the starter setup and connection settings.';
+});
+`,et=`import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, computed, signal } from '@angular/core';
+import { SearchstudioUxAngularModule } from '@searchstax-inc/searchstudio-ux-angular';
+import type { IExternalPromotion, ISearchstaxParsedResult, ISearchstaxSearchResponse, ISearchstaxSearchSortingData, Searchstax } from '@searchstax-inc/searchstudio-ux-js';
+import { connection, demo, design } from './config.js';
+import { contentLanguageTag } from './content-language.js';
+import { demoResultText, demoResultTitle } from './demo-content.js';
+import { setupStarterAnswers } from './starter-answers.js';
+import { thumbnailAlt } from './thumbnail-alt.js';
+import { createCustomerSuggestionSource } from './customer-suggestions.js';
+import { sampleSuggestionSource, setupSearchSuggestions } from './suggestions.js';
+import { setupPaginationFocus } from './pagination-focus.js';
+import { applySampleIndexedPromotion, sampleExternalPromotion, samplePromotionMode, samplePromotionQuery } from './promotions.js';
+
+const facetLabels: Record<string, string> = demo.facetLabels;
+const thumbnailPaths: Record<string, string> = demo.thumbnailPaths;
+
+function publicLink(value: unknown) {
+  if (typeof value !== 'string') return '';
+  try {
+    const url = new URL(value);
+    if (['https:', 'http:'].includes(url.protocol) && !url.username && !url.password) return url.href;
+  } catch { /* An unmapped URL produces no link. */ }
+  return '';
+}
+
+function plainText(value: unknown) {
+  return typeof value === 'string' ? value.replace(/<\\/?(?:em|b|strong)>/gi, '') : '';
+}
+
+@Component({
+  selector: 'search-app',
+  imports: [SearchstudioUxAngularModule],
+  templateUrl: './search-app.html',
+})
+export class SearchApp implements AfterViewInit, OnDestroy {
+  @ViewChild('searchForm', { static: true }) private form!: ElementRef<HTMLFormElement>;
+  @ViewChild('searchField', { static: true }) private input!: ElementRef<HTMLInputElement>;
+  @ViewChild('pagination', { static: true }) private pagination!: ElementRef<HTMLDivElement>;
+  @ViewChild('answerHost', { static: true }) private answerHost!: ElementRef<HTMLDivElement>;
+  readonly connection = connection;
+  readonly design = design;
+  readonly sampleExternalPromotion = sampleExternalPromotion;
+  readonly resultLanguage = contentLanguageTag(connection.language);
+  readonly isDemo = connection.searchURL === demo.searchURL && connection.model === demo.model && this.resultLanguage === demo.language;
+  readonly status = signal('Connecting to search…');
+  private readonly query = signal('');
+  readonly promotionMode = computed(() => this.isDemo ? samplePromotionMode(this.query(), design.samplePromotions) : 'off');
+  private readonly initialQuery = connection.initialQuery ||
+    (this.isDemo ? (design.samplePromotions === 'off' ? 'rehabilitation' : samplePromotionQuery) : '');
+  private api?: Searchstax;
+  private loadingSubscription?: string;
+  private timer?: number;
+  private answers: ReturnType<typeof setupStarterAnswers>;
+  private setSuggestionSource?: ReturnType<typeof setupSearchSuggestions>;
+  private stopPaginationFocus?: () => void;
+
+  initialized(instance: Searchstax) {
+    this.api = instance;
+    instance.setCookiesDisabled(true);
+  }
+
+  ngAfterViewInit() {
+    this.stopPaginationFocus = setupPaginationFocus(this.pagination.nativeElement, () => this.api);
+    queueMicrotask(() => this.start());
+  }
+
+  ngOnDestroy() {
+    this.answers?.clear();
+    this.stopPaginationFocus?.();
+    this.setSuggestionSource?.(null);
+    if (this.loadingSubscription) this.api?.dataLayer.$loadingChange.unsubscribe(this.loadingSubscription);
+    window.clearTimeout(this.timer);
+    this.api = undefined;
+  }
+
+  private start() {
+    const api = this.api;
+    if (!api) return;
+    this.loadingSubscription = api.dataLayer.$loadingChange.subscribe((loading) => {
+      if (!loading) return;
+      this.status.set('Searching…');
+      window.clearTimeout(this.timer);
+      this.timer = window.setTimeout(() => this.status.set('Search is unavailable. Try again in a moment.'), 15000);
+    });
+    api.dataLayer.setItemsPerPage(design.resultsPerPage);
+    this.input.nativeElement.value = this.initialQuery;
+    if (!this.isDemo && design.showSmartAnswersSample && connection.questionURL?.trim()) {
+      this.answers = setupStarterAnswers(this.answerHost.nativeElement, connection);
+    }
+    if (design.showSuggestions) {
+      const source = this.isDemo ? sampleSuggestionSource : connection.suggesterURL
+        ? createCustomerSuggestionSource({ token: connection.searchAuth, language: connection.language }, connection.suggesterURL)
+        : null;
+      if (source) {
+        this.setSuggestionSource = setupSearchSuggestions(this.form.nativeElement, 'angular-search-suggestions');
+        this.setSuggestionSource(source);
+      }
+    }
+    if (this.initialQuery) this.runSearch(this.initialQuery);
+    else this.status.set('Enter a search term.');
+  }
+
+  submit(event: Event) {
+    event.preventDefault();
+    this.runSearch(this.input.nativeElement.value);
+  }
+
+  private runSearch(value: string) {
+    const api = this.api;
+    if (!api) return;
+    const term = value.trim();
+    if (!term) {
+      this.status.set('Enter a search term.');
+      return;
+    }
+    const current = api.dataLayer.searchObject;
+    const next = { ...current, query: term, page: 1, facets: [] };
+    this.answers?.start(term);
+    if (current.query === term && current.page === 1 && !current.facets.length) api.search(next);
+    else api.dataLayer.setSearchObject(next);
+  }
+
+  readonly afterSearch = (items: ISearchstaxParsedResult[], response?: ISearchstaxSearchResponse) => {
+    const total = response?.response?.numFound;
+    if (typeof total !== 'number') return [];
+    window.clearTimeout(this.timer);
+    this.query.set(response?.responseHeader?.params?.q ?? '');
+    this.status.set(total + (total === 1 ? ' result' : ' results'));
+    const results = items.flatMap(item => {
+      const url = publicLink(item.url);
+      return url ? [{
+        ...item,
+        url,
+        title: this.isDemo ? demoResultTitle(item.title) : plainText(item.title),
+        description: this.isDemo ? demoResultText(plainText(item.description)) : plainText(item.description),
+        previewThumbnail: design.showThumbnails ? (this.isDemo ? thumbnailPaths[url] : publicLink(item.thumbnail)) : '',
+        previewThumbnailAlt: this.isDemo ? '' : thumbnailAlt(
+          item.allFields,
+          connection.thumbnailAltField,
+          connection.thumbnailsWithoutAltAreDecorative,
+        ),
+      }] : [];
+    });
+    return this.isDemo ? applySampleIndexedPromotion(results, response, this.promotionMode()) : results;
+  };
+
+  facetLabel(value: string) {
+    return this.isDemo && Object.hasOwn(facetLabels, value) ? facetLabels[value] : value;
+  }
+
+  sortChoices(data: ISearchstaxSearchSortingData | null) {
+    return this.isDemo ? demo.sortOptions : data?.sortOptions?.map(item => ({ label: item.value, order: item.key })) ?? [];
+  }
+
+  sortSearch(event: Event) {
+    if (!this.api || !(event.target instanceof HTMLSelectElement)) return;
+    const data = this.api.dataLayer;
+    data.setSearchObject({ ...data.searchObject, order: encodeURIComponent(event.target.value), page: 1 });
+  }
+
+  livePromotions(entries: IExternalPromotion[] | undefined) {
+    return (entries ?? []).flatMap(item => {
+      const url = publicLink(item.url);
+      return url ? [{ ...item, url }] : [];
+    });
+  }
+}
+`,tt=`<main class="search-starter">
+  @if (design.logoURL) {
+    <img class="search-starter__logo" [src]="design.logoURL" alt="Company logo"
+      referrerpolicy="no-referrer" (error)="$any($event.target).hidden = true">
+  }
+  <h1>{{ isDemo ? 'Search Central County' : 'Search' }}</h1>
+  @if (isDemo) {
+    <p>Search fictional university health content with the SearchStax Angular UI Kit.</p>
+  }
+  <app-searchstax-wrapper
+    [searchURL]="connection.searchURL" [searchAuth]="connection.searchAuth" [model]="connection.model"
+    [language]="connection.language" authType="token" suggesterURL="" trackApiKey=""
+    [router]="{ enabled: false }" [afterSearch]="afterSearch" (initialized)="initialized($event)"
+  >
+    <div>
+      <form #searchForm class="search-starter__form" role="search" (submit)="submit($event)">
+        <label class="search-starter__sr-only" for="starter-query">{{ design.searchFieldText }}</label>
+        <input #searchField id="starter-query" type="search" [placeholder]="design.searchFieldText" autocomplete="off" required>
+        <button type="submit" class="search-starter__submit">{{ design.searchButtonText }}</button>
+      </form>
+    </div>
+    @if (isDemo && design.showSmartAnswersSample) {
+      %%SMART_ANSWERS_SAMPLE%%
+    }
+    <div #answerHost></div>
+    <p role="status">{{ status() }}</p>
+    @if (design.showSorting) {
+      <app-searchstax-search-sorting [templateOverride]="sortControls">
+        <ng-template #sortControls let-context="context">
+          @if (context.sortingData?.searchExecuted && sortChoices(context.sortingData).length) {
+            <label class="search-starter__sort">
+              Sort by
+              <select [value]="context.selectedSorting" (change)="sortSearch($event)">
+                @for (choice of sortChoices(context.sortingData); track choice.order) {
+                  <option [value]="choice.order">{{ choice.label }}</option>
+                }
+              </select>
+            </label>
+          }
+        </ng-template>
+      </app-searchstax-search-sorting>
+    }
+    @if (promotionMode() === 'external' || promotionMode() === 'both') {
+      <section class="sample-external-promotion search-promotion-banner" aria-label="Sample external promotion">
+        <p class="sample-external-promotion__label">Sample external promotion</p>
+        <a [href]="sampleExternalPromotion.url" referrerpolicy="no-referrer">{{ sampleExternalPromotion.title }}</a>
+      </section>
+    }
+    @if (!isDemo) {
+      <app-searchstax-external-promotions [templateOverride]="externalPromotions">
+        <ng-template #externalPromotions let-data="externalPromotionsData">
+          @if (livePromotions(data?.externalPromotions); as links) {
+            @if (links.length) {
+              <section aria-label="External promotions">
+                @for (entry of links; track entry.id ?? entry.url) {
+                  <div class="search-promotion-banner">
+                    <span class="search-promotion-marker">Promoted</span>
+                    <a [href]="entry.url" [attr.lang]="resultLanguage" referrerpolicy="no-referrer">{{ entry.name || entry.url }}</a>
+                    @if (entry.description) {
+                      <p [attr.lang]="resultLanguage">{{ entry.description }}</p>
+                    }
+                  </div>
+                }
+              </section>
+            }
+          }
+        </ng-template>
+      </app-searchstax-external-promotions>
+    }
+    <div class="search-starter__body">
+      @if (design.showFilters) {
+        <aside class="search-starter__filters" aria-label="Filter search results">
+          <app-searchstax-search-facets
+            facetingType="or" [itemsPerPageDesktop]="20" [itemsPerPageMobile]="20"
+            [templateOverrideDesktop]="facetControls" [templateOverrideMobile]="emptyMobileFacets"
+          >
+            <ng-template #facetControls let-data="facetsTemplateDataDesktop" let-context="context"
+              let-facetValues="facetValues" let-isChecked="isChecked" let-selectFacet="selectFacet">
+              @for (facet of data?.facets ?? []; track facet.name) {
+                <fieldset>
+                  <legend>{{ facet.label || facet.name }}</legend>
+                  @for (option of facetValues(facet); track option.value) {
+                    <label #facetRow>
+                      <input type="checkbox" class="searchstax-facet-input-checkbox" [checked]="!!isChecked(option, context)"
+                        [disabled]="option.disabled" (click)="selectFacet(facetRow, $event, option, true, context)">
+                      <span>{{ facetLabel(option.value) }}</span><small>{{ option.count }}</small>
+                    </label>
+                  }
+                </fieldset>
+              }
+            </ng-template>
+            <ng-template #emptyMobileFacets></ng-template>
+          </app-searchstax-search-facets>
+        </aside>
+      }
+      <div>
+        <app-searchstax-results renderMethod="pagination" [resultsPerPage]="design.resultsPerPage"
+          [resultsTemplate]="resultCards" [noResultsTemplate]="emptyState">
+          <ng-template #resultCards let-items="searchResults">
+            <div class="searchstax-search-results">
+              @for (item of items ?? []; track item.uniqueId || item.url) {
+                <article class="searchstax-search-result">
+                  @if (item.sampleIndexedPromotion) {
+                    <span class="sample-indexed-promotion">Sample indexed promotion</span>
+                  }
+                  @if (!isDemo && item.promoted) {
+                    <span class="search-promotion-marker">Promoted</span>
+                  }
+                  @if (item.previewThumbnail && item.previewThumbnailAlt !== null) {
+                    <img class="search-starter__result-thumbnail" [src]="item.previewThumbnail"
+                      [alt]="item.previewThumbnailAlt" [attr.lang]="resultLanguage" loading="lazy" referrerpolicy="no-referrer">
+                  }
+                  <h2 [attr.lang]="resultLanguage"><a [href]="item.url" referrerpolicy="no-referrer">{{ item.title || item.url }}</a></h2>
+                  @if (item.description) {
+                    <p class="search-starter__result-description" [attr.lang]="resultLanguage">{{ item.description }}</p>
+                  }
+                </article>
+              }
+            </div>
+          </ng-template>
+          <ng-template #emptyState>
+            <p class="search-starter__no-results">{{ design.noResultsText }}</p>
+          </ng-template>
+        </app-searchstax-results>
+        <div #pagination tabindex="-1" role="group" aria-label="Search result pagination">
+          <app-searchstax-search-pagination [templateOverride]="pageControls">
+            <ng-template #pageControls let-page="paginationData">
+              @if (page?.totalResults) {
+                <nav class="search-starter__pagination" aria-label="Search result pages">
+                  <span tabindex="-1" data-page-range [attr.data-page-start]="page.startResultIndex">{{ page.startResultIndex }}–{{ page.endResultIndex }} of {{ page.totalResults }} results</span>
+                  @if (!page.isFirstPage) {
+                    <button type="button" data-page-step="previous">Previous</button>
+                  }
+                  @if (!page.isLastPage) {
+                    <button type="button" data-page-step="next">Next</button>
+                  }
+                </nav>
+              }
+            </ng-template>
+          </app-searchstax-search-pagination>
+          <span class="search-starter__sr-only" role="status" data-page-announcement></span>
+        </div>
+      </div>
+    </div>
+  </app-searchstax-wrapper>
+</main>
+`,nt="# SearchStax Angular Starter\n\nThis project uses the SearchStax Angular UI Kit and starts with the public Central County fictional demo. It includes the design you selected in Search Lab.\n\n## Run the Demo\n\nUse Node.js 22.22.3+ on the 22.x line, Node.js 24.15+ on the 24.x line, or Node.js 26 or later.\n\n```sh\nnpm ci\nnpm run dev\n```\n\nOpen the localhost URL printed by Angular CLI. The demo search requires an internet connection. Run `npm run build` to generate the browser files in `dist/starter/browser/`.\n\n- Search for `rehabilitation` to try filters or view the optional sample thumbnails.\n- Search for `campus flu clinic` to try paging, sorting, or the Promotion formats selected in your design.\n- If you enabled sample suggestions, type `reh`. If the Smart Answers sample is visible, expand it to read the fixed answer and its source.\n\n## Connect Your Search App\n\nUse `src/config.js` to connect your app. Keep the `demo` object and set `connection.searchURL` to your Select endpoint, `connection.searchAuth` to an active **Read Only** token, `connection.model` to your Search Profile name, and `connection.language` to the language configured for your app. Set `connection.initialQuery` to a term that matches your content or leave it empty to start with a blank search box.\n\n1. Find the Select endpoint and token under **App Settings > All APIs > Search & Indexing**.\n2. Map Title, URL, and Description under the profile’s **Results Fields**. Map Thumbnail if you display images. Configure and publish any facets, sort options, and Promotions you want to use. [Results Fields](https://support.searchstax.com/hc/en-us/articles/40837318253197-Results-Fields)\n3. For live suggestions, enable and publish Auto-Suggest, set `suggesterURL`, and enable `showSuggestions` in `design`. For live Smart Answers, enable and publish the feature on an eligible profile, set `questionURL` to the streaming Answer endpoint, and enable `showSmartAnswersSample` in `design`. [Auto-Suggest API](https://support.searchstax.com/hc/en-us/articles/40243330090893-Auto-Suggest-API) · [Smart Answers setup](https://support.searchstax.com/hc/en-us/articles/40075209934989-Smart-Answers)\n\nThe starter requests a Smart Answer for the opening query and submitted searches. Use the SearchStax streaming endpoint or a same-origin proxy that returns the same event stream.\n\n### Thumbnail Descriptions\n\nTo show informative thumbnails, enable thumbnails in the design and map the image URL field to **Thumbnail**. Add the indexed description as a Return Field with **No mapping** in **Results Fields**. Then set `connection.thumbnailAltField` in `src/config.js` to that field’s name, such as `image_alt`. Use a description that conveys the information the image adds. The starter omits a connected thumbnail when its description is missing. Set `thumbnailsWithoutAltAreDecorative` to `true` only if every thumbnail without a description is decorative or repeats the nearby text. Those images use empty alt text. [Decorative images](https://www.w3.org/WAI/tutorials/images/decorative/)\n\nBrowser code is visible to visitors. Use a server-side proxy for tokens that need to stay private. [Endpoint and token guidance](https://support.searchstax.com/hc/en-us/articles/39440547272077-Hide-Tokens-and-Endpoints-in-UI-Kits)\n\nUse `src/search-app.html` to change the Angular widget templates and `search.css` to change their appearance. Retain the `.search-starter` wrapper so the exported selectors apply. [Angular UI Kit setup](https://support.searchstax.com/hc/en-us/articles/40364056121997-Getting-Started-With-searchstudio-ux-angular)\n";function rt(e){return e.replaceAll(`&`,`&amp;`).replaceAll(`<`,`&lt;`).replaceAll(`>`,`&gt;`).replaceAll(`"`,`&quot;`)}function it(e){let t=y(e),n=`${Ee.trimEnd()}
+
+${J.trimEnd()}
+
+${X.trimEnd()}
+
+${Fe.trimEnd()}
+
+/* Your design settings */
+.search-starter {
+  --search-accent: ${t.accent};
+  --search-accent-text: ${t.accentText};
+  --search-corners: ${t.cornerRadius};
+  font-family: ${t.font};
+  background: ${t.background};
+  color: ${t.ink};
+}
+
+.search-starter :is(.search-starter__form input, .search-starter__submit, .search-starter__sort select, .search-starter__result-thumbnail, .search-starter__pagination button) {
+  border-radius: var(--search-corners);
+}
+
+.search-starter__submit {
+  color: var(--search-accent-text);
+  background: var(--search-accent);
+}
+
+.search-starter__filters input {
+  accent-color: var(--search-accent);
+}
+
+.search-starter .searchstax-search-results {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: ${t.resultGap};
+}
+
+.search-starter .searchstax-search-result {
+  border-left: 3px solid var(--search-accent);
+  border-radius: var(--search-corners);
+  border-block-end-color: ${t.divider};
+}
+
+.search-starter .searchstax-search-result h2 a {
+  color: ${t.titleInk};
+  text-decoration: ${e.underlineTitles?`underline`:`none`};
+}
+
+.search-starter .searchstax-search-result h2 a:hover {
+  text-decoration: underline;
+}
+
+.search-starter :is(.smart-answers-sample__card a, .smart-answers-sample__note, .sample-indexed-promotion, .searchstax-search-result .search-promotion-marker) {
+  color: inherit;
+}
+`;return e.layout===`cards`?n+=`
+@media (min-width: 1050px) {
+  .search-starter .searchstax-search-results {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+`:n+=`
+.search-starter .searchstax-search-result {
+  padding: 10px 0;
+  border-block-start: 0;
+  border-inline: 0;
+  border-radius: 0;
+  ${e.listDividers?``:`border-block-end-color: transparent;`}
+}
+`,e.showDescriptions||(n+=`
+.search-starter .search-starter__result-description {
+  display: none;
+}
+`),e.filters?n+`
+@media (min-width: 561px) {
+  .search-starter__body {
+    grid-template-columns: 145px minmax(0, 1fr);
+  }
+}
+`:n+`
+.search-starter .search-starter__filters {
+  display: none;
+}
+`}function at(e){return{showFilters:e.filters,showSorting:e.showSorting,showSuggestions:e.showSuggestions,showSmartAnswersSample:e.showSmartAnswersSample,samplePromotions:e.samplePromotions,resultsPerPage:e.resultsPerPage,noResultsText:e.noResultsText}}function ot(e){let t={},n={};if(e)for(let[e,r]of Object.entries(xe)){t[e]=r.path;let i=r.source.slice(r.source.indexOf(`,`)+1);n[r.path]=Uint8Array.from(atob(i),e=>e.charCodeAt(0))}return{paths:t,files:n}}function st(e,t,n){let{kitURL:r,...i}=t,a=JSON.stringify({...i,language:`en`,questionURL:``,suggesterURL:``,...at(e)},null,2),o={UI_KIT_URL:r,SEARCH_FIELD_TEXT:e.searchFieldText,SEARCH_BUTTON_TEXT:e.searchButtonText},s=Ce.replace(/%%(UI_KIT_URL|SEARCH_FIELD_TEXT|SEARCH_BUTTON_TEXT|SMART_ANSWERS_SAMPLE|COMPANY_LOGO)%%/g,(t,n)=>n===`SMART_ANSWERS_SAMPLE`?Pe:n===`COMPANY_LOGO`?e.logoURL?`<img class="search-starter__logo" src="${rt(e.logoURL)}" alt="Company logo" referrerpolicy="no-referrer">`:``:rt(o[n])),c=JSON.stringify({searchURL:t.searchURL,labels:n},null,2),{paths:l,files:u}=ot(e.showThumbnails),d=we.replace(`%%STARTER_CONFIG%%`,()=>a).replace(`%%DEMO_FACETS%%`,()=>c).replace(`%%DEMO_SORTING%%`,()=>JSON.stringify({model:t.model,options:Se},null,2)).replace(`%%DEMO_THUMBNAILS%%`,()=>JSON.stringify(l,null,2)),f=be({"index.html":q(s),"search.css":q(it(e)),"search.js":q(d),"demo-content.js":q(De),"content-language.js":q(Ae),"web-url.js":q(je),"customer-answers.js":q(Y),"customer-suggestions.js":q(Q),"suggestions.js":q(Oe),"pagination-focus.js":q(ke),"promotions.js":q(Z),"README.md":q(Te),...u});return new Blob([new Uint8Array(f)],{type:`application/zip`})}function ct(e,{searchURL:t,searchAuth:n,model:r},i){let{paths:a,files:o}=ot(e.showThumbnails),s={searchURL:t,searchAuth:n,model:r,language:`en`,initialQuery:``,suggesterURL:``,questionURL:``,facetLabels:i,sortOptions:Se,answerSampleHTML:Pe,thumbnailPaths:Object.fromEntries(Object.entries(a).map(([e,t])=>[e,`/`+t]))},c={...at(e),showThumbnails:e.showThumbnails,searchFieldText:e.searchFieldText,searchButtonText:e.searchButtonText,logoURL:e.logoURL},l=`// Public Central County demo. Keep this constant when connecting your own app.
+export const demo = ${JSON.stringify(s,null,2)};
+
+// Replace these values with your app’s browser-safe settings.
+export const connection = {
+  searchURL: demo.searchURL,
+  searchAuth: demo.searchAuth,
+  model: demo.model,
+  language: demo.language,
+  initialQuery: '',
+  suggesterURL: '',
+  questionURL: '',
+  thumbnailAltField: '',
+  thumbnailsWithoutAltAreDecorative: false,
+};
+
+export const design = ${JSON.stringify(c,null,2)};
+`;return{"search.css":q(it(e)),"src/config.js":q(l),"src/demo-content.js":q(De),"src/suggestions.js":q(Oe),"src/pagination-focus.js":q(ke),"src/content-language.js":q(Ae),"src/web-url.js":q(je),"src/customer-answers.js":q(Y),"src/starter-answers.js":q(Me),"src/thumbnail-alt.js":q(Ne),"src/customer-suggestions.js":q(Q),"src/promotions.js":q(Z),...Object.fromEntries(Object.entries(o).map(([e,t])=>[`public/`+e,t]))}}function lt(e,t,n){let r=be({"index.html":q(Ie),"package.json":q(Le),"package-lock.json":q(Re),"README.md":q(Ve),"src/main.jsx":q(ze),"src/SearchApp.jsx":q(Be),...ct(e,t,n)});return new Blob([new Uint8Array(r)],{type:`application/zip`})}function ut(e,t,n){let r=be({"index.html":q(He),"package.json":q(Ue),"package-lock.json":q(We),"README.md":q(qe),"vite.config.js":q(Ge),"src/main.js":q($),"src/SearchApp.vue":q(Ke),...ct(e,t,n)});return new Blob([new Uint8Array(r)],{type:`application/zip`})}function dt(e,t,n){let r=be({"package.json":q(Ye),"package-lock.json":q(Xe),"angular.json":q(Ze),"tsconfig.json":q(Qe),"README.md":q(nt),"src/index.html":q(Je),"src/main.ts":q($e),"src/search-app.ts":q(et),"src/search-app.html":q(tt.replace(`%%SMART_ANSWERS_SAMPLE%%`,()=>Pe)),"public/.gitkeep":new Uint8Array,...ct(e,t,n)});return new Blob([new Uint8Array(r)],{type:`application/zip`})}var ft=`lab:lesson-start`;function pt(e,t,n,r){t.addEventListener(`change`,()=>{t.checked&&(n.hidden=!1)}),e.addEventListener(ft,()=>{t.checked=!1,n.hidden=!0;for(let e of n.querySelectorAll(`details[open]`))e.removeAttribute(`open`);r?.()})}function mt(e){switch(e){case`#lab-improve`:case`#lab-search-fields`:case`#lab-missing-page`:case`#lab-missing-page-takeaway`:case`#lab-missing-page-steps`:return`missing-page`;case`#lab-synonyms`:return`synonyms`;case`#lab-facets-example`:return`facets`;case`#lab-flu-clinic-order`:case`#lab-clinic-promotion`:return`flu-clinic-order`}}function ht(e){return[`lab_layout`,`lab_color`,`lab_font`,`lab_filters`].some(t=>e.searchParams.has(t))}function gt(e,t){if(mt(e.hash))return`improve`;switch(e.hash){case`#lab-home`:return`home`;case`#lab-design-controls`:case`#lab-more-settings`:case`#lab-filters`:case`#lab-design`:return`design`;case`#lab-spell-check`:return`spell-check`;case`#lab-data-filters`:return`data-filters`;case`#lab-find-page`:return`find-page`;case`#lab-promotions`:return`promotions`;case`#lab-promotion-teammate`:case`#lab-promotion-checklist`:return`promotion-checklist`;case`#lab-ranking-guide`:case`#lab-ranking-steps`:return`ranking-guide`;case`#lab-ranking`:case`#lab-compare-ranking`:case`#lab-examples`:return`examples`;case`#lab-preview`:return t===`design`||t===`examples`?t:e.searchParams.has(`lab_scenario`)?`examples`:`design`}let n=e.searchParams;return n.has(`lab_scenario`)||n.has(`lab_view`)?`examples`:ht(e)?`design`:`home`}function _t(e,t){let n=e.querySelectorAll(`[data-lab-screen]`),r=e.querySelectorAll(`[data-lab-design-only]`),i=e.querySelectorAll(`[data-lab-example-only]`),a=e.querySelector(`.search-lab__controls`),o=e.querySelector(`#lab-preview`),s=e.querySelector(`.search-lab__design-switch`),c=[...s.querySelectorAll(`button`)],l=window.matchMedia(`(max-width: 850px)`);function u(t){e.dataset.labDesignMode=t;for(let e of c)e.setAttribute(`aria-pressed`,String(e.dataset.labDesignMode===t))}let d;a.addEventListener(`input`,e=>{e.target instanceof HTMLElement&&(d=e.target)});for(let t of c)t.addEventListener(`click`,()=>{let n=t.dataset.labDesignMode===`edit`?`edit`:`preview`;n!==e.dataset.labDesignMode&&(u(n),n===`edit`&&d?.checkVisibility()?(d.focus({preventScroll:!0}),d.scrollIntoView({block:`center`})):(n===`edit`?a:o).scrollIntoView({block:`start`}))});let f=e.querySelectorAll(`.search-lab__filter-toggle`);for(let e of f){let t=document.getElementById(e.getAttribute(`aria-controls`)),n=e.querySelector(`span`);function r(){let e=t.querySelectorAll(`input:checked, select option:checked:not([value=""])`).length;n.textContent=e?` (${e})`:``}e.addEventListener(`click`,()=>{e.setAttribute(`aria-expanded`,String(e.getAttribute(`aria-expanded`)!==`true`))}),t.addEventListener(`change`,r),new MutationObserver(r).observe(t,{childList:!0,subtree:!0})}e.querySelector(`[data-lab-reset]`).addEventListener(`click`,()=>{u(`preview`);for(let e of f)e.setAttribute(`aria-expanded`,`false`)}),l.addEventListener(`change`,()=>{if(e.dataset.labView!==`design`)return;let t=document.activeElement;l.matches&&a.contains(t)&&u(`edit`),l.matches&&o.contains(t)&&u(`preview`),!l.matches&&s.contains(t)&&(e.dataset.labDesignMode===`edit`?e.querySelector(`#lab-design-controls`):o).focus({preventScroll:!0})});let p,m=``;function h(a){let o=new URL(window.location.href),s=gt(o,p),c=s!==p,f=s===`examples`&&o.hash!==m&&o.hash!==`#lab-preview`;if(s===`design`&&([`#lab-design-controls`,`#lab-more-settings`,`#lab-filters`].includes(o.hash)?u(`edit`):o.hash===`#lab-preview`?u(`preview`):c&&(d=void 0,u(p!==`home`&&ht(o)?`preview`:`edit`))),m=o.hash,c){let t=s===`examples`||s===`design`?`workspace`:s,a=p===`home`||p===`improve`;for(let e of n)e.hidden=e.dataset.labScreen!==t,!e.hidden&&a&&e.dispatchEvent(new Event(ft));for(let e of r)e.hidden=s!==`design`;for(let e of i)e.hidden=s!==`examples`;p=s,e.dataset.labView=s}if((c||f||s===`improve`)&&t(s,o.hash),a){let t=document.getElementById(o.hash.slice(1)),n=document.getElementById(`lab-${s}`),r=t&&e.contains(t)?t:n,i=r?.closest(`details`);for(let e=i;e;e=e.parentElement?.closest(`details`))e.open=!0;o.hash===`#lab-improve`&&l.matches&&n?.closest(`header`)?.focus(),r?.focus({preventScroll:!0}),r===n?window.scrollTo(0,0):r?.scrollIntoView({block:i?`center`:`start`})}}return window.addEventListener(`hashchange`,()=>h(!0)),h(!!window.location.hash),function(){l.matches&&u(`preview`)}}var vt=[`campus flu clinic`,`international health`,`orthopedics`,`primary care`,`rehabilitation`,`rehabilitation center`,`sports medicine`,`travel vaccinations`],yt={label:`Sample search suggestions`,minimumChars:3,suggest(e){let t=e.toLowerCase();return vt.filter(e=>e!==t&&e.startsWith(t))}};function bt(e,t){let n=e.querySelector(`input[type="search"]`),r=document.createElement(`div`),i=document.createElement(`p`),a=document.createElement(`ul`),o=document.createElement(`p`);o.className=`search-suggestions-feedback`,o.setAttribute(`role`,`status`),r.className=`sample-search-suggestions`,r.hidden=!0,i.id=t+`-label`,a.id=t,a.setAttribute(`role`,`listbox`),a.setAttribute(`aria-labelledby`,i.id),r.append(i,a),e.after(r,o);let s=null,c=null,l=-1;function u(){c&&=(window.clearTimeout(c.timer),c.controller.abort(),null),r.hidden=!0,a.replaceChildren(),o.textContent=``,l=-1,n.removeAttribute(`aria-activedescendant`),s&&n.setAttribute(`aria-expanded`,`false`)}function d(e){e.length&&(a.replaceChildren(...e.map((e,n)=>{let r=document.createElement(`li`);return r.id=t+`-`+n,r.setAttribute(`role`,`option`),r.setAttribute(`aria-selected`,`false`),s.language&&(r.lang=s.language),r.textContent=e,r})),r.hidden=!1,n.setAttribute(`aria-expanded`,`true`))}function f(){u();let e=n.value.trim(),t=s;if(!t||e.length<t.minimumChars)return;let i={controller:new AbortController,step:0,timer:void 0};c=i;let a=async()=>{try{let a=await t.suggest(e,i.controller.signal);if(c!==i||n.value.trim()!==e)return;d(a),!r.hidden&&i.step&&m(i.step)}catch{c===i&&(o.textContent=`Search suggestions are unavailable. You can continue searching.`)}finally{c===i&&(c=null)}};t.delay?i.timer=window.setTimeout(a,t.delay):a()}function p(t){n.value=t.textContent,u(),n.focus({preventScroll:!0}),e.requestSubmit()}function m(e){if(r.hidden)return c||f(),c?(c.step=e,!0):!1;let t=a.children;l>=0&&t[l].setAttribute(`aria-selected`,`false`),l=l===-1?e>0?0:t.length-1:(l+e+t.length)%t.length;let i=t[l];return i.setAttribute(`aria-selected`,`true`),n.setAttribute(`aria-activedescendant`,i.id),i.scrollIntoView({block:`nearest`}),!0}return n.addEventListener(`input`,e=>{e.isComposing?u():f()}),n.addEventListener(`compositionend`,f),n.addEventListener(`blur`,u),n.addEventListener(`keydown`,e=>{if(!(!s||e.isComposing||e.altKey||e.ctrlKey||e.metaKey||e.shiftKey))switch(e.key){case`ArrowDown`:case`ArrowUp`:m(e.key===`ArrowDown`?1:-1)&&e.preventDefault();break;case`Escape`:if(r.hidden&&!c)break;e.preventDefault(),u();break;case`Enter`:if(l<0)break;e.preventDefault(),p(a.children[l])}}),e.addEventListener(`submit`,u),a.addEventListener(`mousedown`,e=>e.preventDefault()),a.addEventListener(`click`,e=>{let t=e.target.closest(`[role="option"]`);t&&p(t)}),function(e){if(s!==e){if(s=e,u(),s)i.textContent=s.label,n.setAttribute(`role`,`combobox`),n.setAttribute(`aria-autocomplete`,`list`),n.setAttribute(`aria-controls`,t);else for(let e of[`role`,`aria-autocomplete`,`aria-controls`,`aria-expanded`])n.removeAttribute(e)}}}var xt=`https://mw-searchstax.github.io/university-health-search-demo/`,St=xt+`news/flu-clinic-update-2026/`,Ct=`campus flu clinic`,wt={url:xt+`care/resources/flu-shot-appointments/`,title:`Read the fictional flu shot appointment notice`};function Tt(e,t){return(typeof e==`string`?e.trim().toLowerCase().replace(/\s+/g,` `):``)===`campus flu clinic`?t:`off`}function Et(e,t,n){if(n!==`indexed`&&n!==`both`)return e;let r=t.responseHeader?.params?.sort;if(t.response.start!==0||r&&r!==`score desc`)return e;let i=e.findIndex(e=>e.url===St);return i===-1?e:[{...e[i],sampleIndexedPromotion:!0},...e.slice(0,i),...e.slice(i+1)]}function Dt(){let e=document.createElement(`section`);e.className=`sample-external-promotion search-promotion-banner`,e.setAttribute(`aria-label`,`Sample external promotion`),e.hidden=!0;let t=document.createElement(`p`);t.className=`sample-external-promotion__label`,t.textContent=`Sample external promotion`;let n=document.createElement(`a`);return n.href=wt.url,n.textContent=wt.title,e.append(t,n),e}function Ot(e,t){e.hidden=t!==`external`&&t!==`both`}function kt(e){if(e)try{return Intl.getCanonicalLocales(e.trim().replaceAll(`_`,`-`))[0]}catch{return}}var At=65536,jt=/\r\n\r\n|\n\n|\r\r|\n\r\n|\r\n\n/,Mt=/^ {0,3}\[([^\]\r\n]+)\]:[ \t]*(<[^>\r\n]+>|[^\s<>]+)(?:[ \t]+"[^"\r\n]*")?[ \t]*$/gm,Nt=/(!?)\[([^\]\n]+)\](?:\((<[^>\n]+>|[^\s()<>]+(?:\([^()\s]*\)[^\s()<>]*)*)(?:[ \t]+"[^"\n]*")?\)|\[([^\]\n]*)\])?/g;function Pt(e){try{let t=new URL(e.trim());return t.protocol!==`https:`||!t.hostname.endsWith(`.searchstax.com`)||t.port||t.username||t.password||t.search||t.hash||!/^\/api\/v1\/(?:\d+\/)?answer\/?$/.test(t.pathname)?null:t.href}catch{return null}}var Ft=class extends Error{};function It(e){return e.replace(/\[comment\]: <> \(\{[\s\S]*?(?:\}\)|$)/g,``).trim()}function Lt(e){if(e.includes(`[!CAUTION]`))return!0;if(!e.trimStart().startsWith(`{`))return!1;try{return JSON.parse(e)?.success===!1}catch{return!1}}async function Rt(e,t,n,r){let i=new URL(e.answerEndpoint);i.search=new URLSearchParams({q:t,model:e.profile,language:e.language}).toString();let a=await fetch(i,{headers:{Authorization:`Token `+e.token,Accept:`text/event-stream`},credentials:`omit`,referrerPolicy:`no-referrer`,redirect:`error`,cache:`no-store`,signal:n});if(a.status===401||a.status===403)throw new Ft(`Smart Answers couldn’t access this profile. Check the read-only token and confirm Smart Answers is enabled and published.`);if(!a.ok||!a.headers.get(`content-type`)?.startsWith(`text/event-stream`)||!a.body)throw new Ft(`Smart Answers is unavailable. Check the Answer endpoint or try another search.`);let o=a.body.pipeThrough(new TextDecoderStream).getReader(),s=``,c=``;try{for(;;){let{done:e,value:t}=await o.read();if(e)throw new Ft(`The Smart Answer was interrupted. Try your search again.`);c+=t;let n=!1,i;for(;i=jt.exec(c);){let e=c.slice(0,i.index);c=c.slice(i.index+i[0].length);let t=e.split(/\r\n|\r|\n/).filter(e=>e===`data`||e.startsWith(`data:`)).map(e=>e.slice(5).replace(/^ /,``)).join(`
+`);if(t&&t!==`I_AM_A_QUESTION`){if(t===`I_AM_NOT_A_QUESTION`)return null;if(t===`CLOSE`)return It(s);if(Lt(t)||s.length+t.length>At)throw new Ft(`Smart Answers couldn’t generate an answer. Try another search.`);s+=t,n=!0}}if(c.length>At)throw new Ft(`Smart Answers returned an unreadable response.`);n&&r(It(s))}}finally{await o.cancel().catch(()=>{}),o.releaseLock()}}function zt(t,n){let r=e=>e.replace(/^#{1,6}[ \t]+/gm,``).replace(/\*\*([^*\n]+)\*\*|__([^_\n]+)__/g,(e,t,n)=>t??n),i=[],a=new Map,o=t.replace(Mt,(e,t,n)=>(a.set(t.trim().toLowerCase(),n),``)).trim(),s=0;for(let t of o.matchAll(Nt)){let[c,l,u,d,f]=t,p=d??a.get((f||u).trim().toLowerCase());if(!p)continue;let m=t.index??0;i.push(r(o.slice(s,m))),s=m+c.length;let h=!l&&n?e(p.replace(/^<|>$/g,``)):null;if(!h){i.push(r(u));continue}let g=document.createElement(`a`);g.href=h,g.referrerPolicy=`no-referrer`,g.textContent=r(u),i.push(g)}return i.push(r(o.slice(s))),i}function Bt(e){let t=e.querySelector(`[data-customer-answer]`),n=t.querySelector(`[data-customer-answer-status]`),r=t.querySelector(`[data-customer-answer-content]`),i=e.querySelector(`[data-customer-answer-announcement]`),a=null;function o(e){n.textContent=e,i&&(i.textContent=e)}function s(){a?.abort(),a=null,t.hidden=!0,o(``),r.replaceChildren(),r.removeAttribute(`lang`),r.hidden=!0}async function c(e,n){if(s(),!e.answerEndpoint)return;let i=kt(e.language);i&&(r.lang=i);let c=new AbortController;a=c,t.hidden=!1,o(`Generating a Smart Answer…`);let l=window.setTimeout(()=>c.abort(),45e3);try{let t=await Rt({...e,answerEndpoint:e.answerEndpoint},n,c.signal,e=>{a===c&&e&&(r.replaceChildren(...zt(e,!1)),r.hidden=!1)});if(a!==c)return;t===null?s():t?(r.replaceChildren(...zt(t,!0)),r.hidden=!1,o(`Smart Answer ready.`)):o(`No Smart Answer was returned for this search.`)}catch(e){if(a!==c)return;r.replaceChildren(),r.hidden=!0,o(e instanceof Ft?e.message:`Smart Answers is unavailable. Check the Answer endpoint or try another search.`)}finally{window.clearTimeout(l),a===c&&(a=null)}}return{clear:s,start:c}}function Vt(e,t){let n=2;return{label:`Search suggestions`,language:kt(e.language),delay:250,get minimumChars(){return n},async suggest(r,i){let a=new URL(t);a.searchParams.set(`q`,r),a.searchParams.set(`language`,e.language);let o=await fetch(a,{headers:{Authorization:`Token `+e.token},credentials:`omit`,redirect:`error`,referrerPolicy:`no-referrer`,cache:`no-store`,signal:AbortSignal.any([i,AbortSignal.timeout(5e3)])});if(!o.ok)throw Error(`Unable to fetch suggestions`);let s=await o.json();if(s?.metadata?.enabled===!1)throw Error(`Auto-Suggest is disabled`);let c=s?.metadata?.minPrefixChars;typeof c==`number`&&Number.isSafeInteger(c)&&c>0&&(n=c);let l=new Set([r.toLowerCase()]),u=[];for(let e of Object.values(s?.suggest??{}))for(let t of Object.values(e??{}))if(Array.isArray(t?.suggestions))for(let e of t.suggestions){if(typeof e?.term!=`string`)continue;let t=e.term.trim(),n=t.toLowerCase();if(t&&!l.has(n)&&(l.add(n),u.push(t),u.length===8))return u}return u}}}var Ht=/^[A-Za-z_][\w.-]*$/,Ut=class extends Error{},Wt=class extends Ut{};function Gt(e){return Array.isArray(e)?e.find(e=>typeof e==`string`)??``:typeof e==`string`?e:``}async function Kt(e,t,n){let r=new URL(e.endpoint);r.search=new URLSearchParams({q:t.query,start:String(t.start),rows:String(t.rows),language:e.language,facet:`true`}).toString(),e.profile&&r.searchParams.set(`model`,e.profile),t.sort&&r.searchParams.set(`sort`,t.sort);for(let[e,n]of[[t.filters,``],[t.excludeFilters,`-`]])e?.forEach((e,t)=>{Ht.test(t)&&r.searchParams.append(`fq`,n+t+`:"`+e.replace(/[\\"]/g,`\\$&`)+`"`)});let i=await fetch(r,{headers:{Authorization:`Token `+e.token},credentials:`omit`,redirect:`error`,cache:`no-store`,referrerPolicy:`no-referrer`,signal:n});if(i.status===401||i.status===403)throw new Wt(`The Search App rejected the token. Check that it’s an active read-only token for this app.`);if(i.status===404)throw new Ut(`Search API endpoint not found. Copy the Select endpoint from App Settings.`);if(i.status===400)throw new Ut(`The Search App rejected the request. Check the profile, language, and search term.`);if(i.status===429)throw new Ut(`The Search App is receiving too many requests. Try again in a moment.`);if(!i.ok)throw new Ut(`The Search App is unavailable. Try again in a moment.`);return await i.json()}async function qt(t,n,r){let i=await Kt(t,n,r),a=i?.response;if(!a||!Number.isSafeInteger(a.numFound)||a.numFound<0||!Array.isArray(a.docs))throw new Ut(`The endpoint didn’t return search results. Check the Select endpoint and Search Profile.`);let o=i.metadata?.results??[],s=e=>o.find(t=>t.result_card===e)?.name??e,c=s(`url`),l=s(`title`),u=s(`description`),d=a.docs.flatMap(t=>{let n=e(Gt(t[c]));return n?[{url:n,title:Gt(t[l])||n,description:Gt(t[u]),promoted:t[`[elevated]`]===!0}]:[]}),f=(Array.isArray(i.externalLinks)?i.externalLinks:[]).flatMap(t=>{let n=e(Gt(t?.url));return n?[{url:n,title:Gt(t?.name).trim()||n,description:Gt(t?.description).trim()}]:[]}),p=(i.metadata?.facets??[]).filter(e=>Ht.test(e.name)).map(e=>{let t=i.facet_counts?.facet_fields?.[e.name]??[],n=[];for(let e=0;e<t.length;e+=2){let r=t[e],i=t[e+1];typeof r==`string`&&r&&typeof i==`number`&&n.push({value:r,count:i})}return{field:e.name,label:e.label||e.name,choices:n}}),m=(i.metadata?.sorts??[]).filter(e=>Ht.test(e.name)&&(e.order===`asc`||e.order===`desc`)).map(e=>({value:e.name+` `+e.order,label:e.label||e.name}));return{total:a.numFound,resultCount:a.docs.length,results:d,externalPromotions:f,facets:p,sorts:m}}function Jt(e,n,r){let i=t=>e.querySelector(t),a=i(`[data-customer-connect]`),o=i(`[data-customer-submit]`),s=i(`[data-customer-connect-status]`),c=i(`#lab-customer-endpoint`),l=i(`#lab-customer-token`),u=i(`#lab-customer-profile`),d=i(`[data-customer-profile-requirement]`),f=i(`[data-customer-options]`),p=i(`#lab-customer-language`),m=i(`#lab-customer-answer-endpoint`),h=i(`#lab-customer-suggest-endpoint`),g=i(`#lab-customer-query`),_=[c,m,h],v=i(`[data-customer-preview]`),y=Bt(i(`#lab-preview`)),b=i(`[data-customer-source]`),x=i(`[data-customer-status]`),S=i(`[data-customer-search-feedback]`),C=i(`[data-customer-previous-results]`),w=i(`[data-customer-layout]`),T=i(`[data-customer-facets]`),E=i(`[data-customer-facet-fields]`),D=i(`[data-customer-facet-hint]`),O=i(`#lab-customer-sort`),k=i(`[data-customer-sort-field]`),A=i(`[data-customer-sort-hint]`),j=i(`[data-customer-promotions]`),M=i(`[data-customer-grid]`),N=i(`[data-customer-empty]`),P=i(`[data-customer-pager]`),F=i(`[data-customer-range]`),I=i(`[data-customer-prev]`),L=i(`[data-customer-next]`),R=null,ee=null,z=null,te=null,B=null,V=null;function H(){l.value=``,V=null}for(let[e,t]of _.entries())t.addEventListener(`input`,()=>{V&&t.value.trim()!==V[e]&&H()});l.addEventListener(`input`,()=>{V=null});function ne(){let e=!!m.value.trim();u.required=e,d.textContent=e?`required for Smart Answers`:`optional`,u.placeholder=e?``:`App default`}m.addEventListener(`input`,ne),a.addEventListener(`invalid`,e=>{e.target instanceof HTMLElement&&f.contains(e.target)&&(f.open=!0)},!0),ne();function U(){let e=n();T.hidden=!e.filters,w.dataset.filters=e.filters?`on`:`off`,k.hidden=!e.showSorting||!te?.sorts.length,A.hidden=!e.showSorting||!!te?.sorts.length,te?.total===0&&(N.textContent=e.noResultsText)}function re(e,t){let n=document.activeElement?.dataset.customerFacet,r=e.facets.filter(e=>e.choices.length||t.filters.has(e.field));D.hidden=r.length>0,E.replaceChildren(...r.map(e=>{let n=document.createElement(`label`);n.className=`search-lab__field search-lab__customer-facet`;let r=document.createElement(`select`);r.dataset.customerFacet=e.field,r.add(new Option(`All`,``));for(let{value:t,count:n}of e.choices)r.add(new Option(t+` (`+n+`)`,t));let i=t.filters.get(e.field);return i&&!e.choices.some(e=>e.value===i)&&r.add(new Option(i,i)),r.value=i??``,n.append(e.label,r),n})),n&&[...E.querySelectorAll(`select`)].find(e=>e.dataset.customerFacet===n)?.focus()}function ie(){let e=document.createElement(`span`);return e.className=`search-promotion-marker`,e.textContent=`Promoted`,e}function ae(e,t){j.replaceChildren(...e.map(e=>{let n=document.createElement(`div`);n.className=`search-promotion-banner`;let r=document.createElement(`a`);if(r.href=e.url,r.textContent=e.title,t&&(r.lang=t),r.referrerPolicy=`no-referrer`,n.append(ie(),r),e.description){let r=document.createElement(`p`);r.textContent=e.description,t&&(r.lang=t),n.append(r)}return n})),j.hidden=!e.length}function oe(e,t,r){x.textContent=e.total+(e.total===1?` result`:` results`)+` for “`+t.query+`”`,ae(e.externalPromotions,r),O.replaceChildren(new Option(`Relevance`,``),...e.sorts.map(e=>new Option(e.label,e.value))),O.value=e.sorts.some(e=>e.value===t.sort)?t.sort:``,re(e,t),M.replaceChildren(...e.results.map(e=>{let t=document.createElement(`article`);t.className=`searchstax-search-result`,e.promoted&&t.append(ie());let n=document.createElement(`h4`),i=document.createElement(`a`);if(i.className=`searchstax-search-result-title`,i.href=e.url,i.referrerPolicy=`no-referrer`,i.textContent=e.title,r&&(n.lang=r),n.append(i),t.append(n),e.description){let n=document.createElement(`p`);n.className=`search-lab__result-description`,n.textContent=e.description,r&&(n.lang=r),t.append(n)}return t})),M.hidden=!e.results.length,N.hidden=!!e.results.length,N.textContent=e.total?`This page has no displayable result links. Check the URL mapping in Results Fields.`:n().noResultsText;let i=document.activeElement;P.hidden=!e.resultCount,F.textContent=t.start+1+`–`+(t.start+e.resultCount)+` of `+e.total+` results`,I.hidden=t.start===0,L.hidden=t.start+t.rows>=e.total,(i===I&&I.hidden||i===L&&L.hidden)&&F.focus(),U()}async function se(e,t,i=!1){B?.abort();let c=new AbortController;B=c;let u=i?s:S;delete u.dataset.tone,u.textContent=i?`Connecting to your Search App…`:`Searching your app…`,i?o.disabled=!0:(z=t,C.hidden=!x.textContent,N.hidden=!0,v.setAttribute(`data-searching`,``),w.setAttribute(`aria-busy`,`true`));let d=window.setTimeout(()=>c.abort(),12e3);try{let o=await qt(e,t,c.signal);if(B!==c)return;R=e,z=t,te=o,i&&(H(),ee=e.suggestEndpoint?Vt(e,e.suggestEndpoint):null,a.hidden=!0,v.hidden=!1,s.textContent=`Connected to your Search App.`,b.textContent=[new URL(e.endpoint).hostname,e.profile||`Default profile`,e.language].join(` · `),r(t.query),y.start(e,t.query)),S.textContent=``,oe(o,t,kt(e.language));let l=n().resultsPerPage;i&&l!==t.rows&&ce({rows:l})}catch(t){if(B!==c)return;i&&t instanceof Wt&&l.value.trim()===e.token&&H(),u.dataset.tone=`error`,u.textContent=t instanceof Ut?t.message:`Couldn’t reach the Search App. Check the Select endpoint and whether it allows this browser origin.`,i||(x.textContent=``,M.hidden=!0,j.hidden=!0,P.hidden=!0)}finally{window.clearTimeout(d),B===c&&(B=null,o.disabled=!1,v.removeAttribute(`data-searching`),w.setAttribute(`aria-busy`,`false`),C.hidden=!0)}}function ce(e){R&&z&&se(R,{...z,start:0,...e})}function W(){let e=!!R;B?.abort(),B=null,y.clear(),R=null,ee=null,z=null,te=null,v.hidden=!0,v.removeAttribute(`data-searching`),w.setAttribute(`aria-busy`,`false`),C.hidden=!0,S.textContent=``,M.hidden=!0,M.replaceChildren(),ae([]),E.replaceChildren(),O.replaceChildren(),x.textContent=``,b.textContent=``,s.textContent=``,a.reset(),ne(),f.open=!1,H(),a.hidden=!1,o.disabled=!1,e&&r(null)}return a.addEventListener(`submit`,e=>{e.preventDefault();let r=t(c.value);if(!r){s.dataset.tone=`error`,s.textContent=`Enter the HTTPS SearchStax Select endpoint ending in /emselect.`,c.focus();return}let i=l.value.trim(),a=g.value.trim();if(!i||/[\r\n\t ]/.test(i)||!a){s.dataset.tone=`error`,s.textContent=`Enter a read-only token and a test search.`,(!i||/[\r\n\t ]/.test(i)?l:g).focus();return}let o=m.value.trim(),d=h.value.trim(),f=d?t(d,`emsuggest`):null,v=o?Pt(o):null,y=u.value.trim();o&&!v?(s.dataset.tone=`error`,s.textContent=`Enter the HTTPS SearchStax streaming Answer endpoint ending in /answer.`,m.focus()):v&&!y?(s.dataset.tone=`error`,s.textContent=`Enter the Search Profile that has Smart Answers enabled.`,u.focus()):d&&!f?(s.dataset.tone=`error`,s.textContent=`Enter the HTTPS SearchStax Auto-Suggest endpoint ending in /emsuggest.`,h.focus()):(V=_.map(e=>e.value.trim()),se({endpoint:r,token:i,profile:y,language:p.value.trim()||`en`,answerEndpoint:v??void 0,suggestEndpoint:f??void 0},{query:a,start:0,rows:n().resultsPerPage,sort:``,filters:new Map},!0))}),o.disabled=!1,i(`[data-customer-disconnect]`).addEventListener(`click`,W),O.addEventListener(`change`,()=>ce({sort:O.value})),E.addEventListener(`change`,e=>{let t=e.target;if(!(t instanceof HTMLSelectElement)||!t.dataset.customerFacet)return;let n=new Map(z?.filters);t.value?n.set(t.dataset.customerFacet,t.value):n.delete(t.dataset.customerFacet),ce({filters:n})}),I.addEventListener(`click`,()=>{z&&!B&&ce({start:Math.max(0,z.start-z.rows)})}),L.addEventListener(`click`,()=>{z&&!B&&ce({start:z.start+z.rows})}),{get active(){return!!R},get suggestionSource(){return ee},disconnect:W,search(e){let t=e.trim();t?(ce({query:t,filters:new Map}),R&&y.start(R,t)):(S.dataset.tone=`error`,S.textContent=`Enter a search term for your site.`)},updateDesign(){if(!R||!z)return;U();let e=n();(e.resultsPerPage!==z.rows||!e.filters&&z.filters.size||!e.showSorting&&z.sort)&&ce({rows:e.resultsPerPage,filters:e.filters?z.filters:new Map,sort:e.showSorting?z.sort:``})}}}function Yt(e){return typeof e==`string`?e.replaceAll(`Alder Coast`,`Central County`):``}function Xt(e){return Yt(e).replace(/<\/?(?:em|b|strong)>/gi,``).replace(/\s*\|\s*Central County University Health\s*$/,``)}var Zt=`demo_content_type_s`,Qt={query:`campus flu clinic`,start:0,rows:5,sort:``,filters:new Map},$t={include:{label:`Include Locations`,effect:`Only matching location pages are eligible.`,search:{...Qt,filters:new Map([[Zt,`location`]])}},exclude:{label:`Exclude News`,effect:`Matching news pages are omitted. Other content types can still appear.`,search:{...Qt,excludeFilters:new Map([[Zt,`news`]])}}};function en(e,t,n){e.textContent=n.total?`Showing ${n.results.length} of ${n.total} ${n.total===1?`result`:`results`}`:`No results`,t.replaceChildren(...n.results.map(e=>{let t=document.createElement(`li`),n=document.createElement(`a`);return n.href=e.url,n.textContent=Xt(e.title),t.append(n),t}))}function tn(e,t){let n=e.querySelector(`[data-lab-screen="data-filters"]`);return n.querySelector(`[data-lab-filter-profile]`).textContent=t.profile,nn(n,t,`lab-data-filter-rule`,$t,{describe:(e,t,n)=>`${e.total} results before the rule. ${t.total} with ${n.label}.`,renderBaseline(e){en(n.querySelector(`[data-lab-filter-before-count]`),n.querySelector(`[data-lab-filter-before-list]`),e)}})}function nn(e,n,r,i,a){let o=e.querySelector(`[data-lab-filter-status]`),s=e.querySelector(`[data-lab-filter-after-count]`),c=e.querySelector(`[data-lab-filter-after-list]`),l=e.querySelector(`[data-lab-filter-effect]`),u=e.querySelector(`[data-lab-filter-results]`),d=e.querySelector(`[data-lab-filter-retry]`),f=`input[name="${r}"]`,p=t(n.endpoint),m;function h(){m?.abort(),m=void 0}async function g(){h();let t=e.querySelector(f+`:checked`),r=i[t?.value??`all`];u.hidden=!0;let g=new AbortController;m=g;let _=AbortSignal.any([g.signal,AbortSignal.timeout(12e3)]);o.textContent=`Searching the fictional demo…`;try{if(!p||!n.token||!n.profile)throw Error(`Demo search is unavailable`);let i={...n,endpoint:p},[h,v]=await Promise.all([qt(i,Qt,_),r.search&&qt(i,r.search,_)]);if(m!==g)return;let y=v??h;a.renderBaseline?.(h),en(s,c,y),l&&(l.textContent=r.effect??``),u.hidden=!1,o.textContent=a.describe(h,y,r),document.activeElement===d&&(t??e.querySelector(f)).focus(),d.hidden=!0}catch{if(m!==g)return;o.textContent=`The comparison couldn’t load. Try the search again.`,d.hidden=!1}finally{g.abort(),m===g&&(m=void 0)}}for(let t of e.querySelectorAll(f))t.addEventListener(`change`,g);return d.addEventListener(`click`,g),e=>{e?g():h()}}var rn=5,an={"missing-page":`travel vaccinations`,"flu-clinic-order":`campus flu clinic`},on=`/university-health-search-demo/care/services/international-health/`,sn=`/university-health-search-demo/news/flu-clinic-update-2026/`,cn=`/university-health-search-demo/locations/north-campus-clinic/`,ln=`https://mw-searchstax.github.io/university-health-search-demo/`,un={kind:`added`,label:`New match`},dn={kind:`retained`};function fn(e){return Array.from(new Map(e.results.map(e=>[e.url,e])).values()).slice(0,rn)}function pn(e,t,n,r){if(e===`missing-page`){let e=r.find(e=>new URL(e.url).pathname===on);return e&&t.total<=n.length&&!n.some(t=>t.url===e.url)?{highlights:new Map([[e.url,un]]),heading:`International Health appears`,detail:`Search skipped the service name. Adding it lets the same search match “Travel Vaccinations” on this page.`}:void 0}if(!(n.length===rn&&r.length===rn&&r.every(e=>n.some(t=>t.url===e.url))))return;let i=n.findIndex(e=>new URL(e.url).pathname===cn),a=r.findIndex(e=>new URL(e.url).pathname===cn),o=n.findIndex(e=>new URL(e.url).pathname===sn),s=r.findIndex(e=>new URL(e.url).pathname===sn);if(a<0||a>=i||o<0||s<0)return;let c=`North Campus Clinic moved from #${i+1} to #${a+1}.`,l=o===s?`This year’s notice stayed at #${s+1}.`:`This year’s notice moved from #${o+1} to #${s+1}.`,u=new Map([[r[a].url,{kind:`moved`,label:`#${i+1} → #${a+1}`}]]);return o!==s&&u.set(r[s].url,{kind:`moved`,label:`#${o+1} → #${s+1}`}),{highlights:u,heading:`Same five results, new order`,detail:`${c} ${l} The extra weight for title matches favored the campus clinic pages.`,explanation:`The extra weight for title matches favored the campus clinic pages.`}}function mn(e,t){let n=t.filter(t=>!e.some(e=>e.url===t.url)).length,r=e.filter(e=>!t.some(t=>t.url===e.url)).length;return n||r?[n?n+(n===1?` page entered`:` pages entered`):``,r?r+(r===1?` page left`:` pages left`):``].filter(Boolean).join(` and `)+` the top results.`:t.some((t,n)=>t.url!==e[n]?.url)?`The same pages appear in a different order.`:`The top results stayed the same.`}function hn(e,t=!1){let n=document.createElement(`li`);n.className=`improve-preview__row`,n.setAttribute(`role`,`listitem`);let r=document.createElement(`article`);r.className=`searchstax-search-result`;let i=document.createElement(`h4`),a=document.createElement(`a`);a.className=`searchstax-search-result-title`,a.href=e,i.append(a);let o=document.createElement(`p`),s=t?document.createElement(`span`):null;s&&(s.className=`improve-preview__rank`,s.setAttribute(`aria-hidden`,`true`),r.append(s));let c=document.createElement(`span`);return c.className=`improve-preview__badge`,c.hidden=!0,r.append(i,c,o),n.append(r),{row:n,link:a,description:o,badge:c,rank:s}}function gn(e,t){t?e.row.dataset.change=t.kind:delete e.row.dataset.change,e.badge.textContent=t?.label??``,e.badge.hidden=!t?.label}function _n(e,t,n=[]){let r=document.createElement(`div`),i=document.createElement(`strong`);i.textContent=e;let a=document.createElement(`p`);if(a.textContent=t,r.append(i,a),n.length){let e=document.createElement(`ul`);e.className=`improve-preview__takeaway-results`;for(let t of n){let n=document.createElement(`li`),r=document.createElement(`a`),i=document.createElement(`span`);r.href=`#`+t.link.id,r.textContent=t.link.textContent,i.textContent=t.badge.textContent,r.append(i),r.addEventListener(`click`,e=>{e.preventDefault(),t.link.focus({preventScroll:!0}),t.link.scrollIntoView({block:`center`})}),n.append(r),e.append(n)}r.append(e)}return r}function vn(e,t){e.textContent=t,e.toggleAttribute(`data-applied`,t===`Change applied`)}function yn(e,t,n,r){let i=e.closest(`.improve-workspace`).querySelector(`[data-improve-sidebar]`),a=i.querySelector(`#lab-improve-scenario`),o=e.querySelector(`[data-improve-controls]`),s=e.querySelector(`[data-improve-toggle]`),c=e.querySelector(`[data-improve-own-site]`),l=t.content.firstElementChild.cloneNode(!0),u=l.querySelector(`[data-improve-preview-controls]`),d=l.querySelector(`[data-improve-preview-followup]`),f=u.querySelector(`.improve-preview__wrap-up`),p=f.querySelector(`[data-improve-takeaway]`),m=p.querySelector(`[data-improve-takeaway-toggle]`),h=p.querySelector(`[data-improve-takeaway-label]`),g=p.querySelector(`[data-improve-takeaway-peek]`),_=p.querySelector(`[data-improve-callout]`),v=f.querySelector(`[data-improve-next]`),y=v.querySelector(`[data-improve-own-site-toggle]`),b=v.querySelector(`[data-improve-choose]`);b.addEventListener(`click`,()=>{a.focus({preventScroll:!0}),a.scrollIntoView({block:`center`})});let x=l.querySelector(`[data-improve-results]`),S=l.querySelector(`[data-improve-count]`),C=l.querySelector(`[data-improve-phase]`),w=l.querySelector(`[data-improve-status]`),T=l.querySelector(`[data-improve-retry]`),E=e.querySelector(`[data-improve-baseline-note]`),D=E?document.createElement(`ol`):null,O=window.matchMedia(`(max-width: 850px)`);_.id=r+`-takeaway`,m.setAttribute(`aria-controls`,_.id),m.addEventListener(`click`,()=>M(_.hasAttribute(`hidden`))),c.id=r+`-own-site`;let k=document.createElement(`h3`);k.id=c.id+`-heading`,k.textContent=`Check this on your own site`,k.tabIndex=-1,c.setAttribute(`role`,`region`),c.setAttribute(`aria-labelledby`,k.id);let A=document.createElement(`button`);A.type=`button`,A.className=`lt-btn lt-btn--secondary`,A.textContent=`Back to the lesson`,A.addEventListener(`click`,()=>{j(!1),y.focus()}),c.prepend(k),c.append(A),y.setAttribute(`aria-controls`,c.id),y.addEventListener(`click`,()=>{let e=c.hasAttribute(`hidden`);j(e),e&&(k.focus({preventScroll:!0}),k.scrollIntoView({block:`start`}))}),d.append(c),x.id=r,s.setAttribute(`aria-controls`,x.id),l.querySelector(`[data-improve-query]`).textContent=n,E&&D&&(D.id=r+`-new-match`,D.className=x.className,D.setAttribute(`role`,`list`),D.setAttribute(`aria-label`,`New search match`),D.hidden=!0,s.setAttribute(`aria-controls`,x.id+` `+D.id),x.after(E,u,D)),e.append(l);function j(e){c.hidden=!e,(e?c:v).append(b),y.setAttribute(`aria-expanded`,String(e))}function M(e){_.hidden=!e,m.setAttribute(`aria-expanded`,String(e)),h.textContent=e?`Hide takeaway`:`Show takeaway`,g.hidden=e}function N(e,t=``){let n=p.hidden;p.hidden=!e,g.textContent=t,e?_.replaceChildren(e):_.replaceChildren(),n&&e&&M(!O.matches)}function P(){N(),j(!1);for(let e of c.querySelectorAll(`details[open]`))e.open=!1}function F(){if(!D)return;let e=x.lastElementChild;O.matches?!D.childElementCount&&e instanceof HTMLElement&&e.dataset.change===`added`&&(D.start=x.childElementCount,D.append(e)):x.append(...D.children),D.hidden=!D.childElementCount}function I(e){return x.contains(e)||!!D?.contains(e)}let L=()=>{let t=document.activeElement,n=t instanceof HTMLElement&&(o.contains(t)||f.contains(t)||I(t));(O.matches?u:i).append(o),O.matches&&(D||e.dataset.improveLesson===`synonyms`)?(D??x).after(f):o.append(f),F(),n&&document.activeElement!==t&&t.focus({preventScroll:!0})};return O.addEventListener(`change`,L),L(),{preview:l,list:x,count:S,phase:C,status:w,retry:T,toggle:s,next:v,baselineNote:E,newMatches:D,positionNewMatch:F,containsResult:I,setOwnSiteOpen:j,setTakeaway:N,resetWrapUp:P}}function bn(e,n,r,i,a){let o=e.querySelector(`[data-ranking-watch]`),s={query:an[r],start:0,rows:rn,sort:``,filters:new Map},{preview:c,list:l,count:u,phase:d,status:f,retry:p,toggle:m,next:h,baselineNote:g,newMatches:_,positionNewMatch:v,containsResult:y,setOwnSiteOpen:b,setTakeaway:x,resetWrapUp:S}=yn(e,n,s.query,`lab-`+r+`-results`),C=e.querySelector(`[data-clinic-promotion]`),w=C?.querySelector(`summary`);C&&c.querySelector(`[data-improve-preview-followup]`).append(C);let T=t(i.endpoint),E=window.matchMedia(`(prefers-reduced-motion: reduce)`),D=new Map,O=new Set,k,A,j,M=0;function N(e,t=`visible`){f.classList.toggle(`search-lab__sr-only`,t===`spoken`),f.dataset.tone=t===`error`?`error`:``,f.textContent=e}function P(){for(let e of O)e.cancel();O.clear()}function F(e,t,n){let r=e.animate(t,n);O.add(r),r.onfinish=()=>{O.delete(r)}}function I(e,t,n){let i=fn(e),a=t&&k?fn(k):void 0,s=a&&k?pn(r,k,a,i):void 0;if(o){let e=a??i,t=e.findIndex(e=>new URL(e.url).pathname===cn),n=e.findIndex(e=>new URL(e.url).pathname===sn);o.textContent=t>=0&&n>=0?`Watch North Campus Clinic at #${t+1} and this year’s notice at #${n+1} in the original order.`:`Look at the order of the first few results before changing the setting.`}let c=n&&!E.matches&&D.size>0,f=new Map;if(c){let e=l.getBoundingClientRect().top;for(let[t,{row:n}]of D)f.set(t,n.getBoundingClientRect().top-e)}P();let p=document.activeElement,_=p instanceof HTMLElement&&y(p)?p:void 0,b=new Set(i.map(e=>e.url));for(let[e,{row:t}]of D)b.has(e)||(t.remove(),D.delete(e));if(i.forEach((e,t)=>{let n=D.get(e.url)??hn(e.url,r===`flu-clinic-order`);D.set(e.url,n),n.link.id||(n.link.id=l.id+`-result-`+ ++M),n.link.textContent=Xt(e.title),n.description.textContent=Yt(e.description).replace(/<\/?(?:em|b|strong)>/gi,``),n.description.hidden=!n.description.textContent,n.rank&&(n.rank.textContent=`#`+(t+1)),gn(n,s?.highlights.get(e.url));let i=l.children[t];i!==n.row&&l.insertBefore(n.row,i??null)}),s){let e=Array.from(s.highlights.keys(),e=>D.get(e)),t=_n(s.heading,s.explanation??s.detail,e);if(C&&w){let e=document.createElement(`a`);e.className=`improve-preview__promotion-link`,e.href=`#`+w.id,e.textContent=`Feature one page first with a Promotion`,e.addEventListener(`click`,e=>{e.preventDefault(),C.open=!0,w.focus({preventScroll:!0}),w.scrollIntoView({block:`center`})}),t.append(e)}let n=r===`missing-page`?`New match`:s.heading;x(t,n)}else x();if(g&&(g.hidden=t||!i.length||e.total>i.length||i.some(e=>new URL(e.url).pathname===on)),v(),u.textContent=e.total>i.length?`Top `+i.length+` of `+e.total+` results`:i.length+(i.length===1?` result`:` results`),d.hidden=!1,vn(d,t?`Change applied`:`Before change`),A=t,t&&(h.hidden=!1,C&&(C.hidden=!1)),s?N(s.heading+`. `+s.detail+` Takeaway available.`,`spoken`):a?N(mn(a,i)):i.length===0?N(`No results for this search.`):N(`Before the change. `+u.textContent+`.`,`spoken`),c){let e=l.getBoundingClientRect().top;for(let[t,{row:n}]of D){let r=f.get(t);if(r===void 0){F(n,[{opacity:0,transform:`translateY(8px)`},{opacity:1,transform:`none`}],{duration:230,easing:`ease-out`});continue}let i=r-(n.getBoundingClientRect().top-e);Math.abs(i)>1&&F(n,[{transform:`translateY(`+i+`px)`},{transform:`none`}],{duration:320,easing:`cubic-bezier(.2,.75,.25,1)`})}}_&&document.activeElement!==_&&(y(_)?_:m).focus({preventScroll:!0})}async function L(e){j?.abort();let t=new AbortController;j=t;let n=m.checked;document.activeElement!==p&&(p.hidden=!0),p.setAttribute(`aria-disabled`,`true`),l.setAttribute(`aria-busy`,`true`),A!==void 0&&vn(d,`Updating…`),N(A===void 0?`Searching Central County…`:`Rerunning the same search…`,A===void 0?`visible`:`spoken`);try{if(!T||!i.profile||!i.token||!a||a===i.profile)throw Error(`Demo profiles unavailable`);let r={...i,endpoint:T},o=AbortSignal.any([t.signal,AbortSignal.timeout(12e3)]);if(n&&!k){let e=await qt(r,s,o);if(j!==t)return;k=e}let c=await qt({...r,profile:n?a:i.profile},s,o);if(j!==t)return;n||(k=c),m.disabled=!1,document.activeElement===p&&m.focus({preventScroll:!0}),p.hidden=!0,I(c,n,e)}catch{if(j!==t)return;A!==void 0&&vn(d,A?`Change applied`:`Before change`),N(A===void 0?`The Central County results couldn’t load.`:`The search couldn’t update. The previous results are still visible.`,`error`),p.hidden=!1}finally{j===t&&(j=void 0,p.removeAttribute(`aria-disabled`),l.removeAttribute(`aria-busy`))}}function R(){j?.abort(),j=void 0,p.removeAttribute(`aria-disabled`),l.removeAttribute(`aria-busy`),P()}function ee(){R(),k=void 0,o&&(o.textContent=``),A=void 0,m.checked=!1,m.disabled=!0,p.hidden=d.hidden=h.hidden=!0,S(),l.replaceChildren(),_&&(_.replaceChildren(),_.hidden=!0),g&&(g.hidden=!0),D.clear(),M=0,u.textContent=`Search results`,N(``),C&&(C.hidden=!0,C.open=!1)}m.addEventListener(`change`,()=>{L(!0)}),p.addEventListener(`click`,()=>{j||L(!0)}),E.addEventListener(`change`,P),e.addEventListener(ft,ee);function z(e){C&&e===`#`+w?.id&&(C.hidden=!1);let t=e===`#lab-missing-page-steps`||e===`#lab-missing-page-takeaway`,n=t&&!m.checked;t&&(m.checked=!0,e===`#lab-missing-page-steps`&&(h.hidden=!1,b(!0))),!n&&(j||A===m.checked&&p.hidden)||L(!1)}return{activate:z,stop:R}}function xn(e,t,n,r,i){let a=yn(e,t,n,r),{preview:o,phase:s,status:c}=a;return o.setAttribute(`aria-label`,`Recorded search preview`),o.querySelector(`.search-lab__preview-footnote`).textContent=i,c.classList.add(`search-lab__sr-only`),s.hidden=!1,a}function Sn(e,t,n,r=``){let i=hn(ln+t);return i.link.textContent=n,i.description.textContent=r,i.description.hidden=!r,e.append(i.row),i}function Cn(e,t){let{list:n,count:r,phase:i,status:a,toggle:o,next:s,setTakeaway:c,resetWrapUp:l}=xn(e,t,`ENT`,`lab-synonym-results`,`Recorded example from the fictional Central County website.`),u=Sn(n,`care/services/otolaryngology/`,`Otolaryngology`);u.link.id=n.id+`-department`,gn(u,un);let d=`The visitor still searched for “ENT.” The one-way synonym let search use “Otolaryngology” and find the department page.`,f=_n(`Why the department appeared`,d,[u]),p=window.matchMedia(`(prefers-reduced-motion: reduce)`),m;function h(e){let t=o.checked;m?.cancel(),u.row.hidden=!t,n.hidden=!t,c(t?f:void 0,`New match`),r.textContent=t?`1 result`:`0 results`,vn(i,t?`Change applied`:`Before change`),a.classList.toggle(`search-lab__sr-only`,t),a.textContent=t?`One new match. `+d+` Takeaway available.`:`No results for “ENT.”`,t&&e&&!p.matches&&(m=u.row.animate([{opacity:0,transform:`translateY(8px)`},{opacity:1,transform:`none`}],{duration:230,easing:`ease-out`}))}pt(e,o,s,()=>{l(),h(!1)}),o.addEventListener(`change`,()=>h(!0)),p.addEventListener(`change`,()=>m?.cancel()),h(!1)}function wn(e,t){let{list:n,count:r,phase:i,status:a,toggle:o,next:s,setTakeaway:c,resetWrapUp:l}=xn(e,t,`campus flu clinic`,`lab-provider-results`,`Selected results recorded from Search Lab’s demo profile.`);n.setAttribute(`aria-label`,`Selected search results`);let u=[Sn(n,`news/flu-clinic-update-2024/`,`Flu Clinic Updates — 2024 Archive`,`Notice`).row,Sn(n,`locations/north-campus-clinic/`,`North Campus Clinic`,`Location`).row],d=Sn(n,`care/providers/tessa-rowan/`,`Tessa Rowan`,`Provider`),f=Sn(n,`care/providers/mara-ellison/`,`Mara Ellison`,`Provider`),p=_n(`Same search, fewer results`,`Tessa Rowan and Mara Ellison already matched. The filter hid the notice and location. In Site Search, this kind of filter is called a facet.`),m=window.matchMedia(`(prefers-reduced-motion: reduce)`),h=new Set;function g(){for(let e of h)e.cancel();h.clear()}function _(e){let t=o.checked;g();for(let n of u){if(n.inert=t,!t||!e||m.matches||n.hidden){n.hidden=t;continue}let r=n.animate([{opacity:1,height:n.offsetHeight+`px`},{opacity:0,height:`0px`}],{duration:240,easing:`ease-in-out`,fill:`forwards`});h.add(r),r.onfinish=()=>{n.hidden=!0,h.delete(r),r.cancel()}}for(let e of[d,f])gn(e,t?dn:void 0);c(t?p:void 0,`2 profiles kept`),r.textContent=t?`8 provider matches · 2 shown`:`44 matches · 4 shown`,vn(i,t?`Change applied`:`Before change`),a.textContent=t?r.textContent+`. Tessa Rowan and Mara Ellison already matched. The filter hid the notice and location. In Site Search, this kind of filter is called a facet. Takeaway available.`:r.textContent+`.`}pt(e,o,s,()=>{l(),_(!1)}),o.addEventListener(`change`,()=>_(!0)),m.addEventListener(`change`,()=>{if(m.matches&&h.size){g();for(let e of u)e.hidden=!0}}),_(!1)}function Tn(e,t,n,r){let i=e.querySelector(`#lab-improve-preview-template`),a=e.querySelector(`#lab-improve-scenario`),o=e.querySelectorAll(`[data-improve-lesson]`),s=e.querySelectorAll(`[data-improve-controls]`),c=t=>e.querySelector(`[data-improve-lesson="${t}"]`),l={"missing-page":bn(c(`missing-page`),i,`missing-page`,t,n),"flu-clinic-order":bn(c(`flu-clinic-order`),i,`flu-clinic-order`,t,r),synonyms:void 0,facets:void 0};Cn(c(`synonyms`),i),wn(c(`facets`),i);let u;function d(e,t=``){if(u!==e){u&&l[u]?.stop(),u=e,a.value=e;for(let t of o)t.hidden=t.dataset.improveLesson!==e;for(let t of s)t.hidden=t.dataset.improveControls!==e;c(e).dispatchEvent(new Event(ft))}l[e]?.activate(t)}return a.addEventListener(`change`,()=>{let e=a.value;Object.hasOwn(l,e)&&e!==u&&(window.location.hash!==`#lab-improve`&&window.history.replaceState(window.history.state,``,`#lab-improve`),d(e))}),(e,t)=>{e===`improve`?d(mt(t)??`missing-page`,t):u&&=(l[u]?.stop(),void 0)}}var En=5;function Dn(e){return Xt(e.title)}function On(e,t,n){if(!t.length&&!n.length)return`Neither profile returned results.`;if(e===`fields`){let e=e=>e.findIndex(e=>Dn(e)===`International Health`),r=e(n);if(r>=0&&e(t)<0)return`International Health appears in After at #${r+1}.`}if(t.length===n.length&&t.every((e,t)=>e.url===n[t].url))return`The displayed results stayed in the same order.`;if(!t.length)return`After returned results for this query.`;if(!n.length)return`After returned no results for this query.`;if(t[0].url===n[0].url)return`“${Dn(n[0])}” stayed first. Other displayed results changed.`;let r=t.findIndex(e=>e.url===n[0].url);return r<0?`“${Dn(n[0])}” is now first.`:`“${Dn(n[0])}” moved from #${r+1} to #1.`}function kn(e,n){let r=e.querySelector(`[data-lab-comparison-outcome]`),i=e.querySelector(`[data-lab-comparison-table]`),a=t(n.endpoint),o;function s(){o?.controller.abort(),o=void 0,r.textContent=``,i.hidden=!0}async function c(e,t,c){if(o?.query===e&&o.scenario===t&&o.afterProfile===c)return;s();let l=new AbortController;o={query:e,scenario:t,afterProfile:c,controller:l},r.textContent=`Loading both sets of results…`;let u=AbortSignal.any([l.signal,AbortSignal.timeout(12e3)]),d={query:e,start:0,rows:En,sort:``,filters:new Map};try{if(!a||!n.token||!n.profile||!c||c===n.profile)throw Error(`The comparison profiles are unavailable.`);let s={...n,endpoint:a},[f,p]=await Promise.all([qt(s,d,u),qt({...s,profile:c},d,u)]);if(o?.controller!==l)return;let m=f.results.slice(0,En),h=p.results.slice(0,En),g=Array.from({length:Math.max(m.length,h.length)},(e,t)=>{let n=document.createElement(`tr`),r=document.createElement(`th`);r.scope=`row`,r.textContent=String(t+1),n.append(r);for(let e of[m[t],h[t]])n.insertCell().textContent=e?Dn(e):`—`;return n});i.caption.textContent=`Unfiltered results for “${e}”`,i.tBodies[0].replaceChildren(...g),i.hidden=!g.length,r.textContent=On(t,m,h)}catch{if(o?.controller!==l)return;o=void 0,r.textContent=`The comparison couldn’t load. Run the search again to retry.`}finally{l.abort()}}return{compare:c,clear:s}}function An(e,t){let n=e.querySelector(`[data-page-announcement]`),r,i;function a(i){let a=i.target instanceof Element&&i.target.closest(`button[data-page-step]`),o=t(),s=o?.dataLayer.searchObject;if(!a||a.disabled||!s?.itemsPerPage||o.dataLayer.loading)return;let c=e.querySelector(`[data-page-range]`),l=Number(c?.dataset.pageStart),u=a.dataset.pageStep;if(!Number.isSafeInteger(l)||l<1||u!==`previous`&&u!==`next`)return;let d=1+Math.floor((l-1)/s.itemsPerPage)+(u===`next`?1:-1);(document.activeElement===a||i.detail===0)&&(r={range:c.textContent.trim(),step:u},n&&(n.textContent=``),e.focus({preventScroll:!0}));let f={...s,page:d};d===s.page?o.search(f):o.dataLayer.setSearchObject(f)}function o(){if(!r||document.activeElement!==e)return;let a=e.querySelector(`[data-page-range]`),s=a?.textContent.trim();if(!s||s===r.range)return;if(t()?.dataLayer.loading){i??=requestAnimationFrame(()=>{i=void 0,o()});return}let c=e.querySelector(`button[data-page-step="${r.step}"]:not(:disabled)`);r=void 0,c?(c.focus(),n&&(n.textContent=s)):a.focus()}function s(t){t.target===e&&(r=void 0)}let c=new MutationObserver(o);return c.observe(e,{childList:!0,characterData:!0,subtree:!0}),e.addEventListener(`click`,a),e.addEventListener(`focusout`,s),()=>{i!==void 0&&cancelAnimationFrame(i),c.disconnect(),e.removeEventListener(`click`,a),e.removeEventListener(`focusout`,s)}}(function(){var e=document.querySelector(`[data-search-lab]`);if(!e)return;var t={fields:{query:`travel vaccinations`,name:`SEARCH FIELDS`,intro:`See how Search Fields can help a page match a search.`,copy:`The fictional International Health page is already indexed. Its service-name field contains “Travel Vaccinations”.`,before:`Before: the service-name field isn’t included in Search Fields.`,after:`After: the service-name field is included in Search Fields.`,note:`The same query runs against a prepared demo profile. Adding a field can make a page eligible to match; it doesn’t guarantee its position.`,doc:`https://support.searchstax.com/hc/en-us/articles/40483375841421-Search-Fields`,docLabel:`Learn about Search Fields`,video:`https://support.searchstax.com/hc/en-us/articles/50357414946317-Search-Fields-Video`,videoLabel:`Watch the Search Fields video`},ranking:{query:`campus flu clinic`,name:`RANKING`,intro:`See what happens when matches in page titles count more.`,copy:`Choose a search to compare its top five results. Switch between Before and After to explore either profile in Live Preview.`,before:`The Before profile uses the default weight for title matches.`,after:`The After profile applies a 1.5 Search Field boost to title matches.`,note:`A boost can move several pages. The order depends on which fields match and how closely they match.`,doc:`https://support.searchstax.com/hc/en-us/articles/40151648011149-Ranking`,docLabel:`Follow the Ranking setup steps`,video:`https://support.searchstax.com/hc/en-us/articles/50357479982989-Give-Selected-Search-Fields-More-Influence-Video`,videoLabel:`Watch the Search Field Boosts video`}},n={community:`Community`,hub:`Overview pages`,location:`Locations`,news:`News`,program:`Education programs`,provider:`Providers`,research:`Research`,resource:`Resources`,service:`Services`},r=e.querySelector(`[data-lab-search-form]`),i=e.querySelector(`#lab-query`),v=r.querySelector(`label[for="lab-query"]`),b=r.querySelector(`button[type="submit"]`),x={searchFieldText:e.querySelector(`#lab-field-text`),searchButtonText:e.querySelector(`#lab-button-text`),noResultsText:e.querySelector(`#lab-no-results-text`)},S=e.querySelector(`#lab-filters`),C=e.querySelector(`#lab-descriptions`),w=e.querySelector(`#lab-thumbnails`),T=e.querySelector(`#lab-sorting`),E=e.querySelector(`#lab-suggestions`),D=e.querySelector(`#lab-smart-answers-sample`),O=e.querySelector(`[data-lab-answer-sample]`);O.innerHTML=Pe;var k=O.querySelector(`details`),A=e.querySelector(`#lab-sample-promotions`),j=bt(r,`lab-search-suggestions`),M=e.querySelector(`#lab-sort-order`),N=e.querySelector(`#lab-accent`),P=e.querySelector(`#lab-background`),F=e.querySelector(`#lab-corners`),I=e.querySelector(`#lab-logo-url`),L=e.querySelector(`[data-lab-preview-logo]`),R=e.querySelector(`[data-lab-logo-status]`),ee,z=e.querySelector(`#lab-dividers`),te=e.querySelector(`#lab-underline`),B=e.querySelector(`#lab-preview .search-lab__site`),V=e.querySelector(`#lab-font`),H=e.querySelector(`#lab-spacing`),ne=e.querySelector(`#lab-page-size`),U=e.querySelector(`#lab-scenario`),re=e.querySelector(`[data-lab-facets-panel]`),ie=e.querySelector(`#lab-facets`),ae=e.querySelector(`[data-lab-results-layout]`),oe=Dt();ae.before(oe);var se=e.querySelector(`[data-lab-results-content]`),ce=e.querySelector(`[data-lab-previous-results]`),W=e.querySelector(`[data-lab-no-results]`),le=e.querySelector(`#lab-pagination`);An(le.parentElement,function(){return Q});var G=e.querySelector(`[data-lab-status]`),ue=e.querySelector(`[data-lab-preview-brand]`),de=e.querySelector(`[data-lab-demo-output]`),fe=e.querySelectorAll(`[data-lab-fictional-only]`),K=e.querySelector(`[data-lab-summary]`),pe=e.querySelector(`[data-lab-feedback]`),me=e.querySelector(`[data-lab-code-feedback]`),he=e.querySelector(`[data-lab-design-feedback]`),ge=e.querySelector(`[data-lab-reset]`),q=e.querySelector(`[data-lab-undo-reset]`),_e=e.querySelector(`[data-lab-explanation]`),ve=e.querySelector(`[data-lab-profile-label]`),ye=e.querySelector(`[data-lab-facet-empty]`),be=Array.prototype.slice.call(e.querySelectorAll(`[data-lab-phase]`)),Ce=e.querySelector(`[data-lab-sample]`),we=Array.from(e.querySelectorAll(`[data-lab-ranking-query]`)),Te=e.querySelector(`[data-lab-try-suggestions]`),Ee=e.querySelector(`[data-lab-try-no-results]`),De=[...be,Ce,...we,Te,Ee],J={searchURL:e.getAttribute(`data-search-url`)||``,searchAuth:e.getAttribute(`data-search-credential`)||``,before:e.getAttribute(`data-before-profile`)||``,after:e.getAttribute(`data-after-profile`)||``,rankingAfter:e.getAttribute(`data-ranking-profile`)||``},Oe={endpoint:J.searchURL,token:J.searchAuth,profile:J.before,language:`en`},ke=Tn(e,Oe,J.after,J.rankingAfter),Ae=tn(e,Oe),je=kn(e,Oe),Y={...o},Me=null,Ne=`search-lab:design:`+window.location.pathname+window.location.search,X={scenario:`fields`,phase:`before`,rankingPreset:``},Z,Fe=i.defaultValue,Q,Ie,Le=!1,Re=!1,ze=!1,Be,Ve,He=Jt(e,function(){return Y},function(t){var n=t!==null;e.toggleAttribute(`data-customer-connected`,n),ue.hidden=!n,de.hidden=n,fe.forEach(function(e){e.hidden=n}),We(),Ue(),e.dataset.labView===`design`&&(i.disabled=!1,b.disabled=!1,i.value=t??Xe(),i.focus({preventScroll:!0}),n||(Q?wt(i.value,!0):At()))});e.removeAttribute(`data-search-credential`),M.replaceChildren(...Se.map(({label:e,order:t})=>new Option(e,t))),ne.replaceChildren(...a.map(e=>new Option(String(e),String(e))));function Ue(){var e=Z===`examples`?o:Y,t=He.active&&e.searchFieldText===o.searchFieldText?`Search your site`:e.searchFieldText;v.textContent=t,i.placeholder=t,b.textContent=e.searchButtonText,W.textContent=e.noResultsText}function We(){k.hidden=He.active||!Y.showSmartAnswersSample,k.hidden&&(k.open=!1);var t=He.active?He.suggestionSource:Y.showSuggestions?yt:null;j(e.dataset.labView===`design`?t:null),Te.parentElement.hidden=!Y.showSuggestions}function Ge(){Me=null,q.hidden=!0,he.textContent=``}function $(){Ge();var t=y(Y);e.setAttribute(`data-layout`,Y.layout),e.toggleAttribute(`data-hide-result-descriptions`,!Y.showDescriptions),e.toggleAttribute(`data-show-demo-thumbnails`,Y.showThumbnails),e.toggleAttribute(`data-show-sorting`,Y.showSorting),e.style.setProperty(`--lab-accent`,t.accent),e.style.setProperty(`--lab-accent-text`,t.accentText),e.style.setProperty(`--preview-font`,t.font),e.style.setProperty(`--lab-result-gap`,t.resultGap),B.style.setProperty(`--preview-background`,t.background),B.style.setProperty(`--preview-ink`,t.ink),B.style.setProperty(`--preview-title-ink`,t.titleInk),B.style.setProperty(`--preview-divider`,t.divider),B.style.setProperty(`--preview-corners`,t.cornerRadius),B.toggleAttribute(`data-hide-list-dividers`,!Y.listDividers),B.toggleAttribute(`data-underline-titles`,Y.underlineTitles),ae.setAttribute(`data-filters`,Y.filters?`on`:`off`),re.hidden=!Y.filters,S.checked=Y.filters,C.checked=Y.showDescriptions,w.checked=Y.showThumbnails,T.checked=Y.showSorting,E.checked=Y.showSuggestions,D.checked=Y.showSmartAnswersSample,A.value=Y.samplePromotions,Ce.textContent=Xe(),We(),Y.showSorting||(M.value=``),N.value=Y.color,P.value=Y.background,F.value=Y.corners,window.clearTimeout(ee),I.value=Y.logoURL,I.removeAttribute(`aria-invalid`),qe(),z.checked=Y.listDividers,z.closest(`[data-lab-list-option]`).hidden=Y.layout!==`list`,te.checked=Y.underlineTitles,V.value=Y.font,H.value=Y.resultSpacing,ne.value=String(Y.resultsPerPage),Object.keys(x).forEach(function(e){x[e].value=Y[e]}),Ue(),e.querySelector(`input[name="lab-layout"][value="`+Y.layout+`"]`).checked=!0,me.textContent=``,He.updateDesign(),ot()}function Ke(e){R.textContent=e,R.hidden=!e}function qe(){(L.getAttribute(`src`)??``)===Y.logoURL?Ke(Y.logoURL&&L.complete&&!L.naturalWidth?`The logo couldn’t load. Check the image URL.`:``):(L.hidden=!0,Ke(``),Y.logoURL?L.src=Y.logoURL:L.removeAttribute(`src`))}function Je(){be.forEach(function(e){e.setAttribute(`aria-pressed`,String(e.getAttribute(`data-lab-phase`)===X.phase))}),ve.textContent=X.phase===`after`?`After`:`Before`,_e.textContent=t[X.scenario][X.phase]}function Ye(){var n=t[X.scenario],r=Z===`examples`&&X.scenario===`ranking`;U.value=X.scenario,e.querySelector(`[data-lab-lesson-intro]`).textContent=n.intro,e.querySelector(`[data-lab-lesson-name]`).textContent=n.name,e.querySelector(`[data-lab-lesson-copy]`).textContent=n.copy,e.querySelector(`[data-lab-lesson-note]`).textContent=n.note,e.querySelector(`[data-lab-comparison]`).setAttribute(`aria-label`,(X.scenario===`ranking`?`Ranking`:`Search Fields`)+` comparison`),Ce.textContent=Xe(),Ce.parentElement.hidden=r||He.active,e.querySelector(`[data-lab-ranking-queries]`).hidden=!r,e.querySelector(`[data-lab-ranking-checklist]`).hidden=!r,e.querySelector(`[data-lab-doc]`).href=n.doc,e.querySelector(`[data-lab-doc-label]`).textContent=n.docLabel,e.querySelector(`[data-lab-video]`).href=n.video,e.querySelector(`[data-lab-video-label]`).textContent=n.videoLabel,e.querySelector(`[data-lab-field-checklist]`).hidden=X.scenario!==`fields`,Je()}function Xe(){return Z===`examples`?X.scenario===`ranking`&&X.rankingPreset||t[X.scenario].query:Y.samplePromotions===`off`?Fe:Ct}function Ze(e){return we.some(function(t){return t.dataset.labRankingQuery===e})}function Qe(e){return Tt(e,Z===`design`?Y.samplePromotions:`off`)}function $e(){de.hasAttribute(`data-searching`)||(de.setAttribute(`data-searching`,``),ae.setAttribute(`aria-busy`,`true`),G.removeAttribute(`data-tone`),G.textContent=`Searching the demo…`,ce.hidden=!ze,W.hidden=!0)}function et(e){He.active||(e&&(document.activeElement===i||document.activeElement===b||document.activeElement===U||document.activeElement===M||De.includes(document.activeElement))&&(Ve=document.activeElement),e?$e():(de.removeAttribute(`data-searching`),ae.setAttribute(`aria-busy`,`false`),ce.hidden=!0),ie.inert=e,le.inert=e,b.disabled=e,i.disabled=e,U.disabled=e,M.disabled=e||!Q,De.forEach(function(t){t.disabled=e}),!e&&Ve&&((document.activeElement===document.body||document.activeElement===document.documentElement)&&Ve.focus({preventScroll:!0}),Ve=null))}function tt(e){window.clearTimeout(Be),et(!1),Q||(i.disabled=!0,b.disabled=!0,De.forEach(function(e){e.disabled=!0})),ze=!1,se.hidden=!0,oe.hidden=!0,le.hidden=!0,W.hidden=!0,G.dataset.tone=`error`,G.textContent=e||`The live demo is unavailable right now. Please try again later.`,K.textContent=`Search results`}function nt(){Le&&Q&&!Q.dataLayer.loading&&(window.clearTimeout(Be),et(!1),se.hidden=!1,ze=!0,W.hidden=!Re,Ot(oe,Ie.promotions),le.hidden=!1,G.textContent=``,ye.hidden=!!ie.querySelector(`input`))}function rt(){ie.querySelectorAll(`[data-lab-type]`).forEach(function(e){var t=e.getAttribute(`data-lab-type`),r=n[t]||t;e.textContent!==r&&(e.textContent=r)}),ye.hidden=!!ie.querySelector(`input`)}function at(){var e=new URL(window.location.href).searchParams,n=null;if(window.performance.getEntriesByType(`navigation`)[0]?.type===`reload`)try{n=window.sessionStorage.getItem(Ne)}catch{}Y=g(n===null?e:new URLSearchParams(n));var r=e.get(`lab_scenario`),i=e.get(`lab_view`),a=e.get(`lab_query`);Object.prototype.hasOwnProperty.call(t,r)&&(X.scenario=r),(i===`before`||i===`after`)&&(X.phase=i),X.scenario===`ranking`&&Ze(a)&&(X.rankingPreset=a)}function ot(){var e=new URLSearchParams;_(e,Y);try{window.sessionStorage.setItem(Ne,e.toString())}catch{}}function ct(){var e=new URL(window.location.href);return e.search=``,e.hash=Z===`examples`?`lab-examples`:`lab-design`,_(e.searchParams,Y),Z===`examples`&&(e.searchParams.set(`lab_scenario`,X.scenario),e.searchParams.set(`lab_view`,X.phase),X.scenario===`ranking`&&Ze(Ie?.query)&&e.searchParams.set(`lab_query`,Ie.query)),e.href}function ft(e,t){var n=URL.createObjectURL(e),r=document.createElement(`a`);r.href=n,r.download=t,document.body.appendChild(r);try{r.click()}finally{r.remove(),window.setTimeout(function(){URL.revokeObjectURL(n)},1e3)}}function pt(e){try{var t={searchURL:J.searchURL,searchAuth:J.searchAuth,model:J.before,kitURL:document.querySelector(`#searchstax-ui-kit`).src},r={javascript:{create:st,name:`searchstax-vanilla-starter.zip`},react:{create:lt,name:`searchstax-react-starter.zip`},vue:{create:ut,name:`searchstax-vue-starter.zip`},angular:{create:dt,name:`searchstax-angular-starter.zip`}}[e];ft(r.create(Y,t,n),r.name),me.textContent=`Download started. Unzip the starter and open its README for setup.`}catch{me.textContent=`Couldn’t prepare the starter. Try downloading it again.`}}function mt(e,t,n){var r=n||pe;!navigator.clipboard||typeof navigator.clipboard.writeText!=`function`?r.textContent=`Copy isn’t available in this browser.`:navigator.clipboard.writeText(e).then(function(){r.textContent=t}).catch(function(){r.textContent=`Couldn’t copy. Please try again.`})}function ht(){if(typeof window.Searchstax==`function`)return window.Searchstax;if(window.Searchstax&&typeof window.Searchstax.Searchstax==`function`)return window.Searchstax.Searchstax;var e=window[`@searchstaxInc/searchstudioUxJs`];return e&&typeof e.Searchstax==`function`?e.Searchstax:null}function gt(e){try{var t=new URL(e);return t.protocol===`https:`&&/(^|\.)searchstax\.com$/i.test(t.hostname)&&/\/emselect\/?$/.test(t.pathname)}catch{return!1}}function vt(e){return e.filter(function(e){try{var t=new URL(e.url);return t.protocol===`https:`&&t.hostname===`mw-searchstax.github.io`&&t.pathname.indexOf(`/university-health-search-demo/`)===0}catch{return!1}}).map(function(e){return Object.assign({},e,{title:Xt(e.title),description:Yt(e.description),demoThumbnail:xe[e.url]?.source})})}function xt(){return Z===`design`&&Y.showSorting?M.value:``}function St(){return Z===`design`?Y.resultsPerPage:o.resultsPerPage}function wt(e,t,n=!1,r){if(Q&&!He.active){if(!e.trim())G.dataset.tone=`error`,G.textContent=`Enter a search term to explore the demo.`;else{var a=Q.dataLayer.searchObject,o=Z===`examples`&&X.scenario===`ranking`&&X.phase===`after`,s=Z!==`examples`||X.phase===`before`?J.before:o?J.rankingAfter:J.after;if(!s||o&&(s===J.before||s===J.after))tt(`The Ranking example hasn’t been configured yet.`);else{var c=e.trim();if(Z===`examples`){var l=X.scenario===`ranking`?J.rankingAfter:J.after;je.compare(c,X.scenario,l)}var u=xt(),d=St(),f=Qe(c),p=r?.page??1,m=r?JSON.stringify(a.facets)===JSON.stringify(r.facets):!t||!a.facets.length,h=a.query===c&&a.model===s&&a.page===p&&a.order===u&&a.itemsPerPage===d&&m;if(h&&Le&&Ie.promotions===f)n||(i.value=c),G.textContent=``,se.hidden=!1,le.hidden=!1;else{Ie={query:c,model:s,order:u,itemsPerPage:d,promotions:f},Le=!1,Z===`examples`&&(K.textContent=``),n||(i.value=Ie.query),et(!0),window.clearTimeout(Be),Be=window.setTimeout(tt,15e3),Q.dataLayer.setModel(s),Q.dataLayer.setItemsPerPage(d);var g=Object.assign({},a,{query:Ie.query,page:p,itemsPerPage:d,facets:r?.facets??(t?[]:a.facets),model:s,order:u});h?Q.search(g):Q.dataLayer.setSearchObject(g)}}}}}function kt(){var e=Q?.dataLayer.searchObject;e?.query&&(e.order!==xt()||e.itemsPerPage!==St()||Ie?.promotions!==Qe(e.query))&&wt(e.query,!1,!0)}function At(){var e=ht();if(!gt(J.searchURL)||!J.searchAuth||!J.before||!J.after||J.before===J.after)tt();else if(!e)tt();else try{Q=new e,Q.initialize({language:`en`,model:J.before,searchURL:J.searchURL,searchAuth:J.searchAuth,authType:`token`,suggesterURL:``,trackApiKey:``,router:{enabled:!1},hooks:{afterSearch:function(e,t){var n=t&&t.responseHeader&&t.responseHeader.params,r=t&&t.response&&t.response.numFound;return!Ie||!n||n.q!==Ie.query||n.model!==Ie.model||(n.sort||`score desc`)!==(Ie.order||`score desc`)||Number(n.rows)!==Ie.itemsPerPage||typeof r!=`number`?Q.dataLayer.searchResults||[]:(Le=!0,Re=r===0,K.textContent=r+(r===1?` result`:` results`)+` for “`+Ie.query+`”`,window.setTimeout(nt,0),Et(vt(Array.isArray(e)?e:[]),t,Ie.promotions))}}}),Q.setCookiesDisabled(!0),Q.addSearchResultsWidget(`lab-results`,{renderMethod:`pagination`,resultsPerPage:St(),templates:{mainTemplate:{template:`<div id="lab-results-list" class="searchstax-search-results"></div>`,searchResultsContainerId:`lab-results-list`},searchResultTemplate:{template:`<article class="searchstax-search-result">{{#sampleIndexedPromotion}}<span class="sample-indexed-promotion">Sample indexed promotion</span>{{/sampleIndexedPromotion}}{{#demoThumbnail}}<img class="search-lab__result-thumbnail" src="{{demoThumbnail}}" alt="" width="384" height="216" loading="lazy">{{/demoThumbnail}}<h4><a class="searchstax-search-result-title" href="{{url}}" data-searchstax-unique-result-id="{{uniqueId}}">{{title}}</a></h4><p class="search-lab__result-description">{{description}}</p></article>`,searchResultUniqueIdAttribute:`data-searchstax-unique-result-id`},noSearchResultTemplate:{template:` `}}}),Q.addFacetsWidget(`lab-facets`,{facetingType:`or`,specificFacets:[`demo_content_type_s`],itemsPerPageDesktop:20,itemsPerPageMobile:20,templates:{mainTemplateDesktop:{template:`<div class="lab-facet-groups"></div>`,facetsContainerClass:`lab-facet-groups`},mainTemplateMobile:{template:` `},facetItemContainerTemplate:{template:`<fieldset><legend>Content type</legend><div class="lab-facet-options"></div></fieldset>`,facetListContainerClass:`lab-facet-options`},facetItemTemplate:{template:`<label class="search-lab__facet-option"><input class="lab-facet-checkbox" type="checkbox" {{#disabled}}disabled{{/disabled}} {{#isChecked}}checked{{/isChecked}}><span data-lab-type="{{value}}">{{value}}</span><span class="search-lab__facet-count">{{count}}</span></label>`,inputCheckboxClass:`lab-facet-checkbox`,checkTriggerClasses:[]}}}),new MutationObserver(rt).observe(ie,{childList:!0,subtree:!0}),Q.addPaginationWidget(`lab-pagination`,{templates:{mainTemplate:{template:`{{#results.length}}<nav class="search-lab__pagination" aria-label="Search result pages"><span tabindex="-1" data-page-range data-page-start="{{startResultIndex}}">{{startResultIndex}}–{{endResultIndex}} of {{totalResults}} results</span>{{^isFirstPage}}<button type="button" data-page-step="previous">Previous</button>{{/isFirstPage}}{{^isLastPage}}<button type="button" data-page-step="next">Next</button>{{/isLastPage}}</nav>{{/results.length}}`}}}),Q.dataLayer.$loadingChange.subscribe(function(e){e?$e():(nt(),window.setTimeout(nt,0))}),wt(Xe(),!0)}catch{Q=null,tt()}}e.querySelectorAll(`input[name="lab-layout"]`).forEach(function(e){e.addEventListener(`change`,function(){s(e.value)&&(Y.layout=e.value),$()})});for(let[e,t]of[[N,`color`],[P,`background`]])e.addEventListener(`input`,function(){f(e.value)&&(Y[t]=e.value),$()});F.addEventListener(`change`,function(){Y.corners=p(F.value),$()});function jt(){window.clearTimeout(ee);let e=I.value.trim(),t=m(e);e&&!t?(I.setAttribute(`aria-invalid`,`true`),Ke(`Enter a valid HTTPS image URL.`)):(I.removeAttribute(`aria-invalid`),Y.logoURL!==t&&(Ge(),me.textContent=``),Y.logoURL=t,qe(),ot())}I.addEventListener(`change`,jt),I.addEventListener(`input`,function(){window.clearTimeout(ee),ee=window.setTimeout(jt,350)}),L.addEventListener(`load`,function(){L.hidden=!1,Ke(``)}),L.addEventListener(`error`,function(){L.hidden=!0,L.hasAttribute(`src`)&&Ke(`The logo couldn’t load. Check the image URL.`)}),z.addEventListener(`change`,function(){Y.listDividers=z.checked,$()}),te.addEventListener(`change`,function(){Y.underlineTitles=te.checked,$()}),V.addEventListener(`change`,function(){d(V.value)&&(Y.font=V.value),$()}),H.addEventListener(`change`,function(){c(H.value)&&(Y.resultSpacing=H.value),$()}),ne.addEventListener(`change`,function(){Y.resultsPerPage=l(ne.value),$(),kt()}),Object.keys(x).forEach(function(e){var t=x[e];t.addEventListener(`input`,function(){Y[e]=h(t.value,o[e]),Ge(),Ue(),me.textContent=``,ot()})}),U.addEventListener(`change`,function(){Object.prototype.hasOwnProperty.call(t,U.value)&&(X.scenario=U.value,X.phase=`before`,X.rankingPreset=``,Ye(),i.value=t[X.scenario].query,wt(i.value,!0))}),S.addEventListener(`change`,function(){Y.filters=S.checked,$(),!Y.filters&&Q&&Q.dataLayer.searchObject.facets.length&&wt(i.value,!0)}),C.addEventListener(`change`,function(){Y.showDescriptions=C.checked,$()}),w.addEventListener(`change`,function(){Y.showThumbnails=w.checked,$()}),T.addEventListener(`change`,function(){Y.showSorting=T.checked,$(),kt()}),M.addEventListener(`change`,kt),E.addEventListener(`change`,function(){Y.showSuggestions=E.checked,$()}),D.addEventListener(`change`,function(){Y.showSmartAnswersSample=D.checked,$()}),A.addEventListener(`change`,function(){Y.samplePromotions=u(A.value),$(),kt()}),be.forEach(function(e){e.addEventListener(`click`,function(){X.phase=e.getAttribute(`data-lab-phase`),Je(),wt(i.value,!0)})}),r.addEventListener(`submit`,function(e){e.preventDefault(),He.active?He.search(i.value):(wt(i.value,!0),i.value.trim()||i.focus())}),Ce.addEventListener(`click`,function(){wt(Xe(),!0)}),Te.addEventListener(`click`,function(){Ft(),i.value=`reh`,i.focus(),i.dispatchEvent(new Event(`input`,{bubbles:!0}))}),Ee.addEventListener(`click`,function(){Ft(),i.focus(),wt(`qzxvzz`,!0)}),we.forEach(function(e){e.addEventListener(`click`,function(){wt(e.dataset.labRankingQuery,!0)})});let Mt=[...e.querySelectorAll(`.search-lab__handoff-actions button`)];function Nt(e){for(let t of Mt){let n=t===e;t.setAttribute(`aria-expanded`,String(n)),document.getElementById(t.getAttribute(`aria-controls`)).hidden=!n}}for(let e of Mt)e.addEventListener(`click`,function(){Nt(e.getAttribute(`aria-expanded`)===`true`?null:e)});e.querySelectorAll(`[data-lab-share]`).forEach(function(e){e.addEventListener(`click`,function(){var t=e.parentElement.querySelector(`[role="status"]`);mt(ct(),`Link copied.`,t)})}),e.querySelectorAll(`[data-lab-download-starter]`).forEach(function(e){e.addEventListener(`click`,function(){pt(e.dataset.labDownloadStarter)})}),e.querySelector(`[data-lab-download-css]`).addEventListener(`click`,function(){ft(new Blob([it(Y)],{type:`text/css`}),`searchstax-search.css`),me.textContent=`CSS download started.`}),e.querySelector(`[data-lab-copy-css]`).addEventListener(`click`,function(){mt(it(Y),`CSS copied. Use it with the starter markup or adapt the selectors for your templates.`,me)}),ge.addEventListener(`click`,function(){let t=Q?.dataLayer.searchObject,n=Me??{design:{...Y},preview:!He.active&&t?.query?{query:t.query,draft:i.value,page:t.page,facets:[...t.facets],order:M.value}:null};Y={...o},$(),Nt(null),e.querySelector(`#lab-design-controls > details`).open=!0,e.querySelectorAll(`#lab-more-settings > details[open]`).forEach(e=>{e.open=!1}),k.open=!1,He.active||(i.value=Xe(),wt(i.value,!0)),Me=n,q.hidden=!1,he.textContent=He.active?`Design settings reset.`:`Design and demo search reset.`}),q.addEventListener(`click`,function(){if(!Me)return;let{design:e,preview:t}=Me;Y=e,ge.focus({preventScroll:!0}),$(),t&&!He.active&&(M.value=t.order,i.value=t.draft,wt(t.query,!1,!0,t)),he.textContent=`Previous design restored.`}),at(),$();var Pt=new Map([[`#lab-ranking`,{scenario:`ranking`,back:`#lab-find-page`,label:`Back to Tool Options`}],[`#lab-compare-ranking`,{scenario:`ranking`,back:`#lab-ranking-guide`,label:`Back to the Ranking Walkthrough`}]]);let Ft=_t(e,function(t,n){if(ke(t,n),Ae(t===`data-filters`),t!==`examples`&&je.clear(),t!==`design`&&He.disconnect(),We(),t===`design`||t===`examples`){var r=Pt.get(n);if(t===`examples`){var a=e.querySelector(`[data-lab-example-back]`),o=e.querySelector(`[data-lab-example-back-label]`);a.href=r?.back??`#lab-improve`,o.textContent=r?.label??`Back to Improve What People Find`}if(r)X.scenario=r.scenario,X.phase=`before`,X.rankingPreset=``;else if(t===Z)return;var s=!Z;Z=t,Ue(),Ye(),i.value=Xe(),s?At():Q&&wt(i.value,!0)}})})();var jn=`campus flu clinic`,Mn=`transit access`,Nn=`https://mw-searchstax.github.io/university-health-search-demo/`,Pn=Nn+`news/`,Fn=Nn+`locations/`,In=[{title:`Flu Clinic Updates — 2024 Archive`,url:Pn+`flu-clinic-update-2024/`,summary:`A fictional 2024 archive notice records a sample flu clinic updates pack of poster headings and document labels.`},{title:`Flu Clinic Updates — 2025 Archive`,url:Pn+`flu-clinic-update-2025/`,summary:`A fictional 2025 archive notice describes revised headings and a large-print version of the sample flu clinic updates pack.`},{title:`Flu Clinic Updates — 2026 Notice`,url:Pn+`flu-clinic-update-2026/`,summary:`A fictional 2026 notice brings the sample flu clinic updates pack and its historical editions into one reference set.`},{title:`North Campus Clinic`,url:Fn+`north-campus-clinic/`,summary:`A fictional northern teaching annex stores Primary Care and Neurology classroom materials.`},{title:`South Campus Clinic`,url:Fn+`south-campus-clinic/`,summary:`The South Campus Clinic building houses seminar rooms and teaching displays for Dermatology, Endocrinology, and Women’s Health.`}],Ln=[{title:`Transit Access`,url:Nn+`community/transit-access/`,summary:`A fictional campus-map guide explains pedestrian, covered-link and transit symbols without real routes or schedules.`},{title:`Community at Central County`,url:Nn+`community/`,summary:`Explore enduring programs for reading health information, understanding campus maps and connecting university teaching with public-service subjects.`},{title:`Accessibility and Language Support`,url:Nn+`care/resources/accessibility-and-language-support/`,summary:`Large-print samples, glossary layouts, and fictional wayfinding symbols are grouped as design references.`}],[Rn,zn,Bn,Vn,Hn]=In;function Un(e){return[Bn,...e.filter(e=>e!==Bn)]}var Wn=[Vn,Hn,Rn,zn,Bn];function Gn(e){let t=Un(In);In.forEach((n,r)=>{let i=e.insertRow(),a=document.createElement(`th`);a.scope=`row`,a.textContent=String(r+1),i.append(a);for(let e of[n,t[r],Wn[r]]){let t=i.insertCell(),n=e.title.replace(/^Flu Clinic Updates — /,``);if(e===Bn){t.className=`promotions-lab__current-notice`;let e=document.createElement(`strong`);e.textContent=n,t.append(e)}else t.textContent=n}})}function Kn(e,t,n=!1){e.replaceChildren(...t.map(e=>{let t=document.createElement(`li`);t.className=`promotions-lab__result`;let r=document.createElement(`a`);if(r.href=e.url,r.textContent=e.title,t.append(r),n&&e===Bn){let e=document.createElement(`span`);e.className=`promotions-lab__promoted`,e.textContent=`Promoted`,t.append(e)}let i=document.createElement(`p`);return i.textContent=e.summary,t.append(i),t}))}function qn(e,t){e.replaceChildren(...t.map(e=>{let t=document.createElement(`li`);t.className=`promotions-lab__result`,t.classList.toggle(`promotions-lab__current-notice`,e===Bn);let n=document.createElement(`a`);return n.href=e.url,n.textContent=e.title,t.append(n),t}))}function Jn(e){let t=e.querySelector(`[data-promotion-results]`),n=e.querySelector(`[data-promotion-feature]`),r=e.querySelector(`[data-promotion-query]`),i=e.querySelector(`[data-promotion-why]`),a=e.querySelector(`[data-promotion-heading]`),o=e.querySelector(`[data-promotion-outcome]`),s=e.querySelector(`[data-promotion-optional]`),c=e.querySelector(`[data-promotion-switch]`),l=e.querySelector(`[data-promotion-next]`),u=!1;function d(){let e=n.checked&&!u,l=u?Ln:In;Kn(t,e?Un(l):l,e),r.textContent=u?Mn:jn,i.hidden=s.hidden=!n.checked,a.textContent=u?`Why Transit Access is still first`:`Why the notice moved up`,o.textContent=u?`This search doesn’t contain “flu clinic,” so the promotion has no effect.`:`You chose the 2026 notice for searches containing “flu clinic.” The visitor searched for “campus flu clinic,” so your choice applies. Both archives are still available below it. In Site Search, this is called a promotion.`,c.textContent=u?`Back to “campus flu clinic”`:`Check “transit access”`}function f(){u=!1,d()}pt(e,n,l,f),n.addEventListener(`change`,f),c.addEventListener(`click`,()=>{u=!u,d()}),d()}var Yn=document.querySelector(`[data-clinic-promoted-order]`);Yn&&qn(Yn,Un(In).slice(0,3));var Xn=document.querySelector(`[data-lab-screen="promotions"]`);Xn&&Jn(Xn);var Zn=document.querySelector(`[data-clinic-comparison]`);Zn&&Gn(Zn);function Qn(e,t,n,r){e.addEventListener(`click`,async()=>{let e=n.value,i=!1;try{navigator.clipboard&&(await navigator.clipboard.writeText(e),i=!0)}catch{}n.value===e&&(n.hidden=i,t.textContent=i?r.copied:r.manual,i||(n.focus(),n.select()))})}var $n={profile:`[test Search App and Search Profile]`,query:`[trigger phrase]`,longerQuery:`[exact longer query containing the trigger phrase]`,controlQuery:`[exact unrelated control query]`,page:`[indexed page title or URL]`,baseline:`[first result and position of the intended page for each query]`};function er(e,t,n){let{profile:r,query:i,longerQuery:a,controlQuery:o,page:s,baseline:c}=e,l=t===`exact`?`Exact Match`:t===`contains`?`Contains`:`Please help me choose`;return[`Hi, could you help set up an indexed promotion so people searching for the phrase below see the intended page at the top of their results?`,``,`Test Search App and Search Profile — ${r}`,`Trigger phrase — ${i}`,`Match type — ${l}`,`Page to promote — ${s}`,`Longer query — ${a}`,`Control query — ${o}`,``,`Recorded baseline in Preview`,c,``,`Please confirm which Search App and Search Profile the live site uses, including the default profile if the site doesn't specify one. Use a Sandbox or staging App if available, and confirm no live search uses the App and profile we'll test.`,`Confirm or complete the baseline in Preview for the test profile using the three queries above. For each, record the first result and where the intended page appears, if at all.`,`In the test Search App and profile, go to Optimizations → Promotions and select Create a Promotion. Name the promotion, select Create, and enter the trigger phrase and match type.`,`Confirm the page is indexed and select it under Indexed Items. Select Save Draft, then publish to the confirmed test profile only.`,`Repeat the same searches in Preview. Confirm the correct page is first in the regular results for the trigger phrase. The longer search should promote it only with Contains. The unrelated search should show no promotion for this page and the same first result as before.`,``,`Please share the before-and-after results so we can review them before publishing to live search.`,``,`Promotions guide — ${n}`].join(`
+`)}function tr(e){let t=Object.keys($n).map(t=>({name:t,input:e.querySelector(`[data-promotion-input="${t}"]`)})),n=e.querySelector(`[data-promotion-request-match]`),r=e.querySelector(`[data-promotion-copy]`),i=e.querySelector(`[data-promotion-copy-status]`),a=e.querySelector(`[data-promotion-request]`),o=e.querySelector(`[data-promotion-guide]`).href;function s(){let e={...$n};for(let{name:n,input:r}of t)e[n]=r?.value.trim()||$n[n];a&&(a.value=er(e,n?.value??``,o)),i&&a?.hidden&&(i.textContent=``)}for(let{input:e}of t)e?.addEventListener(`input`,s);n?.addEventListener(`change`,s),r&&i&&a&&Qn(r,i,a,{copied:`Request copied.`,manual:`Select and copy the request below.`}),s()}var nr=document.querySelector(`[data-promotion-checklist]`);nr&&tr(nr);var rr={fields:{name:`Search Fields`,queries:`Visitor’s query`,queryPrompt:`[query that should find the target page]`,expectedPrompt:`[indexed field to include and target page the visitor’s query should find]`,steps:[`In Preview, select the test App, language, and profile. Run all three queries and record the first results and whether each search finds the target URL.`,`Confirm the page is indexed and eligible for the test profile. In Configurations → Basic Configurations → Search Fields, select the indexed text field that contains the visitor’s words.`,`Save a draft and publish to the confirmed test profile only. Repeat the three searches in Preview. Confirm the visitor’s query finds the target URL, the title query still finds the page, and the control query keeps its top results.`]},ranking:{name:`Ranking`,queries:`Two queries to improve`,queryPrompt:`[two queries where the target pages should rank higher]`,expectedPrompt:`[searchable field and boost to try, and which pages should move up]`,steps:[`In Preview, select the test App, language, and profile. Run the two queries to improve and the control query. Record the top five in relevance order and the current position of each target page.`,`In Configurations → Advanced Configurations → Ranking, enable Field Ranking if needed. Under Search Field, choose a searchable field and try a small boost.`,`Save a draft and publish to the confirmed test profile only. Repeat the three searches in Preview. Verify the target pages moved up and the control query kept the same top five in the same order.`]}};function ir(e,t){let n=rr[t],r=Array.from(e.querySelectorAll(`input[name], textarea[name]`)),i=e.querySelector(`[data-test-plan-copy]`),a=e.querySelector(`[data-test-plan-status]`),o=e.querySelector(`[data-test-plan-request]`);function s(){let e=new Map(r.map(e=>[e.name,e.value.trim()])),i=(t,n)=>e.get(t)||n,s=[`${n.queries} — ${i(`query`,n.queryPrompt)}`];t===`fields`&&s.push(`Query using the page title — ${i(`title-query`,`[distinctive part of the page title]`)}`),o.value=[`Hi, could you help test a ${n.name} change in Site Search?`,``,`Test Search App, language, and profile — ${i(`scope`,`[test Search App, language, and Search Profile]`)}`,`Target page or pages — ${i(`page`,`[URL or title of each target page]`)}`,...s,`Control query — ${i(`control`,`[query whose top results should stay the same]`)}`,``,`Baseline in Preview`,i(`baseline`,`[record the current top results and where the target appears for each query]`),``,`Expected change`,i(`expected`,n.expectedPrompt),``,`Confirm which App, language, and profile the live site uses. Use a Sandbox or staging App if available, and confirm the selected test profile serves no live searches.`,...n.steps,``,`Please share the before-and-after results so we can review them before publishing to live search.`].join(`
+`),o.hidden&&(a.textContent=``)}for(let e of r)e.addEventListener(`input`,s);Qn(i,a,o,{copied:`Test plan copied.`,manual:`Select and copy the test plan below.`}),s()}for(let e of document.querySelectorAll(`[data-lab-test-plan]`)){let t=e.dataset.labTestPlan;(t===`fields`||t===`ranking`)&&ir(e,t)}function ar(e){let t=e.querySelector(`[data-spell-no-results]`),n=e.querySelector(`[data-spell-before-results]`),r=e.querySelector(`[data-spell-after-results]`),i=e.querySelector(`[data-spell-correction]`),a=e.querySelector(`[data-spell-results]`),o=e.querySelector(`[data-spell-status]`);n.append(a.content.cloneNode(!0)),r.append(a.content.cloneNode(!0));function s(e){let r=e.value===`typo`;t.hidden=!r,n.hidden=r,i.hidden=!r,o.textContent=r?`Spell Check recovers 8 results for rehabilitation.`:`Both searches return 8 results for rehabilitation.`}for(let t of e.querySelectorAll(`input[name="spell-check-query"]`))t.checked&&s(t),t.addEventListener(`change`,()=>s(t))}var or=document.querySelector(`[data-lab-screen="spell-check"]`);or&&ar(or);
