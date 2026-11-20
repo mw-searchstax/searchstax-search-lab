@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet">
   <script defer id="searchstax-ui-kit" src="https://cdn.jsdelivr.net/npm/@searchstax-inc/searchstudio-ux-js@4.2.34/dist/@searchstax-inc/searchstudio-ux-js.iife.js"></script>
-  <script type="module" crossorigin src="./assets/index-_HZUwMSu.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-DyTs85DD.css">
+  <script type="module" crossorigin src="./assets/index-DnfoXKHM.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-Bt622uah.css">
 </head>
 <body>
 <main
@@ -478,15 +478,13 @@
       </header>
       <div class="search-lab__workspace improve-workspace">
         <aside class="improve-workspace__sidebar" aria-label="Lesson options" data-improve-sidebar>
-          <div class="improve-workspace__picker">
-            <label for="lab-improve-scenario">Choose a lesson</label>
-            <select id="lab-improve-scenario" aria-controls="lab-improve-preview">
-              <option value="missing-page">Search Fields · Match text</option>
-              <option value="synonyms">Synonyms · Link terms</option>
-              <option value="flu-clinic-order">Ranking · Order results</option>
-              <option value="facets">Faceting · Narrow results</option>
-            </select>
-          </div>
+          <fieldset class="improve-workspace__picker" id="lab-improve-scenario" aria-controls="lab-improve-preview">
+            <legend>Choose a lesson</legend>
+            <label><input type="radio" name="improve-lesson" value="missing-page"> Search Fields · Match text</label>
+            <label><input type="radio" name="improve-lesson" value="synonyms"> Synonyms · Link terms</label>
+            <label><input type="radio" name="improve-lesson" value="flu-clinic-order"> Ranking · Order results</label>
+            <label><input type="radio" name="improve-lesson" value="facets"> Faceting · Narrow results</label>
+          </fieldset>
         </aside>
         <div class="improve-workspace__preview" id="lab-improve-preview">
           <div data-improve-lesson="missing-page" hidden>
