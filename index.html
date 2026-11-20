@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet">
   <script defer id="searchstax-ui-kit" src="https://cdn.jsdelivr.net/npm/@searchstax-inc/searchstudio-ux-js@4.2.34/dist/@searchstax-inc/searchstudio-ux-js.iife.js"></script>
-  <script type="module" crossorigin src="./assets/index-CKTyUlVC.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-Bkh1NjLb.css">
+  <script type="module" crossorigin src="./assets/index-_HZUwMSu.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-DyTs85DD.css">
 </head>
 <body>
 <main
@@ -620,7 +620,7 @@
           <div data-improve-lesson="facets" hidden>
             <div class="improve-workspace__action" data-improve-controls="facets" hidden>
               <h2 id="lab-facets-example" tabindex="-1">What if I only want to see providers?</h2>
-              <p>The search returns notices, locations, and provider profiles. A content type filter narrows the list.</p>
+              <p>The search returns notices, locations, and provider profiles. Select Providers under Refine results to narrow the list.</p>
               <fieldset class="improve-workspace__facet">
                 <legend>Filter by content type</legend>
                 <label><input type="checkbox" data-improve-toggle> Providers</label>
@@ -673,43 +673,62 @@
 
     <template id="lab-improve-preview-template">
       <section class="search-lab__preview improve-preview" aria-label="Live search preview">
+        <div class="improve-preview__toolbar">
+          <strong data-preview-label>Live visitor preview</strong>
+          <strong data-browsing-label hidden>Live visitor search</strong>
+          <span data-improve-phase hidden></span>
+        </div>
         <div class="search-lab__browser search-lab__site">
           <div class="search-lab__site-header">
-            <h3 class="search-lab__site-brand search-lab__site-wordmark"><span>Central County</span> <small>University Health</small></h3>
-            <span class="search-lab__demo-label">Fictional demo</span>
+            <a class="search-lab__site-brand search-lab__site-wordmark" href="https://mw-searchstax.github.io/university-health-search-demo/"><span>Central County</span> <small>University Health</small></a>
+            <nav class="improve-preview__site-nav" aria-label="Central County">
+              <a href="https://mw-searchstax.github.io/university-health-search-demo/care/">Departments</a>
+              <a href="https://mw-searchstax.github.io/university-health-search-demo/education/">Education</a>
+              <a href="https://mw-searchstax.github.io/university-health-search-demo/locations/">Locations</a>
+            </nav>
           </div>
           <div class="search-lab__site-content">
-            <div class="improve-preview__query">
-              <span>Visitor’s search</span>
-              <strong data-improve-query></strong>
-            </div>
-            <div class="search-lab__results-heading">
-              <strong data-improve-count>Search results</strong>
-              <span data-improve-phase hidden></span>
-            </div>
-            <div data-improve-preview-controls>
-              <div class="improve-preview__wrap-up">
-                <div data-improve-takeaway hidden>
-                  <button type="button" class="improve-preview__takeaway-toggle" aria-expanded="false" data-improve-takeaway-toggle>
-                    <span data-improve-takeaway-label>Show takeaway</span>
-                    <span data-improve-takeaway-peek aria-hidden="true"></span>
-                    <span class="improve-preview__takeaway-icon" aria-hidden="true"></span>
-                  </button>
-                  <div class="improve-preview__callout" data-improve-callout hidden></div>
-                </div>
-                <section class="improve-wrap-up__actions" data-improve-next hidden aria-label="Next steps">
-                  <button class="lt-btn lt-btn--secondary" type="button" aria-expanded="false" data-improve-own-site-toggle>Check this on your own site</button>
-                  <button class="improve-choose-scenario" type="button" data-improve-choose>Choose another lesson</button>
-                </section>
+            <form class="improve-preview__search" data-visitor-form role="search" aria-label="Central County">
+              <label><span>Search the website</span><input type="search" data-improve-query required autocomplete="off"></label>
+              <button type="submit">Search</button>
+            </form>
+            <button type="button" class="improve-preview__return" data-visitor-return hidden>Return to lesson search</button>
+            <div data-lesson-results>
+              <div class="improve-preview__summary">
+                <h3 tabindex="-1" data-improve-count>Search results</h3>
+                <span data-improve-context>Across all content</span>
               </div>
+              <div data-improve-facet></div>
+              <p class="search-lab__status search-lab__search-status" data-improve-status role="status" aria-atomic="true"></p>
+              <p class="improve-preview__empty-hint" data-improve-empty-hint hidden>Try the full name or a broader search term.</p>
+              <button class="lt-btn lt-btn--secondary" type="button" data-improve-retry hidden>Retry search</button>
+              <div data-improve-note-anchor></div>
+              <ol class="improve-preview__results" role="list" aria-label="Results in rank order" data-improve-results></ol>
             </div>
-            <p class="search-lab__status search-lab__search-status" data-improve-status role="status" aria-atomic="true"></p>
-            <button class="lt-btn lt-btn--secondary" type="button" data-improve-retry hidden>Retry search</button>
-            <ol class="improve-preview__results" role="list" aria-label="Results in rank order" data-improve-results></ol>
-            <div data-improve-preview-followup></div>
+            <section data-visitor-output aria-label="Visitor search results" hidden>
+              <p data-visitor-status role="status" aria-atomic="true"></p>
+              <button type="button" class="lt-btn lt-btn--secondary" data-visitor-retry hidden>Retry search</button>
+              <ol class="improve-preview__results" data-visitor-results></ol>
+              <div class="improve-preview__pages">
+                <button type="button" class="lt-btn lt-btn--secondary" data-visitor-prev hidden>Previous</button>
+                <button type="button" class="lt-btn lt-btn--secondary" data-visitor-next hidden>Next</button>
+              </div>
+            </section>
           </div>
         </div>
         <p class="search-lab__preview-footnote">Live results from Search Lab’s demo profiles for the fictional Central County website.</p>
+        <div data-improve-takeaway hidden>
+          <button type="button" class="improve-preview__takeaway-toggle" aria-expanded="true" data-improve-takeaway-toggle>
+            <span data-improve-takeaway-label>Search Lab note</span>
+            <span class="improve-preview__takeaway-icon" aria-hidden="true"></span>
+          </button>
+          <div class="improve-preview__callout" data-improve-callout></div>
+        </div>
+        <section class="improve-wrap-up__actions" data-improve-next hidden aria-label="Next steps">
+          <button class="lt-btn lt-btn--secondary" type="button" aria-expanded="false" data-improve-own-site-toggle>Check this on your own site</button>
+          <button class="improve-choose-scenario" type="button" data-improve-choose>Choose another lesson</button>
+        </section>
+        <div data-improve-preview-followup></div>
       </section>
     </template>
 
@@ -789,7 +808,7 @@
         </ol>
         <p><a href="https://support.searchstax.com/hc/en-us/articles/40151648011149-Ranking">Read the Ranking setup guide</a></p>
         <div class="promotions-lab__followup">
-          <details data-lab-test-plan="ranking">
+          <details class="search-lab__disclosure" data-lab-test-plan="ranking">
             <summary>Get Help From a Teammate</summary>
             <div class="promotions-lab__checklist-body">
               <p>Fill in what you know and copy the test plan. All fields are optional.</p>
@@ -962,7 +981,7 @@
         <li>Record the before-and-after results. If a check fails, review the trigger, match type, and selected page in the test profile. Once the checks pass, share your results and follow your team's process for publishing to live search.</li>
       </ol>
       <div class="promotions-lab__followup">
-        <details>
+        <details class="search-lab__disclosure">
           <summary id="lab-promotion-teammate">Explain it to a teammate</summary>
           <div class="promotions-lab__checklist-body">
             <p>“Could we test putting [current page] first when a search contains [phrase]? Here’s a search where an older page comes up first today: [visitor’s search].”</p>
