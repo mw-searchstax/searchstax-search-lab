@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script defer id="searchstax-ui-kit" src="https://cdn.jsdelivr.net/npm/@searchstax-inc/searchstudio-ux-js@4.2.34/dist/@searchstax-inc/searchstudio-ux-js.iife.js"></script>
-  <script type="module" crossorigin src="./assets/index-CSz1pmMY.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-CtTM3P3A.css">
+  <script type="module" crossorigin src="./assets/index-CWTAS3v5.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-DnSjdFw2.css">
 </head>
 <body>
 <main
@@ -46,14 +46,18 @@
         <nav aria-label="Lab topics">
           <ul>
             <li><a href="#lab-design">Design a Search Page</a></li>
+            <li><a href="#lab-missing-page">Search Fields · Match text</a></li>
+            <li><a href="#lab-synonyms">Synonyms · Link terms</a></li>
+            <li><a href="#lab-flu-clinic-order">Ranking · Order results</a></li>
+            <li><a href="#lab-facets-example">Faceting · Narrow results</a></li>
             <li><a href="#lab-spell-check">Spell Check</a></li>
             <li><a href="#lab-find-page">Options for a buried page</a></li>
             <li><a href="#lab-promotions">Promotions walkthrough</a></li>
             <li><a href="#lab-promotion-checklist">Promotions checklist</a></li>
-            <li><a href="#lab-ranking-guide">Ranking walkthrough</a></li>
-            <li><a href="#lab-compare-ranking">Ranking comparison</a></li>
+            <li><a href="#lab-ranking-steps">Test ranking on your site</a></li>
+            <li><a href="#lab-compare-ranking">Compare results before and after a ranking change</a></li>
             <li><a href="#lab-data-filters">Data Filters</a></li>
-            <li><a href="#lab-examples">All Search Fields and Ranking examples</a></li>
+            <li><a href="#lab-examples">Explore Search Fields and Ranking</a></li>
           </ul>
         </nav>
       </details>
@@ -88,8 +92,8 @@
       <div class="search-lab__handoff" role="group" aria-label="Design handoff and data source" data-lab-design-only>
         <div class="search-lab__handoff-actions">
           <button type="button" aria-expanded="false" aria-controls="lab-share-panel">Share Design</button>
-          <button type="button" aria-expanded="false" aria-controls="lab-code-panel">Get Code</button>
-          <button type="button" aria-expanded="false" aria-controls="lab-connect-panel">Connect a Search App</button>
+          <button type="button" aria-expanded="false" aria-controls="lab-code-panel">Get starter code</button>
+          <button type="button" aria-expanded="false" aria-controls="lab-connect-panel">Preview with your Search App</button>
         </div>
         <div class="search-lab__handoff-panel" id="lab-share-panel" hidden>
           <p>Your design stays in this tab when you reload. Copy a link to share your current layout, colors, and other design choices with teammates.</p>
@@ -317,16 +321,16 @@
 
           <section class="search-lab__control-section search-lab__control-section--lesson" aria-labelledby="lab-relevance-heading" data-lab-example-only hidden>
             <div class="search-lab__section-heading">
-              <h2 id="lab-relevance-heading">Choose an Example</h2>
+              <h2 id="lab-relevance-heading">Compare search settings</h2>
               <p data-lab-lesson-intro>See how Search Fields can help a page match a search.</p>
             </div>
             <div class="search-lab__field search-lab__scenario">
-              <label for="lab-scenario">Scenario</label>
+              <label for="lab-scenario">Choose a feature to compare</label>
               <select id="lab-scenario" aria-describedby="lab-scenario-help">
                 <option value="fields">Search Fields</option>
                 <option value="ranking">Ranking</option>
               </select>
-              <p id="lab-scenario-help">Choosing a scenario starts its example search.</p>
+              <p id="lab-scenario-help">Choosing a feature runs its example search.</p>
             </div>
             <div class="search-lab__lesson-label"><span data-lab-lesson-name>SEARCH FIELDS</span><span>GUIDED EXAMPLE</span></div>
             <p class="search-lab__lesson-copy" data-lab-lesson-copy>The fictional International Health page includes “Travel Vaccinations” in a service-name field.</p>
@@ -467,14 +471,14 @@
         <p>Try one change on the Central County demo, then see what to check in your own SearchStax app.</p>
       </header>
       <div class="search-lab__workspace improve-workspace">
-        <aside class="improve-workspace__sidebar" aria-label="Scenario options" data-improve-sidebar>
+        <aside class="improve-workspace__sidebar" aria-label="Lesson options" data-improve-sidebar>
           <div class="improve-workspace__picker">
-            <label for="lab-improve-scenario">Scenario</label>
+            <label for="lab-improve-scenario">Choose a lesson</label>
             <select id="lab-improve-scenario" aria-controls="lab-improve-preview">
-              <option value="missing-page">Travel vaccinations</option>
-              <option value="synonyms">ENT department</option>
-              <option value="flu-clinic-order">Flu clinic ranking</option>
-              <option value="facets">Providers filter</option>
+              <option value="missing-page">Search Fields · Match text</option>
+              <option value="synonyms">Synonyms · Link terms</option>
+              <option value="flu-clinic-order">Ranking · Order results</option>
+              <option value="facets">Faceting · Narrow results</option>
             </select>
           </div>
         </aside>
@@ -638,7 +642,7 @@
           <div data-improve-lesson="flu-clinic-order" hidden>
             <div class="improve-workspace__action" data-improve-controls="flu-clinic-order" hidden>
               <h2 id="lab-flu-clinic-order" tabindex="-1">What changes the order of flu clinic results?</h2>
-              <p id="lab-clinic-setting"><strong>Ranking</strong> affects which results appear first. Try giving matches in page titles more influence on the order.</p>
+              <p id="lab-clinic-setting"><strong>Ranking</strong> affects which results appear first. Try giving matches in page titles more influence on the order. <span data-ranking-watch></span></p>
               <label><input type="checkbox" data-improve-toggle aria-describedby="lab-clinic-setting" disabled> Give title matches more weight</label>
             </div>
             <details class="search-lab__disclosure promotions-lab__result-promotion" data-clinic-promotion hidden>
@@ -689,6 +693,7 @@
                 </div>
                 <section class="improve-wrap-up__actions" data-improve-next hidden aria-label="Next steps">
                   <button class="lt-btn lt-btn--secondary" type="button" aria-expanded="false" data-improve-own-site-toggle>Check this on your own site</button>
+                  <button class="improve-choose-scenario" type="button" data-improve-choose>Choose another lesson</button>
                 </section>
               </div>
             </div>
