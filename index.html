@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet">
   <script defer id="searchstax-ui-kit" src="https://cdn.jsdelivr.net/npm/@searchstax-inc/searchstudio-ux-js@4.2.34/dist/@searchstax-inc/searchstudio-ux-js.iife.js"></script>
-  <script type="module" crossorigin src="./assets/index-8EV8aHEM.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-Bt622uah.css">
+  <script type="module" crossorigin src="./assets/index-DIG-lb34.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-BuVtSD4q.css">
 </head>
 <body>
 <main
@@ -93,6 +93,7 @@
         <div class="search-lab__actions">
           <button type="button" class="lt-btn lt-btn--secondary" data-lab-share>Share example</button>
           <p class="search-lab__feedback" role="status"></p>
+          <input class="search-lab__share-url" aria-label="Example link" type="text" readonly hidden>
         </div>
       </header>
       <div class="search-lab__handoff" role="group" aria-label="Design handoff and data source" data-lab-design-only>
@@ -105,6 +106,7 @@
           <p>Your design stays in this tab when you reload. Copy a link to share your current layout, colors, and other design choices with teammates.</p>
           <button type="button" class="lt-btn lt-btn--secondary" data-lab-share>Copy design link</button>
           <p class="search-lab__feedback" role="status"></p>
+          <input class="search-lab__share-url" aria-label="Design link" type="text" readonly hidden>
         </div>
         <div class="search-lab__handoff-panel" id="lab-code-panel" hidden>
           <div class="search-lab__code-group">
@@ -114,6 +116,7 @@
               <button type="button" class="lt-btn lt-btn--secondary" data-lab-copy-css>Copy CSS</button>
               <button type="button" class="lt-btn lt-btn--secondary" data-lab-download-css>Download CSS</button>
             </div>
+            <p class="search-lab__feedback" role="status" data-lab-css-feedback></p>
           </div>
           <div class="search-lab__code-group">
             <h2>Runnable starters</h2>
@@ -704,7 +707,7 @@
               <ol class="improve-preview__results" role="list" aria-label="Results in rank order" data-improve-results></ol>
             </div>
             <section data-visitor-output aria-label="Visitor search results" hidden>
-              <p data-visitor-status role="status" aria-atomic="true"></p>
+              <p data-visitor-status tabindex="-1" role="status" aria-atomic="true"></p>
               <button type="button" class="lt-btn lt-btn--secondary" data-visitor-retry hidden>Retry search</button>
               <ol class="improve-preview__results" data-visitor-results></ol>
               <div class="improve-preview__pages">
