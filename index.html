@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet">
   <script defer id="searchstax-ui-kit" src="https://cdn.jsdelivr.net/npm/@searchstax-inc/searchstudio-ux-js@4.2.34/dist/@searchstax-inc/searchstudio-ux-js.iife.js"></script>
-  <script type="module" crossorigin src="./assets/index-C9kynfl4.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-C-gUsLFI.css">
+  <script type="module" crossorigin src="./assets/index-CO-y5uLS.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-DPGG8o_G.css">
 </head>
 <body>
 <main
@@ -120,7 +120,7 @@
           </div>
           <div class="search-lab__code-group">
             <h2>Starter projects</h2>
-            <p>For a working example, choose the <strong>JavaScript ZIP</strong>. If your team uses React, Vue, or Angular, choose that ZIP. Send one ZIP to your developer. It includes the demo, your styles, and a <code>README.md</code> with setup steps.</p>
+            <p>For a working example, choose the <strong>JavaScript ZIP</strong>. If your team uses React, Vue, or Angular, choose that ZIP. Send one ZIP to your developer. It includes your search layout, styles, and a <code>README.md</code> with setup steps.</p>
             <div class="search-lab__code-actions search-lab__starter-actions">
               <button type="button" class="lt-btn lt-btn--secondary" data-lab-download-starter="javascript">Download JavaScript ZIP</button>
               <button type="button" class="lt-btn lt-btn--secondary" data-lab-download-starter="react">Download React ZIP</button>
@@ -132,7 +132,7 @@
         </div>
         <div class="search-lab__handoff-panel" id="lab-connect-panel" hidden>
           <form data-customer-connect autocomplete="off">
-            <p>Use a read-only token for a Search App you’re allowed to preview. The connection lasts until you leave Design. Copied links and ZIPs use the fictional demo.</p>
+            <p>Use a read-only token for a Search App you’re allowed to preview. The connection lasts until you leave Design. Shared links reopen the fictional demo. A tabbed starter includes your language and profile names. Your connection credentials stay out of downloads.</p>
             <fieldset class="search-lab__field">
               <legend>Required to connect</legend>
               <p id="lab-customer-credentials-help">In Site Search, open your Search App and go to <strong>App Settings → All APIs → Search &amp; Indexing</strong> for the Select endpoint and a Read Only token. You can also paste a Select request URL that includes a model or language to fill in those settings.</p>
@@ -210,7 +210,7 @@
               <div class="search-lab__quick-fields">
                 <div class="search-lab__field">
                   <div class="search-lab__field--inline"><label for="lab-profile-tabs">Preview profile tabs and languages</label><input type="checkbox" id="lab-profile-tabs" aria-controls="lab-experiences"></div>
-                  <p>Compare the same search across profiles within a language. Starter downloads use the single-profile layout.</p>
+                  <p>Compare the same search across profiles within a language. Starter downloads include this picker and the profile tabs you configured.</p>
                 </div>
                 <fieldset class="search-lab__field">
                   <legend>Results layout</legend>
@@ -424,17 +424,6 @@
                 <span class="search-lab__demo-label" data-lab-fictional-only>Fictional demo</span>
               </div>
               <section class="search-lab__site-content lab-experiences" id="lab-experiences" aria-label="Profile tabs and languages preview" hidden>
-                <p data-exp-source></p>
-                <label class="search-lab__field">Search language <select></select></label>
-                <form class="search-lab__search-form" role="search" aria-label="Search this profile">
-                  <label class="search-lab__sr-only" for="lab-exp-query">Search this profile</label>
-                  <input type="search" id="lab-exp-query" required>
-                  <button type="submit">Search</button>
-                </form>
-                <div role="tablist" aria-label="Search Profiles"></div>
-                <div role="tabpanel" id="lab-exp-results" tabindex="0"><p role="status"></p><ul></ul>
-                  <div data-exp-pages hidden><button type="button" data-exp-prev>Previous page</button> <button type="button" data-exp-next>Next page</button></div>
-                </div>
                 <button type="button" data-exp-disconnect hidden>Return to the fictional demo</button>
               </section>
               <div class="search-lab__site-content" data-single-experience>
