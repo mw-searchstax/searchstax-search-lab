@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet">
   <script defer id="searchstax-ui-kit" src="https://cdn.jsdelivr.net/npm/@searchstax-inc/searchstudio-ux-js@4.2.34/dist/@searchstax-inc/searchstudio-ux-js.iife.js"></script>
-  <script type="module" crossorigin src="./assets/index-CO-y5uLS.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-DPGG8o_G.css">
+  <script type="module" crossorigin src="./assets/index-CpnAe1KH.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-BnZhJNx8.css">
 </head>
 <body>
 <main
@@ -132,7 +132,7 @@
         </div>
         <div class="search-lab__handoff-panel" id="lab-connect-panel" hidden>
           <form data-customer-connect autocomplete="off">
-            <p>Use a read-only token for a Search App you’re allowed to preview. The connection lasts until you leave Design. Shared links reopen the fictional demo. A tabbed starter includes your language and profile names. Your connection credentials stay out of downloads.</p>
+            <p>Use a read-only token for a Search App you’re allowed to preview. The connection lasts until you leave Design. Shared links reopen the fictional demo. A starter with profile tabs or a language picker includes your language and profile names. Your connection credentials stay out of downloads.</p>
             <fieldset class="search-lab__field">
               <legend>Required to connect</legend>
               <p id="lab-customer-credentials-help">In Site Search, open your Search App and go to <strong>App Settings → All APIs → Search &amp; Indexing</strong> for the Select endpoint and a Read Only token. You can also paste a Select request URL that includes a model or language to fill in those settings.</p>
@@ -175,7 +175,7 @@
               <div class="search-lab__field search-lab__text-field">
                 <label for="lab-experience-list">Additional profiles and languages (optional)</label>
                 <p id="lab-exp-import-help">The Select endpoint searches one experience at a time. To preview others, enter one language and profile per line, such as <strong>en | Campus directory</strong>. You can also paste search request URLs from this same Select endpoint. Search Lab reads their language and model locally. Find enabled languages in App Settings → Languages and profile names in the profile selector.</p>
-                <textarea id="lab-experience-list" rows="3" spellcheck="false" aria-describedby="lab-exp-import-help" placeholder="en | Campus directory&#10;fr | Annuaire"></textarea>
+                <textarea id="lab-experience-list" rows="3" spellcheck="false" aria-describedby="lab-exp-import-help" placeholder="en | Campus directory&#10;es | Directorio"></textarea>
               </div>
               <div class="search-lab__field search-lab__text-field">
                 <label for="lab-customer-suggest-endpoint">Auto-Suggest endpoint (optional)</label>
@@ -206,12 +206,16 @@
         <aside class="search-lab__controls" id="lab-workspace-controls" aria-label="Search Lab controls">
           <section class="search-lab__control-section" id="lab-design-controls" aria-label="Design controls" tabindex="-1" data-lab-design-only>
             <details class="search-lab__disclosure" open>
+              <summary>Search navigation</summary>
+              <div class="search-lab__field">
+                <div class="search-lab__field--inline"><label for="lab-profile-tabs">Show profile tabs</label><input type="checkbox" id="lab-profile-tabs"></div>
+                <p>Let visitors switch between searches such as Programs and Locations.</p>
+              </div>
+              <div class="search-lab__field search-lab__field--inline"><label for="lab-language-picker">Show language picker</label><input type="checkbox" id="lab-language-picker"></div>
+            </details>
+            <details class="search-lab__disclosure" open>
               <summary>Layout and style</summary>
               <div class="search-lab__quick-fields">
-                <div class="search-lab__field">
-                  <div class="search-lab__field--inline"><label for="lab-profile-tabs">Preview profile tabs and languages</label><input type="checkbox" id="lab-profile-tabs" aria-controls="lab-experiences"></div>
-                  <p>Compare the same search across profiles within a language. Starter downloads include this picker and the profile tabs you configured.</p>
-                </div>
                 <fieldset class="search-lab__field">
                   <legend>Results layout</legend>
                   <div class="search-lab__layout-options">
