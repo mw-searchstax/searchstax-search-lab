@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet">
   <script defer id="searchstax-ui-kit" src="https://cdn.jsdelivr.net/npm/@searchstax-inc/searchstudio-ux-js@4.2.34/dist/@searchstax-inc/searchstudio-ux-js.iife.js"></script>
-  <script type="module" crossorigin src="./assets/index-BOv3PsXO.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-LwMOhMEc.css">
+  <script type="module" crossorigin src="./assets/index-D9DTREZs.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-KLnxNI1k.css">
 </head>
 <body>
 <main
@@ -75,7 +75,7 @@
         <div class="search-lab__design-heading">
           <div>
             <h1 id="lab-design" tabindex="-1">Design a Search Page</h1>
-            <p>In <strong>Layout and style</strong>, choose <strong>Cards</strong>. Try a search in the preview, then use <strong>Get starter code</strong> to download your design for a developer.<span class="search-lab__narrow-design-help"> Use <strong>Edit</strong> to change settings and <strong>Preview</strong> to try them.</span></p>
+            <p>Choose what visitors can do in <strong>Features</strong>. In <strong>Appearance</strong>, try a card layout or change the page colors. Use <strong>Get starter code</strong> to share your design with a developer.<span class="search-lab__narrow-design-help"> Use <strong>Edit</strong> to change settings and <strong>Preview</strong> to try them.</span></p>
           </div>
           <div class="search-lab__design-reset">
             <div class="search-lab__actions">
@@ -103,7 +103,7 @@
           <button type="button" aria-expanded="false" aria-controls="lab-connect-panel">Preview with your Search App</button>
         </div>
         <div class="search-lab__handoff-panel" id="lab-share-panel" hidden>
-          <p>Copy a link to reopen these layout and style settings with the fictional demo.<span data-lab-local-share hidden> This local link works for teammates who run their copy at the same address. To hand the design to a developer, send a starter ZIP.</span></p>
+          <p>Copy a link to reopen these feature and appearance settings with the fictional demo.<span data-lab-local-share hidden> This local link works for teammates who run their copy at the same address. To hand the design to a developer, send a starter ZIP.</span></p>
           <button type="button" class="lt-btn lt-btn--secondary" data-lab-share>Copy design link</button>
           <p class="search-lab__feedback" role="status"></p>
           <input class="search-lab__share-url" aria-label="Design link" type="text" readonly hidden>
@@ -205,17 +205,101 @@
         </div>
         <aside class="search-lab__controls" id="lab-workspace-controls" aria-label="Search Lab controls">
           <section class="search-lab__control-section" id="lab-design-controls" aria-label="Design controls" tabindex="-1" data-lab-design-only>
-            <details class="search-lab__disclosure" open>
-              <summary>Search navigation</summary>
-              <div class="search-lab__field">
-                <div class="search-lab__field--inline"><label for="lab-profile-tabs">Show profile tabs</label><input type="checkbox" id="lab-profile-tabs"></div>
-                <p>Let visitors switch between searches such as Programs and Locations.</p>
-              </div>
-              <div class="search-lab__field search-lab__field--inline"><label for="lab-language-picker">Show language picker</label><input type="checkbox" id="lab-language-picker"></div>
-            </details>
-            <details class="search-lab__disclosure" open>
-              <summary>Layout and style</summary>
-              <div class="search-lab__quick-fields">
+            <div class="search-lab__editor-tabs" role="tablist" aria-label="Design settings">
+              <button type="button" id="lab-features-tab" role="tab" aria-selected="true" aria-controls="lab-more-settings">Features</button>
+              <button type="button" id="lab-appearance-tab" role="tab" aria-selected="false" aria-controls="lab-appearance-panel" tabindex="-1">Appearance</button>
+            </div>
+            <div id="lab-more-settings" role="tabpanel" aria-labelledby="lab-features-tab" tabindex="0">
+              <details class="search-lab__disclosure" open data-default-open>
+                <summary>Search navigation</summary>
+                <div class="search-lab__field">
+                  <div class="search-lab__field--inline"><label for="lab-profile-tabs">Show profile tabs</label><input type="checkbox" id="lab-profile-tabs"></div>
+                  <p>Let visitors switch between searches such as Programs and Locations.</p>
+                </div>
+                <div class="search-lab__field search-lab__field--inline"><label for="lab-language-picker">Show language picker</label><input type="checkbox" id="lab-language-picker"></div>
+              </details>
+              <details class="search-lab__disclosure">
+                <summary>Search box</summary>
+                <div class="search-lab__field" data-lab-fictional-only>
+                  <div class="search-lab__field--inline">
+                    <label for="lab-suggestions">Suggest terms as visitors type</label>
+                    <input id="lab-suggestions" type="checkbox">
+                  </div>
+                </div>
+                <div class="search-lab__field search-lab__text-field">
+                  <label for="lab-field-text">Search field text</label>
+                  <input id="lab-field-text" type="text" value="Search the website" aria-describedby="lab-field-text-help">
+                  <p id="lab-field-text-help">This text appears when the search box is empty.</p>
+                </div>
+                <div class="search-lab__field search-lab__text-field">
+                  <label for="lab-button-text">Search button text</label>
+                  <input id="lab-button-text" type="text" value="Search">
+                </div>
+              </details>
+              <details class="search-lab__disclosure">
+                <summary>Filters and sorting</summary>
+                <div class="search-lab__field search-lab__field--inline">
+                  <label for="lab-filters">Show filters</label>
+                  <input id="lab-filters" type="checkbox" checked>
+                </div>
+                <button type="button" class="search-lab__placement-link" data-placement-target="lab-filter-placement">Change filter placement</button>
+                <div class="search-lab__field search-lab__field--inline">
+                  <label for="lab-sorting">Show sort options</label>
+                  <input id="lab-sorting" type="checkbox">
+                </div>
+              </details>
+              <details class="search-lab__disclosure">
+                <summary>Results</summary>
+                <div class="search-lab__field">
+                  <label for="lab-page-size">Results per page</label>
+                  <select id="lab-page-size"></select>
+                </div>
+                <div class="search-lab__field search-lab__field--inline">
+                  <label for="lab-descriptions">Show result descriptions</label>
+                  <input id="lab-descriptions" type="checkbox" checked>
+                </div>
+                <div class="search-lab__field search-lab__field--inline" data-lab-fictional-only>
+                  <label for="lab-thumbnails">Show sample thumbnails</label>
+                  <input id="lab-thumbnails" type="checkbox">
+                </div>
+                <div class="search-lab__field search-lab__text-field">
+                  <label for="lab-no-results-text">No-results message</label>
+                  <input id="lab-no-results-text" type="text" aria-describedby="lab-no-results-help">
+                  <p id="lab-no-results-help">This message appears when a search finds no matches. Leave it blank to use the default.</p>
+                  <div class="search-lab__actions" data-lab-fictional-only>
+                    <button type="button" class="lt-btn lt-btn--secondary" data-lab-try-no-results disabled>Try empty state in preview</button>
+                  </div>
+                </div>
+              </details>
+              <details class="search-lab__disclosure">
+                <summary>Related searches</summary>
+                <div class="search-lab__field search-lab__field--inline">
+                  <label for="lab-related-toggle">Show related searches</label>
+                  <input id="lab-related-toggle" type="checkbox" checked>
+                </div>
+                <button type="button" class="search-lab__placement-link" data-placement-target="lab-related-placement">Change related search placement</button>
+              </details>
+              <details class="search-lab__disclosure" data-lab-fictional-only>
+                <summary>Promotions and answers</summary>
+                <div class="search-lab__field">
+                  <label for="lab-sample-promotions">Sample promotions</label>
+                  <select id="lab-sample-promotions" aria-describedby="lab-sample-promotions-help">
+                    <option value="off">Off</option>
+                    <option value="indexed">Indexed result</option>
+                    <option value="external">External banner</option>
+                    <option value="both">Indexed result and external banner</option>
+                  </select>
+                  <p id="lab-sample-promotions-help">Choosing a sample runs <strong>campus flu clinic</strong>. The indexed result moves to the top in Relevance order. The external banner appears above the results.</p>
+                </div>
+                <div class="search-lab__field search-lab__field--inline">
+                  <label for="lab-smart-answers-sample">Show Smart Answers sample</label>
+                  <input id="lab-smart-answers-sample" type="checkbox" checked>
+                </div>
+              </details>
+            </div>
+            <div id="lab-appearance-panel" role="tabpanel" aria-labelledby="lab-appearance-tab" tabindex="0" hidden>
+              <details class="search-lab__disclosure" open data-default-open>
+                <summary>Layout</summary>
                 <fieldset class="search-lab__field">
                   <legend>Results layout</legend>
                   <div class="search-lab__layout-options">
@@ -223,153 +307,81 @@
                     <label><input type="radio" name="lab-layout" value="cards"><span><span aria-hidden="true">▦</span> Cards</span></label>
                   </div>
                 </fieldset>
-                <div class="search-lab__field search-lab__field--inline">
-                  <label for="lab-accent">Accent color</label>
-                  <input id="lab-accent" type="color" value="#263f58">
-                </div>
-                <div class="search-lab__field search-lab__field--inline">
-                  <label for="lab-background">Background color</label>
-                  <input id="lab-background" type="color" value="#ffffff">
-                </div>
                 <div class="search-lab__field">
-                  <label for="lab-corners">Corner shape</label>
-                  <select id="lab-corners">
-                    <option value="standard">Standard</option>
-                    <option value="square">Square</option>
-                    <option value="rounded">Rounded</option>
-                  </select>
+                  <label for="lab-filter-placement">Desktop filter placement</label>
+                  <select id="lab-filter-placement" aria-describedby="lab-filter-placement-help"><option value="sidebar">Sidebar</option><option value="top">Above results</option></select>
+                  <p id="lab-filter-placement-help">On narrow screens, visitors open Filters above the results.</p>
                 </div>
-                <div class="search-lab__field search-lab__text-field">
-                  <label for="lab-logo-url">Company logo URL</label>
-                  <input id="lab-logo-url" type="url" inputmode="url" placeholder="https://…" aria-describedby="lab-logo-help">
-                  <p id="lab-logo-help">Use a publicly accessible HTTPS image URL. Leave it blank to use the preview’s wordmark.</p>
-                  <p data-lab-logo-status role="status" hidden></p>
-                </div>
-                <div class="search-lab__field search-lab__font-field">
-                  <label for="lab-font">Search page font</label>
-                  <select id="lab-font">
-                    <option value="arial">Arial</option>
-                    <option value="verdana">Verdana</option>
-                    <option value="tahoma">Tahoma</option>
-                    <option value="trebuchet">Trebuchet MS</option>
-                    <option value="georgia">Georgia</option>
-                    <option value="times">Times New Roman</option>
-                    <option value="courier">Courier New</option>
+                <div class="search-lab__field" data-top-filter-options hidden>
+                  <label for="lab-top-filter-style">Top filter style</label>
+                  <select id="lab-top-filter-style">
+                    <option value="list">Vertical list</option>
+                    <option value="row">Horizontal row</option>
                   </select>
                 </div>
                 <div class="search-lab__field">
-                  <label for="lab-page-size">Results per page</label>
-                  <select id="lab-page-size"></select>
+                  <label for="lab-related-placement">Related search placement</label>
+                  <select id="lab-related-placement">
+                    <option value="below">Below results</option><option value="above">Below search box</option>
+                  </select>
                 </div>
-                <div class="search-lab__field search-lab__text-field">
-                  <label for="lab-button-text">Search button text</label>
-                  <input id="lab-button-text" type="text" value="Search">
+                <div class="search-lab__field search-lab__spacing-field">
+                  <label for="lab-spacing">Result spacing</label>
+                  <select id="lab-spacing">
+                    <option value="compact">Compact</option>
+                    <option value="standard" selected>Standard</option>
+                    <option value="roomy">Roomy</option>
+                  </select>
                 </div>
-              </div>
-            </details>
-
-          </section>
-
-          <section class="search-lab__control-section search-lab__advanced" id="lab-more-settings" aria-label="More design settings" tabindex="-1" data-lab-design-only>
-            <details class="search-lab__disclosure">
-              <summary>Search box and related searches</summary>
-              <div class="search-lab__field search-lab__text-field">
-                <label for="lab-field-text">Search field text</label>
-                <input id="lab-field-text" type="text" value="Search the website" aria-describedby="lab-field-text-help">
-                <p id="lab-field-text-help">This text appears when the search box is empty.</p>
-              </div>
-              <div class="search-lab__field" data-lab-fictional-only>
-                <div class="search-lab__field--inline">
-                  <label for="lab-suggestions">Suggest terms as visitors type</label>
-                  <input id="lab-suggestions" type="checkbox">
+                <div class="search-lab__field search-lab__field--inline" data-lab-list-option>
+                  <label for="lab-dividers">Show list dividers</label>
+                  <input id="lab-dividers" type="checkbox" checked>
                 </div>
-              </div>
-              <div class="search-lab__field">
-                <label for="lab-related-placement">Related search placement</label>
-                <select id="lab-related-placement">
-                  <option value="below">Below results</option><option value="above">Below search box</option><option value="off">Off</option>
-                </select>
-                <p data-lab-fictional-only>If the current demo query has no related terms, choosing a placement previews <strong>rehabilitation</strong>.</p>
-              </div>
-            </details>
-
-            <details class="search-lab__disclosure">
-              <summary>Results</summary>
-              <div class="search-lab__field search-lab__field--inline">
-                <label for="lab-descriptions">Show result descriptions</label>
-                <input id="lab-descriptions" type="checkbox" checked>
-              </div>
-              <div class="search-lab__field search-lab__field--inline" data-lab-list-option>
-                <label for="lab-dividers">Show list dividers</label>
-                <input id="lab-dividers" type="checkbox" checked>
-              </div>
-              <div class="search-lab__field search-lab__field--inline">
-                <label for="lab-underline">Underline result titles</label>
-                <input id="lab-underline" type="checkbox">
-              </div>
-              <div class="search-lab__field search-lab__field--inline" data-lab-fictional-only>
-                <label for="lab-thumbnails">Show sample thumbnails</label>
-                <input id="lab-thumbnails" type="checkbox">
-              </div>
-              <div class="search-lab__field search-lab__spacing-field">
-                <label for="lab-spacing">Result spacing</label>
-                <select id="lab-spacing">
-                  <option value="compact">Compact</option>
-                  <option value="standard" selected>Standard</option>
-                  <option value="roomy">Roomy</option>
-                </select>
-              </div>
-              <div class="search-lab__field search-lab__text-field">
-                <label for="lab-no-results-text">No-results message</label>
-                <input id="lab-no-results-text" type="text" aria-describedby="lab-no-results-help">
-                <p id="lab-no-results-help">This message appears when a search finds no matches. Leave it blank to use the default.</p>
-                <div class="search-lab__actions" data-lab-fictional-only>
-                  <button type="button" class="lt-btn lt-btn--secondary" data-lab-try-no-results disabled>Try empty state in preview</button>
+                <div class="search-lab__field search-lab__field--inline">
+                  <label for="lab-underline">Underline result titles</label>
+                  <input id="lab-underline" type="checkbox">
                 </div>
-              </div>
-            </details>
-
-            <details class="search-lab__disclosure">
-              <summary>Filter placement and sorting</summary>
-              <div class="search-lab__field search-lab__field--inline">
-                <label for="lab-filters">Show filters</label>
-                <input id="lab-filters" type="checkbox" checked>
-              </div>
-              <div class="search-lab__field">
-                <label for="lab-filter-placement">Desktop filter placement</label>
-                <select id="lab-filter-placement" aria-describedby="lab-filter-placement-help"><option value="sidebar">Sidebar</option><option value="top">Above results</option></select>
-                <p id="lab-filter-placement-help">On narrow screens, visitors open Filters above the results.</p>
-              </div>
-              <div class="search-lab__field" data-top-filter-options hidden>
-                <label for="lab-top-filter-style">Top filter style</label>
-                <select id="lab-top-filter-style">
-                  <option value="list">Vertical list</option>
-                  <option value="row">Horizontal row</option>
-                </select>
-              </div>
-              <div class="search-lab__field search-lab__field--inline">
-                <label for="lab-sorting">Show sort options</label>
-                <input id="lab-sorting" type="checkbox">
-              </div>
-            </details>
-
-            <details class="search-lab__disclosure" data-lab-fictional-only>
-              <summary>Promotions and answers</summary>
-              <div class="search-lab__field">
-                <label for="lab-sample-promotions">Sample promotions</label>
-                <select id="lab-sample-promotions" aria-describedby="lab-sample-promotions-help">
-                  <option value="off">Off</option>
-                  <option value="indexed">Indexed result</option>
-                  <option value="external">External banner</option>
-                  <option value="both">Indexed result and external banner</option>
-                </select>
-                <p id="lab-sample-promotions-help">Choosing a sample runs <strong>campus flu clinic</strong>. The indexed result moves to the top in Relevance order. The external banner appears above the results.</p>
-              </div>
-              <div class="search-lab__field search-lab__field--inline">
-                <label for="lab-smart-answers-sample">Show Smart Answers sample</label>
-                <input id="lab-smart-answers-sample" type="checkbox" checked>
-              </div>
-            </details>
+              </details>
+              <details class="search-lab__disclosure" open data-default-open>
+                <summary>Page style</summary>
+                <div class="search-lab__quick-fields">
+                  <div class="search-lab__field search-lab__field--inline">
+                    <label for="lab-accent">Accent color</label>
+                    <input id="lab-accent" type="color" value="#263f58">
+                  </div>
+                  <div class="search-lab__field search-lab__field--inline">
+                    <label for="lab-background">Background color</label>
+                    <input id="lab-background" type="color" value="#ffffff">
+                  </div>
+                  <div class="search-lab__field search-lab__font-field">
+                    <label for="lab-font">Search page font</label>
+                    <select id="lab-font">
+                      <option value="arial">Arial</option>
+                      <option value="verdana">Verdana</option>
+                      <option value="tahoma">Tahoma</option>
+                      <option value="trebuchet">Trebuchet MS</option>
+                      <option value="georgia">Georgia</option>
+                      <option value="times">Times New Roman</option>
+                      <option value="courier">Courier New</option>
+                    </select>
+                  </div>
+                  <div class="search-lab__field">
+                    <label for="lab-corners">Corner shape</label>
+                    <select id="lab-corners">
+                      <option value="standard">Standard</option>
+                      <option value="square">Square</option>
+                      <option value="rounded">Rounded</option>
+                    </select>
+                  </div>
+                  <div class="search-lab__field search-lab__text-field">
+                    <label for="lab-logo-url">Company logo URL</label>
+                    <input id="lab-logo-url" type="url" inputmode="url" placeholder="https://…" aria-describedby="lab-logo-help">
+                    <p id="lab-logo-help">Use a publicly accessible HTTPS image URL. Leave it blank to use the preview’s wordmark.</p>
+                    <p data-lab-logo-status role="status" hidden></p>
+                  </div>
+                </div>
+              </details>
+            </div>
           </section>
 
           <section class="search-lab__control-section search-lab__control-section--lesson" aria-labelledby="lab-relevance-heading" data-lab-example-only hidden>
