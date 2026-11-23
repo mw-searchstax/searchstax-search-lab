@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet">
   <script defer id="searchstax-ui-kit" src="https://cdn.jsdelivr.net/npm/@searchstax-inc/searchstudio-ux-js@4.2.34/dist/@searchstax-inc/searchstudio-ux-js.iife.js"></script>
-  <script type="module" crossorigin src="./assets/index-C-FMNWl8.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index--zzpThQi.css">
+  <script type="module" crossorigin src="./assets/index-C9kynfl4.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-C-gUsLFI.css">
 </head>
 <body>
 <main
@@ -135,7 +135,7 @@
             <p>Use a read-only token for a Search App you’re allowed to preview. The connection lasts until you leave Design. Copied links and ZIPs use the fictional demo.</p>
             <fieldset class="search-lab__field">
               <legend>Required to connect</legend>
-              <p id="lab-customer-credentials-help">In Site Search, open your Search App and go to <strong>App Settings → All APIs → Search &amp; Indexing</strong> for the Select endpoint and a Read Only token.</p>
+              <p id="lab-customer-credentials-help">In Site Search, open your Search App and go to <strong>App Settings → All APIs → Search &amp; Indexing</strong> for the Select endpoint and a Read Only token. You can also paste a Select request URL that includes a model or language to fill in those settings.</p>
               <div class="search-lab__field search-lab__text-field">
                 <label for="lab-customer-endpoint">Search API Select endpoint</label>
                 <input id="lab-customer-endpoint" type="url" required placeholder="https://…/emselect" aria-describedby="lab-customer-credentials-help">
@@ -170,7 +170,12 @@
               </div>
               <div class="search-lab__field search-lab__text-field">
                 <label for="lab-customer-language">Language code</label>
-                <input id="lab-customer-language" type="text" value="en">
+                <input id="lab-customer-language" type="text" placeholder="App default">
+              </div>
+              <div class="search-lab__field search-lab__text-field">
+                <label for="lab-experience-list">Additional profiles and languages (optional)</label>
+                <p id="lab-exp-import-help">The Select endpoint searches one experience at a time. To preview others, enter one language and profile per line, such as <strong>en | Campus directory</strong>. You can also paste search request URLs from this same Select endpoint. Search Lab reads their language and model locally. Find enabled languages in App Settings → Languages and profile names in the profile selector.</p>
+                <textarea id="lab-experience-list" rows="3" spellcheck="false" aria-describedby="lab-exp-import-help" placeholder="en | Campus directory&#10;fr | Annuaire"></textarea>
               </div>
               <div class="search-lab__field search-lab__text-field">
                 <label for="lab-customer-suggest-endpoint">Auto-Suggest endpoint (optional)</label>
@@ -203,6 +208,10 @@
             <details class="search-lab__disclosure" open>
               <summary>Layout and style</summary>
               <div class="search-lab__quick-fields">
+                <div class="search-lab__field">
+                  <div class="search-lab__field--inline"><label for="lab-profile-tabs">Preview profile tabs and languages</label><input type="checkbox" id="lab-profile-tabs" aria-controls="lab-experiences"></div>
+                  <p>Compare the same search across profiles within a language. Starter downloads use the single-profile layout.</p>
+                </div>
                 <fieldset class="search-lab__field">
                   <legend>Results layout</legend>
                   <div class="search-lab__layout-options">
@@ -414,7 +423,21 @@
                 <h3 class="search-lab__site-brand" data-lab-preview-brand hidden>Your Search App</h3>
                 <span class="search-lab__demo-label" data-lab-fictional-only>Fictional demo</span>
               </div>
-              <div class="search-lab__site-content">
+              <section class="search-lab__site-content lab-experiences" id="lab-experiences" aria-label="Profile tabs and languages preview" hidden>
+                <p data-exp-source></p>
+                <label class="search-lab__field">Search language <select></select></label>
+                <form class="search-lab__search-form" role="search" aria-label="Search this profile">
+                  <label class="search-lab__sr-only" for="lab-exp-query">Search this profile</label>
+                  <input type="search" id="lab-exp-query" required>
+                  <button type="submit">Search</button>
+                </form>
+                <div role="tablist" aria-label="Search Profiles"></div>
+                <div role="tabpanel" id="lab-exp-results" tabindex="0"><p role="status"></p><ul></ul>
+                  <div data-exp-pages hidden><button type="button" data-exp-prev>Previous page</button> <button type="button" data-exp-next>Next page</button></div>
+                </div>
+                <button type="button" data-exp-disconnect hidden>Return to the fictional demo</button>
+              </section>
+              <div class="search-lab__site-content" data-single-experience>
                 <form class="search-lab__search-form" data-lab-search-form role="search">
                   <label class="search-lab__sr-only" for="lab-query">Search the website</label>
                   <input id="lab-query" type="search" value="rehabilitation" placeholder="Search the website" autocomplete="off">
