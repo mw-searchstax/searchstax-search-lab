@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet">
   <script defer id="searchstax-ui-kit" src="https://cdn.jsdelivr.net/npm/@searchstax-inc/searchstudio-ux-js@4.2.34/dist/@searchstax-inc/searchstudio-ux-js.iife.js"></script>
-  <script type="module" crossorigin src="./assets/index-DIG-lb34.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-BuVtSD4q.css">
+  <script type="module" crossorigin src="./assets/index-Yp_Fx7lX.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-BNOtbgCu.css">
 </head>
 <body>
 <main
@@ -27,7 +27,7 @@
     <section class="search-lab__home" data-lab-screen="home" aria-labelledby="lab-home">
       <header class="search-lab__intro">
         <h1 id="lab-home" tabindex="-1">Search Lab</h1>
-        <p>Try SearchStax Site Search on the fictional Central County University Health website. You can start without a Search App.</p>
+        <p>Use a fictional university health website to explore SearchStax Site Search. Start with <strong>Design a Search Page</strong> to try a visitor’s search and prepare a design for your developer. You can use the demo without an account.</p>
       </header>
       <div class="search-lab__paths">
         <section class="search-lab__path" aria-labelledby="lab-design-path">
@@ -43,7 +43,7 @@
             <div class="path-order"><i></i><i></i><i></i></div><span>→</span><div class="path-order path-order--after"><i></i><i></i><i></i></div>
           </div>
           <h2 id="lab-improve-path">Improve What People Find</h2>
-          <p>Change one setting in the demo preview and see what visitors find. Then see where to apply the same idea in your own SearchStax app.</p>
+          <p>Compare example search results before and after a change, then find the setting in your own Search App.</p>
           <a class="lt-btn lt-btn--secondary" href="#lab-improve">Start improving <span aria-hidden="true">→</span></a>
         </section>
       </div>
@@ -75,7 +75,7 @@
         <div class="search-lab__design-heading">
           <div>
             <h1 id="lab-design" tabindex="-1">Design a Search Page</h1>
-            <p>Switch to cards or try an accent color. The preview updates as you go.</p>
+            <p>In <strong>Layout and style</strong>, choose <strong>Cards</strong>. Try a search in the preview, then use <strong>Get starter code</strong> to download your design for a developer.<span class="search-lab__narrow-design-help"> Use <strong>Edit</strong> to change settings and <strong>Preview</strong> to try them.</span></p>
           </div>
           <div class="search-lab__design-reset">
             <div class="search-lab__actions">
@@ -103,7 +103,7 @@
           <button type="button" aria-expanded="false" aria-controls="lab-connect-panel">Preview with your Search App</button>
         </div>
         <div class="search-lab__handoff-panel" id="lab-share-panel" hidden>
-          <p>Your design stays in this tab when you reload. Copy a link to share your current layout, colors, and other design choices with teammates.</p>
+          <p>Copy a link to reopen these layout and style settings with the fictional demo.<span data-lab-local-share hidden> This local link works for teammates who run their copy at the same address. To hand the design to a developer, send a starter ZIP.</span></p>
           <button type="button" class="lt-btn lt-btn--secondary" data-lab-share>Copy design link</button>
           <p class="search-lab__feedback" role="status"></p>
           <input class="search-lab__share-url" aria-label="Design link" type="text" readonly hidden>
@@ -111,7 +111,7 @@
         <div class="search-lab__handoff-panel" id="lab-code-panel" hidden>
           <div class="search-lab__code-group">
             <h2>Stylesheet</h2>
-            <p>Use the CSS with the starter markup or adapt its selectors to match your existing search page.</p>
+            <p>Choose CSS if your developer already has a search page and needs the styles. The selectors match the starter markup.</p>
             <div class="search-lab__code-actions">
               <button type="button" class="lt-btn lt-btn--secondary" data-lab-copy-css>Copy CSS</button>
               <button type="button" class="lt-btn lt-btn--secondary" data-lab-download-css>Download CSS</button>
@@ -119,8 +119,8 @@
             <p class="search-lab__feedback" role="status" data-lab-css-feedback></p>
           </div>
           <div class="search-lab__code-group">
-            <h2>Runnable starters</h2>
-            <p>Each ZIP includes your design and the fictional demo. Open its <code>README.md</code> for setup, including Next.js notes in the React ZIP.</p>
+            <h2>Starter projects</h2>
+            <p>For a working example, choose the <strong>JavaScript ZIP</strong>. If your team uses React, Vue, or Angular, choose that ZIP. Send one ZIP to your developer. It includes the demo, your styles, and a <code>README.md</code> with setup steps.</p>
             <div class="search-lab__code-actions search-lab__starter-actions">
               <button type="button" class="lt-btn lt-btn--secondary" data-lab-download-starter="javascript">Download JavaScript ZIP</button>
               <button type="button" class="lt-btn lt-btn--secondary" data-lab-download-starter="react">Download React ZIP</button>
@@ -151,11 +151,18 @@
               </div>
             </fieldset>
             <details class="search-lab__disclosure" data-customer-options>
-              <summary>Search Profile, language, and optional endpoints</summary>
+              <summary>Search Profile, language, and optional API connections</summary>
               <div class="search-lab__field search-lab__text-field">
                 <label for="lab-customer-answer-endpoint">Smart Answers endpoint (optional)</label>
                 <input id="lab-customer-answer-endpoint" type="url" aria-describedby="lab-customer-answer-help">
                 <p id="lab-customer-answer-help">Use the streaming Answer endpoint for this app. Each submitted search requests a Smart Answer. <a href="https://support.searchstax.com/hc/en-us/articles/40243570123021-Smart-Answers-API">Find the Answer endpoint</a>.</p>
+              </div>
+              <div class="search-lab__field search-lab__text-field">
+                <label for="lab-related-endpoint">Related Searches endpoint (optional)</label>
+                <input id="lab-related-endpoint" type="url" aria-describedby="lab-discovery-help">
+                <label for="lab-discovery-key">Discovery key</label>
+                <input id="lab-discovery-key" type="password" autocomplete="off" aria-describedby="lab-discovery-help">
+                <p id="lab-discovery-help">Find both under App Settings → All APIs → Discovery. Use a test app with Related Searches enabled.</p>
               </div>
               <div class="search-lab__field search-lab__text-field">
                 <label for="lab-customer-profile">Search Profile (<span data-customer-profile-requirement>optional</span>)</label>
@@ -170,6 +177,14 @@
                 <input id="lab-customer-suggest-endpoint" type="url" aria-describedby="lab-customer-suggest-help">
                 <p id="lab-customer-suggest-help">Use the Auto-Suggest endpoint for this app to preview suggestions as you type. <a href="https://support.searchstax.com/hc/en-us/articles/40243330090893-Auto-Suggest-API">Find the Auto-Suggest endpoint</a>.</p>
               </div>
+              <fieldset class="search-lab__field" disabled aria-describedby="lab-tracking-setup-help">
+                <legend>Analytics setup (preview only)</legend>
+                <p id="lab-tracking-setup-help">Tracking is off in this preview. Your app’s Tracking endpoint and key are under App Settings → All APIs → Analytics. The starter README explains how to enable tracking on your own site.</p>
+                <label for="lab-tracking-endpoint">Tracking endpoint</label>
+                <input id="lab-tracking-endpoint" type="url" placeholder="https://…/api/v2/track/">
+                <label for="lab-tracking-key">Tracking key</label>
+                <input id="lab-tracking-key" type="password" autocomplete="off">
+              </fieldset>
             </details>
             <div class="search-lab__actions">
               <button type="submit" class="lt-btn lt-btn--primary" data-customer-submit disabled>Connect</button>
@@ -218,7 +233,7 @@
                   <p data-lab-logo-status role="status" hidden></p>
                 </div>
                 <div class="search-lab__field search-lab__font-field">
-                  <label for="lab-font">Preview font</label>
+                  <label for="lab-font">Search page font</label>
                   <select id="lab-font">
                     <option value="arial">Arial</option>
                     <option value="verdana">Verdana</option>
@@ -244,7 +259,7 @@
 
           <section class="search-lab__control-section search-lab__advanced" id="lab-more-settings" aria-label="More design settings" tabindex="-1" data-lab-design-only>
             <details class="search-lab__disclosure">
-              <summary>Search box</summary>
+              <summary>Search box and related searches</summary>
               <div class="search-lab__field search-lab__text-field">
                 <label for="lab-field-text">Search field text</label>
                 <input id="lab-field-text" type="text" value="Search the website" aria-describedby="lab-field-text-help">
@@ -252,12 +267,16 @@
               </div>
               <div class="search-lab__field" data-lab-fictional-only>
                 <div class="search-lab__field--inline">
-                  <label for="lab-suggestions">Show sample search suggestions</label>
+                  <label for="lab-suggestions">Suggest terms as visitors type</label>
                   <input id="lab-suggestions" type="checkbox">
                 </div>
-                <div class="search-lab__actions" hidden>
-                  <button type="button" class="lt-btn lt-btn--secondary" data-lab-try-suggestions disabled>Try suggestions in preview</button>
-                </div>
+              </div>
+              <div class="search-lab__field">
+                <label for="lab-related-placement">Related search placement</label>
+                <select id="lab-related-placement">
+                  <option value="below">Below results</option><option value="above">Below search box</option><option value="off">Off</option>
+                </select>
+                <p data-lab-fictional-only>If the current demo query has no related terms, choosing a placement previews <strong>rehabilitation</strong>.</p>
               </div>
             </details>
 
@@ -298,10 +317,23 @@
             </details>
 
             <details class="search-lab__disclosure">
-              <summary>Filters and sorting</summary>
+              <summary>Filter placement and sorting</summary>
               <div class="search-lab__field search-lab__field--inline">
                 <label for="lab-filters">Show filters</label>
                 <input id="lab-filters" type="checkbox" checked>
+              </div>
+              <div class="search-lab__field">
+                <label for="lab-filter-placement">Desktop filter placement</label>
+                <select id="lab-filter-placement" aria-describedby="lab-filter-placement-help"><option value="sidebar">Sidebar</option><option value="top">Above results</option></select>
+                <p id="lab-filter-placement-help">On narrow screens, visitors open Filters above the results.</p>
+              </div>
+              <div class="search-lab__field" data-top-filter-options hidden>
+                <label for="lab-top-filter-style">Top filter style</label>
+                <select id="lab-top-filter-style">
+                  <option value="list">Vertical list</option>
+                  <option value="row">Horizontal row</option>
+                  <option value="tabs">Tab-style row</option>
+                </select>
               </div>
               <div class="search-lab__field search-lab__field--inline">
                 <label for="lab-sorting">Show sort options</label>
@@ -319,7 +351,7 @@
                   <option value="external">External banner</option>
                   <option value="both">Indexed result and external banner</option>
                 </select>
-                <p id="lab-sample-promotions-help">Search for <strong>campus flu clinic</strong> to see the samples. The indexed example uses Relevance order.</p>
+                <p id="lab-sample-promotions-help">Choosing a sample runs <strong>campus flu clinic</strong>. The indexed result moves to the top in Relevance order. The external banner appears above the results.</p>
               </div>
               <div class="search-lab__field search-lab__field--inline">
                 <label for="lab-smart-answers-sample">Show Smart Answers sample</label>
@@ -495,8 +527,8 @@
               <h2 id="lab-missing-page" tabindex="-1">Why did this search miss a page?</h2>
               <p id="lab-service-setting"><strong>Search Fields</strong> controls which parts of a page can match.</p>
               <p class="improve-workspace__term-pair" id="lab-service-clue">International Health’s <strong>Service name</strong> is “Travel Vaccinations.”</p>
-              <p id="lab-service-rerun">Check the box to run the same search again with that field included.</p>
-              <label><input type="checkbox" data-improve-toggle aria-describedby="lab-service-setting lab-service-clue lab-service-rerun" disabled> Add a field to Search Fields</label>
+              <p id="lab-service-rerun">Include Service name and watch for International Health in the results.</p>
+              <button class="lt-btn lt-btn--primary" type="button" data-improve-toggle aria-describedby="lab-service-setting lab-service-clue lab-service-rerun" disabled>Include Service name</button>
             </div>
             <p class="improve-preview__baseline-note" data-improve-baseline-note hidden>International Health is missing from the results.</p>
             <div class="promotions-lab__checklist-body improve-wrap-up__guidance" data-improve-own-site hidden>
@@ -596,7 +628,7 @@
               <h2 id="lab-synonyms" tabindex="-1">Can visitors find the ENT department?</h2>
               <p>A visitor searches for “ENT” to find the ear, nose, and throat department. In <strong>Synonyms</strong>, connect what visitors type to the words on the page.</p>
               <p class="improve-workspace__term-pair" id="lab-synonym-term-pair"><strong>ENT <span aria-hidden="true">→</span><span class="search-lab__sr-only"> leads to </span> Otolaryngology</strong></p>
-              <label><input type="checkbox" data-improve-toggle aria-describedby="lab-synonym-term-pair"> Add a synonym</label>
+              <button class="lt-btn lt-btn--primary" type="button" data-improve-toggle aria-describedby="lab-synonym-term-pair">Add a synonym</button>
             </div>
             <div class="promotions-lab__checklist-body improve-wrap-up__guidance" data-improve-own-site hidden>
               <p>Try an abbreviation your visitors use. Compare it with the words on the page you expected to find. The related Site Search setting is <strong>Synonyms</strong>.</p>
@@ -621,10 +653,11 @@
           <div data-improve-lesson="facets" hidden>
             <div class="improve-workspace__action" data-improve-controls="facets" hidden>
               <h2 id="lab-facets-example" tabindex="-1">What if I only want to see providers?</h2>
-              <p>The search returns notices, locations, and provider profiles. Select Providers under Refine results to narrow the list.</p>
+              <p>This lesson adds a content type filter to the visitor preview. Apply <strong>Providers</strong> to the same search and watch which results remain.</p>
+              <button class="lt-btn lt-btn--primary" type="button" data-improve-toggle>Apply Providers filter</button>
               <fieldset class="improve-workspace__facet">
                 <legend>Filter by content type</legend>
-                <label><input type="checkbox" data-improve-toggle> Providers</label>
+                <label><input type="checkbox" data-improve-provider> Providers</label>
               </fieldset>
             </div>
             <div class="promotions-lab__checklist-body improve-wrap-up__guidance" data-improve-own-site hidden>
@@ -650,7 +683,7 @@
             <div class="improve-workspace__action" data-improve-controls="flu-clinic-order" hidden>
               <h2 id="lab-flu-clinic-order" tabindex="-1">What changes the order of flu clinic results?</h2>
               <p id="lab-clinic-setting"><strong>Ranking</strong> affects which results appear first. Try giving matches in page titles more influence on the order. <span data-ranking-watch></span></p>
-              <label><input type="checkbox" data-improve-toggle aria-describedby="lab-clinic-setting" disabled> Give title matches more weight</label>
+              <button class="lt-btn lt-btn--primary" type="button" data-improve-toggle aria-describedby="lab-clinic-setting" disabled>Give title matches more weight</button>
             </div>
             <details class="search-lab__disclosure promotions-lab__result-promotion" data-clinic-promotion hidden>
               <summary id="lab-clinic-promotion">Need this year’s notice first?</summary>
