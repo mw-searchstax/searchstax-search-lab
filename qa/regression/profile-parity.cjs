@@ -1,7 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { unzipSync } = require('fflate');
-const { assert, baseURL, chromium, webkit } = require('./runtime.cjs');
+const { assert, baseURL, chromium, webkit, localQA } = require('./runtime.cjs');
 
 const designs = { tabs: ['on', 'off'], language: ['off', 'on'], both: ['on', 'on'] };
 const formats = ['javascript', 'react', 'vue', 'angular'];
@@ -355,7 +355,7 @@ async function run() {
       assert.equal(await page.locator('.lab-experiences input[type=search]').inputValue(), 'orthopedics');
       await checkFeatures(page, process.env.QA_PROFILE_MODE || 'both');
     } else {
-      await checkBuiltInFeatures(browser);
+      if (localQA) await checkBuiltInFeatures(browser);
       await preserve(page, 'Show profile tabs', 'Show language picker');
       await preserve(page, 'Show language picker', 'Show profile tabs');
       const ordinaryURL = new URL(designURL('both'));
@@ -366,7 +366,7 @@ async function run() {
       const ordinarySort = page.locator('#lab-sort-order');
       await ordinarySort.waitFor();
       await checkSelectStyle(ordinarySort, 36);
-      for (const mode of Object.keys(designs)) {
+      for (const mode of localQA ? Object.keys(designs) : []) {
         await page.goto(designURL(mode));
         await checkFeatures(page, mode);
         if (process.env.QA_PROFILE_EXPORT_DIR) {
@@ -376,7 +376,7 @@ async function run() {
         }
         console.log('Passed feature and appearance settings in', mode);
       }
-      await editFeatures(page);
+      if (localQA) await editFeatures(page);
     }
     assert.deepEqual(errors, []);
   } finally { await browser.close(); }

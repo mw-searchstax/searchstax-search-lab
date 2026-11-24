@@ -1,6 +1,6 @@
 const fs = require('node:fs');
 const { unzipSync } = require('fflate');
-const { assert, baseURL, chromium, firefox, webkit } = require('./runtime.cjs');
+const { assert, baseURL, chromium, firefox, webkit, localQA } = require('./runtime.cjs');
 
 const name = process.env.QA_BROWSER || 'chromium';
 const engine = { chromium, firefox, webkit }[name];
@@ -46,6 +46,39 @@ async function spanishDesign(browser) {
   assert.ok(await original.evaluate(el => el === document.querySelector('#lab-preview')));
   await page.close();
   console.log('Passed Spanish profile, selected facet, submitted search, draft, and shared preview.');
+}
+
+async function hostedDesign(browser) {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 920 } });
+  try {
+    const url = new URL(baseURL);
+    if (localQA) {
+      // Serve the local build under a non-loopback origin to exercise the hosted UI.
+      url.host = 'pilot.example.test';
+      await page.route(requestURL => requestURL.origin === url.origin, async route => {
+        const requestURL = new URL(route.request().url());
+        const response = await route.fetch({ url: new URL(requestURL.pathname + requestURL.search, baseURL).href });
+        await route.fulfill({ response });
+      });
+    }
+    url.search = 'lab_source=fictional&lab_profile_tabs=on';
+    url.hash = 'lab-design';
+    const panel = page.locator('#lab-experiences');
+    async function checkApp() {
+      await panel.getByRole('tab', { name: 'Main Profile', exact: true }).waitFor();
+      assert.equal(await page.getByLabel('Preview source').isVisible(), false);
+      assert.equal(await panel.getByRole('tab', { name: 'Programs', exact: true }).count(), 0);
+      await panel.locator('.searchstax-search-result-ribbon:visible').first().waitFor();
+    }
+    await page.goto(url.href);
+    await checkApp();
+    await page.evaluate(() => sessionStorage.setItem('search-lab:design:' + location.pathname + location.search,
+      'lab_source=fictional&lab_profile_tabs=on&lab_page_size=5'));
+    await page.reload();
+    await checkApp();
+    assert.equal(await page.locator('#lab-page-size').inputValue(), '5');
+    console.log('Hosted Build kept SearchLabDemo for a legacy fictional link and a saved draft.');
+  } finally { await page.close(); }
 }
 
 async function connectedDesign(browser) {
@@ -136,9 +169,10 @@ async function run() {
   assert.ok(engine, 'Choose chromium, firefox, or webkit');
   const browser = await engine.launch(name === 'chromium' ? { channel: 'chrome' } : {});
   try {
-    await spanishDesign(browser);
+    await hostedDesign(browser);
+    if (localQA) await spanishDesign(browser);
     await connectedDesign(browser);
-    await mobileEditor(browser);
+    if (localQA) await mobileEditor(browser);
   } finally {
     await browser.close();
   }

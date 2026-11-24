@@ -52,6 +52,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
 
   var root = document.querySelector('[data-search-lab]');
   if (!root) return;
+  const localPreview = ['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname);
 
   var SCENARIOS = {
     fields: {
@@ -287,7 +288,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
     const fixture = !connected && design.previewSource === 'fictional';
     const builtIn = !connected && !fixture && experiencePanel.hidden;
     sourcePicker.value = design.previewSource;
-    sourcePicker.closest('[data-preview-source-field]').hidden = connected;
+    sourcePicker.closest('[data-preview-source-field]').hidden = connected || !localPreview;
     const profile = builtIn ? builtInApp.settings : selectedSettings?.profile;
     const entitlements = builtIn ? builtInApp.configuration?.entitlements : selectedSettings?.entitlements;
     if (builtIn) {
@@ -414,6 +415,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
     }
   }
   sourcePicker.addEventListener('change', () => {
+    if (!localPreview) return;
     const previous = experiencePanel.hidden ? null : experiencePreview.searchState;
     design.previewSource = sourcePicker.value;
     updateDesign();
@@ -700,7 +702,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
       } catch { /* Use the link when the browser blocks storage. */ }
     }
     const settings = draft === null ? params : new URLSearchParams(draft);
-    design = readDesignParams(settings);
+    design = readDesignParams(settings, localPreview);
     var scenario = params.get('lab_scenario');
     var phase = params.get('lab_view');
     var preset = params.get('lab_query');
@@ -1232,8 +1234,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
       setHandoffPanel(button.getAttribute('aria-expanded') === 'true' ? null : button);
     });
   }
-  root.querySelector('[data-lab-local-share]').hidden =
-    !['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname);
+  root.querySelector('[data-lab-local-share]').hidden = !localPreview;
   root.querySelectorAll('[data-lab-share]').forEach(function (button) {
     const field = button.parentElement.querySelector('.search-lab__share-url');
     const message = button.parentElement.querySelector('[role="status"]');

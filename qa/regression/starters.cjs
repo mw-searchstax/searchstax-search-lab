@@ -1,4 +1,4 @@
-const { chromium, assert, baseURL } = require('./runtime.cjs');
+const { chromium, assert, baseURL, localQA } = require('./runtime.cjs');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
@@ -112,6 +112,7 @@ async function downloadCSS(page, mode) {
   const browser = await chromium.launch({ channel: process.env.BROWSER_CHANNEL || 'chrome' });
   try {
     for (const mode of Object.keys(modes)) {
+      if (!localQA && modes[mode].lab_source === 'fictional') continue;
       const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
       const page = await context.newPage();
       page.setDefaultTimeout(12000);

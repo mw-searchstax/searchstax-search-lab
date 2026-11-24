@@ -116,7 +116,7 @@ export function resolveSearchText(value: string | null, fallback: string): strin
   return value?.replace(/[\r\n]+/g, ' ').trim() || fallback;
 }
 
-export function readDesignParams(params: URLSearchParams): DesignSettings {
+export function readDesignParams(params: URLSearchParams, allowFictionalPreview = false): DesignSettings {
   // Earlier share links and session drafts always wrote these four fields and omitted sorting when off.
   const savedDesign = ['lab_layout', 'lab_color', 'lab_font', 'lab_filters'].every(key => params.has(key));
   const layout = params.get('lab_layout');
@@ -127,7 +127,7 @@ export function readDesignParams(params: URLSearchParams): DesignSettings {
   const background = '#' + (params.get('lab_background') ?? '').toLowerCase();
 
   return {
-    previewSource: params.get('lab_source') === 'fictional' ? 'fictional' : 'app',
+    previewSource: allowFictionalPreview && params.get('lab_source') === 'fictional' ? 'fictional' : 'app',
     layout: isLayout(layout) ? layout : DEFAULT_DESIGN.layout,
     resultSpacing: isResultSpacing(spacing) ? spacing : DEFAULT_DESIGN.resultSpacing,
     topFilterStyle: topStyle === 'row' || topStyle === 'tabs' ? 'row' : 'list',
@@ -157,7 +157,8 @@ export function readDesignParams(params: URLSearchParams): DesignSettings {
 }
 
 export function writeDesignParams(params: URLSearchParams, design: DesignSettings): void {
-  params.set('lab_source', design.previewSource);
+  if (design.previewSource === 'fictional') params.set('lab_source', 'fictional');
+  else params.delete('lab_source');
   if (design.languagePicker || design.profileTabs) params.set('lab_languages', design.languagePicker ? 'on' : 'off');
   if (design.profileTabs) params.set('lab_profile_tabs', 'on');
   params.set('lab_layout', design.layout);
