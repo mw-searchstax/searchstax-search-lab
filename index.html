@@ -9,14 +9,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet">
   <script defer id="searchstax-ui-kit" src="https://cdn.jsdelivr.net/npm/@searchstax-inc/searchstudio-ux-js@4.2.34/dist/@searchstax-inc/searchstudio-ux-js.iife.js"></script>
-  <script type="module" crossorigin src="./assets/index-CSqLl2gu.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-DGmXwO0j.css">
+  <script type="module" crossorigin src="./assets/index-CSmS3xid.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-BiDAfKJe.css">
 </head>
 <body>
 <main
   class="search-lab lt-container"
   id="main-content"
   data-search-lab
+  data-search-app-name="SearchLabDemo"
   data-search-url="https://searchcloud-29-us-east-1.searchstax.com/29847/searchlabdemo-16707/emselect"
   data-search-credential="ef1ccc4d470be7a6eaa07e87a2ee577d08bba67c"
   data-before-profile="Main Profile"
@@ -83,7 +84,7 @@
           <button type="button" aria-expanded="false" aria-controls="lab-connect-panel">Preview with your Search App</button>
         </div>
         <div class="search-lab__handoff-panel" id="lab-share-panel" hidden>
-          <p>Copy a link to reopen these feature and appearance settings with the fictional demo.<span data-lab-local-share hidden> This local link works for teammates who run their copy at the same address. To hand the design to a developer, send a starter ZIP.</span></p>
+          <p>Copy a link to reopen these feature and appearance settings.<span data-lab-local-share hidden> This local link works for teammates who run their copy at the same address. To hand the design to a developer, send a starter ZIP.</span></p>
           <button type="button" class="lt-btn lt-btn--secondary" data-lab-share>Copy design link</button>
           <p class="search-lab__feedback" role="status"></p>
           <input class="search-lab__share-url" aria-label="Design link" type="text" readonly hidden>
@@ -112,7 +113,7 @@
         </div>
         <div class="search-lab__handoff-panel" id="lab-connect-panel" hidden>
           <form data-customer-connect autocomplete="off">
-            <p>Use a read-only token for a Search App you’re allowed to preview. The connection lasts until you leave Design. Shared links reopen the fictional demo. A starter with profile tabs or a language picker includes your language and profile names. Your connection credentials stay out of downloads.</p>
+            <p>Use a read-only token for a Search App you’re allowed to preview. The connection lasts until you leave Design. Shared links reopen the selected built-in preview source. A starter with profile tabs or a language picker includes the selected languages, profile names, and feature settings. Your connection credentials stay out of downloads.</p>
             <fieldset class="search-lab__field">
               <legend>Required to connect</legend>
               <p id="lab-customer-credentials-help">In Site Search, open your Search App and go to <strong>App Settings → All APIs → Search &amp; Indexing</strong> for the Select endpoint and a Read Only token. You can also paste a Select request URL that includes a model or language to fill in those settings.</p>
@@ -145,7 +146,7 @@
                 <p id="lab-discovery-help">Find both under App Settings → All APIs → Discovery. Use a test app with Related Searches enabled.</p>
               </div>
               <div class="search-lab__field search-lab__text-field">
-                <label for="lab-customer-profile">Search Profile (<span data-customer-profile-requirement>optional</span>)</label>
+                <label for="lab-customer-profile">Search Profile (optional)</label>
                 <input id="lab-customer-profile" type="text" placeholder="App default">
               </div>
               <div class="search-lab__field search-lab__text-field">
@@ -153,9 +154,9 @@
                 <input id="lab-customer-language" type="text" placeholder="App default">
               </div>
               <div class="search-lab__field search-lab__text-field">
-                <label for="lab-experience-list">Additional profiles and languages (optional)</label>
-                <p id="lab-exp-import-help">The Select endpoint searches one experience at a time. To preview others, enter one language and profile per line, such as <strong>en | Campus directory</strong>. You can also paste search request URLs from this same Select endpoint. Search Lab reads their language and model locally. Find enabled languages in App Settings → Languages and profile names in the profile selector.</p>
-                <textarea id="lab-experience-list" rows="3" spellcheck="false" aria-describedby="lab-exp-import-help" placeholder="en | Campus directory&#10;es | Directorio"></textarea>
+                <label for="lab-app-configuration">App configuration snapshot (optional JSON file)</label>
+                <p id="lab-exp-import-help">Load your app’s profile names, feature entitlements, and published settings. The snapshot must match this Select endpoint. Without it, you can search a single profile and see which settings are unknown. <a href="./examples/search-lab-configuration.json" download>Download the example snapshot</a> and replace its endpoint, profiles, and settings with your app’s values. Leave an unknown setting null.</p>
+                <input id="lab-app-configuration" type="file" accept=".json,application/json" aria-describedby="lab-exp-import-help">
               </div>
               <div class="search-lab__field search-lab__text-field">
                 <label for="lab-customer-suggest-endpoint">Auto-Suggest endpoint (optional)</label>
@@ -190,30 +191,19 @@
               <button type="button" id="lab-appearance-tab" role="tab" aria-selected="false" aria-controls="lab-appearance-panel" tabindex="-1">Appearance</button>
             </div>
             <div id="lab-more-settings" role="tabpanel" aria-labelledby="lab-features-tab" tabindex="0">
-              <details class="search-lab__disclosure" open data-default-open>
-                <summary>Search navigation</summary>
-                <div class="search-lab__field">
-                  <div class="search-lab__field--inline"><label for="lab-profile-tabs">Show profile tabs</label><input type="checkbox" id="lab-profile-tabs"></div>
-                  <p>Let visitors switch between searches such as Programs and Locations.</p>
-                </div>
-                <div class="search-lab__field search-lab__field--inline"><label for="lab-language-picker">Show language picker</label><input type="checkbox" id="lab-language-picker"></div>
-              </details>
-              <details class="search-lab__disclosure">
+              <div class="search-lab__field" data-preview-source-field>
+                <label for="lab-preview-source">Preview source</label>
+                <select id="lab-preview-source"><option value="app">SearchLabDemo</option><option value="fictional">Fictional demo</option></select>
+              </div>
+              <p data-app-settings-summary hidden></p>
+
+              <details class="search-lab__disclosure" data-lab-fictional-only>
                 <summary>Search box</summary>
                 <div class="search-lab__field" data-lab-fictional-only>
                   <div class="search-lab__field--inline">
                     <label for="lab-suggestions">Suggest terms as visitors type</label>
                     <input id="lab-suggestions" type="checkbox">
                   </div>
-                </div>
-                <div class="search-lab__field search-lab__text-field">
-                  <label for="lab-field-text">Search field text</label>
-                  <input id="lab-field-text" type="text" value="Search the website" aria-describedby="lab-field-text-help">
-                  <p id="lab-field-text-help">This text appears when the search box is empty.</p>
-                </div>
-                <div class="search-lab__field search-lab__text-field">
-                  <label for="lab-button-text">Search button text</label>
-                  <input id="lab-button-text" type="text" value="Search">
                 </div>
               </details>
               <details class="search-lab__disclosure">
@@ -228,29 +218,7 @@
                   <input id="lab-sorting" type="checkbox" checked>
                 </div>
               </details>
-              <details class="search-lab__disclosure">
-                <summary>Results</summary>
-                <div class="search-lab__field">
-                  <label for="lab-page-size">Results per page</label>
-                  <select id="lab-page-size"></select>
-                </div>
-                <div class="search-lab__field search-lab__field--inline">
-                  <label for="lab-descriptions">Show result descriptions</label>
-                  <input id="lab-descriptions" type="checkbox" checked>
-                </div>
-                <div class="search-lab__field search-lab__field--inline" data-lab-fictional-only>
-                  <label for="lab-thumbnails">Show sample thumbnails</label>
-                  <input id="lab-thumbnails" type="checkbox">
-                </div>
-                <div class="search-lab__field search-lab__text-field">
-                  <label for="lab-no-results-text">No-results message</label>
-                  <input id="lab-no-results-text" type="text" aria-describedby="lab-no-results-help">
-                  <p id="lab-no-results-help">This message appears when a search finds no matches. Leave it blank to use the default.</p>
-                  <div class="search-lab__actions" data-lab-fictional-only>
-                    <button type="button" class="lt-btn lt-btn--secondary" data-lab-try-no-results disabled>Try empty state in preview</button>
-                  </div>
-                </div>
-              </details>
+
               <details class="search-lab__disclosure">
                 <summary>Related searches</summary>
                 <div class="search-lab__field search-lab__field--inline">
@@ -276,17 +244,48 @@
                   <input id="lab-smart-answers-sample" type="checkbox" checked>
                 </div>
               </details>
-            </div>
-            <div id="lab-appearance-panel" role="tabpanel" aria-labelledby="lab-appearance-tab" tabindex="0" hidden>
-              <details class="search-lab__disclosure" open data-default-open>
-                <summary>Layout</summary>
-                <fieldset class="search-lab__field">
-                  <legend>Results layout</legend>
-                  <div class="search-lab__layout-options">
-                    <label><input type="radio" name="lab-layout" value="list" checked><span><span aria-hidden="true">☰</span> List</span></label>
-                    <label><input type="radio" name="lab-layout" value="cards"><span><span aria-hidden="true">▦</span> Cards</span></label>
+              <details class="search-lab__disclosure" id="lab-advanced">
+                <summary>Advanced Options</summary>
+                <p>These controls need custom templates, layout, or search logic in your implementation.</p>
+                <div class="search-lab__field search-lab__field--inline"><label for="lab-profile-tabs">Show profile tabs</label><input type="checkbox" id="lab-profile-tabs"></div>
+                <fieldset class="search-lab__field" data-profile-choices hidden><legend>Profiles to include as tabs</legend><div></div></fieldset>
+                <p data-profile-catalog-status></p>
+                <div class="search-lab__field search-lab__field--inline"><label for="lab-language-picker">Show language picker</label><input type="checkbox" id="lab-language-picker"></div>
+                <div class="search-lab__field search-lab__field--inline" data-lab-fictional-only>
+                  <label for="lab-descriptions">Show result descriptions</label>
+                  <input id="lab-descriptions" type="checkbox" checked>
+                </div>
+                <div class="search-lab__field search-lab__field--inline" data-lab-fictional-only>
+                  <label for="lab-thumbnails">Show sample thumbnails</label>
+                  <input id="lab-thumbnails" type="checkbox">
+                </div>
+                <div class="search-lab__field">
+                  <label for="lab-page-size">Results per page</label>
+                  <select id="lab-page-size"></select>
+                </div>
+                <div class="search-lab__field search-lab__text-field">
+                  <label for="lab-field-text">Search field text</label>
+                  <input id="lab-field-text" type="text" value="Search the website" aria-describedby="lab-field-text-help">
+                  <p id="lab-field-text-help">This text appears when the search box is empty.</p>
+                </div>
+                <div class="search-lab__field search-lab__text-field">
+                  <label for="lab-button-text">Search button text</label>
+                  <input id="lab-button-text" type="text" value="Search">
+                </div>
+                <div class="search-lab__field search-lab__text-field">
+                  <label for="lab-no-results-text">No-results message</label>
+                  <input id="lab-no-results-text" type="text" aria-describedby="lab-no-results-help">
+                  <p id="lab-no-results-help">This message appears when a search finds no matches. Leave it blank to use the default.</p>
+                  <div class="search-lab__actions" data-lab-fictional-only>
+                    <button type="button" class="lt-btn lt-btn--secondary" data-lab-try-no-results disabled>Try empty state in preview</button>
                   </div>
-                </fieldset>
+                </div>
+                <div class="search-lab__field">
+                  <label for="lab-related-placement">Related search placement</label>
+                  <select id="lab-related-placement">
+                    <option value="below">Below results</option><option value="above">Below search box</option>
+                  </select>
+                </div>
                 <div class="search-lab__field">
                   <label for="lab-filter-placement">Desktop filter placement</label>
                   <select id="lab-filter-placement" aria-describedby="lab-filter-placement-help"><option value="sidebar">Sidebar</option><option value="top">Above results</option></select>
@@ -299,12 +298,24 @@
                     <option value="row">Horizontal row</option>
                   </select>
                 </div>
-                <div class="search-lab__field">
-                  <label for="lab-related-placement">Related search placement</label>
-                  <select id="lab-related-placement">
-                    <option value="below">Below results</option><option value="above">Below search box</option>
-                  </select>
+                <div class="search-lab__field search-lab__text-field">
+                  <label for="lab-logo-url">Company logo URL</label>
+                  <input id="lab-logo-url" type="url" inputmode="url" placeholder="https://…" aria-describedby="lab-logo-help">
+                  <p id="lab-logo-help">Use a publicly accessible HTTPS image URL. Leave it blank to use the preview’s wordmark.</p>
+                  <p data-lab-logo-status role="status" hidden></p>
                 </div>
+              </details>
+            </div>
+            <div id="lab-appearance-panel" role="tabpanel" aria-labelledby="lab-appearance-tab" tabindex="0" hidden>
+              <details class="search-lab__disclosure" open data-default-open>
+                <summary>Layout</summary>
+                <fieldset class="search-lab__field">
+                  <legend>Results layout</legend>
+                  <div class="search-lab__layout-options">
+                    <label><input type="radio" name="lab-layout" value="list" checked><span><span aria-hidden="true">☰</span> List</span></label>
+                    <label><input type="radio" name="lab-layout" value="cards"><span><span aria-hidden="true">▦</span> Cards</span></label>
+                  </div>
+                </fieldset>
                 <div class="search-lab__field search-lab__spacing-field">
                   <label for="lab-spacing">Result spacing</label>
                   <select id="lab-spacing">
@@ -353,12 +364,7 @@
                       <option value="rounded">Rounded</option>
                     </select>
                   </div>
-                  <div class="search-lab__field search-lab__text-field">
-                    <label for="lab-logo-url">Company logo URL</label>
-                    <input id="lab-logo-url" type="url" inputmode="url" placeholder="https://…" aria-describedby="lab-logo-help">
-                    <p id="lab-logo-help">Use a publicly accessible HTTPS image URL. Leave it blank to use the preview’s wordmark.</p>
-                    <p data-lab-logo-status role="status" hidden></p>
-                  </div>
+
                 </div>
               </details>
             </div>
@@ -417,10 +423,10 @@
                 <img class="search-lab__site-logo" data-lab-preview-logo alt="Company logo" referrerpolicy="no-referrer" hidden>
                 <h3 class="search-lab__site-brand search-lab__site-wordmark" data-lab-fictional-only><span>Central County</span> <small>University Health</small></h3>
                 <h3 class="search-lab__site-brand" data-lab-preview-brand hidden>Your Search App</h3>
-                <span class="search-lab__demo-label" data-lab-fictional-only>Fictional demo</span>
+                <span class="search-lab__demo-label" data-lab-fictional-only data-lab-source-label>Fictional demo</span>
               </div>
               <section class="search-lab__site-content lab-experiences" id="lab-experiences" aria-label="Profile tabs and languages preview" hidden>
-                <button type="button" data-exp-disconnect hidden>Return to the fictional demo</button>
+                <button type="button" data-exp-disconnect hidden>Disconnect app</button>
               </section>
               <div class="search-lab__site-content" data-single-experience>
                 <form class="search-lab__search-form" data-lab-search-form role="search">
@@ -430,7 +436,12 @@
                 </form>
                 <p class="search-lab__sample" data-lab-fictional-only>Try <button type="button" data-lab-sample>rehabilitation</button></p>
 
-                <div data-lab-answer-sample data-lab-design-only hidden></div>
+                <p class="search-lab__sr-only" role="status" aria-atomic="true" data-customer-answer-announcement></p>
+                <section class="search-lab__customer-answer" aria-labelledby="lab-customer-answer-heading" data-customer-answer hidden>
+                  <h4 id="lab-customer-answer-heading">Smart Answer</h4>
+                  <p class="search-lab__status" data-customer-answer-status></p>
+                  <div class="search-lab__customer-answer-content" data-customer-answer-content hidden></div>
+                </section>
 
                 <div data-lab-demo-output>
                   <p class="search-lab__status search-lab__search-status" role="status" data-lab-status>Connecting to the demo…</p>
@@ -462,17 +473,11 @@
                     </div>
                   </div>
                 </div>
-                <p class="search-lab__sr-only" role="status" aria-atomic="true" data-customer-answer-announcement></p>
                 <section class="search-lab__customer-preview" aria-label="Connected search results" data-customer-preview hidden>
                   <div class="search-lab__customer-source">
                     <p data-customer-source></p>
-                    <button class="lt-btn lt-btn--secondary" type="button" data-customer-disconnect>Return to the fictional demo</button>
+                    <button class="lt-btn lt-btn--secondary" type="button" data-customer-disconnect>Disconnect app</button>
                   </div>
-                  <section class="search-lab__customer-answer" aria-labelledby="lab-customer-answer-heading" data-customer-answer hidden>
-                    <h4 id="lab-customer-answer-heading">Smart Answer</h4>
-                    <p class="search-lab__status" data-customer-answer-status></p>
-                    <div class="search-lab__customer-answer-content" data-customer-answer-content hidden></div>
-                  </section>
                   <p class="search-lab__status search-lab__search-status" role="status" data-customer-search-feedback></p>
                   <div class="search-lab__results-heading">
                     <span class="search-lab__previous-results" data-customer-previous-results hidden>Previous results</span>
@@ -506,7 +511,7 @@
               </div>
             </div>
           </div>
-          <p class="search-lab__preview-footnote" data-lab-fictional-only>Fictional content from <a href="https://mw-searchstax.github.io/university-health-search-demo/">Central County University Health</a>. The preview uses Search Lab’s demo profiles.</p>
+          <p class="search-lab__preview-footnote" data-lab-fictional-only>Fictional content from <a href="https://mw-searchstax.github.io/university-health-search-demo/">Central County University Health</a>.</p>
         </section>
       </div>
       <p class="search-lab__feedback" role="status" aria-live="polite" data-lab-feedback></p>
