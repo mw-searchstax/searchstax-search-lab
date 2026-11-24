@@ -13,6 +13,7 @@ function loadFflate() {
 
 const { unzipSync, strFromU8 } = loadFflate();
 const frameworks = ['javascript', 'react', 'vue', 'angular'];
+const demoConfiguration = require('../../public/config/searchlabdemo.json');
 const modes = {
   single: { lab_profile_tabs: 'off', lab_languages: 'off', lab_page_size: '5' },
   liveTabs: { lab_profile_tabs: 'on', lab_languages: 'off', lab_page_size: '5' },
@@ -75,6 +76,14 @@ function checkArchive(mode, framework, files) {
     assert.ok(config.includes("export const connection = { endpoint: '', token: '' }"));
   } else {
     const source = framework === 'javascript' ? textFile(files, 'search.js') : textFile(files, 'src/config.js');
+    const prefix = framework === 'javascript' ? '' : 'src/';
+    const serviceSettings = JSON.parse(textFile(files, prefix + 'feature-settings.js').match(/= ([\s\S]+);/)[1]);
+    const selected = demoConfiguration.profiles.find(item => item.profile === 'SearchLabBuild' && item.language === 'en');
+    assert.deepEqual(serviceSettings.entitlements, demoConfiguration.entitlements);
+    assert.deepEqual(serviceSettings.relatedSearchesByLanguage, { en: demoConfiguration.relatedSearchesByLanguage.en });
+    assert.deepEqual(serviceSettings.profiles, [{ language: selected.language, profile: selected.profile, smartAnswers: selected.smartAnswers }]);
+    assert.doesNotMatch(textFile(files, prefix + 'related-searches.js'), /physical therapy/);
+    assert.doesNotMatch(source, /showSmartAnswersSample/);
     assert.match(source, /["']?resultsPerPage["']?\s*:\s*5/);
     assert.match(source, /["']?showSorting["']?\s*:\s*true/);
     assert.match(source, /["']?analyticsBaseUrl["']?\s*:\s*["']\s*["']/);

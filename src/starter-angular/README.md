@@ -1,6 +1,6 @@
 # SearchStax Angular Starter
 
-This project uses the SearchStax Angular UI Kit and starts with the public Central County fictional demo. It includes the design you selected in Search Lab.
+This starter uses the SearchStax Angular UI Kit and your Search Lab design. A SearchLabDemo download is ready to search. For a connected-app download, add your endpoint and read-only token under **Connect Your Search App** before you run it.
 
 ## Run the Demo
 
@@ -15,7 +15,7 @@ Open the localhost URL printed by Angular CLI. The demo search requires an inter
 
 - Search for `rehabilitation` to try filters or view the optional sample thumbnails.
 - Search for `campus flu clinic` to try paging, sorting, or the Promotion formats selected in your design.
-- If you enabled sample suggestions, type `reh`. If the Smart Answers sample is visible, expand it to read the fixed answer and its source.
+- On SearchLabDemo, type `reh` to try suggestions if you enabled them in your design.
 
 ## Connect Your Search App
 
@@ -23,13 +23,17 @@ Use `src/config.js` to connect your app. Keep the `demo` object and set `connect
 
 1. Find the Select endpoint and token under **App Settings > All APIs > Search & Indexing**.
 2. Map Title, URL, and Description under the profile’s **Results Fields**. Map Thumbnail if you display images. Configure and publish any facets, sort options, and Promotions you want to use. [Results Fields](https://support.searchstax.com/hc/en-us/articles/40837318253197-Results-Fields)
-3. For live suggestions, enable and publish Auto-Suggest, set `suggesterURL`, and enable `showSuggestions` in `design`. For live Smart Answers, enable and publish the feature on an eligible profile, set `questionURL` to the streaming Answer endpoint, and enable `showSmartAnswersSample` in `design`. [Auto-Suggest API](https://support.searchstax.com/hc/en-us/articles/40243330090893-Auto-Suggest-API) · [Smart Answers setup](https://support.searchstax.com/hc/en-us/articles/40075209934989-Smart-Answers)
+3. For live suggestions, publish Auto-Suggest, set `suggesterURL` to its endpoint, and enable `showSuggestions` in `design`. [Auto-Suggest API](https://support.searchstax.com/hc/en-us/articles/40243330090893-Auto-Suggest-API)
 
-For Related Searches on your own app, set `relatedURL` and `discoveryKey` in the `connection` object in `src/config.js`. Use the endpoint and key from **App Settings → All APIs → Discovery**. The fictional demo includes related terms for `rehabilitation`. [Related Searches API](https://support.searchstax.com/hc/en-us/articles/40243333638541-Related-Searches-API)
+### Related Searches and Smart Answers
+
+The download includes the selected app’s feature settings in `src/feature-settings.js`. Related Searches uses the app entitlement and the published setting for the search language. Smart Answers uses its entitlement and the published setting for the selected profile and language. An off or unknown setting leaves that feature out.
+
+In `src/config.js`, enter `relatedURL` and the browser-safe `discoveryKey` from **App Settings → All APIs → Discovery** to receive related terms. For Smart Answers, enter the streaming `questionURL` or a same-origin streaming proxy. Answers use the search token, language, and profile. [Related Searches API](https://support.searchstax.com/hc/en-us/articles/40243333638541-Related-Searches-API) · [Smart Answers setup](https://support.searchstax.com/hc/en-us/articles/40075209934989-Smart-Answers)
+
+If you switch apps or the published settings change, reconnect in Build with the updated app configuration and download a fresh starter. For fixed examples of both features, choose **Fictional demo** in local Search Lab before downloading.
 
 Result links open with tracking off by default. To enable search and result-click tracking on your own app, open **App Settings > All APIs > Analytics**. In `src/config.js`, set `connection.analyticsBaseUrl` to the origin of your Tracking URL (the `https://` address before `/api/v2/track/`) and `connection.trackApiKey` to the Tracking key. Leave both blank to keep tracking off. If your site requires consent, supply these settings only after the visitor opts in.
-
-The starter requests a Smart Answer for the opening query and submitted searches. Use the SearchStax streaming endpoint or a same-origin proxy that returns the same event stream.
 
 ### Thumbnail Descriptions
 

@@ -9,7 +9,7 @@ function starterAnswerEndpoint(value) {
     if (url.origin === window.location.origin && !url.username && !url.password && !url.search && !url.hash) {
       return url.href;
     }
-  } catch { /* Show configuration feedback for an invalid endpoint. */ }
+  } catch { /* An invalid endpoint leaves the feature inactive. */ }
   return null;
 }
 
@@ -18,6 +18,10 @@ function starterAnswerEndpoint(value) {
  * @param {{ questionURL: string, searchAuth: string, model: string, language: string }} connection
  */
 export function setupStarterAnswers(host, connection) {
+  const answerEndpoint = starterAnswerEndpoint(connection.questionURL.trim());
+  const profile = connection.model.trim();
+  if (!answerEndpoint || !profile) return;
+
   host.innerHTML = `
     <p class="search-starter__sr-only" role="status" data-customer-answer-announcement></p>
     <section class="smart-answers-sample__card search-starter__answer" aria-label="Smart Answer" data-customer-answer hidden>
@@ -27,18 +31,6 @@ export function setupStarterAnswers(host, connection) {
     </section>`;
 
   const answers = setupCustomerAnswers(host);
-  const answerEndpoint = starterAnswerEndpoint(connection.questionURL.trim());
-  const profile = connection.model?.trim();
-  if (!answerEndpoint || !profile) {
-    const panel = host.querySelector('[data-customer-answer]');
-    const status = host.querySelector('[data-customer-answer-status]');
-    if (panel instanceof HTMLElement && status) {
-      panel.hidden = false;
-      status.textContent = 'Set a Search Profile and a valid streaming Answer endpoint to use Smart Answers.';
-    }
-    return;
-  }
-
   const answerConnection = { answerEndpoint, profile, language: connection.language, token: connection.searchAuth };
   return {
     clear: answers.clear,

@@ -9,12 +9,11 @@ import {
 import { connection, demo, design } from './config.js';
 import { contentLanguageTag } from './content-language.js';
 import { starterPassages } from './starter-passages.js';
-import { setupStarterAnswers } from './starter-answers.js';
+import { setupStarterServices } from './starter-services.js';
 import { thumbnailAlt } from './thumbnail-alt.js';
 import { createCustomerSuggestionSource } from './customer-suggestions.js';
 import { sampleSuggestionSource, setupSearchSuggestions } from './suggestions.js';
 import { getAnalyticsSettings, setupResultTracking } from './result-tracking.js';
-import { setupStarterRelated } from './related-searches.js';
 import { setupPaginationFocus } from './pagination-focus.js';
 import { applySampleIndexedPromotion, sampleExternalPromotion, samplePromotionMode, samplePromotionQuery } from './promotions.js';
 
@@ -133,7 +132,7 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
   const pagination = useRef(null);
   const resultHost = useRef(null);
   const answerHost = useRef(null);
-  const answers = useRef(null);
+  const services = useRef(null);
   const setSuggestionSource = useRef(null);
 
   function runSearch(query) {
@@ -144,7 +143,7 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
     }
     const current = api.dataLayer.searchObject;
     const next = { ...current, query: term, page: 1, facets: [] };
-    answers.current?.start(term);
+    void services.current?.search(term);
     if (current.query === term && current.page === 1 && !current.facets.length) api.search(next);
     else api.dataLayer.setSearchObject(next);
   }
@@ -158,15 +157,11 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
       timer.current = window.setTimeout(() => setStatus('Search is unavailable. Try again in a moment.'), 15000);
     });
     api.dataLayer.setItemsPerPage(design.resultsPerPage);
-    if (!isDemo && design.showSmartAnswersSample && connection.questionURL?.trim()) {
-      answers.current = setupStarterAnswers(answerHost.current, connection);
-    }
-    const stopRelated = setupStarterRelated(form.current, design, connection, isDemo, initialQuery);
+    services.current = setupStarterServices(form.current, answerHost.current, connection, design);
     if (initialQuery) runSearch(initialQuery);
     else setStatus('Enter a search term.');
     return () => {
-      stopRelated();
-      answers.current?.clear();
+      services.current?.clear();
       loading.unsubscribe(subscription);
       window.clearTimeout(timer.current);
     };
@@ -194,7 +189,6 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
       <input id="starter-query" type="search" defaultValue={initialQuery} placeholder={design.searchFieldText} ref={input} autoComplete="off" required />
       <button type="submit" className="search-starter__submit">{design.searchButtonText}</button>
     </form>
-    {isDemo && design.showSmartAnswersSample && <div dangerouslySetInnerHTML={{ __html: demo.answerSampleHTML }} />}
     <div ref={answerHost} />
     <p role="status">{status}</p>
     {design.showSorting && <SearchstaxSortingWidget searchSortingTemplate={(data, _, selected) => sortControls(data, selected, api)} />}
@@ -255,6 +249,10 @@ export default function SearchApp() {
       }] : [];
     });
     return isDemo ? applySampleIndexedPromotion(results, response, samplePromotionMode(query, design.samplePromotions)) : results;
+  }
+
+  if (!connection.searchURL || !connection.searchAuth) {
+    return <main className="search-starter"><p>Set the Select endpoint and read-only token in src/config.js to start searching.</p></main>;
   }
 
   return (

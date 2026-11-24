@@ -13,6 +13,9 @@
   @if (isDemo) {
     <p>Search fictional university health content with the SearchStax Angular UI Kit.</p>
   }
+  @if (!connection.searchURL || !connection.searchAuth) {
+    <p>Set the Select endpoint and read-only token in src/config.js to start searching.</p>
+  } @else {
   <app-searchstax-wrapper
     [searchURL]="connection.searchURL" [searchAuth]="connection.searchAuth" [model]="connection.model"
     [language]="connection.language" authType="token" suggesterURL="" [trackApiKey]="analytics.trackApiKey" [analyticsBaseUrl]="analytics.analyticsBaseUrl"
@@ -25,9 +28,6 @@
         <button type="submit" class="search-starter__submit">{{ design.searchButtonText }}</button>
       </form>
     </div>
-    @if (isDemo && design.showSmartAnswersSample) {
-      %%SMART_ANSWERS_SAMPLE%%
-    }
     <div #answerHost></div>
     <p role="status">{{ status() }}</p>
     @if (design.showSorting) {
@@ -153,4 +153,5 @@
       </div>
     </div>
   </app-searchstax-wrapper>
+  }
 </main>

@@ -1,12 +1,5 @@
 import { readCustomerEndpoint } from './web-url.js';
 
-const demoTerms = new Map([
-  ['rehabilitation', ['physical therapy', 'rehabilitation services']],
-  ['physical therapy', ['rehabilitation', 'sports medicine']],
-  ['rehabilitation services', ['rehabilitation', 'physical therapy']],
-  ['sports medicine', ['physical therapy']],
-]);
-
 export function relatedSource(endpoint, key, language) {
   const url = readCustomerEndpoint(endpoint || '', 'related-search');
   if (!url || !key?.trim()) return null;
@@ -24,8 +17,6 @@ export function relatedSource(endpoint, key, language) {
     return data.response.docs.map(doc => doc?.related_search).filter(term => typeof term === 'string' && term.trim());
   };
 }
-
-export const demoRelatedSource = query => demoTerms.get(query.toLowerCase()) || [];
 
 export function setupRelatedSearches(form, selectTerm) {
   const section = document.createElement('section');
@@ -90,20 +81,4 @@ export function setupRelatedSearches(form, selectTerm) {
     heading.textContent = label;
     section.setAttribute('aria-label', label);
   } };
-}
-
-export function setupStarterRelated(form, design, connection, isDemo, initialQuery) {
-  const field = form.querySelector('input[type="search"]');
-  const anchor = form.closest('.search-starter').querySelector('.search-starter__body');
-  const source = isDemo ? demoRelatedSource : relatedSource(connection.relatedURL, connection.discoveryKey, connection.language);
-  const related = setupRelatedSearches(form, term => {
-    field.value = term;
-    field.focus();
-    form.requestSubmit();
-  });
-  const show = query => related.show(anchor, design.relatedPlacement, query.trim(), source);
-  const submit = () => show(field.value);
-  form.addEventListener('submit', submit);
-  show(initialQuery || '');
-  return () => { form.removeEventListener('submit', submit); related.clear(); };
 }

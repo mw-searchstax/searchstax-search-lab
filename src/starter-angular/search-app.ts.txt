@@ -5,12 +5,11 @@ import type { IExternalPromotion, ISearchstaxParsedResult, ISearchstaxSearchResp
 import { connection, demo, design } from './config.js';
 import { contentLanguageTag } from './content-language.js';
 import { starterPassages } from './starter-passages.js';
-import { setupStarterAnswers } from './starter-answers.js';
+import { setupStarterServices } from './starter-services.js';
 import { thumbnailAlt } from './thumbnail-alt.js';
 import { createCustomerSuggestionSource } from './customer-suggestions.js';
 import { sampleSuggestionSource, setupSearchSuggestions } from './suggestions.js';
 import { getAnalyticsSettings, setupResultTracking } from './result-tracking.js';
-import { setupStarterRelated } from './related-searches.js';
 import { setupPaginationFocus } from './pagination-focus.js';
 import { applySampleIndexedPromotion, sampleExternalPromotion, samplePromotionMode, samplePromotionQuery } from './promotions.js';
 
@@ -34,11 +33,11 @@ function publicLink(value: unknown) {
   templateUrl: './search-app.html',
 })
 export class SearchApp implements AfterViewInit, OnDestroy {
-  @ViewChild('searchForm', { static: true }) private form!: ElementRef<HTMLFormElement>;
-  @ViewChild('searchField', { static: true }) private input!: ElementRef<HTMLInputElement>;
-  @ViewChild('resultHost', { static: true }) private resultHost!: ElementRef<HTMLDivElement>;
-  @ViewChild('pagination', { static: true }) private pagination!: ElementRef<HTMLDivElement>;
-  @ViewChild('answerHost', { static: true }) private answerHost!: ElementRef<HTMLDivElement>;
+  @ViewChild('searchForm') private form!: ElementRef<HTMLFormElement>;
+  @ViewChild('searchField') private input!: ElementRef<HTMLInputElement>;
+  @ViewChild('resultHost') private resultHost!: ElementRef<HTMLDivElement>;
+  @ViewChild('pagination') private pagination!: ElementRef<HTMLDivElement>;
+  @ViewChild('answerHost') private answerHost!: ElementRef<HTMLDivElement>;
   readonly connection = connection;
   readonly analytics = getAnalyticsSettings(connection);
   readonly design = design;
@@ -53,10 +52,9 @@ export class SearchApp implements AfterViewInit, OnDestroy {
   private api?: Searchstax;
   private loadingSubscription?: string;
   private timer?: number;
-  private answers: ReturnType<typeof setupStarterAnswers>;
+  private services?: ReturnType<typeof setupStarterServices>;
   private setSuggestionSource?: ReturnType<typeof setupSearchSuggestions>;
   private stopResultTracking?: () => void;
-  private stopRelated?: () => void;
   private stopPaginationFocus?: () => void;
 
   initialized(instance: Searchstax) {
@@ -65,14 +63,14 @@ export class SearchApp implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
+    if (!connection.searchURL || !connection.searchAuth) return;
     this.stopPaginationFocus = setupPaginationFocus(this.pagination.nativeElement, () => this.api);
     queueMicrotask(() => this.start());
   }
 
   ngOnDestroy() {
-    this.answers?.clear();
+    this.services?.clear();
     this.stopResultTracking?.();
-    this.stopRelated?.();
     this.stopPaginationFocus?.();
     this.setSuggestionSource?.(null);
     if (this.loadingSubscription) this.api?.dataLayer.$loadingChange.unsubscribe(this.loadingSubscription);
@@ -92,9 +90,6 @@ export class SearchApp implements AfterViewInit, OnDestroy {
     });
     api.dataLayer.setItemsPerPage(design.resultsPerPage);
     this.input.nativeElement.value = this.initialQuery;
-    if (!this.isDemo && design.showSmartAnswersSample && connection.questionURL?.trim()) {
-      this.answers = setupStarterAnswers(this.answerHost.nativeElement, connection);
-    }
     if (design.showSuggestions) {
       const source = this.isDemo ? sampleSuggestionSource : connection.suggesterURL
         ? createCustomerSuggestionSource({ token: connection.searchAuth, language: connection.language }, connection.suggesterURL)
@@ -104,7 +99,7 @@ export class SearchApp implements AfterViewInit, OnDestroy {
         this.setSuggestionSource(source);
       }
     }
-    this.stopRelated = setupStarterRelated(this.form.nativeElement, design, connection, this.isDemo, this.initialQuery);
+    this.services = setupStarterServices(this.form.nativeElement, this.answerHost.nativeElement, connection, design);
     if (this.initialQuery) this.runSearch(this.initialQuery);
     else this.status.set('Enter a search term.');
   }
@@ -124,7 +119,7 @@ export class SearchApp implements AfterViewInit, OnDestroy {
     }
     const current = api.dataLayer.searchObject;
     const next = { ...current, query: term, page: 1, facets: [] };
-    this.answers?.start(term);
+    void this.services?.search(term);
     if (current.query === term && current.page === 1 && !current.facets.length) api.search(next);
     else api.dataLayer.setSearchObject(next);
   }

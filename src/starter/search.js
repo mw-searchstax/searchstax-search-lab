@@ -1,12 +1,11 @@
 import { sampleSuggestionSource, setupSearchSuggestions } from './suggestions.js';
 import { createCustomerSuggestionSource } from './customer-suggestions.js';
 import { getAnalyticsSettings, setupResultTracking } from './result-tracking.js';
-import { setupStarterRelated } from './related-searches.js';
+import { setupStarterServices } from './starter-services.js';
 import { setupPaginationFocus } from './pagination-focus.js';
 import { contentLanguageTag } from './content-language.js';
 import { starterPassages } from './starter-passages.js';
 import { readCustomerEndpoint, webURL } from './web-url.js';
-import { readAnswerEndpoint, setupCustomerAnswers } from './customer-answers.js';
 import {
   applySampleIndexedPromotion,
   createSampleExternalPromotion,
@@ -22,15 +21,14 @@ if (logo) {
 }
 
 // UI Kit connection settings
-// This starter connects to the public, read-only Central County demo.
-// See README.md to connect your Search App.
+// For a connected-app download, add your Select endpoint and read-only token here.
 const config = %%STARTER_CONFIG%%;
 
 // Display labels for the demo facet values.
 const demoFacets = %%DEMO_FACETS%%;
 const demoThumbnails = %%DEMO_THUMBNAILS%%;
 const demoSorting = %%DEMO_SORTING%%;
-const language = config.language || 'en';
+const language = config.language;
 const resultLanguage = contentLanguageTag(language);
 const usesDemoProfile = config.searchURL === demoFacets.searchURL &&
   config.model === demoSorting.model && resultLanguage === 'en';
@@ -43,23 +41,6 @@ const feedback = document.querySelector('#search-feedback');
 const retry = document.querySelector('#search-retry');
 const reload = document.querySelector('#search-reload');
 const output = document.querySelector('#search-output');
-const smartAnswersSample = document.querySelector('#search-smart-answers-sample');
-smartAnswersSample.hidden = !config.showSmartAnswersSample || !usesDemoProfile;
-
-let requestAnswer;
-if (!usesDemoProfile && config.showSmartAnswersSample && config.questionURL?.trim()) {
-  const answerEndpoint = readAnswerEndpoint(config.questionURL);
-  const profile = config.model?.trim();
-  if (answerEndpoint && profile) {
-    const answers = setupCustomerAnswers(document.querySelector('.search-starter'));
-    const connection = { answerEndpoint, profile, language, token: config.searchAuth };
-    requestAnswer = term => answers.start(connection, term);
-  } else {
-    document.querySelector('[data-customer-answer]').hidden = false;
-    document.querySelector('[data-customer-answer-status]').textContent =
-      'Set a Search Profile and a valid SearchStax streaming Answer endpoint to use Smart Answers.';
-  }
-}
 const externalPromotions = usesDemoProfile ? createSampleExternalPromotion() : document.createElement('section');
 if (!usesDemoProfile) externalPromotions.setAttribute('aria-label', 'External promotions');
 externalPromotions.hidden = true;
@@ -191,7 +172,11 @@ function renderExternalPromotions(entries) {
   externalPromotions.hidden = banners.length === 0;
 }
 
-try {
+async function startSearch() {
+  if (!config.searchURL || !config.searchAuth) {
+    showFeedback('Set the Select endpoint and read-only token in search.js to start searching.');
+    return;
+  }
   await loadUiKit();
   const kit = window['@searchstaxInc/searchstudioUxJs'] || window.Searchstax;
   const Searchstax = typeof kit === 'function' ? kit : kit.Searchstax;
@@ -330,6 +315,7 @@ try {
   });
   search.dataLayer.setItemsPerPage(config.resultsPerPage);
 
+  const services = setupStarterServices(form, document.querySelector('#search-answer'), config, config);
   function runSearch() {
     form.after(feedback);
     const term = query.value.trim();
@@ -337,7 +323,7 @@ try {
       showFeedback('Enter a search term.');
       return;
     }
-    void requestAnswer?.(term);
+    void services.search(term);
     const current = search.dataLayer.searchObject;
     const next = { ...current, query: term, page: 1, facets: [] };
     if (term === current.query && current.page === 1 && !current.facets.length) {
@@ -349,9 +335,11 @@ try {
 
   submit.disabled = false;
   form.addEventListener('submit', runSearch);
-  setupStarterRelated(form, config, config, usesDemoProfile, query.value);
-  runSearch();
-} catch {
+  if (query.value.trim()) runSearch();
+  else showFeedback('Enter a search term.');
+}
+
+startSearch().catch(() => {
   submit.disabled = true;
   showFeedback('Search couldn’t start. Reload to try again.', reload);
-}
+});

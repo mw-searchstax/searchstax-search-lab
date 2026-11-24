@@ -37,7 +37,7 @@ import { setupRelatedSearches, relatedSource } from './related-searches.js';
 import './related-searches.css';
 import profileControls from './profile-controls.html?raw';
 import { resultCards, resultMappingNotice, appendResultCard } from './result-card';
-import { profileStatus, featureStatus, readAppConfiguration } from './app-configuration';
+import { endpointFingerprint, profileStatus, featureStatus, readAppConfiguration } from './app-configuration';
 import { readAnswerEndpoint } from './customer-answers.js';
 import { readCustomerEndpoint } from './web-url.js';
 import { demoProfiles, setupExperiencePreview } from './profile-experiences';
@@ -218,7 +218,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
   var connectedRelatedSource;
   let builtInRelatedSource;
   let builtInAnswerQuery = '';
-  let snapshotRequested = false;
+  let snapshotRequest;
   let lastBuiltInPage;
   let builtInHighlighting;
   const unknownResultFields = new WeakSet();
@@ -246,8 +246,6 @@ import { setupPaginationFocus } from './pagination-focus.js';
     }
   }
   async function loadBuiltInConfiguration() {
-    if (snapshotRequested) return;
-    snapshotRequested = true;
     try {
       const response = await fetch('./config/searchlabdemo.json', { cache: 'no-cache', credentials: 'omit', signal: AbortSignal.timeout(12000) });
       if (!response.ok) throw Error('The built-in app configuration is unavailable.');
@@ -259,7 +257,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
       }
     } catch {
       // Leave unavailable metadata unknown. Retry on the next visit to Build.
-      snapshotRequested = false;
+      snapshotRequest = undefined;
     }
     if (root.dataset.labView === 'design' && lastBuiltInPage && lastBuiltInPage.request === expected && completed) {
       search.dataLayer.setSearchResults(renderBuiltInPage(lastBuiltInPage.items, lastBuiltInPage.response));
@@ -772,13 +770,31 @@ import { setupPaginationFocus } from './pagination-focus.js';
     }
   }
 
-  function downloadStarter(framework) {
+  async function downloadStarter(framework) {
     try {
-      var connection = {
+      const customer = customerPreview.connection;
+      const app = customer ?? builtInApp;
+      const experience = experiencePanel.hidden ? undefined : experiencePreview.handoff();
+      const savedDesign = { ...design };
+      if (!experience && !customer) await snapshotRequest;
+      const settings = app.settings;
+      const connection = {
+        customer: Boolean(customer),
+        language: app.language,
+        featureSettings: {
+          ...(customer ? { endpointHash: experience ? undefined : await endpointFingerprint(app.endpoint) } : { endpoint: app.endpoint }),
+          entitlements: app.configuration?.entitlements ?? {},
+          relatedSearchesByLanguage: settings ? { [settings.language]: settings.relatedSearches } : {},
+          profiles: settings ? [{ language: settings.language, profile: settings.profile, smartAnswers: settings.smartAnswers }] : [],
+        },
+        questionURL: customer ? '' : app.answerEndpoint || '',
+        relatedURL: customer ? '' : builtInApp.relatedURL || '',
+        discoveryKey: customer ? '' : builtInApp.discoveryKey || '',
         searchURL: config.searchURL,
         searchAuth: config.searchAuth,
-        model: config.build,
-        experience: !experiencePanel.hidden ? experiencePreview.handoff() : undefined,
+        model: app.profile,
+        demoModel: config.build,
+        experience,
         kitURL: document.querySelector('#searchstax-ui-kit').src,
       };
       var starter = {
@@ -787,7 +803,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
         vue: { create: createVueStarterZip, name: 'searchstax-vue-starter.zip' },
         angular: { create: createAngularStarterZip, name: 'searchstax-angular-starter.zip' },
       }[framework];
-      downloadFile(starter.create(design, connection, FACET_LABELS), starter.name);
+      downloadFile(starter.create(savedDesign, connection, FACET_LABELS), starter.name);
       codeFeedback.textContent = 'Download started. Unzip the starter and open its README for setup.';
     } catch {
       codeFeedback.textContent = 'Couldn’t prepare the starter. Try downloading it again.';
@@ -1346,7 +1362,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
     showImprovePreview(view, hash);
     showDataFilters(view === 'data-filters');
     if (view !== 'examples') relevanceComparison.clear();
-    if (view === 'design') void loadBuiltInConfiguration();
+    if (view === 'design') snapshotRequest ??= loadBuiltInConfiguration();
     else updateSingleProfileFeatures();
     if (view !== 'design') customerPreview.disconnect();
     syncFeatureControls();

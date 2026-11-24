@@ -1,6 +1,6 @@
 # SearchStax JavaScript Starter
 
-This starter uses the SearchStax JavaScript UI Kit to search the fictional Central County university health website. It comes connected to the public, read-only demo, so you can try it without a SearchStax account.
+This starter uses the SearchStax JavaScript UI Kit and your Search Lab design. A SearchLabDemo download is ready to search. For a connected-app download, add your endpoint and read-only token under **Connect Your Search App** before you run it.
 
 ## Run the Demo
 
@@ -17,7 +17,7 @@ Press Ctrl+C in the terminal when you're done.
 
 ## Try your design
 
-For the default demo, search for **rehabilitation**. If related searches are visible, choose **physical therapy**. The search box and results update to the selected term.
+For SearchLabDemo, search for **rehabilitation** to see results from the selected profile.
 
 If you enabled sample thumbnails, the ZIP includes fictional images for two Central County results.
 
@@ -26,8 +26,6 @@ Sorting is on by default and starts in Relevance order. When sorting is enabled,
 If search can’t start, choose **Reload search**. If a search fails or takes longer than usual, choose **Retry search** to repeat it with the same query, sort, filters and page. When earlier results are still on screen, the status message tells you.
 
 If you enabled sample search suggestions, type `reh` to try them. Choosing a suggestion runs a search against the fictional demo.
-
-If your design shows the Smart Answers sample, expand **Smart Answers Sample** to see the fixed fictional answer and its source link.
 
 If you enabled sample promotions, the starter opens with `campus flu clinic`. The indexed sample moves the 2026 notice to the first relevance result when that notice is present. The external sample displays a separate link above the results. [Indexed and external promotions](https://support.searchstax.com/hc/en-us/articles/40499202855693-Promotions-Indexed-vs-External)
 
@@ -44,7 +42,13 @@ To change the message visitors see when a search finds no matches, edit `noResul
 
 Publish indexed or external promotions in the connected Search Profile and search for one of their trigger phrases. External promotions appear above the results. Indexed promotions display a **Promoted** label in the order returned by the app. The sample promotions are available with the included Central County connection. [Promotions](https://support.searchstax.com/hc/en-us/articles/40155433600397-Promotions)
 
-For Related Searches on your own app, set `relatedURL` and `discoveryKey` in `search.js`. Use the endpoint and key from **App Settings → All APIs → Discovery**. The fictional demo includes related terms for `rehabilitation`. [Related Searches API](https://support.searchstax.com/hc/en-us/articles/40243333638541-Related-Searches-API)
+### Related Searches and Smart Answers
+
+The download includes the selected app’s feature settings in `feature-settings.js`. Related Searches uses the app entitlement and the published setting for the search language. Smart Answers uses its entitlement and the published setting for the selected profile and language. An off or unknown setting leaves that feature out.
+
+In `search.js`, enter `relatedURL` and the browser-safe `discoveryKey` from **App Settings → All APIs → Discovery** to receive related terms. For Smart Answers, enter the streaming `questionURL` or a same-origin streaming proxy. Answers use the search token, language, and profile. [Related Searches API](https://support.searchstax.com/hc/en-us/articles/40243333638541-Related-Searches-API) · [Smart Answers setup](https://support.searchstax.com/hc/en-us/articles/40075209934989-Smart-Answers)
+
+If you switch apps or the published settings change, reconnect in Build with the updated app configuration and download a fresh starter. For fixed examples of both features, choose **Fictional demo** in local Search Lab before downloading.
 
 Result links work with tracking off, the default. To enable search and result-click tracking on your own app, open **App Settings > All APIs > Analytics**. In `search.js`, set `analyticsBaseUrl` to the origin of your Tracking URL (the `https://` address before `/api/v2/track/`) and `trackApiKey` to the Tracking key. Leave both blank to keep tracking off. If your site requires consent, supply these settings only after the visitor opts in.
 
@@ -55,5 +59,3 @@ If you move the search UI into an existing page, keep the `.search-starter` wrap
 For sorting on your app, configure and publish sort options on your Search Profile under **Configurations > Advanced Configurations > Sorting**. Set `showSorting` to `true` in `search.js`. **Sort by** displays the published options after a search. Choosing an option keeps the current filters and returns to the first page. [Facets and sorting setup](https://support.searchstax.com/hc/en-us/articles/38268731934349-Setting-Up-Facets-Filters-and-Sorting)
 
 For live suggestions on your app, enable and publish Auto-Suggest in Site Search. In `search.js`, set `suggesterURL` to the app’s HTTPS Auto-Suggest endpoint ending in `/emsuggest`, and set `showSuggestions` to `true`. The starter uses the same read-only token and language as search. Use the arrow keys and Enter to search for a suggestion, or press Escape to dismiss the list. Leave `suggesterURL` empty to use search without connected suggestions. [Auto-Suggest](https://support.searchstax.com/hc/en-us/articles/40075200119437-Auto-Suggest) · [Auto-Suggest API](https://support.searchstax.com/hc/en-us/articles/40243330090893-Auto-Suggest-API)
-
-The Smart Answers sample is available with the Central County connection. For live answers on your own app, enable and publish Smart Answers on the Search Profile you set in `model`. In `search.js`, set `questionURL` to that app’s HTTPS streaming Smart Answers endpoint and set `showSmartAnswersSample` to `true` to display the answer. The starter uses the same read-only token and language as search. It requests an answer for the opening query and each submitted search. Leave `questionURL` empty to skip answer requests. [Smart Answers setup](https://support.searchstax.com/hc/en-us/articles/40075209934989-Smart-Answers) · [Smart Answers API](https://support.searchstax.com/hc/en-us/articles/40243570123021-Smart-Answers-API)

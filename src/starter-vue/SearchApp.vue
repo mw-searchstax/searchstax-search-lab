@@ -11,12 +11,11 @@ import {
 import { connection, demo, design } from './config.js';
 import { contentLanguageTag } from './content-language.js';
 import { starterPassages } from './starter-passages.js';
-import { setupStarterAnswers } from './starter-answers.js';
+import { setupStarterServices } from './starter-services.js';
 import { thumbnailAlt } from './thumbnail-alt.js';
 import { createCustomerSuggestionSource } from './customer-suggestions.js';
 import { sampleSuggestionSource, setupSearchSuggestions } from './suggestions.js';
 import { getAnalyticsSettings, setupResultTracking } from './result-tracking.js';
-import { setupStarterRelated } from './related-searches.js';
 import { setupPaginationFocus } from './pagination-focus.js';
 import { applySampleIndexedPromotion, sampleExternalPromotion, samplePromotionMode, samplePromotionQuery } from './promotions.js';
 
@@ -33,14 +32,13 @@ const queryField = ref(null);
 const pagination = ref(null);
 const resultHost = ref(null);
 const answerHost = ref(null);
-let answers;
+let services;
 const status = ref('Connecting to search…');
 const query = ref('');
 const promotionMode = computed(() => isDemo ? samplePromotionMode(query.value, design.samplePromotions) : 'off');
 let api;
 let loadingSubscription;
 let timer;
-let stopRelated;
 let setSuggestionSource;
 
 function publicLink(value) {
@@ -104,7 +102,7 @@ function runSearch(value) {
   }
   const current = api.dataLayer.searchObject;
   const next = { ...current, query: term, page: 1, facets: [] };
-  answers?.start(term);
+  void services?.search(term);
   if (current.query === term && current.page === 1 && !current.facets.length) api.search(next);
   else api.dataLayer.setSearchObject(next);
 }
@@ -127,9 +125,6 @@ watch(form, async (element) => {
   });
   api.dataLayer.setItemsPerPage(design.resultsPerPage);
   queryField.value.value = initialQuery;
-  if (!isDemo && design.showSmartAnswersSample && connection.questionURL?.trim()) {
-    answers = setupStarterAnswers(answerHost.value, connection);
-  }
   if (design.showSuggestions) {
     const source = isDemo ? sampleSuggestionSource : connection.suggesterURL
       ? createCustomerSuggestionSource({ token: connection.searchAuth, language: connection.language }, connection.suggesterURL)
@@ -139,7 +134,7 @@ watch(form, async (element) => {
       setSuggestionSource(source);
     }
   }
-  stopRelated = setupStarterRelated(element, design, connection, isDemo, initialQuery);
+  services = setupStarterServices(element, answerHost.value, connection, design);
   if (initialQuery) runSearch(initialQuery);
   else status.value = 'Enter a search term.';
 }, { flush: 'post' });
@@ -156,8 +151,7 @@ watch(pagination, (host, _, onCleanup) => {
 }, { flush: 'post' });
 
 onBeforeUnmount(() => {
-  stopRelated?.();
-  answers?.clear();
+  services?.clear();
   setSuggestionSource?.(null);
   if (loadingSubscription) api.dataLayer.$loadingChange.unsubscribe(loadingSubscription);
   window.clearTimeout(timer);
@@ -170,7 +164,8 @@ onBeforeUnmount(() => {
       referrerpolicy="no-referrer" @error="$event.target.hidden = true">
     <h1>{{ isDemo ? 'Search Central County' : 'Search' }}</h1>
     <p v-if="isDemo">Search fictional university health content with the SearchStax Vue UI Kit.</p>
-    <SearchstaxWrapper
+    <p v-if="!connection.searchURL || !connection.searchAuth">Set the Select endpoint and read-only token in src/config.js to start searching.</p>
+    <SearchstaxWrapper v-else
       :searchURL="connection.searchURL" :searchAuth="connection.searchAuth" :model="connection.model"
       :language="connection.language" authType="token" suggesterURL="" v-bind="analytics"
       :router="{ enabled: false }" :afterSearch="afterSearch" @initialized="initialized"
@@ -183,7 +178,6 @@ onBeforeUnmount(() => {
           <button type="submit" class="search-starter__submit">{{ design.searchButtonText }}</button>
         </form>
       </div>
-      <div v-if="isDemo && design.showSmartAnswersSample" v-html="demo.answerSampleHTML"></div>
       <div ref="answerHost"></div>
       <p role="status">{{ status }}</p>
       <SearchstaxSortingWidget v-if="design.showSorting">

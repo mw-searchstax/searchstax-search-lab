@@ -185,6 +185,29 @@ async function run() {
     await page.getByLabel('Show language picker').uncheck();
     assert.equal(await page.locator('#lab-query').inputValue(), 'private-draft');
     await page.locator('[data-single-experience] [data-customer-answer-content]').filter({ hasText: 'Answer en/Main ' + query }).waitFor();
+    for (const format of ['javascript', 'react', 'vue', 'angular']) {
+      const [download] = await Promise.all([page.waitForEvent('download'), page.locator('[data-lab-download-starter="' + format + '"]').click()]);
+      const files = unzipSync(fs.readFileSync(await download.path()));
+      const prefix = format === 'javascript' ? '' : 'src/';
+      const config = Buffer.from(files[prefix + (prefix ? 'config.js' : 'search.js')]).toString();
+      assert.match(config, /"model": "Main"/);
+      assert.match(config, /"language": "en"/);
+      assert.match(config, /"searchURL": ""/);
+      assert.match(config, /"searchAuth": ""/);
+      const settings = JSON.parse(Buffer.from(files[prefix + 'feature-settings.js']).toString().match(/= ([\s\S]+);/)[1]);
+      assert.match(settings.endpointHash, /^[a-f0-9]{64}$/);
+      assert.deepEqual(settings.entitlements, { relatedSearches: true, smartAnswers: true });
+      assert.deepEqual(settings.relatedSearchesByLanguage, { en: true });
+      assert.deepEqual(settings.profiles, [{ language: 'en', profile: 'Main', smartAnswers: true }]);
+      for (const bytes of Object.values(files)) {
+        for (const value of [origin, selectToken, discoveryToken, query, 'private-draft']) assert.equal(Buffer.from(bytes).includes(value), false);
+      }
+      if (process.env.QA_ARTIFACT_DIR) {
+        const dir = path.join(process.env.QA_ARTIFACT_DIR, 'connectedSingle', format);
+        fs.mkdirSync(dir, { recursive: true });
+        await download.saveAs(path.join(dir, 'starter.zip'));
+      }
+    }
     const singleSort = page.locator('#lab-customer-sort');
     await singleSort.waitFor();
     assert.equal(await singleSort.locator('option:checked').textContent(), 'Relevance');

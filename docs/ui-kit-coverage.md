@@ -130,7 +130,7 @@ The ten widget families below follow the [Help Center catalog](https://support.s
 
 | Option | Build today | Destination, mechanism and proposed default | Prerequisite or review example | JS | React | Vue | Angular |
 |---|---|---|---|---|---|---|---|
-| Answer availability | Configured answers can stream, with sources. Samples live in the fictional experience. | Features · app and template. Follow both entitlement and profile configuration. | Answer endpoint and an answerable query. Handle empty/error responses. | Partial | Partial | Partial | Partial |
+| Answer availability | Configured answers can stream, with sources. Samples live in the fictional experience. | Features · app and template. Follow both entitlement and profile configuration. | Answer endpoint and an answerable query. Handle empty/error responses. | Wired | Wired | Wired | Wired |
 | Answer template | One heading and answer card. | Appearance · template and CSS. Start with current heading and card, make heading and treatment editable. | A streamed answer. | Gap | Gap | Gap | Gap |
 | Citation styling | Source links in the connected answer. | Appearance · CSS and template. Preserve link labels and order. | An answer with sources. | Gap | Gap | Gap | Gap |
 | `showMoreAfterWordCount` | No word-count control. | Features · native. Start at 100 words, allow adjustment. | A long answer. Check expand/collapse in each kit. | Gap | Gap | Gap | Gap |
@@ -202,7 +202,9 @@ The kits document three styling paths. Import the distributed theme, override se
 
 The last two rows refer to the profile-navigation exports. For ordinary exports, document-level card rendering still expects a usable result URL. The preview and profile-tab renderer can also show text-only results. Test this case before claiming full parity for the result-item template. Thumbnail treatments also differ between the ordinary starters and the profile-tab renderer.
 
-There’s a separate gap in the ordinary exports’ built-in demo paths. They can render sample Smart Answers, Related Searches and promotions even when that profile’s settings or response wouldn’t supply them. The connected integration and the shared profile-tab renderer have different conditions. Before adding those design controls, carry the selected source and its verified feature settings into the ordinary exports and test with a configured service and an unconfigured profile.
+All four ordinary exports carry the selected app’s language-scoped Related Searches setting and profile-scoped Smart Answers setting. The fictional demo supplies the sample terms and answer. Sample promotions in the ordinary built-in demo remain a separate coverage gap.
+
+Local download verification on November 24, 2026 covered JavaScript, React, Vue and Angular. Each ran **rehabilitation** against the live English SearchLabBuild profile, showed highlighted results and made zero Discovery or Answer requests. In an isolated connected-app fixture, each displayed returned terms and a streamed answer. Choosing a returned term submitted it to the same profile and language. Independent settings produced suggestions alone or an answer alone. Unknown settings, missing credentials or service endpoints, a different app, a different language, and absent entitlements suppressed the corresponding requests. The explicit fictional download in each framework displayed the fixed suggestions and answer for the same query.
 
 ## Template bindings for the developer handoff
 

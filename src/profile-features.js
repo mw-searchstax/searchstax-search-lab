@@ -1,6 +1,6 @@
 import { setupSearchSuggestions, sampleSuggestionSource } from './sample-suggestions.js';
 import { createCustomerSuggestionSource } from './customer-suggestions.js';
-import { setupRelatedSearches, relatedSource, demoRelatedSource } from './related-searches.js';
+import { setupRelatedSearches, relatedSource } from './related-searches.js';
 import { featureStatus } from './app-configuration.js';
 import { setupCustomerAnswers } from './customer-answers.js';
 import { createSampleExternalPromotion, updateSampleExternalPromotion, samplePromotionMode, samplePromotionQuery, applySampleIndexedPromotion } from './sample-promotions.js';
@@ -14,10 +14,17 @@ const spanishSuggestions = {
   },
 };
 const directoryRelated = {
-  en: { campus: ['campus clinic', 'public health'], 'campus clinic': ['campus', 'rehabilitation'] },
+  en: {
+    campus: ['campus clinic', 'public health'],
+    'campus clinic': ['campus', 'rehabilitation'],
+    rehabilitation: ['physical therapy', 'rehabilitation services'],
+    'physical therapy': ['rehabilitation', 'sports medicine'],
+    'rehabilitation services': ['rehabilitation', 'physical therapy'],
+    'sports medicine': ['physical therapy'],
+  },
   es: { campus: ['campus norte', 'campus sur'], rehabilitación: ['terapia física'], clínica: ['campus norte', 'campus sur'] },
 };
-const relatedEnglish = query => directoryRelated.en[query.toLowerCase()] ?? demoRelatedSource(query);
+const relatedEnglish = query => directoryRelated.en[query.toLowerCase()] ?? [];
 const relatedSpanish = query => directoryRelated.es[query.toLowerCase()] ?? [];
 
 export const spanishPromotionQuery = 'clínica de gripe del campus';

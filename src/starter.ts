@@ -19,6 +19,8 @@ import paginationFocusJS from './pagination-focus.js?raw';
 import contentLanguageJS from './content-language.js?raw';
 import webURLJS from './web-url.js?raw';
 import customerAnswersJS from './customer-answers.js?raw';
+import starterServicesJS from './starter-services.js?raw';
+import type { Entitlements, Profile } from './app-configuration';
 import starterAnswersJS from './starter-answers.js?raw';
 import thumbnailAltJS from './thumbnail-alt.js?raw';
 import promotionsCSS from './sample-promotions.css?raw';
@@ -69,6 +71,19 @@ import profileAngular from './starter-profile/search-app.ts.txt?raw';
 
 type StarterConnection = {
   experience?: ExperienceHandoff;
+  customer: boolean;
+  demoModel: string;
+  language: string;
+  featureSettings: {
+    endpoint?: string;
+    endpointHash?: string;
+    entitlements: Entitlements;
+    relatedSearchesByLanguage: Record<string, boolean | undefined>;
+    profiles: Partial<Profile>[];
+  };
+  questionURL: string;
+  relatedURL: string;
+  discoveryKey: string;
   searchURL: string;
   searchAuth: string;
   model: string;
@@ -199,7 +214,6 @@ function starterFeatures(design: DesignSettings) {
     showFilters: design.filters,
     showSorting: design.showSorting,
     showSuggestions: design.showSuggestions,
-    showSmartAnswersSample: design.showSmartAnswersSample,
     samplePromotions: design.samplePromotions,
     resultsPerPage: design.resultsPerPage,
     noResultsText: design.noResultsText,
@@ -292,33 +306,51 @@ Live results use the Search API. Tracking is off in this starter.
   return new Blob([new Uint8Array(archive)], { type: 'application/zip' });
 }
 
+function ordinaryConnection(connection: StarterConnection) {
+  return {
+    searchURL: connection.customer ? '' : connection.searchURL,
+    searchAuth: connection.customer ? '' : connection.searchAuth,
+    model: connection.model,
+    language: connection.language,
+    questionURL: connection.questionURL,
+    relatedURL: connection.relatedURL,
+    discoveryKey: connection.discoveryKey,
+    suggesterURL: '',
+    analyticsBaseUrl: '',
+    trackApiKey: '',
+  };
+}
+
+function ordinaryServiceFiles(connection: StarterConnection, prefix: string) {
+  const settings = 'export const featureSettings = ' + JSON.stringify(connection.featureSettings, null, 2) + ';\n';
+  return {
+    [prefix + 'feature-settings.js']: strToU8(settings),
+    [prefix + 'app-configuration.js']: strToU8(appConfigurationRuntime),
+    [prefix + 'starter-services.js']: strToU8(starterServicesJS),
+    [prefix + 'starter-answers.js']: strToU8(starterAnswersJS),
+  };
+}
+
 export function createStarterZip(
   design: DesignSettings,
   connection: StarterConnection,
   demoFacetLabels: Record<string, string>,
 ): Blob {
   if (connection.experience) return createProfileStarter('javascript', design, connection.experience);
-  const { kitURL, ...searchConfig } = connection;
   const config = JSON.stringify({
-    ...searchConfig,
-    language: 'en',
-    questionURL: '',
-    suggesterURL: '',
-    relatedURL: '',
-    discoveryKey: '',
-    analyticsBaseUrl: '',
-    trackApiKey: '',
+    ...ordinaryConnection(connection),
     ...starterFeatures(design),
   }, null, 2);
   const htmlValues = {
-    UI_KIT_URL: kitURL,
+    UI_KIT_URL: connection.kitURL,
+    HEADING: connection.customer ? 'Search' : 'Search Central County',
+    INITIAL_QUERY: connection.customer ? '' : 'rehabilitation',
     SEARCH_FIELD_TEXT: design.searchFieldText,
     SEARCH_BUTTON_TEXT: design.searchButtonText,
   };
   const html = htmlTemplate.replace(
-    /%%(UI_KIT_URL|SEARCH_FIELD_TEXT|SEARCH_BUTTON_TEXT|SMART_ANSWERS_SAMPLE|COMPANY_LOGO)%%/g,
-    (_, key: keyof typeof htmlValues | 'SMART_ANSWERS_SAMPLE' | 'COMPANY_LOGO') => {
-      if (key === 'SMART_ANSWERS_SAMPLE') return smartAnswersSampleHTML;
+    /%%(UI_KIT_URL|SEARCH_FIELD_TEXT|SEARCH_BUTTON_TEXT|HEADING|INITIAL_QUERY|COMPANY_LOGO)%%/g,
+    (_, key: keyof typeof htmlValues | 'COMPANY_LOGO') => {
       if (key === 'COMPANY_LOGO') {
         return design.logoURL
           ? `<img class="search-starter__logo" src="${escapeHTML(design.logoURL)}" alt="Company logo" referrerpolicy="no-referrer">`
@@ -332,9 +364,10 @@ export function createStarterZip(
   const javascript = jsTemplate
     .replace('%%STARTER_CONFIG%%', () => config)
     .replace('%%DEMO_FACETS%%', () => demoFacets)
-    .replace('%%DEMO_SORTING%%', () => JSON.stringify({ model: connection.model, options: demoSortOptions }, null, 2))
+    .replace('%%DEMO_SORTING%%', () => JSON.stringify({ model: connection.demoModel, options: demoSortOptions }, null, 2))
     .replace('%%DEMO_THUMBNAILS%%', () => JSON.stringify(thumbnailPaths, null, 2));
   const archive = zipSync({
+    ...ordinaryServiceFiles(connection, ''),
     'index.html': strToU8(html),
     'search.css': strToU8(renderStarterCSS(design)),
     'search.js': strToU8(javascript),
@@ -359,19 +392,15 @@ export function createStarterZip(
 
 function frameworkStarterFiles(
   design: DesignSettings,
-  { searchURL, searchAuth, model }: StarterConnection,
+  selected: StarterConnection,
   facetLabels: Record<string, string>,
 ) {
   const { paths, files } = collectThumbnails(design.showThumbnails);
   const demo = {
-    searchURL, searchAuth, model,
+    searchURL: selected.searchURL, model: selected.demoModel,
     language: 'en',
-    initialQuery: '',
-    suggesterURL: '',
-    questionURL: '',
     facetLabels,
     sortOptions: demoSortOptions,
-    answerSampleHTML: smartAnswersSampleHTML,
     thumbnailPaths: Object.fromEntries(Object.entries(paths).map(([url, path]) => [url, '/' + path])),
   };
   const settings = {
@@ -385,21 +414,9 @@ function frameworkStarterFiles(
 export const demo = ${JSON.stringify(demo, null, 2)};
 
 // Replace these values with your app’s browser-safe settings.
-export const connection = {
-  searchURL: demo.searchURL,
-  searchAuth: demo.searchAuth,
-  model: demo.model,
-  language: demo.language,
-  initialQuery: '',
-  suggesterURL: '',
-  questionURL: '',
-  relatedURL: '',
-  discoveryKey: '',
-  analyticsBaseUrl: '',
-  trackApiKey: '',
-  thumbnailAltField: '',
-  thumbnailsWithoutAltAreDecorative: false,
-};
+export const connection = ${JSON.stringify({
+  ...ordinaryConnection(selected), initialQuery: '', thumbnailAltField: '', thumbnailsWithoutAltAreDecorative: false,
+}, null, 2)};
 
 export const design = ${JSON.stringify(settings, null, 2)};
 `;
@@ -416,7 +433,7 @@ export const design = ${JSON.stringify(settings, null, 2)};
     'src/result-card.js': strToU8(cardRuntime),
     'src/starter-passages.js': strToU8(starterPassages),
     'src/customer-answers.js': strToU8(customerAnswersJS),
-    'src/starter-answers.js': strToU8(starterAnswersJS),
+    ...ordinaryServiceFiles(selected, 'src/'),
     'src/thumbnail-alt.js': strToU8(thumbnailAltJS),
     'src/customer-suggestions.js': strToU8(customerSuggestions),
     'src/promotions.js': strToU8(promotionsJS),
@@ -476,7 +493,7 @@ export function createAngularStarterZip(
     'src/index.html': strToU8(angularHTML),
     'src/main.ts': strToU8(angularEntry),
     'src/search-app.ts': strToU8(angularApp),
-    'src/search-app.html': strToU8(angularTemplate.replace('%%SMART_ANSWERS_SAMPLE%%', () => smartAnswersSampleHTML)),
+    'src/search-app.html': strToU8(angularTemplate),
     'public/.gitkeep': new Uint8Array(0),
     ...frameworkStarterFiles(design, connection, facetLabels),
   });

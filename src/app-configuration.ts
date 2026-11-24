@@ -60,6 +60,14 @@ export function readAppConfiguration(text: string, endpoint: string): AppConfigu
   return { profiles, entitlements: { relatedSearches: flag(features.relatedSearches), smartAnswers: flag(features.smartAnswers) } };
 }
 
+// Bind exported settings to the original app without including a customer's Select URL.
+export async function endpointFingerprint(endpoint: string) {
+  if (!globalThis.crypto?.subtle) return '';
+  const bytes = new TextEncoder().encode(endpoint.trim().replace(/\/$/, ''));
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  return Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
+}
+
 export function featureStatus(entitled?: boolean, configured?: boolean) {
   if (entitled === false) return 'Unavailable';
   if (configured === false) return 'Off';
