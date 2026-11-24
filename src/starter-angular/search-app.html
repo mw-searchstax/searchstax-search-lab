@@ -1,3 +1,9 @@
+<ng-template #passage let-parts>
+  @for (part of parts; track $index) {
+    @if (part.matched) {<mark class="search-result-hit">{{ part.text }}</mark>}
+    @else {<ng-container>{{ part.text }}</ng-container>}
+  }
+</ng-template>
 <main class="search-starter">
   @if (design.logoURL) {
     <img class="search-starter__logo" [src]="design.logoURL" alt="Company logo"
@@ -112,10 +118,12 @@
                     <img class="search-starter__result-thumbnail" [src]="item.previewThumbnail"
                       [alt]="item.previewThumbnailAlt" [attr.lang]="resultLanguage" loading="lazy" referrerpolicy="no-referrer">
                   }
-                  <h2 [attr.lang]="resultLanguage"><a [href]="item.url" [attr.data-result-id]="item.uniqueId" referrerpolicy="no-referrer">{{ item.title || item.url }}</a></h2>
-                  @if (item.description) {
-                    <p class="search-starter__result-description" [attr.lang]="resultLanguage">{{ item.description }}</p>
+                  @if (item.ribbonParts.length) {<span class="searchstax-search-result-ribbon"><ng-container [ngTemplateOutlet]="passage" [ngTemplateOutletContext]="{ $implicit: item.ribbonParts }" /></span>}
+                  <h2 [attr.lang]="resultLanguage"><a [href]="item.url" [attr.data-result-id]="item.uniqueId" referrerpolicy="no-referrer"><ng-container [ngTemplateOutlet]="passage" [ngTemplateOutletContext]="{ $implicit: item.titleParts }" /></a></h2>
+                  @if (item.descriptionParts.length) {
+                    <p class="search-starter__result-description" [attr.lang]="resultLanguage"><ng-container [ngTemplateOutlet]="passage" [ngTemplateOutletContext]="{ $implicit: item.descriptionParts }" /></p>
                   }
+                  @for (field of item.otherFields; track $index) {<p>{{ field.label ? field.label + ': ' : '' }}<ng-container [ngTemplateOutlet]="passage" [ngTemplateOutletContext]="{ $implicit: field.parts }" /></p>}
                 </article>
               }
             </div>

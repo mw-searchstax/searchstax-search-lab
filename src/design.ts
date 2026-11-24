@@ -21,6 +21,9 @@ const CORNER_RADII = { standard: '5px', square: '0px', rounded: '14px' };
 export const PAGE_SIZES = [5, 10, 20] as const;
 
 export type DesignSettings = {
+  highlightStyle: 'default' | 'bold' | 'italic' | 'color' | 'plain';
+  highlightText: string;
+  highlightBackground: string;
   previewSource: 'app' | 'fictional';
   layout: 'list' | 'cards';
   resultSpacing: keyof typeof RESULT_GAPS;
@@ -50,6 +53,9 @@ export type DesignSettings = {
 };
 
 export const DEFAULT_DESIGN: Readonly<DesignSettings> = {
+  highlightStyle: 'default',
+  highlightText: '#202020',
+  highlightBackground: '#ffec99',
   previewSource: 'app',
   layout: 'list',
   resultSpacing: 'standard',
@@ -102,6 +108,10 @@ export function isHexColor(value: string): boolean {
   return /^#[\da-f]{6}$/i.test(value);
 }
 
+export function readHighlightStyle(value: string | null): DesignSettings['highlightStyle'] {
+  return value === 'bold' || value === 'italic' || value === 'color' || value === 'plain' ? value : 'default';
+}
+
 export function readCorners(value: string | null): DesignSettings['corners'] {
   return value !== null && Object.hasOwn(CORNER_RADII, value)
     ? value as DesignSettings['corners'] : DEFAULT_DESIGN.corners;
@@ -127,6 +137,9 @@ export function readDesignParams(params: URLSearchParams, allowFictionalPreview 
   const background = '#' + (params.get('lab_background') ?? '').toLowerCase();
 
   return {
+    highlightStyle: readHighlightStyle(params.get('lab_highlight')),
+    highlightText: readHighlightColor(params.get('lab_hit_text'), DEFAULT_DESIGN.highlightText),
+    highlightBackground: readHighlightColor(params.get('lab_hit_bg'), DEFAULT_DESIGN.highlightBackground),
     previewSource: allowFictionalPreview && params.get('lab_source') === 'fictional' ? 'fictional' : 'app',
     layout: isLayout(layout) ? layout : DEFAULT_DESIGN.layout,
     resultSpacing: isResultSpacing(spacing) ? spacing : DEFAULT_DESIGN.resultSpacing,
@@ -157,6 +170,15 @@ export function readDesignParams(params: URLSearchParams, allowFictionalPreview 
 }
 
 export function writeDesignParams(params: URLSearchParams, design: DesignSettings): void {
+  if (design.highlightStyle !== 'default') params.set('lab_highlight', design.highlightStyle);
+  else params.delete('lab_highlight');
+  for (const [key, value, fallback] of [
+    ['lab_hit_text', design.highlightText, DEFAULT_DESIGN.highlightText],
+    ['lab_hit_bg', design.highlightBackground, DEFAULT_DESIGN.highlightBackground],
+  ]) {
+    if (value !== fallback) params.set(key, value.slice(1));
+    else params.delete(key);
+  }
   if (design.previewSource === 'fictional') params.set('lab_source', 'fictional');
   else params.delete('lab_source');
   if (design.languagePicker || design.profileTabs) params.set('lab_languages', design.languagePicker ? 'on' : 'off');
@@ -206,13 +228,27 @@ export function writeDesignParams(params: URLSearchParams, design: DesignSetting
   }
 }
 
-function contrastText(color: string) {
+function readHighlightColor(value: string | null, fallback: string) {
+  return value && isHexColor('#' + value) ? '#' + value.toLowerCase() : fallback;
+}
+
+function relativeLuminance(color: string) {
   const channels = [1, 3, 5].map(index => {
     const channel = parseInt(color.slice(index, index + 2), 16) / 255;
     return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
   });
   const [red, green, blue] = channels;
-  const luminance = red * 0.2126 + green * 0.7152 + blue * 0.0722;
+  return red * 0.2126 + green * 0.7152 + blue * 0.0722;
+}
+
+export function contrastRatio(foreground: string, background: string) {
+  const a = relativeLuminance(foreground);
+  const b = relativeLuminance(background);
+  return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+}
+
+function contrastText(color: string) {
+  const luminance = relativeLuminance(color);
   const contrastOnBlack = (luminance + 0.05) / 0.05;
   const contrastOnWhite = 1.05 / (luminance + 0.05);
   return contrastOnBlack >= contrastOnWhite ? '#000000' : '#ffffff';
@@ -222,6 +258,15 @@ export function designVariables(design: DesignSettings) {
   const topStyle = design.filterPlacement === 'top' ? design.topFilterStyle : 'list';
   const darkBackground = contrastText(design.background) === '#ffffff';
   return {
+    '--search-hit-weight': design.highlightStyle === 'bold' ? 'bold' : 'inherit',
+    '--search-hit-style': design.highlightStyle === 'italic' ? 'italic' : 'inherit',
+    '--search-hit-ink': design.highlightStyle === 'color'
+      ? (contrastRatio(design.highlightText, design.highlightBackground) >= 4.5 ? design.highlightText : contrastText(design.highlightBackground))
+      : design.highlightStyle === 'default' ? 'MarkText' : 'inherit',
+    '--search-hit-background': design.highlightStyle === 'color' ? design.highlightBackground
+      : design.highlightStyle === 'default' ? 'Mark' : 'transparent',
+    '--search-hit-forced-ink': ['color', 'default'].includes(design.highlightStyle) ? 'HighlightText' : 'inherit',
+    '--search-hit-forced-background': ['color', 'default'].includes(design.highlightStyle) ? 'Highlight' : 'transparent',
     '--search-accent': design.color,
     '--search-accent-text': contrastText(design.color),
     '--search-background': design.background,

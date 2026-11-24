@@ -4,6 +4,7 @@
   "relatedSearchesByLanguage": { "en": false },
   "profiles": [
     { "language": "en", "profile": "Main Profile", "smartAnswers": false, "highlighting": false },
+    { "language": "en", "profile": "SearchLabBuild", "smartAnswers": false, "highlighting": true },
     { "language": "en", "profile": "SearchLabAfter", "smartAnswers": false, "highlighting": false },
     { "language": "en", "profile": "SearchLabRanking", "smartAnswers": false, "highlighting": false }
   ]

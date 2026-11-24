@@ -13,7 +13,7 @@ export function mapResultCard(doc: Record<string, unknown>, fields: ResultField[
   const card: ResultCard = { url: '', thumbnail: '', values: [], promoted: doc['[elevated]'] === true };
   const mapped = new Set<string>();
   for (const field of fields) {
-    if (!field || typeof field.name !== 'string' || !Object.hasOwn(doc, field.name)) continue;
+    if (!field || typeof field.name !== 'string' || (!Object.hasOwn(doc, field.name) && !Object.hasOwn(highlights ?? {}, field.name))) continue;
     const role = field.result_card ?? '';
     if (role && mapped.has(role)) continue;
     mapped.add(role);
@@ -61,16 +61,28 @@ export function resultMappingNotice(mappingsKnown: boolean, displayed: number, t
   return !displayed && total > 0 ? 'No configured Results Fields have a displayable value on this page.' : '';
 }
 
-// Preserve highlight boundaries without parsing result content as HTML.
+// Only the search service’s bare emphasis tags are markup. Everything else is text.
+export function passageParts(value: string, highlighted = false) {
+  if (!highlighted) return [{ text: value, matched: false }];
+  let depth = 0;
+  const parts: { text: string; matched: boolean }[] = [];
+  for (const token of value.split(/(<\/?(?:em|mark|b|strong)>)/ig)) {
+    if (!token) continue;
+    if (/^<(?:em|mark|b|strong)>$/i.test(token)) depth++;
+    else if (/^<\/(?:em|mark|b|strong)>$/i.test(token)) depth = Math.max(0, depth - 1);
+    else parts.push({ text: token, matched: depth > 0 });
+  }
+  return parts;
+}
+
 function appendValue(node: HTMLElement, field: CardValue) {
-  if (!field.highlighted) { node.append(field.value); return; }
-  let highlight: HTMLElement | null = null;
-  for (const part of field.value.split(/(<\/?(?:em|mark|b|strong)>)/ig)) {
-    if (/^<(em|mark|b|strong)>$/i.test(part)) {
-      highlight = document.createElement('mark');
-      node.append(highlight);
-    } else if (/^<\/(em|mark|b|strong)>$/i.test(part)) highlight = null;
-    else (highlight || node).append(part);
+  for (const part of passageParts(field.value, field.highlighted)) {
+    if (part.matched) {
+      const mark = document.createElement('mark');
+      mark.className = 'search-result-hit';
+      mark.textContent = part.text;
+      node.append(mark);
+    } else node.append(part.text);
   }
 }
 

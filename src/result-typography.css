@@ -5,3 +5,33 @@
   --search-result-description-size: .875rem;
   --search-result-description-line-height: 1.5;
 }
+
+:where(.search-starter, .search-lab[data-lab-view='design'] #lab-preview) .search-result-hit {
+  color: var(--search-hit-ink, MarkText);
+  background-color: var(--search-hit-background, Mark);
+  font-weight: var(--search-hit-weight, inherit);
+  font-style: var(--search-hit-style, inherit);
+}
+
+@media (forced-colors: active) {
+  :where(.search-starter, .search-lab[data-lab-view='design'] #lab-preview) .search-result-hit {
+    forced-color-adjust: none;
+    color: var(--search-hit-forced-ink, HighlightText);
+    background-color: var(--search-hit-forced-background, Highlight);
+  }
+}
+
+:is(.mapped-result-card, .search-starter .searchstax-search-result) .searchstax-search-result-ribbon {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin-block-end: .5rem;
+  padding: .15rem .6rem;
+  border-inline-start: .25rem solid currentColor;
+  border-radius: 0 .2rem .2rem 0;
+  background: var(--search-accent, #33475a);
+  color: var(--search-accent-text, #fff);
+  font-size: .8125rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}

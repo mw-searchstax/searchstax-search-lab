@@ -1,9 +1,10 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, computed, signal } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { SearchstudioUxAngularModule } from '@searchstax-inc/searchstudio-ux-angular';
 import type { IExternalPromotion, ISearchstaxParsedResult, ISearchstaxSearchResponse, ISearchstaxSearchSortingData, Searchstax } from '@searchstax-inc/searchstudio-ux-js';
 import { connection, demo, design } from './config.js';
 import { contentLanguageTag } from './content-language.js';
-import { demoResultText, demoResultTitle } from './demo-content.js';
+import { starterPassages } from './starter-passages.js';
 import { setupStarterAnswers } from './starter-answers.js';
 import { thumbnailAlt } from './thumbnail-alt.js';
 import { createCustomerSuggestionSource } from './customer-suggestions.js';
@@ -25,13 +26,11 @@ function publicLink(value: unknown) {
   return '';
 }
 
-function plainText(value: unknown) {
-  return typeof value === 'string' ? value.replace(/<\/?(?:em|b|strong)>/gi, '') : '';
-}
+
 
 @Component({
   selector: 'search-app',
-  imports: [SearchstudioUxAngularModule],
+  imports: [NgTemplateOutlet, SearchstudioUxAngularModule],
   templateUrl: './search-app.html',
 })
 export class SearchApp implements AfterViewInit, OnDestroy {
@@ -136,13 +135,13 @@ export class SearchApp implements AfterViewInit, OnDestroy {
     window.clearTimeout(this.timer);
     this.query.set(response?.responseHeader?.params?.q ?? '');
     this.status.set(total + (total === 1 ? ' result' : ' results'));
+    const passages = starterPassages(response, this.isDemo);
     const results = items.flatMap(item => {
       const url = publicLink(item.url);
       return url ? [{
         ...item,
         url,
-        title: this.isDemo ? demoResultTitle(item.title) : plainText(item.title),
-        description: this.isDemo ? demoResultText(plainText(item.description)) : plainText(item.description),
+        ...passages(item),
         previewThumbnail: design.showThumbnails ? (this.isDemo ? thumbnailPaths[url] : publicLink(item.thumbnail)) : '',
         previewThumbnailAlt: this.isDemo ? '' : thumbnailAlt(
           item.allFields,

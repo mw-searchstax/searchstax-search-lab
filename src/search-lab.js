@@ -2,6 +2,8 @@ import {
   DEFAULT_DESIGN,
   PAGE_SIZES,
   designVariables,
+  contrastRatio,
+  readHighlightStyle,
   isHexColor,
   isFont,
   isLayout,
@@ -174,6 +176,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
   var config = {
     searchURL: root.getAttribute('data-search-url') || '',
     searchAuth: root.getAttribute('data-search-credential') || '',
+    build: root.dataset.buildProfile || root.dataset.beforeProfile,
     before: root.getAttribute('data-before-profile') || '',
     after: root.getAttribute('data-after-profile') || '',
     rankingAfter: root.getAttribute('data-ranking-profile') || '',
@@ -183,6 +186,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
   };
   const builtInApp = {
     ...demoConnection,
+    profile: config.build,
     answerEndpoint: readAnswerEndpoint(root.dataset.answerEndpoint || ''),
     relatedURL: readCustomerEndpoint(root.dataset.relatedEndpoint || '', 'related-search'),
     discoveryKey: root.dataset.discoveryKey || '',
@@ -207,6 +211,9 @@ import { setupPaginationFocus } from './pagination-focus.js';
   var relatedToggle = root.querySelector('#lab-related-toggle');
   var relatedPlacement = root.querySelector('#lab-related-placement');
   var topFilterStyle = root.querySelector('#lab-top-filter-style');
+  const hitStyle = root.querySelector('#lab-hit-style');
+  const hitText = root.querySelector('#lab-hit-text');
+  const hitBackground = root.querySelector('#lab-hit-bg');
   var filterPlacement = root.querySelector('#lab-filter-placement');
   var connectedRelatedSource;
   let builtInRelatedSource;
@@ -281,8 +288,8 @@ import { setupPaginationFocus } from './pagination-focus.js';
   let includedProfiles = [];
   let choiceLanguage = demoProfiles[0].language;
   let selectedSettings;
-  function showProfileSettings(profile, entitlements, summary) {
-    selectedSettings = { profile, entitlements };
+  function showProfileSettings(profile, entitlements, summary, highlighting = profile?.highlighting) {
+    selectedSettings = { profile, entitlements, highlighting };
     if (settingsSummary) {
       settingsSummary.textContent = summary ?? profileStatus(entitlements, profile, customerPreview?.highlighting, customerPreview?.connection);
     }
@@ -299,6 +306,12 @@ import { setupPaginationFocus } from './pagination-focus.js';
     if (settingsSummary && builtIn) {
       settingsSummary.textContent = profileStatus(entitlements ?? {}, profile, profile?.highlighting ?? builtInHighlighting, builtInApp);
     }
+    const highlighting = builtIn ? profile?.highlighting ?? builtInHighlighting
+      : experiencePanel.hidden ? customerPreview?.highlighting : selectedSettings?.highlighting;
+    root.querySelector('#lab-hit-hint').textContent = highlighting === false
+      ? 'Enable hit highlighting in this profile’s Results Fields to see matched passages.'
+      : highlighting === true ? 'Search for a matching term to see its emphasis in the results.'
+      : 'Highlighting settings are unknown for this profile. A search response can supply them.';
     const liveProfile = builtIn ? builtInApp.profile : profile?.profile;
     sourceLabel.textContent = !connected && !fixture && root.dataset.labView === 'design'
       ? [root.dataset.searchAppName || 'Live app', liveProfile].filter(Boolean).join(' · ') : 'Fictional demo';
@@ -320,12 +333,12 @@ import { setupPaginationFocus } from './pagination-focus.js';
   }
   experiencePanel.addEventListener('profile-settings', event => {
     if (experiencePanel.hidden) return;
-    const { profile, entitlements, summary } = event.detail;
+    const { profile, entitlements, summary, highlighting } = event.detail;
     if (choiceLanguage !== profile.language) {
       choiceLanguage = profile.language;
       refreshTabChoices();
     }
-    showProfileSettings(profile, entitlements, summary);
+    showProfileSettings(profile, entitlements, summary, highlighting);
   });
   function refreshTabChoices() {
     const choices = availableProfiles.filter(profile => profile.language === choiceLanguage);
@@ -461,7 +474,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
         else initialize();
       }
     }
-  });
+  }, syncFeatureControls);
 
   // The credential is for the public, read-only demo search only. Remove it
   // from the DOM and only include it in the runnable demo starter.
@@ -527,6 +540,14 @@ import { setupPaginationFocus } from './pagination-focus.js';
     if (!design.showSorting) sortOrder.value = '';
     colorInput.value = design.color;
     backgroundInput.value = design.background;
+    hitStyle.value = design.highlightStyle;
+    hitText.value = design.highlightText;
+    hitBackground.value = design.highlightBackground;
+    root.querySelector('#lab-hit-colors').hidden = design.highlightStyle !== 'color';
+    const ratio = contrastRatio(design.highlightText, design.highlightBackground);
+    root.querySelector('#lab-hit-contrast').textContent = ratio >= 4.5
+      ? 'Text contrast ' + ratio.toFixed(2) + ':1.'
+      : 'Selected colors have ' + ratio.toFixed(2) + ':1 contrast. An accessible text color is used until the pair reaches 4.5:1.';
     cornersInput.value = design.corners;
     window.clearTimeout(logoTimer);
     logoInput.value = design.logoURL;
@@ -756,7 +777,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
       var connection = {
         searchURL: config.searchURL,
         searchAuth: config.searchAuth,
-        model: config.before,
+        model: config.build,
         experience: !experiencePanel.hidden ? experiencePreview.handoff() : undefined,
         kitURL: document.querySelector('#searchstax-ui-kit').src,
       };
@@ -835,7 +856,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
     }
     var current = search.dataLayer.searchObject;
     var compareRanking = workspaceMode === 'examples' && state.scenario === 'ranking' && state.phase === 'after';
-    var model = workspaceMode !== 'examples' || state.phase === 'before' ? config.before
+    var model = workspaceMode === 'design' ? config.build : state.phase === 'before' ? config.before
       : (compareRanking ? config.rankingAfter : config.after);
     if (!model || (compareRanking && (model === config.before || model === config.after))) {
       showUnavailable('The Ranking example hasn’t been configured yet.');
@@ -898,10 +919,6 @@ import { setupPaginationFocus } from './pagination-focus.js';
     const mapped = cards.flatMap((card, index) => {
       if (card.url && !isDemoResultURL(card.url)) return [];
       if (!card.url && !card.thumbnail && !card.values.length) return [];
-      for (const value of card.values) {
-        if (value.role === 'title' && !value.highlighted) value.value = demoResultTitle(value.value);
-        else value.value = demoResultText(value.value);
-      }
       const body = document.createElement('div');
       appendResultCard(body, card);
       const link = body.querySelector('a');
@@ -943,7 +960,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
       search = new BuildSearch();
       search.initialize({
         language: 'en',
-        model: config.before,
+        model: workspaceMode === 'design' ? config.build : config.before,
         searchURL: config.searchURL,
         searchAuth: config.searchAuth,
         authType: 'token',
@@ -1031,7 +1048,11 @@ import { setupPaginationFocus } from './pagination-focus.js';
       updateDesign();
     });
   });
-  for (const [input, field] of [[colorInput, 'color'], [backgroundInput, 'background']]) {
+  hitStyle.addEventListener('change', function () {
+    design.highlightStyle = readHighlightStyle(hitStyle.value);
+    updateDesign();
+  });
+  for (const [input, field] of [[colorInput, 'color'], [backgroundInput, 'background'], [hitText, 'highlightText'], [hitBackground, 'highlightBackground']]) {
     input.addEventListener('input', function () {
       if (isHexColor(input.value)) design[field] = input.value;
       updateDesign();

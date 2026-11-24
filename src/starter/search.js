@@ -4,7 +4,7 @@ import { getAnalyticsSettings, setupResultTracking } from './result-tracking.js'
 import { setupStarterRelated } from './related-searches.js';
 import { setupPaginationFocus } from './pagination-focus.js';
 import { contentLanguageTag } from './content-language.js';
-import { demoResultText, demoResultTitle } from './demo-content.js';
+import { starterPassages } from './starter-passages.js';
 import { readCustomerEndpoint, webURL } from './web-url.js';
 import { readAnswerEndpoint, setupCustomerAnswers } from './customer-answers.js';
 import {
@@ -215,21 +215,21 @@ try {
       afterSearch(items, response) {
         const total = response?.response?.numFound;
         if (typeof total !== 'number') return [];
+        const passages = starterPassages(response, usesDemoProfile);
         const results = items.filter(item => /^https?:\/\//i.test(item.url));
         if (!usesDemoProfile) {
           if (response !== promotionResponse) {
             promotionResponse = response;
             renderExternalPromotions(response.externalLinks);
           }
-          return results.map(item => ({ ...item, indexedPromotion: item.promoted === true, resultLanguage }));
+          return results.map(item => ({ ...item, ...passages(item), indexedPromotion: item.promoted === true, resultLanguage }));
         }
         const mode = samplePromotionMode(response.responseHeader?.params?.q, config.samplePromotions);
         updateSampleExternalPromotion(externalPromotions, mode);
         return applySampleIndexedPromotion(
           results.map(item => ({
             ...item,
-            title: demoResultTitle(item.title),
-            description: demoResultText(item.description),
+            ...passages(item),
             demoThumbnail: demoThumbnails[item.url],
           })),
           response,
@@ -266,6 +266,7 @@ try {
     });
   }
 
+  const passageMarkup = '{{#matched}}<mark class="search-result-hit">{{text}}</mark>{{/matched}}{{^matched}}{{text}}{{/matched}}';
   search.addSearchResultsWidget('search-results', {
     renderMethod: 'pagination',
     resultsPerPage: config.resultsPerPage,
@@ -275,7 +276,15 @@ try {
         searchResultsContainerId: 'search-result-list',
       },
       searchResultTemplate: {
-        template: '<article class="searchstax-search-result">{{#sampleIndexedPromotion}}<span class="sample-indexed-promotion">Sample indexed promotion</span>{{/sampleIndexedPromotion}}{{#indexedPromotion}}<span class="search-promotion-marker">Promoted</span>{{/indexedPromotion}}{{#demoThumbnail}}<img class="search-starter__result-thumbnail" src="{{demoThumbnail}}" alt="" width="384" height="216" loading="lazy">{{/demoThumbnail}}<h2{{#resultLanguage}} lang="{{resultLanguage}}"{{/resultLanguage}}><a href="{{url}}" data-result-id="{{uniqueId}}">{{title}}</a></h2><p class="search-starter__result-description"{{#resultLanguage}} lang="{{resultLanguage}}"{{/resultLanguage}}>{{description}}</p></article>',
+        template: `<article class="searchstax-search-result">
+          {{#sampleIndexedPromotion}}<span class="sample-indexed-promotion">Sample indexed promotion</span>{{/sampleIndexedPromotion}}
+          {{#indexedPromotion}}<span class="search-promotion-marker">Promoted</span>{{/indexedPromotion}}
+          {{#demoThumbnail}}<img class="search-starter__result-thumbnail" src="{{demoThumbnail}}" alt="" width="384" height="216" loading="lazy">{{/demoThumbnail}}
+          {{#hasRibbon}}<span class="searchstax-search-result-ribbon">{{#ribbonParts}}${passageMarkup}{{/ribbonParts}}</span>{{/hasRibbon}}
+          <h2{{#resultLanguage}} lang="{{resultLanguage}}"{{/resultLanguage}}><a href="{{url}}" data-result-id="{{uniqueId}}">{{#titleParts}}${passageMarkup}{{/titleParts}}</a></h2>
+          <p class="search-starter__result-description"{{#resultLanguage}} lang="{{resultLanguage}}"{{/resultLanguage}}>{{#descriptionParts}}${passageMarkup}{{/descriptionParts}}</p>
+          {{#otherFields}}<p>{{#label}}{{label}}: {{/label}}{{#parts}}${passageMarkup}{{/parts}}</p>{{/otherFields}}
+        </article>`,
       },
       noSearchResultTemplate: { template: ' ' },
     },

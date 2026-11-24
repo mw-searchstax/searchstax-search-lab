@@ -8,7 +8,7 @@ import {
 } from '@searchstax-inc/searchstudio-ux-react';
 import { connection, demo, design } from './config.js';
 import { contentLanguageTag } from './content-language.js';
-import { demoResultText, demoResultTitle } from './demo-content.js';
+import { starterPassages } from './starter-passages.js';
 import { setupStarterAnswers } from './starter-answers.js';
 import { thumbnailAlt } from './thumbnail-alt.js';
 import { createCustomerSuggestionSource } from './customer-suggestions.js';
@@ -31,8 +31,9 @@ function publicLink(value) {
   return '';
 }
 
-function plainText(value) {
-  return typeof value === 'string' ? value.replace(/<\/?(?:em|b|strong)>/gi, '') : '';
+function renderParts(parts) {
+  return parts.map((part, index) => part.matched
+    ? <mark className="search-result-hit" key={index}>{part.text}</mark> : part.text);
 }
 
 function resultCards(results) {
@@ -45,8 +46,10 @@ function resultCards(results) {
           {item.previewThumbnail && item.previewThumbnailAlt !== null && (
             <img className="search-starter__result-thumbnail" src={item.previewThumbnail} alt={item.previewThumbnailAlt} lang={resultLanguage} loading="lazy" referrerPolicy="no-referrer" />
           )}
-          <h2 lang={resultLanguage}><a href={item.url} data-result-id={item.uniqueId} referrerPolicy="no-referrer">{item.title || item.url}</a></h2>
-          {item.description && <p className="search-starter__result-description" lang={resultLanguage}>{item.description}</p>}
+          {item.ribbonParts.length > 0 && <span className="searchstax-search-result-ribbon">{renderParts(item.ribbonParts)}</span>}
+          <h2 lang={resultLanguage}><a href={item.url} data-result-id={item.uniqueId} referrerPolicy="no-referrer">{renderParts(item.titleParts)}</a></h2>
+          {item.descriptionParts.length > 0 && <p className="search-starter__result-description" lang={resultLanguage}>{renderParts(item.descriptionParts)}</p>}
+          {item.otherFields.map((field, index) => <p key={index}>{field.label && field.label + ': '}{renderParts(field.parts)}</p>)}
         </article>
       ))}
     </div>
@@ -236,13 +239,13 @@ export default function SearchApp() {
     const end = Math.min(total, start + (response.response.docs?.length ?? design.resultsPerPage));
     setSummary({ query, start, end, total });
     setStatus(total + (total === 1 ? ' result' : ' results'));
+    const passages = starterPassages(response, isDemo);
     const results = items.flatMap((item) => {
       const url = publicLink(item.url);
       return url ? [{
         ...item,
         url,
-        title: isDemo ? demoResultTitle(item.title) : plainText(item.title),
-        description: isDemo ? demoResultText(plainText(item.description)) : plainText(item.description),
+        ...passages(item),
         previewThumbnail: design.showThumbnails ? (isDemo ? demo.thumbnailPaths[url] : publicLink(item.thumbnail)) : '',
         previewThumbnailAlt: isDemo ? '' : thumbnailAlt(
           item.allFields,

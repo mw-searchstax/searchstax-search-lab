@@ -1,5 +1,5 @@
 <script setup>
-import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
+import { computed, h, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import {
   SearchstaxExternalPromotionsWidget,
   SearchstaxFacetsWidget,
@@ -10,7 +10,7 @@ import {
 } from '@searchstax-inc/searchstudio-ux-vue';
 import { connection, demo, design } from './config.js';
 import { contentLanguageTag } from './content-language.js';
-import { demoResultText, demoResultTitle } from './demo-content.js';
+import { starterPassages } from './starter-passages.js';
 import { setupStarterAnswers } from './starter-answers.js';
 import { thumbnailAlt } from './thumbnail-alt.js';
 import { createCustomerSuggestionSource } from './customer-suggestions.js';
@@ -19,6 +19,10 @@ import { getAnalyticsSettings, setupResultTracking } from './result-tracking.js'
 import { setupStarterRelated } from './related-searches.js';
 import { setupPaginationFocus } from './pagination-focus.js';
 import { applySampleIndexedPromotion, sampleExternalPromotion, samplePromotionMode, samplePromotionQuery } from './promotions.js';
+
+function Passage({ parts }) {
+  return parts.map(part => part.matched ? h('mark', { class: 'search-result-hit' }, part.text) : part.text);
+}
 
 const analytics = getAnalyticsSettings(connection);
 const resultLanguage = contentLanguageTag(connection.language);
@@ -47,9 +51,7 @@ function publicLink(value) {
   return '';
 }
 
-function plainText(value) {
-  return typeof value === 'string' ? value.replace(/<\/?(?:em|b|strong)>/gi, '') : '';
-}
+
 
 function afterSearch(items, response) {
   const total = response?.response?.numFound;
@@ -57,13 +59,13 @@ function afterSearch(items, response) {
   window.clearTimeout(timer);
   query.value = response.responseHeader?.params?.q ?? '';
   status.value = total + (total === 1 ? ' result' : ' results');
+  const passages = starterPassages(response, isDemo);
   const results = items.flatMap(item => {
     const url = publicLink(item.url);
     return url ? [{
       ...item,
       url,
-      title: isDemo ? demoResultTitle(item.title) : plainText(item.title),
-      description: isDemo ? demoResultText(plainText(item.description)) : plainText(item.description),
+      ...passages(item),
       previewThumbnail: design.showThumbnails ? (isDemo ? demo.thumbnailPaths[url] : publicLink(item.thumbnail)) : '',
       previewThumbnailAlt: isDemo ? '' : thumbnailAlt(
         item.allFields,
@@ -239,8 +241,10 @@ onBeforeUnmount(() => {
                   <span v-if="!isDemo && item.promoted" class="search-promotion-marker">Promoted</span>
                   <img v-if="item.previewThumbnail && item.previewThumbnailAlt !== null" class="search-starter__result-thumbnail" :src="item.previewThumbnail"
                     :alt="item.previewThumbnailAlt" :lang="resultLanguage" loading="lazy" referrerpolicy="no-referrer">
-                  <h2 :lang="resultLanguage"><a :href="item.url" :data-result-id="item.uniqueId" referrerpolicy="no-referrer">{{ item.title || item.url }}</a></h2>
-                  <p v-if="item.description" class="search-starter__result-description" :lang="resultLanguage">{{ item.description }}</p>
+                  <span v-if="item.ribbonParts.length" class="searchstax-search-result-ribbon"><Passage :parts="item.ribbonParts" /></span>
+                  <h2 :lang="resultLanguage"><a :href="item.url" :data-result-id="item.uniqueId" referrerpolicy="no-referrer"><Passage :parts="item.titleParts" /></a></h2>
+                  <p v-if="item.descriptionParts.length" class="search-starter__result-description" :lang="resultLanguage"><Passage :parts="item.descriptionParts" /></p>
+                  <p v-for="(field, i) in item.otherFields" :key="i">{{ field.label ? field.label + ': ' : '' }}<Passage :parts="field.parts" /></p>
                 </article>
               </div>
             </template>

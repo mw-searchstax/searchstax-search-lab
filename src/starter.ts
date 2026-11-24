@@ -53,6 +53,7 @@ import profileFeaturesJS from './profile-features.js?raw';
 import designRuntime from './design.ts?starter-js';
 import sortRuntime from './demo-sorting.ts?starter-js';
 import recoveryRuntime from './search-recovery.ts?starter-js';
+import starterPassages from './starter-passages.js?raw';
 import cardRuntime from './result-card.ts?starter-js';
 import appConfigurationRuntime from './app-configuration.ts?starter-js';
 import profileRuntime from './profile-experiences.ts?starter-js';
@@ -340,6 +341,8 @@ export function createStarterZip(
     'demo-content.js': strToU8(demoContentJS),
     'content-language.js': strToU8(contentLanguageJS),
     'web-url.js': strToU8(webURLJS),
+    'result-card.js': strToU8(cardRuntime),
+    'starter-passages.js': strToU8(starterPassages),
     'customer-answers.js': strToU8(customerAnswersJS),
     'customer-suggestions.js': strToU8(customerSuggestions),
     'suggestions.js': strToU8(suggestionsJS),
@@ -410,6 +413,8 @@ export const design = ${JSON.stringify(settings, null, 2)};
     'src/pagination-focus.js': strToU8(paginationFocusJS),
     'src/content-language.js': strToU8(contentLanguageJS),
     'src/web-url.js': strToU8(webURLJS),
+    'src/result-card.js': strToU8(cardRuntime),
+    'src/starter-passages.js': strToU8(starterPassages),
     'src/customer-answers.js': strToU8(customerAnswersJS),
     'src/starter-answers.js': strToU8(starterAnswersJS),
     'src/thumbnail-alt.js': strToU8(thumbnailAltJS),

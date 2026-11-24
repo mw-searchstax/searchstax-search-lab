@@ -28,7 +28,7 @@ async function checkBuiltInFeatures(browser) {
   try {
     await page.route(u => u.pathname === url.pathname && u.origin === url.origin, async route => {
       const html = await (await route.fetch()).text();
-      const body = html.replace(/data-search-url="[^"]+"/, 'data-search-url="' + endpoint + '"')
+      const body = html.replace(/data-build-profile="[^"]+"/, 'data-build-profile="Main Profile"').replace(/data-search-url="[^"]+"/, 'data-search-url="' + endpoint + '"')
         .replace(/data-search-credential="[^"]+"/, 'data-search-credential="test-only" data-discovery-key="test-only"')
         .replace('data-before-profile=', 'data-answer-endpoint="' + featureHost + '/api/v1/answer" data-related-endpoint="' + featureHost + '/qa/related-search" data-before-profile=');
       await route.fulfill({ contentType: 'text/html', body });

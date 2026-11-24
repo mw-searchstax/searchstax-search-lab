@@ -315,7 +315,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
   function reportSettings() {
     const entitlements = app ? app.configuration?.entitlements ?? {} : { relatedSearches: true, smartAnswers: true };
     panel.dispatchEvent(new CustomEvent('profile-settings', { detail: {
-      profile: active, entitlements, summary: profileStatus(entitlements, active, highlighting, app ?? undefined),
+      profile: active, entitlements, highlighting, summary: profileStatus(entitlements, active, highlighting, app ?? undefined),
     } }));
   }
 

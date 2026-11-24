@@ -67,20 +67,6 @@
 .mapped-result-thumbnail { display: block; width: min(100%, 12rem); height: auto; margin-bottom: .5rem; }
 
 .mapped-result-card { position: relative; }
-.mapped-result-card .searchstax-search-result-ribbon {
-  display: block;
-  width: fit-content;
-  max-width: 100%;
-  margin-block-end: .5rem;
-  padding: .15rem .6rem;
-  border-inline-start: .25rem solid currentColor;
-  border-radius: 0 .2rem .2rem 0;
-  background: var(--search-accent, #33475a);
-  color: var(--search-accent-text, #fff);
-  font-size: .8125rem;
-  font-weight: 700;
-  overflow-wrap: anywhere;
-}
 .mapped-result-card :is(.mapped-result-paths, .mapped-result-date, .mapped-result-distance) {
   font-size: .875em;
 }

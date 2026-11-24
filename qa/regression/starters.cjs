@@ -65,7 +65,7 @@ function checkArchive(mode, framework, files) {
     assert.equal(settings.navigation.resultsPerPage, 5);
     if (mode === 'liveTabs') {
       assert.equal(settings.source, 'app');
-      assert.deepEqual(settings.profiles.map(item => item.profile), ['Main Profile', 'SearchLabAfter', 'SearchLabRanking']);
+      assert.deepEqual(settings.profiles.map(item => item.profile), ['Main Profile', 'SearchLabBuild', 'SearchLabAfter', 'SearchLabRanking']);
       assert.deepEqual(settings.thumbnails, {});
     } else {
       assert.equal(settings.source, 'demo');

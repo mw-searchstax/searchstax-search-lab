@@ -19,6 +19,7 @@ export function setupCustomerPreview(
   root: Element,
   getDesign: () => DesignSettings,
   onModeChange: (query: string | null) => void,
+  onResultSettings: () => void,
 ) {
   const get = <T extends HTMLElement>(selector: string) => root.querySelector<T>(selector)!;
   const form = get<HTMLFormElement>('[data-customer-connect]');
@@ -310,6 +311,7 @@ export function setupCustomerPreview(
       displayedStart = search.start;
       searchFeedback.textContent = '';
       renderResults(page, search, contentLanguageTag(candidate.language));
+      onResultSettings();
       const rows = getDesign().resultsPerPage;
       if (connecting && rows !== search.rows) run({ rows });
     } catch (error) {
