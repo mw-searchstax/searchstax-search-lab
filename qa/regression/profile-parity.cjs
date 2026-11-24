@@ -75,6 +75,7 @@ async function checkFeatures(page, mode) {
   const language = panel.locator('[data-exp-language] select');
   assert.equal(await language.isVisible(), mode !== 'tabs');
   assert.equal(await panel.getByRole('tablist').isVisible(), mode !== 'language');
+  if (mode !== 'language') assert.deepEqual(await panel.getByRole('tab').allTextContents(), ['Programs', 'Locations']);
   const sort = panel.locator('[data-exp-sort] select');
   await sort.waitFor();
   await checkSelectStyle(sort, 36);
@@ -125,6 +126,7 @@ async function checkFeatures(page, mode) {
   await panel.getByText('Try another clinic.', { exact: true }).waitFor();
   if (mode !== 'tabs') {
     await language.selectOption('es');
+    if (mode === 'both') assert.deepEqual(await panel.getByRole('tab').allTextContents(), ['Programas', 'Ubicaciones']);
     assert.equal(await input.inputValue(), 'zxq-no-matches');
     assert.equal(await input.getAttribute('placeholder'), 'Find a clinic');
     assert.equal(await panel.locator('button[type=submit]').innerText(), 'Find pages');

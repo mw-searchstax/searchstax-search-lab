@@ -14,6 +14,7 @@ export type ExperienceHandoff = {
   source: 'app' | 'demo';
   entitlements?: Entitlements;
   profiles: Experience[];
+  defaultLanguage: string;
   selected: Experience;
   initialQuery: string;
 };
@@ -80,9 +81,10 @@ function directoryCards(entries: (ReturnType<typeof searchDirectory>['entries'][
   });
 }
 
-export function experienceHandoff(connected = false, catalog: Experience[] = demoProfiles, active = catalog[0], query = 'campus'): ExperienceHandoff {
+export function experienceHandoff(connected = false, catalog: Experience[] = demoProfiles, active = catalog[0], query = 'campus', defaultLanguage = demoProfiles[0].language): ExperienceHandoff {
   return {
     source: connected ? 'app' : 'demo',
+    defaultLanguage,
     profiles: catalog.map(({ language, profile, relatedSearches, smartAnswers, highlighting }) => ({ language, profile, relatedSearches, smartAnswers, highlighting })),
     selected: { language: active.language, profile: active.profile },
     initialQuery: connected ? '' : query,
@@ -114,6 +116,14 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
   let tabProfiles = allProfiles;
   let catalog = allProfiles;
   let active = catalog[0];
+  let defaultLanguage = demoProfiles[0].language;
+  let startingProfile: Experience | undefined = active;
+  function profileForLanguage(code: string, preferred?: Experience): Experience {
+    const choices = catalog.filter(item => item.language === code);
+    return choices.find(item => item.profile === preferred?.profile)
+      ?? choices.find(item => item.profile === startingProfile?.profile && item.language === startingProfile.language)
+      ?? choices[0] ?? { language: code, profile: '' };
+  }
   let query = 'campus';
   let start = 0;
   let displayedStart = 0;
@@ -150,8 +160,9 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
     filterButton.textContent = (es ? 'Filtros' : 'Filters') + (filters.size ? ' (' + filters.size + ')' : '');
     field('[data-exp-sort] span').textContent = es ? 'Ordenar por' : 'Sort by';
     field('[data-exp-sort]').hidden = !options.showSorting || !sorts.length;
-    field('[data-exp-sort-hint]').hidden = !app || !options.showSorting || Boolean(sorts.length);
-    features.update(options, app, active, query);
+    field('[data-exp-sort-hint]').hidden = !app || !active.profile || !options.showSorting || Boolean(sorts.length);
+    if (active.profile) features.update(options, app, active, query);
+    else features.clear();
   }
 
   filterButton.addEventListener('click', () => {
@@ -210,6 +221,11 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
     if (anchor !== pages) list.replaceChildren();
     if (!options.filters || !query || app && (!app.endpoint || !app.token)) showFacets([]);
     if (anchor !== pages) pages.hidden = true;
+    if (!active.profile) {
+      status.textContent = active.language ? 'No profiles are included for ' + languageName(active.language) + '.'
+        : 'The default profile’s language is unknown.';
+      return;
+    }
     if (app && (!app.endpoint || !app.token)) {
       status.textContent = 'To search your app, set the Select endpoint and read-only token in src/config.js.';
       return;
@@ -311,13 +327,12 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
     filters.clear();
     showFacets([]);
     start = 0;
-    const choices = catalog.filter(choice => !options.languagePicker || choice.language === active.language);
+    const choices = catalog.filter(choice => choice.profile && choice.language === active.language);
     tabs.replaceChildren(...choices.map(choice => {
       const button = document.createElement('button');
       button.type = 'button';
       button.id = 'lab-experience-tab-' + catalog.indexOf(choice);
-      button.textContent = choice.profile || 'Default profile';
-      if (choices.some(other => other !== choice && other.profile === choice.profile)) button.textContent += ' (' + choice.language + ')';
+      button.textContent = choice.profile;
       button.setAttribute('role', 'tab');
       button.setAttribute('aria-controls', results.id);
       button.setAttribute('aria-selected', String(choice === active));
@@ -330,40 +345,40 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       });
       return button;
     }));
-    const selected = tabs.querySelector<HTMLButtonElement>('[aria-selected="true"]')!;
-    results.setAttribute('role', options.profileTabs ? 'tabpanel' : 'region');
-    if (options.profileTabs) {
+    const selected = tabs.querySelector<HTMLButtonElement>('[aria-selected="true"]');
+    tabs.hidden = !options.profileTabs || !choices.length;
+    results.setAttribute('role', options.profileTabs && selected ? 'tabpanel' : 'region');
+    if (options.profileTabs && selected) {
       results.removeAttribute('aria-label');
       results.setAttribute('aria-labelledby', selected.id);
     } else {
       results.removeAttribute('aria-labelledby');
       results.setAttribute('aria-label', 'Search results');
     }
-    if (focus) selected.focus();
+    if (focus) selected?.focus();
     if (fromLanguage) void search(field('[data-exp-language]'), language);
-    else if (focus) void search(tabs, selected);
+    else if (focus && selected) void search(tabs, selected);
     else void search();
   }
   function render(fromLanguage = false) {
-    const languages = [...new Set(catalog.map(item => item.language))];
+    const languages = [...new Set(allProfiles.map(item => item.language).filter(Boolean))];
+    if (active.language && !languages.includes(active.language)) languages.unshift(active.language);
     language.replaceChildren(...languages.map(code => new Option(!app && code === 'es' ? 'Español' : languageName(code), code)));
+    if (!defaultLanguage) language.prepend(new Option('Choose a language', ''));
     language.value = active.language;
-    language.disabled = languages.length === 1;
+    language.disabled = language.options.length < 2;
     field('[data-exp-language]').hidden = !options.languagePicker;
-    tabs.hidden = !options.profileTabs;
     const es = spanish();
     field('[data-exp-language] span').textContent = es ? 'Idioma de búsqueda' : 'Search language';
     info.textContent = !app && active.language === 'es' ? 'Los enlaces abren páginas del campus en inglés.' : '';
-    if (app && !options.profileTabs) info.textContent = 'Search Profile: ' + (active.profile || 'Default');
+    if (app && active.profile && !options.profileTabs) info.textContent = 'Search Profile: ' + active.profile;
     info.hidden = !info.textContent;
     select(active, false, fromLanguage);
   }
   language.addEventListener('change', () => {
     const section = !app && demoProfiles.find(item => item.language === active.language && item.profile === active.profile)?.section;
     const translated = section && demoProfiles.find(item => item.language === language.value && item.section === section);
-    active = catalog.find(item => item.language === language.value && translated && item.profile === translated.profile)
-      ?? catalog.find(item => item.language === language.value && item.profile === active.profile)
-      ?? catalog.find(item => item.language === language.value)!;
+    active = profileForLanguage(language.value, translated || active);
     render(true);
   });
   function submit(term: string) {
@@ -384,7 +399,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       tabProfiles = choices;
       if (!options.profileTabs) return;
       catalog = tabProfiles;
-      if (!catalog.includes(active)) active = catalog[0];
+      active = profileForLanguage(active.language, active);
       if (!panel.hidden) render();
     },
     get searchState() { return { query, draft: input.value }; },
@@ -395,7 +410,10 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       const previous = options;
       options = { ...design };
       catalog = options.profileTabs ? tabProfiles : allProfiles;
-      if (!catalog.includes(active)) active = catalog[0];
+      const code = design.languagePicker ? active.language : defaultLanguage;
+      const leavingTabs = previous.profileTabs && !design.profileTabs;
+      if (leavingTabs || active.language !== code) active = profileForLanguage(code);
+      else if (!catalog.includes(active)) active = profileForLanguage(code, active);
       panel.dataset.layout = design.layout;
       panel.dataset.filterPlacement = design.filterPlacement;
       panel.dataset.filterStyle = design.topFilterStyle;
@@ -405,8 +423,6 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       panel.dataset.underline = String(design.underlineTitles);
       if (panel.hidden || !(design.profileTabs || design.languagePicker)) return;
       if (previous.profileTabs !== design.profileTabs || previous.languagePicker !== design.languagePicker) {
-        if (!design.languagePicker && active.language !== catalog[0].language) active = catalog[0];
-        else if (!design.profileTabs) active = catalog.find(item => item.language === active.language)!;
         render();
       } else if (previous.filters !== design.filters || previous.resultsPerPage !== design.resultsPerPage ||
                  previous.showSorting !== design.showSorting || previous.samplePromotions !== design.samplePromotions) {
@@ -417,14 +433,17 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       } else updatePresentation();
     },
     handoff(): ExperienceHandoff {
-      return { ...experienceHandoff(Boolean(app), catalog, active, query), entitlements: app?.configuration?.entitlements };
+      return { ...experienceHandoff(Boolean(app), catalog, active, query, defaultLanguage), entitlements: app?.configuration?.entitlements };
     },
-    setSource(connection: CustomerConnection | null, choices: Experience[], term: string, selected?: Experience) {
+    setSource(connection: CustomerConnection | null, choices: Experience[], term: string, selected?: Experience, sourceLanguage?: string) {
       cancelSearch(); features.clear(); app = connection;
       allProfiles = choices.length ? choices : connection ? [connection.settings ?? { language: connection.language, profile: connection.profile }] : demoProfiles;
       tabProfiles = allProfiles;
       catalog = allProfiles;
-      active = catalog.find(item => item.language === selected?.language && item.profile === selected.profile) ?? catalog[0];
+      defaultLanguage = sourceLanguage ?? (connection ? connection.language || selected?.language || '' : demoProfiles[0].language);
+      startingProfile = connection?.settings ?? (!connection ? demoProfiles[0] : undefined);
+      const code = options.languagePicker ? selected?.language ?? defaultLanguage : defaultLanguage;
+      active = profileForLanguage(code, selected?.language === code ? selected : undefined);
       panel.dataset.descriptions = String(Boolean(app) || options.showDescriptions);
       query = term;
       start = 0;

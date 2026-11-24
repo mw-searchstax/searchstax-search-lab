@@ -288,7 +288,9 @@ export function setupCustomerPreview(
     try {
       const page = await searchBuildApp(candidate, search, pending.signal);
       if (request !== pending) return;
-      if (connecting && page.settings) candidate = { ...candidate, settings: page.settings, language: page.settings.language, profile: page.settings.profile };
+      if (connecting && candidate.configuration) {
+        candidate = { ...candidate, settings: page.settings, language: page.settings?.language ?? page.language ?? '', profile: page.settings?.profile ?? candidate.profile };
+      }
       connection = candidate;
       options = search;
       latestPage = page;

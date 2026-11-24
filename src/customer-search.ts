@@ -113,9 +113,10 @@ export async function searchBuildApp(connection: CustomerConnection, options: Cu
   const params = payload.responseHeader?.params;
   const profile = connection.profile || params?.model;
   const language = (connection.language || params?.language)?.toLowerCase().replaceAll('-', '_');
-  const settings = connection.settings ?? connection.configuration?.profiles.find(item => item.profile === profile && item.language === language);
+  const matches = connection.configuration?.profiles.filter(item => item.profile === profile && (!language || item.language === language));
+  const settings = connection.settings ?? (matches?.length === 1 ? matches[0] : undefined);
   const { cards, ...metadata } = resultCards(payload, response.docs, settings?.highlighting);
-  return { ...page, ...metadata, settings, cards: cards.filter(card => card.url || card.thumbnail || card.values.length) };
+  return { ...page, ...metadata, settings, language, cards: cards.filter(card => card.url || card.thumbnail || card.values.length) };
 }
 
 // The prepared Improve lessons use the demo’s original linked-result projection.

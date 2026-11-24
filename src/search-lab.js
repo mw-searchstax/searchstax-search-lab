@@ -221,6 +221,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
   const settingsSummary = root.querySelector('[data-app-settings-summary]');
   let availableProfiles = demoProfiles;
   let includedProfiles = [...demoProfiles];
+  let choiceLanguage = demoProfiles[0].language;
   let selectedSettings;
   function showProfileSettings(profile, entitlements, summary) {
     selectedSettings = { profile, entitlements };
@@ -244,11 +245,18 @@ import { setupPaginationFocus } from './pagination-focus.js';
     descriptionToggle.closest('.search-lab__field').hidden = connected;
   }
   experiencePanel.addEventListener('profile-settings', event => {
-    if (!experiencePanel.hidden) showProfileSettings(event.detail.profile, event.detail.entitlements, event.detail.summary);
+    if (experiencePanel.hidden) return;
+    const { profile, entitlements, summary } = event.detail;
+    if (choiceLanguage !== profile.language) {
+      choiceLanguage = profile.language;
+      refreshTabChoices();
+    }
+    showProfileSettings(profile, entitlements, summary);
   });
   function refreshTabChoices() {
-    profileChoices.hidden = !design.profileTabs || !availableProfiles.length;
-    profileChoices.querySelector('div').replaceChildren(...availableProfiles.map(profile => {
+    const choices = availableProfiles.filter(profile => profile.language === choiceLanguage);
+    profileChoices.hidden = !design.profileTabs || !choices.length;
+    profileChoices.querySelector('div').replaceChildren(...choices.map(profile => {
       const label = document.createElement('label');
       const checkbox = document.createElement('input');
       checkbox.type = 'checkbox';
@@ -258,7 +266,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
         includedProfiles = availableProfiles.filter(item => item === profile ? checkbox.checked : includedProfiles.includes(item));
         experiencePreview.setProfiles(includedProfiles);
         refreshTabChoices();
-        profileChoices.querySelectorAll('input')[availableProfiles.indexOf(profile)]?.focus();
+        profileChoices.querySelectorAll('input')[choices.indexOf(profile)]?.focus();
       });
       label.append(checkbox, ' ' + profile.profile + ' (' + profile.language + ')');
       return label;
@@ -273,7 +281,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
     experienceToggle.disabled = availableProfiles.length === 0;
     languageToggle.disabled = !availableProfiles.length;
     experienceToggle.checked = design.profileTabs;
-    profileChoices.hidden = !design.profileTabs || !availableProfiles.length;
+    profileChoices.hidden = !design.profileTabs || !profileChoices.querySelector('input');
     languageToggle.checked = design.languagePicker;
     experiencePreview.configure(design);
     if (enabled === !experiencePanel.hidden) return;
@@ -322,6 +330,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
       resultsLayout.setAttribute('aria-busy', 'false');
     }
     availableProfiles = connected ? customerPreview.experiences : demoProfiles;
+    choiceLanguage = connected ? customerPreview.connection.language : demoProfiles[0].language;
     includedProfiles = [...availableProfiles];
     if (!availableProfiles.length) {
       design.profileTabs = false;

@@ -36,7 +36,7 @@ export function mountProfileSearch(host) {
     relatedURL: readCustomerEndpoint(connection.relatedURL || '', 'related-search'),
     discoveryKey: connection.discoveryKey || '',
   } : null;
-  search.setSource(app, settings.profiles, settings.initialQuery, settings.selected);
+  search.setSource(app, settings.profiles, settings.initialQuery, settings.selected, settings.defaultLanguage);
   panel.hidden = false;
   search.open();
   return () => { search.close(); host.replaceChildren(); };
