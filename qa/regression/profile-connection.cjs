@@ -2,12 +2,21 @@ const fs = require('node:fs');
 const path = require('node:path');
 const snapshot = path.join(__dirname, '../../public/examples/search-lab-configuration.json');
 const { unzipSync } = require('fflate');
-const { assert, baseURL, chromium, webkit } = require('./runtime.cjs');
+const { assert, baseURL, chromium, webkit, localQA } = require('./runtime.cjs');
 
 async function run() {
   const browser = process.env.QA_BROWSER === 'webkit' ? await webkit.launch() : await chromium.launch({ channel: 'chrome' });
   try {
     const page = await browser.newPage();
+    async function checkSettings(...patterns) {
+      const summary = page.locator('[data-app-settings-summary]');
+      if (!localQA) {
+        assert.equal(await summary.count(), 0);
+        return;
+      }
+      const text = await summary.innerText();
+      for (const pattern of patterns) assert.match(text, pattern);
+    }
     page.setDefaultTimeout(8000);
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
@@ -210,7 +219,7 @@ async function run() {
     await page.getByText('Results Fields are unknown for this profile.', { exact: true }).waitFor();
     assert.equal(await page.getByLabel('Show profile tabs').isDisabled(), true);
     assert.equal(await page.locator('[data-profile-choices] input, [data-customer-grid] a, [data-customer-grid] img').count(), 0);
-    assert.match(await page.locator('[data-app-settings-summary]').innerText(), /Smart Answers — Unknown/);
+    await checkSettings(/Smart Answers — Unknown/);
     const featureRequests = requests.filter(r => ['related-search', 'answer'].includes(r.kind)).length;
     await page.locator('[data-customer-disconnect]').click();
     if (!await page.locator('[data-customer-connect]').isVisible()) await page.getByRole('button', { name: 'Preview with your Search App' }).click();
@@ -221,9 +230,8 @@ async function run() {
     await fileInput.setInputFiles({ name: 'limited.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(limited)) });
     await page.locator('[data-customer-submit]').click();
     await single.getByRole('link', { name: 'en/Main ' + query }).waitFor();
-    const featureSummary = await page.locator('[data-app-settings-summary]').innerText();
-    assert.match(featureSummary, /Smart Answers — Unavailable \(entitled: no, configured: yes\)/);
-    assert.match(featureSummary, /Related Searches — Unknown \(entitled: unknown, configured: yes\)/);
+    await checkSettings(/Smart Answers — Unavailable \(entitled: no, configured: yes\)/,
+      /Related Searches — Unknown \(entitled: unknown, configured: yes\)/);
     assert.equal(requests.filter(r => ['related-search', 'answer'].includes(r.kind)).length, featureRequests);
     assert.equal(await page.locator('.search-related-terms:visible, [data-customer-answer]:visible').count(), 0);
     await page.locator('[data-customer-disconnect]').click();
@@ -262,7 +270,7 @@ async function run() {
     await single.getByText('Default directory').waitFor();
     releaseConnection();
     await page.locator('[data-customer-source]').filter({ hasText: 'Directory' }).waitFor();
-    assert.match(await page.locator('[data-app-settings-summary]').innerText(), /Smart Answers — Off/);
+    await checkSettings(/Smart Answers — Off/);
     await page.getByRole('tab', { name: 'Features', exact: true }).click();
     if (!await page.locator('#lab-profile-tabs').isVisible()) await page.locator('#lab-advanced > summary').click();
     await page.getByLabel('Show profile tabs').check();

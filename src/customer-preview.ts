@@ -22,6 +22,7 @@ export function setupCustomerPreview(
 ) {
   const get = <T extends HTMLElement>(selector: string) => root.querySelector<T>(selector)!;
   const form = get<HTMLFormElement>('[data-customer-connect]');
+  const settingsSummary = root.querySelector<HTMLElement>('[data-app-settings-summary]');
   const connect = get<HTMLButtonElement>('[data-customer-submit]');
   const formStatus = get('[data-customer-connect-status]');
   const endpoint = get<HTMLInputElement>('#lab-customer-endpoint');
@@ -247,8 +248,8 @@ export function setupCustomerPreview(
     grid.hidden = !page.cards.length;
     empty.hidden = Boolean(page.cards.length);
     empty.textContent = resultMappingNotice(page.mappingsKnown, page.cards.length, page.total) || getDesign().noResultsText;
-    if (connection && !get('[data-single-experience]').hidden) {
-      get('[data-app-settings-summary]').textContent = profileStatus(connection.configuration?.entitlements ?? {}, connection.settings, page.highlighting, connection);
+    if (settingsSummary && connection && !get('[data-single-experience]').hidden) {
+      settingsSummary.textContent = profileStatus(connection.configuration?.entitlements ?? {}, connection.settings, page.highlighting, connection);
     }
 
     const focusedPageButton = document.activeElement;

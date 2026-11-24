@@ -268,9 +268,13 @@ import { setupPaginationFocus } from './pagination-focus.js';
   experiencePanel.insertAdjacentHTML('afterbegin', profileControls.replace('<!-- smart-answer-sample -->', () => smartAnswersSampleHTML));
   const profileChoices = root.querySelector('[data-profile-choices]');
   const catalogStatus = root.querySelector('[data-profile-catalog-status]');
-  const settingsSummary = root.querySelector('[data-app-settings-summary]');
   const sourceLabel = root.querySelector('[data-lab-source-label]');
   const sourcePicker = root.querySelector('#lab-preview-source');
+  const settingsSummary = localPreview ? document.createElement('p') : null;
+  if (settingsSummary) {
+    settingsSummary.dataset.appSettingsSummary = '';
+    sourcePicker.closest('[data-preview-source-field]').after(settingsSummary);
+  }
   const emptyCatalog = [];
   let navigationSource;
   let availableProfiles = emptyCatalog;
@@ -279,8 +283,9 @@ import { setupPaginationFocus } from './pagination-focus.js';
   let selectedSettings;
   function showProfileSettings(profile, entitlements, summary) {
     selectedSettings = { profile, entitlements };
-    settingsSummary.textContent = summary ?? profileStatus(entitlements, profile, customerPreview?.highlighting, customerPreview?.connection);
-    settingsSummary.hidden = false;
+    if (settingsSummary) {
+      settingsSummary.textContent = summary ?? profileStatus(entitlements, profile, customerPreview?.highlighting, customerPreview?.connection);
+    }
     syncFeatureControls();
   }
   function syncFeatureControls() {
@@ -291,9 +296,8 @@ import { setupPaginationFocus } from './pagination-focus.js';
     sourcePicker.closest('[data-preview-source-field]').hidden = connected || !localPreview;
     const profile = builtIn ? builtInApp.settings : selectedSettings?.profile;
     const entitlements = builtIn ? builtInApp.configuration?.entitlements : selectedSettings?.entitlements;
-    if (builtIn) {
+    if (settingsSummary && builtIn) {
       settingsSummary.textContent = profileStatus(entitlements ?? {}, profile, profile?.highlighting ?? builtInHighlighting, builtInApp);
-      settingsSummary.hidden = false;
     }
     const liveProfile = builtIn ? builtInApp.profile : profile?.profile;
     sourceLabel.textContent = !connected && !fixture && root.dataset.labView === 'design'

@@ -67,6 +67,7 @@ async function hostedDesign(browser) {
     async function checkApp() {
       await panel.getByRole('tab', { name: 'Main Profile', exact: true }).waitFor();
       assert.equal(await page.getByLabel('Preview source').isVisible(), false);
+      assert.equal(await page.locator('[data-app-settings-summary]').count(), 0);
       assert.equal(await panel.getByRole('tab', { name: 'Programs', exact: true }).count(), 0);
       await panel.locator('.searchstax-search-result-ribbon:visible').first().waitFor();
     }
