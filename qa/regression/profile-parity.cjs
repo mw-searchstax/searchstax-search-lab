@@ -23,6 +23,7 @@ async function preserve(page, first, second) {
   await ordinary.press('Enter');
   await page.locator('[data-lab-summary]').filter({ hasText: /results for “orthopedics”/ }).waitFor();
   await ordinary.fill('unfinished spelling');
+  await page.locator('#lab-advanced > summary').click();
   await page.getByLabel(first).check();
   const panel = page.locator('#lab-experiences');
   const input = panel.locator('input[type=search]');
@@ -92,7 +93,7 @@ async function checkFeatures(page, mode) {
   const list = visibleList(panel);
   await list.first().waitFor();
   assert.equal(await input.inputValue(), 'rehabilitation');
-  const image = panel.locator('.profile-result-thumbnail:visible').first();
+  const image = panel.locator('.mapped-result-thumbnail:visible').first();
   await image.waitFor();
   assert.ok(await image.evaluate(el => el.decode().then(() => el.naturalWidth > 0)));
   const related = panel.getByRole('region', { name: 'Related searches' });
@@ -165,10 +166,11 @@ async function editFeatures(page) {
   await (await control('sorting')).uncheck();
   assert.equal(await panel.locator('[data-exp-sort]').isVisible(), false);
   await submit(panel, 'rehabilitation');
-  await panel.locator('.profile-result-thumbnail:visible').first().waitFor();
-  await (await control('thumbnails')).uncheck();
+  await panel.locator('.mapped-result-thumbnail:visible').first().waitFor();
+  assert.equal(await page.getByLabel('Show sample thumbnails').isVisible(), false);
   await (await control('descriptions')).uncheck();
-  assert.equal(await panel.locator('.profile-result-thumbnail:visible, .experience-results li p:visible').count(), 0);
+  assert.equal(await panel.locator('.search-lab__result-description:visible').count(), 0);
+  assert.ok(await panel.locator('.mapped-result-thumbnail:visible').count());
   await (await control('related-toggle')).uncheck();
   assert.equal(await panel.getByRole('region', { name: 'Related searches' }).isVisible(), false);
   await (await control('suggestions')).uncheck();

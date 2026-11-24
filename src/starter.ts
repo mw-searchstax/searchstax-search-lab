@@ -53,6 +53,8 @@ import profileFeaturesJS from './profile-features.js?raw';
 import designRuntime from './design.ts?starter-js';
 import sortRuntime from './demo-sorting.ts?starter-js';
 import recoveryRuntime from './search-recovery.ts?starter-js';
+import cardRuntime from './result-card.ts?starter-js';
+import appConfigurationRuntime from './app-configuration.ts?starter-js';
 import profileRuntime from './profile-experiences.ts?starter-js';
 import searchRuntime from './customer-search.ts?starter-js';
 import { experienceHandoff, type ExperienceHandoff } from './profile-experiences';
@@ -222,6 +224,8 @@ function createProfileStarter(framework: Framework, design: DesignSettings, expe
   const entries: Record<string, string> = {
     'search.css': renderStarterCSS(design),
     'src/profile-experiences.js': profileRuntime,
+    'src/app-configuration.js': appConfigurationRuntime,
+    'src/result-card.js': cardRuntime,
     'src/search-recovery.js': recoveryRuntime,
     'src/profile-features.js': profileFeaturesJS,
     'src/design.js': designRuntime,
@@ -235,7 +239,7 @@ function createProfileStarter(framework: Framework, design: DesignSettings, expe
     'src/content-language.js': contentLanguageJS,
     'src/web-url.js': webURLJS,
     'src/config.js': `export const settings = ${JSON.stringify({ ...experience, navigation: design, logoURL: design.logoURL,
-      thumbnails: design.showThumbnails ? Object.fromEntries(Object.entries(demoThumbnails).map(([url, image]) => [url, image.source])) : {} }, null, 2)};
+      thumbnails: experience.source === 'demo' ? Object.fromEntries(Object.entries(demoThumbnails).map(([url, image]) => [url, image.source])) : {} }, null, 2)};
 
 // Use your app’s HTTPS Select endpoint and a browser-safe read-only token.
 export const connection = { endpoint: '', token: '' };
@@ -271,7 +275,7 @@ ${run}
 
 ## Try the design
 
-${experience.source === 'demo' ? 'Search for **campus** in the sample directory and open a result. The preview settings determine whether visitors can switch profiles, choose English or Spanish, and filter results.' : 'Your configured languages, profiles and starting tab are in **src/config.js**. Add the connection settings below and enter a search term from your site.'}
+${experience.source === 'demo' ? 'Search for **campus** in the sample directory and open a result. The preview settings determine whether visitors can switch profiles, choose English or Spanish, and filter results.' : 'Your selected languages, profiles, feature settings, and starting tab are in **src/config.js**. Add the connection settings below and enter a search term from your site.'}
 
 When both controls are enabled, the language picker controls which profiles appear. Switching profiles keeps the submitted query and returns to the first page. Use the arrow keys to move between tabs.
 
@@ -279,7 +283,7 @@ When both controls are enabled, the language picker controls which profiles appe
 
 In **src/config.js**, set **settings.source** to **app**. Enter the HTTPS Select endpoint from App Settings → All APIs → Search & Indexing in **connection.endpoint**, and its browser-safe read-only token in **connection.token**. These values are visible to visitors. Use **settings.profiles** for the list of language and profile pairs and **settings.selected** for the starting pair. Empty language and profile values use the app defaults. Set **settings.initialQuery** to your preferred opening query or leave it blank.
 
-To use optional services in your own app, add the HTTPS Auto-Suggest endpoint as **connection.suggestEndpoint**, the streaming Answer endpoint as **connection.answerEndpoint**, or the Related Searches endpoint and Discovery key as **connection.relatedURL** and **connection.discoveryKey**. Use credentials intended for browser use. Each request uses the selected language and profile where supported.
+To use optional services in your own app, add the HTTPS Auto-Suggest endpoint as **connection.suggestEndpoint**, the streaming Answer endpoint as **connection.answerEndpoint**, or the Related Searches endpoint and Discovery key as **connection.relatedURL** and **connection.discoveryKey**. Use credentials intended for browser use. Set the app’s **settings.entitlements** and each profile’s **relatedSearches** and **smartAnswers** flags from its published configuration. Each service needs both an entitlement and an enabled profile setting. Requests use the selected language and profile where supported.
 
 Live results use the Search API. Tracking is off in this starter.
 `;

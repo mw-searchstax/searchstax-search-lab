@@ -46,7 +46,7 @@ function fixture() {
         description: 'A page in the campus directory. '.repeat(12),
       }));
       await route.fulfill({ json: {
-        response: { numFound: 31, docs }, metadata: { sorts: [{ name: 'title', order: 'asc', label: 'Title' }],
+        response: { numFound: 31, docs }, metadata: { results: ['title', 'url', 'description'].map(name => ({ name, result_card: name })), sorts: [{ name: 'title', order: 'asc', label: 'Title' }],
           facets: [{ name: 'type', label: 'Content type' }] }, facet_counts: { facet_fields: { type: ['Library', 12] } },
       } });
     },
@@ -76,8 +76,8 @@ async function connected(page, profiles) {
   await page.locator('#lab-customer-profile').fill('Main');
   if (profiles) {
     await page.locator('#lab-customer-language').fill('en');
-    await page.locator('#lab-experience-list').fill('en | Directory\nes | Directorio');
   }
+  await page.locator('#lab-app-configuration').setInputFiles(require('node:path').join(__dirname, '../../public/examples/search-lab-configuration.json'));
   const fieldMessage = page.locator('#lab-connect-field-error');
   await connect.click();
   await observe('Invalid endpoint', fieldMessage, address, 'validation');
@@ -107,7 +107,11 @@ async function connected(page, profiles) {
   server.fail(200);
   await connect.press('Enter');
   await page.locator('[data-customer-connect-status]').filter({ hasText: 'Connected to your Search App' }).waitFor();
-  if (profiles) await page.getByLabel('Show language picker').check();
+  if (profiles) {
+    await page.locator('#lab-advanced > summary').click();
+    await page.getByLabel('Show profile tabs').check();
+    await page.getByLabel('Show language picker').check();
+  }
   await page.locator('[data-lab-design-mode=preview]').click();
   const panel = profiles ? page.locator('#lab-experiences') : page.locator('[data-single-experience]');
   const input = panel.getByRole('searchbox');
@@ -265,6 +269,7 @@ async function optionalServices(page) {
     'lab-customer-suggest-endpoint': origin + '/qa/emsuggest', 'lab-related-endpoint': origin + '/qa/related-search',
     'lab-discovery-key': 'test-only',
   })) await page.locator('#' + id).fill(value);
+  await page.locator('#lab-app-configuration').setInputFiles(require('node:path').join(__dirname, '../../public/examples/search-lab-configuration.json'));
   await page.locator('[data-customer-submit]').click();
   await page.locator('[data-customer-connect-status]').filter({ hasText: 'Connected' }).waitFor();
   await page.locator('[data-lab-design-mode=preview]').click();

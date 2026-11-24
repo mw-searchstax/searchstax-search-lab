@@ -134,7 +134,7 @@
 .search-lab__controls { min-width: 0; border: 1px solid var(--lab-border); border-radius: var(--border-radius-lg); background: var(--lab-canvas); }
 .search-lab__control-section { padding: var(--lab-space-md); }
 .search-lab__editor-tabs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 6.5rem), 1fr)); padding: 3px; margin-bottom: .75rem; border: 1px solid var(--lab-border); border-radius: var(--border-radius-base, 6px); background: #fff; }
-.search-lab__editor-tabs button { min-height: var(--lab-target); padding: .375rem; border: 0; border-radius: 4px; color: var(--lab-ink); background: transparent; font: inherit; font-size: .875rem; font-weight: 600; cursor: pointer; }
+.search-lab__editor-tabs button { overflow-wrap: anywhere; min-height: var(--lab-target); padding: .375rem; border: 0; border-radius: 4px; color: var(--lab-ink); background: transparent; font: inherit; font-size: .875rem; font-weight: 600; cursor: pointer; }
 .search-lab__editor-tabs button:hover { background: var(--color-bg-secondary); }
 .search-lab__editor-tabs button[aria-selected="true"] {
   color: #fff;
@@ -755,3 +755,5 @@ body:has(.search-lab[data-customer-connected]) #searchAccessibilityContainer {
 }
 
 #lab-experience-list { box-sizing: border-box; width: 100%; margin-block-start: .5rem; padding: .5rem; font: inherit; resize: vertical; }
+
+.search-lab [data-profile-choices] label { display: block; margin-block: .4rem; }

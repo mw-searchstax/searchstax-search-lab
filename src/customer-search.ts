@@ -1,4 +1,6 @@
 import { webURL } from './web-url.js';
+import type { AppConfiguration, Profile } from './app-configuration.js';
+import { resultCards, type ResultResponse } from './result-card.js';
 export { readCustomerEndpoint } from './web-url.js';
 
 export type CustomerConnection = {
@@ -6,6 +8,8 @@ export type CustomerConnection = {
   token: string;
   profile: string;
   language: string;
+  configuration?: AppConfiguration;
+  settings?: Profile;
   relatedURL?: string;
   discoveryKey?: string;
   answerEndpoint?: string;
@@ -21,10 +25,9 @@ export type CustomerSearch = {
   excludeFilters?: Map<string, string>;
 };
 
-type SearchPayload = {
+type SearchPayload = ResultResponse & {
   response?: { numFound: number; docs: Record<string, unknown>[] };
-  metadata?: {
-    results?: { name: string; result_card: string }[];
+  metadata?: ResultResponse['metadata'] & {
     facets?: { name: string; label: string }[];
     sorts?: { name: string; order: string; label: string }[];
   };
@@ -50,6 +53,7 @@ async function requestSearch(connection: CustomerConnection, options: CustomerSe
     rows: String(options.rows),
     facet: 'true',
   }).toString();
+  if (connection.settings?.highlighting !== undefined) url.searchParams.set('hl', String(connection.settings.highlighting));
   if (connection.language) url.searchParams.set('language', connection.language);
   if (connection.profile) url.searchParams.set('model', connection.profile);
   if (options.sort) url.searchParams.set('sort', options.sort);
@@ -77,13 +81,47 @@ async function requestSearch(connection: CustomerConnection, options: CustomerSe
   return await response.json() as SearchPayload;
 }
 
-export async function searchCustomerApp(connection: CustomerConnection, options: CustomerSearch, signal: AbortSignal) {
+async function readPage(connection: CustomerConnection, options: CustomerSearch, signal: AbortSignal) {
   const payload = await requestSearch(connection, options, signal);
   const response = payload?.response;
   if (!response || !Number.isSafeInteger(response.numFound) || response.numFound < 0 || !Array.isArray(response.docs)) {
     throw new CustomerSearchError('The endpoint didn’t return search results. Check the Select endpoint and Search Profile.');
   }
-  const mappings = payload.metadata?.results ?? [];
+  const externalPromotions = (Array.isArray(payload.externalLinks) ? payload.externalLinks : []).flatMap(item => {
+    const url = webURL(firstText(item?.url));
+    return url ? [{ url, title: firstText(item?.name).trim() || url, description: firstText(item?.description).trim() }] : [];
+  });
+
+  const facets = (Array.isArray(payload.metadata?.facets) ? payload.metadata.facets : []).filter(field => field && typeof field.name === 'string' && fieldName.test(field.name)).map(field => {
+    const counts = payload.facet_counts?.facet_fields?.[field.name] ?? [];
+    const choices: { value: string; count: number }[] = [];
+    for (let index = 0; index < counts.length; index += 2) {
+      const value = counts[index];
+      const count = counts[index + 1];
+      if (typeof value === 'string' && value && typeof count === 'number') choices.push({ value, count });
+    }
+    return { field: field.name, label: field.label || field.name, choices };
+  });
+  const sorts = (Array.isArray(payload.metadata?.sorts) ? payload.metadata.sorts : [])
+    .filter(sort => sort && typeof sort.name === 'string' && fieldName.test(sort.name) && (sort.order === 'asc' || sort.order === 'desc'))
+    .map(sort => ({ value: sort.name + ' ' + sort.order, label: sort.label || sort.name }));
+  return { payload, response, total: response.numFound, resultCount: response.docs.length, externalPromotions, facets, sorts };
+}
+
+export async function searchBuildApp(connection: CustomerConnection, options: CustomerSearch, signal: AbortSignal) {
+  const { payload, response, ...page } = await readPage(connection, options, signal);
+  const params = payload.responseHeader?.params;
+  const profile = connection.profile || params?.model;
+  const language = (connection.language || params?.language)?.toLowerCase().replaceAll('-', '_');
+  const settings = connection.settings ?? connection.configuration?.profiles.find(item => item.profile === profile && item.language === language);
+  const { cards, ...metadata } = resultCards(payload, response.docs, settings?.highlighting);
+  return { ...page, ...metadata, settings, cards: cards.filter(card => card.url || card.thumbnail || card.values.length) };
+}
+
+// The prepared Improve lessons use the demo’s original linked-result projection.
+export async function searchCustomerApp(connection: CustomerConnection, options: CustomerSearch, signal: AbortSignal) {
+  const { payload, response, ...page } = await readPage(connection, options, signal);
+  const mappings = Array.isArray(payload.metadata?.results) ? payload.metadata.results : [];
   const mappedName = (role: string) => mappings.find(field => field.result_card === role)?.name ?? role;
   const urlField = mappedName('url');
   const titleField = mappedName('title');
@@ -98,25 +136,8 @@ export async function searchCustomerApp(connection: CustomerConnection, options:
     }] : [];
   });
 
-  const externalPromotions = (Array.isArray(payload.externalLinks) ? payload.externalLinks : []).flatMap(item => {
-    const url = webURL(firstText(item?.url));
-    return url ? [{ url, title: firstText(item?.name).trim() || url, description: firstText(item?.description).trim() }] : [];
-  });
-
-  const facets = (payload.metadata?.facets ?? []).filter(field => fieldName.test(field.name)).map(field => {
-    const counts = payload.facet_counts?.facet_fields?.[field.name] ?? [];
-    const choices: { value: string; count: number }[] = [];
-    for (let index = 0; index < counts.length; index += 2) {
-      const value = counts[index];
-      const count = counts[index + 1];
-      if (typeof value === 'string' && value && typeof count === 'number') choices.push({ value, count });
-    }
-    return { field: field.name, label: field.label || field.name, choices };
-  });
-  const sorts = (payload.metadata?.sorts ?? [])
-    .filter(sort => fieldName.test(sort.name) && (sort.order === 'asc' || sort.order === 'desc'))
-    .map(sort => ({ value: sort.name + ' ' + sort.order, label: sort.label || sort.name }));
-  return { total: response.numFound, resultCount: response.docs.length, results, externalPromotions, facets, sorts };
+  return { ...page, results };
 }
 
+export type BuildPage = Awaited<ReturnType<typeof searchBuildApp>>;
 export type CustomerPage = Awaited<ReturnType<typeof searchCustomerApp>>;

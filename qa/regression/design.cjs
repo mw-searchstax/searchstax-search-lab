@@ -17,6 +17,7 @@ async function start(browser, width) {
 
 async function spanishDesign(browser) {
   const page = await start(browser, 1440);
+  await page.locator('#lab-advanced > summary').click();
   await page.getByLabel('Show profile tabs').check();
   await page.getByLabel('Show language picker').check();
   const preview = page.locator('#lab-experiences');
@@ -64,7 +65,7 @@ async function connectedDesign(browser) {
       title: 'Clinic ' + (start + i + 1), url: 'https://example.org/clinic/' + (start + i + 1),
       description: 'A fictional clinic',
     }));
-    return route.fulfill({ json: { metadata: { facets: [{ name: 'type', label: 'Content type' }] },
+    return route.fulfill({ json: { metadata: { results: ['title', 'url', 'description'].map(name => ({ name, result_card: name })), facets: [{ name: 'type', label: 'Content type' }] },
       facet_counts: { facet_fields: { type: ['Clinic', 27] } }, response: { numFound: 27, docs } } });
   });
   await page.getByRole('button', { name: 'Preview with your Search App' }).click();
@@ -111,6 +112,7 @@ async function connectedDesign(browser) {
 
 async function mobileEditor(browser) {
   const page = await start(browser, 390);
+  await page.locator('#lab-advanced > summary').click();
   await page.getByLabel('Show profile tabs').check();
   await tab(page, 'Appearance').click();
   await page.getByRole('button', { name: 'Preview', exact: true }).click();

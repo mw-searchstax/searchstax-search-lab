@@ -30,6 +30,7 @@ export function mountProfileSearch(host) {
   const app = live ? {
     endpoint: readCustomerEndpoint(connection.endpoint) || '',
     token: connection.token.trim(),
+    configuration: { entitlements: settings.entitlements ?? {}, profiles: settings.profiles },
     answerEndpoint: readAnswerEndpoint(connection.answerEndpoint || ''),
     suggestEndpoint: readCustomerEndpoint(connection.suggestEndpoint || '', 'emsuggest'),
     relatedURL: readCustomerEndpoint(connection.relatedURL || '', 'related-search'),

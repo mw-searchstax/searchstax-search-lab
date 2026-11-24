@@ -1,5 +1,6 @@
 import { createSearchRecovery } from './search-recovery';
-import { readExperienceCatalog, type Experience } from './profile-experiences';
+import { readAppConfiguration, featureStatus, profileStatus, type Profile, type AppConfiguration } from './app-configuration.js';
+import { appendResultCard } from './result-card.js';
 import type { DesignSettings } from './design';
 import { contentLanguageTag } from './content-language.js';
 import { readAnswerEndpoint, setupCustomerAnswers } from './customer-answers.js';
@@ -8,9 +9,9 @@ import {
   CustomerSearchError,
   CustomerSearchTokenError,
   readCustomerEndpoint,
-  searchCustomerApp,
+  searchBuildApp,
   type CustomerConnection,
-  type CustomerPage,
+  type BuildPage,
   type CustomerSearch,
 } from './customer-search';
 
@@ -26,9 +27,8 @@ export function setupCustomerPreview(
   const endpoint = get<HTMLInputElement>('#lab-customer-endpoint');
   const token = get<HTMLInputElement>('#lab-customer-token');
   const profile = get<HTMLInputElement>('#lab-customer-profile');
-  const catalogInput = get<HTMLTextAreaElement>('#lab-experience-list');
-  let experiences: Experience[] = [];
-  const profileRequirement = get('[data-customer-profile-requirement]');
+  const snapshot = get<HTMLInputElement>('#lab-app-configuration');
+  let importVersion = 0;
   const connectionOptions = get<HTMLDetailsElement>('[data-customer-options]');
   const language = get<HTMLInputElement>('#lab-customer-language');
   const answerEndpoint = get<HTMLInputElement>('#lab-customer-answer-endpoint');
@@ -96,13 +96,20 @@ export function setupCustomerPreview(
     field.scrollIntoView({ block: 'center', behavior: 'instant' });
   }
   form.addEventListener('input', event => {
+    importVersion++;
+    if (request && !connection) {
+      request.abort();
+      request = null;
+      formStatus.textContent = '';
+      connect.removeAttribute('aria-disabled');
+    }
     if (event.target === invalidField) clearFieldError();
     connect.textContent = 'Connect';
   });
   let connection: CustomerConnection | null = null;
   let suggestionSource: ReturnType<typeof createCustomerSuggestionSource> | null = null;
   let options: CustomerSearch | null = null;
-  let latestPage: CustomerPage | null = null;
+  let latestPage: BuildPage | null = null;
   let request: AbortController | null = null;
   let tokenDestinations: string[] | null = null;
 
@@ -133,20 +140,11 @@ export function setupCustomerPreview(
     connectionOptions.open = true;
   });
 
-  function updateProfileRequirement() {
-    const requiresProfile = Boolean(answerEndpoint.value.trim());
-    profile.required = requiresProfile;
-    profileRequirement.textContent = requiresProfile ? 'required for Smart Answers' : 'optional';
-    profile.placeholder = requiresProfile ? '' : 'App default';
-  }
-
-  answerEndpoint.addEventListener('input', updateProfileRequirement);
   form.addEventListener('invalid', event => {
     if (event.target instanceof HTMLElement && connectionOptions.contains(event.target)) {
       connectionOptions.open = true;
     }
   }, true);
-  updateProfileRequirement();
 
   function updateVisibility() {
     const design = getDesign();
@@ -154,10 +152,10 @@ export function setupCustomerPreview(
     layout.dataset.filters = design.filters ? 'on' : 'off';
     sortField.hidden = !design.showSorting || !latestPage?.sorts.length;
     sortHint.hidden = !design.showSorting || Boolean(latestPage?.sorts.length);
-    if (latestPage?.total === 0) empty.textContent = design.noResultsText;
+    if (latestPage?.mappingsKnown && latestPage.total === 0) empty.textContent = design.noResultsText;
   }
 
-  function renderFacets(page: CustomerPage, active: CustomerSearch) {
+  function renderFacets(page: BuildPage, active: CustomerSearch) {
     const focused = document.activeElement as HTMLInputElement | HTMLSelectElement | null;
     const design = getDesign();
     const showChoices = design.filterPlacement === 'top';
@@ -211,7 +209,7 @@ export function setupCustomerPreview(
     return label;
   }
 
-  function renderExternalPromotions(entries: CustomerPage['externalPromotions'], language?: string) {
+  function renderExternalPromotions(entries: BuildPage['externalPromotions'], language?: string) {
     promotions.replaceChildren(...entries.map(entry => {
       const banner = document.createElement('div');
       banner.className = 'search-promotion-banner';
@@ -232,39 +230,27 @@ export function setupCustomerPreview(
     promotions.hidden = !entries.length;
   }
 
-  function renderResults(page: CustomerPage, active: CustomerSearch, language?: string) {
+  function renderResults(page: BuildPage, active: CustomerSearch, language?: string) {
     status.textContent = page.total + (page.total === 1 ? ' result' : ' results') + ' for “' + active.query + '”';
     renderExternalPromotions(page.externalPromotions, language);
     sort.replaceChildren(new Option('Relevance', ''), ...page.sorts.map(item => new Option(item.label, item.value)));
     sort.value = page.sorts.some(item => item.value === active.sort) ? active.sort : '';
     renderFacets(page, active);
-    grid.replaceChildren(...page.results.map(item => {
+    grid.replaceChildren(...page.cards.map(card => {
       const result = document.createElement('article');
       result.className = 'searchstax-search-result';
-      if (item.promoted) result.append(promotionLabel());
-      const title = document.createElement('h4');
-      const link = document.createElement('a');
-      link.className = 'searchstax-search-result-title';
-      link.href = item.url;
-      link.referrerPolicy = 'no-referrer';
-      link.textContent = item.title;
-      if (language) title.lang = language;
-      title.append(link);
-      result.append(title);
-      if (item.description) {
-        const description = document.createElement('p');
-        description.className = 'search-lab__result-description';
-        description.textContent = item.description;
-        if (language) description.lang = language;
-        result.append(description);
-      }
+      if (language) result.lang = language;
+      if (card.promoted) result.append(promotionLabel());
+      appendResultCard(result, card);
       return result;
     }));
-    grid.hidden = !page.results.length;
-    empty.hidden = Boolean(page.results.length);
-    empty.textContent = page.total
-      ? 'This page has no displayable result links. Check the URL mapping in Results Fields.'
-      : getDesign().noResultsText;
+    grid.hidden = !page.cards.length;
+    empty.hidden = Boolean(page.cards.length);
+    empty.textContent = !page.mappingsKnown ? 'Results Fields are unknown for this profile.'
+      : page.total ? 'No configured Results Fields have a displayable value on this page.' : getDesign().noResultsText;
+    if (connection && !get('[data-single-experience]').hidden) {
+      get('[data-app-settings-summary]').textContent = profileStatus(connection.configuration?.entitlements ?? {}, connection.settings, page.highlighting, connection);
+    }
 
     const focusedPageButton = document.activeElement;
     pager.hidden = !page.resultCount;
@@ -300,12 +286,14 @@ export function setupCustomerPreview(
     }
     const timer = window.setTimeout(() => pending.abort(), 12000);
     try {
-      const page = await searchCustomerApp(candidate, search, pending.signal);
+      const page = await searchBuildApp(candidate, search, pending.signal);
       if (request !== pending) return;
+      if (connecting && page.settings) candidate = { ...candidate, settings: page.settings, language: page.settings.language, profile: page.settings.profile };
       connection = candidate;
       options = search;
       latestPage = page;
       if (connecting) {
+        snapshot.value = '';
         discoveryKey.value = '';
         clearFormToken();
         suggestionSource = candidate.suggestEndpoint ? createCustomerSuggestionSource(candidate, candidate.suggestEndpoint) : null;
@@ -314,7 +302,7 @@ export function setupCustomerPreview(
         formStatus.textContent = 'Connected to your Search App.';
         source.textContent = [new URL(candidate.endpoint).hostname, candidate.profile || 'Default profile', candidate.language || 'App default language'].join(' · ');
         onModeChange(search.query);
-        if (!get('[data-single-experience]').hidden) void answers.start(candidate, search.query);
+        if (!get('[data-single-experience]').hidden) showAnswers(candidate, search.query);
       }
       recovery.clear();
       displayedStart = search.start;
@@ -361,6 +349,11 @@ export function setupCustomerPreview(
     void load(connection, { ...options, start: 0, ...changes });
   }
 
+  function showAnswers(app: CustomerConnection, term: string) {
+    if (featureStatus(app.configuration?.entitlements.smartAnswers, app.settings?.smartAnswers) === 'On') void answers.start(app, term);
+    else answers.clear();
+  }
+
   function disconnect() {
     const wasConnected = Boolean(connection);
     request?.abort();
@@ -371,7 +364,7 @@ export function setupCustomerPreview(
     connect.textContent = 'Connect';
     failedSearch = null;
     connection = null;
-    experiences = [];
+    importVersion++;
     suggestionSource = null;
     options = null;
     latestPage = null;
@@ -389,7 +382,6 @@ export function setupCustomerPreview(
     source.textContent = '';
     formStatus.textContent = '';
     form.reset();
-    updateProfileRequirement();
     connectionOptions.open = false;
     clearFormToken();
     form.hidden = false;
@@ -397,7 +389,7 @@ export function setupCustomerPreview(
     if (wasConnected) onModeChange(null);
   }
 
-  form.addEventListener('submit', event => {
+  form.addEventListener('submit', async event => {
     event.preventDefault();
     if (connect.getAttribute('aria-disabled') === 'true') return;
     clearFieldError();
@@ -421,10 +413,6 @@ export function setupCustomerPreview(
       fieldError(answerEndpoint, 'Enter the HTTPS SearchStax streaming Answer endpoint ending in /answer.');
       return;
     }
-    if (streamingEndpoint && !profileName) {
-      fieldError(profile, 'Enter the Search Profile that has Smart Answers enabled.');
-      return;
-    }
     if (requestedSuggestEndpoint && !autoSuggestEndpoint) {
       fieldError(suggestEndpoint, 'Enter the HTTPS SearchStax Auto-Suggest endpoint ending in /emsuggest.');
       return;
@@ -435,15 +423,28 @@ export function setupCustomerPreview(
       fieldError((relatedURL ? discoveryKey : relatedEndpoint), 'Enter both the HTTPS Related Searches endpoint ending in /related-search/ and its Discovery key.');
       return;
     }
-    try {
-      experiences = readExperienceCatalog(selectEndpoint, { profile: profileName, language: language.value.trim() }, catalogInput.value);
-    } catch (error) {
-      fieldError(catalogInput, error instanceof Error ? error.message : 'Check the additional profiles and languages.');
-      return;
+    let configuration: AppConfiguration | undefined;
+    let settings: Profile | undefined;
+    const file = snapshot.files?.[0];
+    const version = ++importVersion;
+    if (file) {
+      try {
+        configuration = readAppConfiguration(await file.text(), selectEndpoint);
+        if (version !== importVersion) return;
+        const requestedLanguage = language.value.trim().toLowerCase().replaceAll('-', '_');
+        if (profileName) {
+          const matches = configuration.profiles.filter(item => item.profile === profileName && (!requestedLanguage || item.language === requestedLanguage));
+          if (matches.length !== 1) throw Error('Enter a profile and language listed together in this snapshot, or leave the profile blank to use the app default.');
+          settings = matches[0];
+        }
+      } catch (error) {
+        if (version === importVersion) fieldError(snapshot, error instanceof Error ? error.message : 'Check the configuration snapshot.');
+        return;
+      }
     }
     tokenDestinations = endpointFields.map(field => field.value.trim());
     void load({
-      endpoint: selectEndpoint, token: key, profile: profileName, language: language.value.trim(),
+      endpoint: selectEndpoint, token: key, configuration, settings, profile: settings?.profile ?? profileName, language: settings?.language ?? language.value.trim(),
       relatedURL: relatedURL ?? undefined, discoveryKey: discovery || undefined,
       answerEndpoint: streamingEndpoint ?? undefined, suggestEndpoint: autoSuggestEndpoint ?? undefined,
     },
@@ -470,15 +471,16 @@ export function setupCustomerPreview(
   return {
     get connection() { return connection; },
     get query() { return options?.query; },
+    get highlighting() { return latestPage?.highlighting; },
     get order() { return options?.sort; },
     suspendAnswers: answers.clear,
     resumeAnswers() {
-      if (connection && options?.query) void answers.start(connection, options.query);
+      if (connection && options?.query) showAnswers(connection, options.query);
     },
-    get experiences() { return experiences; },
+    get experiences() { return connection?.configuration?.profiles ?? []; },
     get discovery() {
-      return connection?.relatedURL && connection.discoveryKey
-        ? { url: connection.relatedURL, key: connection.discoveryKey, language: connection.language } : null;
+      return connection?.relatedURL && connection.discoveryKey && featureStatus(connection.configuration?.entitlements.relatedSearches, connection.settings?.relatedSearches) === 'On'
+        ? { url: connection.relatedURL, key: connection.discoveryKey, language: connection.language, profile: connection.profile } : null;
     },
     get active() { return Boolean(connection); },
     get suggestionSource() { return suggestionSource; },
@@ -492,7 +494,7 @@ export function setupCustomerPreview(
         return;
       }
       run({ query: term, filters: new Map() });
-      if (connection) void answers.start(connection, term);
+      if (connection) showAnswers(connection, term);
     },
     updateDesign(order?: string) {
       if (!connection || !options) return;

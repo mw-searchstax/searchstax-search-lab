@@ -72,8 +72,10 @@ async function run() {
     const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
     await page.goto(baseURL + '#lab-design');
     if (!useWebKit) await checkSelection(page);
-    await page.getByRole('tab', { name: 'Appearance', exact: true }).click();
+    await page.locator('#lab-advanced > summary').click();
     await page.getByLabel('Desktop filter placement').selectOption('top');
+    await page.getByLabel('Top filter style').selectOption('row');
+    await page.getByRole('tab', { name: 'Appearance', exact: true }).click();
     for (const width of [286, 320, 390, 851, 1440]) {
       await page.setViewportSize({ width, height: 844 });
       for (const [mode, css] of [['default', 'html {}'], ['text spacing', spacing], ['200% text', enlarge], ['200% text and spacing', enlarge + spacing]]) {
@@ -82,7 +84,6 @@ async function run() {
           const measured = await checkBounds(page, width + 'px ' + mode);
           if (mode.startsWith('200%') && width <= 320) assert.ok(measured.stacked, 'Color controls should stack at ' + width + 'px');
           if (width === 320 && mode === '200% text and spacing') {
-            await page.getByLabel('Top filter style').selectOption('row');
             await page.getByLabel('Search page font').selectOption('georgia');
             assert.equal(await page.getByLabel('Search page font').inputValue(), 'georgia');
             if (process.env.QA_SCREENSHOT_DIR) {

@@ -1,0 +1,9 @@
+{
+  "endpoint": "https://review.searchstax.com/qa/emselect",
+  "entitlements": { "relatedSearches": true, "smartAnswers": true },
+  "profiles": [
+    { "language": "en", "profile": "Main", "relatedSearches": true, "smartAnswers": true, "highlighting": true },
+    { "language": "en", "profile": "Directory", "relatedSearches": false, "smartAnswers": false, "highlighting": false },
+    { "language": "es", "profile": "Directorio", "relatedSearches": true, "smartAnswers": true, "highlighting": true }
+  ]
+}

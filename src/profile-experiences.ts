@@ -3,39 +3,16 @@ import { setupProfileFeatures, orderDirectoryResults, spanishPromotionQuery } fr
 import { demoSortOptions } from './demo-sorting.js';
 import { contentLanguageTag } from './content-language.js';
 import { createSearchRecovery } from './search-recovery.js';
-import { readCustomerEndpoint, searchCustomerApp, CustomerSearchError, type CustomerPage, type CustomerConnection } from './customer-search.js';
+import { searchBuildApp, CustomerSearchError, type BuildPage, type CustomerConnection } from './customer-search.js';
 
-export type Experience = Pick<CustomerConnection, 'language' | 'profile'>;
+import { profileStatus, type Entitlements, type Profile } from './app-configuration.js';
+import { appendResultCard, mapResultCard, type ResultCard } from './result-card.js';
 
-export function readExperienceCatalog(endpoint: string, first: Experience, text: string) {
-  const items: Experience[] = [];
-  const add = ({ language, profile }: Experience) => {
-    const code = language.trim().replaceAll('-', '_').toLowerCase();
-    if (code && !/^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$/.test(code)) throw Error('Enter the language code from your app, such as en or es_mx.');
-    if (!items.some(item => item.language === code && item.profile === profile)) items.push({ language: code, profile });
-  };
-  add(first);
-  for (const raw of text.split(/\r?\n/)) {
-    const line = raw.trim();
-    if (!line) continue;
-    if (/^https:\/\//i.test(line)) {
-      let url: URL;
-      try { url = new URL(line); } catch { throw Error('Check the search request URL.'); }
-      const base = new URL(url); base.search = '';
-      if (!readCustomerEndpoint(base.href) || base.origin !== new URL(endpoint).origin ||
-          base.pathname.replace(/\/$/, '') !== new URL(endpoint).pathname.replace(/\/$/, '')) throw Error('Use search request URLs from this app’s Select endpoint.');
-      add({ language: url.searchParams.get('language') || '', profile: url.searchParams.get('model')?.trim() || '' });
-    } else {
-      const parts = line.split('|').map(value => value.trim());
-      if (parts.length !== 2 || !parts[0]) throw Error('Enter one language code and profile per line, such as en | Campus directory.');
-      add({ language: parts[0], profile: parts[1] });
-    }
-  }
-  return items;
-}
+export type Experience = Profile;
 
 export type ExperienceHandoff = {
   source: 'app' | 'demo';
+  entitlements?: Entitlements;
   profiles: Experience[];
   selected: Experience;
   initialQuery: string;
@@ -53,21 +30,19 @@ const directory = [
   { section: 'shared', topic: ['Flu clinic', 'Clínica de gripe'], path: 'news/flu-clinic-update-2024/', en: ['Flu Clinic Updates — 2024 Archive', 'Archived campus flu clinic teaching notices.'], es: ['Clínica de gripe — Archivo de 2024', 'Avisos anteriores de la clínica de gripe del campus.'] },
   { section: 'shared', topic: ['Flu clinic', 'Clínica de gripe'], path: 'news/flu-clinic-update-2026/', en: ['Flu Clinic Updates — 2026 Notice', 'The current campus flu clinic notice.'], es: ['Clínica de gripe — Aviso de 2026', 'El aviso actual de la clínica de gripe del campus.'] },
 ];
-const sample = [
+export const demoProfiles = [
   { language: 'en', profile: 'Programs', section: 'programs' },
   { language: 'en', profile: 'Locations', section: 'locations' },
   { language: 'es', profile: 'Programas', section: 'programs' },
   { language: 'es', profile: 'Ubicaciones', section: 'locations' },
-];
-
-type Result = { title: string; description: string; url: string; promoted?: boolean };
+].map(item => ({ ...item, relatedSearches: item.section !== 'locations', smartAnswers: item.section === 'programs', highlighting: item.section === 'programs' }));
 
 function searchDirectory(active: Experience, query: string, tabs: boolean, filters: Map<string, string>) {
   const spanish = active.language === 'es';
-  const scope = sample.find(item => item.language === active.language && item.profile === active.profile);
+  const scope = demoProfiles.find(item => item.language === active.language && item.profile === active.profile);
   const items = directory.filter(doc => !tabs || doc.section === scope?.section || doc.section === 'shared').map(doc => {
     const [title, description] = spanish ? doc.es : doc.en;
-    const type = sample.find(item => item.language === active.language && item.section === doc.section)?.profile ?? (spanish ? 'Avisos' : 'Notices');
+    const type = demoProfiles.find(item => item.language === active.language && item.section === doc.section)?.profile ?? (spanish ? 'Avisos' : 'Notices');
     return { title, description, url: demoBase + doc.path, type, topic: doc.topic[spanish ? 1 : 0] };
   }).filter(doc => query.toLocaleLowerCase().split(/\s+/).every(word => (doc.title + ' ' + doc.description).toLocaleLowerCase().includes(word)));
   const field = tabs ? 'topic' : 'type';
@@ -79,10 +54,36 @@ function searchDirectory(active: Experience, query: string, tabs: boolean, filte
     choices: [...counts].map(([value, count]) => ({ value, count })) }] };
 }
 
-export function experienceHandoff(connected = false, catalog: Experience[] = sample, active = catalog[0], query = 'campus'): ExperienceHandoff {
+function directoryCards(entries: (ReturnType<typeof searchDirectory>['entries'][number] & { promoted?: boolean })[],
+  profile: Profile, query: string, thumbnails: Record<string, string>) {
+  const locations = demoProfiles.find(item => item.profile === profile.profile)?.section === 'locations';
+  const fields = [
+    { name: 'title', result_card: 'title' }, { name: 'url', result_card: 'url' },
+    { name: 'description', result_card: 'description' }, { name: 'type', result_card: locations ? 'paths' : 'ribbon' },
+    { name: 'topic', result_card: '', title: profile.language === 'es' ? 'Tema' : 'Topic' },
+  ];
+  return entries.map(entry => {
+    const card = mapResultCard(entry, fields);
+    if (profile.highlighting) {
+      for (const field of card.values) {
+        const at = field.value.toLocaleLowerCase().indexOf(query.toLocaleLowerCase());
+        if (at < 0) continue;
+        const text = field.value;
+        field.value = text.slice(0, at) + '<em>' + text.slice(at, at + query.length) + '</em>' + text.slice(at + query.length);
+        field.highlighted = true;
+      }
+    }
+    card.promoted = Boolean(entry.promoted);
+    // These URLs are bundled fixture images. Connected cards use their mapped thumbnail field.
+    card.thumbnail = thumbnails[entry.url] ?? '';
+    return card;
+  });
+}
+
+export function experienceHandoff(connected = false, catalog: Experience[] = demoProfiles, active = catalog[0], query = 'campus'): ExperienceHandoff {
   return {
     source: connected ? 'app' : 'demo',
-    profiles: catalog.map(({ language, profile }) => ({ language, profile })),
+    profiles: catalog.map(({ language, profile, relatedSearches, smartAnswers, highlighting }) => ({ language, profile, relatedSearches, smartAnswers, highlighting })),
     selected: { language: active.language, profile: active.profile },
     initialQuery: connected ? '' : query,
   };
@@ -109,7 +110,9 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
   const info = field('[data-exp-source]');
   const pages = field('[data-exp-pages]');
   let app: CustomerConnection | null = null;
-  let catalog: Experience[] = sample;
+  let allProfiles: Experience[] = demoProfiles;
+  let tabProfiles = allProfiles;
+  let catalog = allProfiles;
   let active = catalog[0];
   let query = 'campus';
   let start = 0;
@@ -125,8 +128,10 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
   const filterButton = field<HTMLButtonElement>('[data-exp-filter-toggle]');
   const order = field<HTMLSelectElement>('[data-exp-sort] select');
   const empty = field('[data-exp-empty]');
-  let sorts: CustomerPage['sorts'] = [];
+  let sorts: BuildPage['sorts'] = [];
   let noMatches = false;
+  let mappingNotice = '';
+  let highlighting: boolean | undefined;
   const features = setupProfileFeatures(panel, submit);
   const spanish = () => active.language.split(/[-_]/)[0] === 'es';
 
@@ -138,7 +143,8 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
     field('form').setAttribute('aria-label', fieldText);
     field('button[type="submit"]').textContent = es && options.searchButtonText === DEFAULT_DESIGN.searchButtonText ? 'Buscar' : options.searchButtonText;
     empty.textContent = es && options.noResultsText === DEFAULT_DESIGN.noResultsText ? 'No hay coincidencias. Prueba otra búsqueda o quita un filtro.' : options.noResultsText;
-    empty.hidden = !noMatches;
+    if (mappingNotice) empty.textContent = mappingNotice;
+    empty.hidden = !noMatches && !mappingNotice;
     previous.textContent = es ? 'Página anterior' : 'Previous page';
     next.textContent = es ? 'Página siguiente' : 'Next page';
     filterButton.textContent = (es ? 'Filtros' : 'Filters') + (filters.size ? ' (' + filters.size + ')' : '');
@@ -153,7 +159,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
   });
   order.addEventListener('change', () => { start = 0; void search(field('[data-exp-sort]'), order); });
 
-  function showFacets(fields: CustomerPage['facets']) {
+  function showFacets(fields: BuildPage['facets']) {
     const focused = document.activeElement as HTMLInputElement | null;
     const hadFocus = facets.contains(focused);
     facets.replaceChildren();
@@ -198,6 +204,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
     lastControl = control;
     recovery.begin(anchor, control);
     noMatches = false;
+    mappingNotice = '';
     updatePresentation();
     features.showExternalPromotions([]);
     if (anchor !== pages) list.replaceChildren();
@@ -214,25 +221,29 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
     results.setAttribute('aria-busy', 'true');
     status.textContent = 'Searching…';
     try {
-      let entries: Result[];
+      let cards: ResultCard[];
       let choices = demoSortOptions.slice(1).map(({ order, label }) => ({
         value: order, label: es ? label.replace('Page address', 'Dirección de página') : label,
       }));
-      let banners: CustomerPage['externalPromotions'] = [];
-      let fields: CustomerPage['facets'];
+      let banners: BuildPage['externalPromotions'] = [];
+      let fields: BuildPage['facets'];
       const rows = options.resultsPerPage;
       let total: number;
       if (app) {
-        const page = await searchCustomerApp({ ...app, ...active }, { query, start, rows, sort: options.showSorting ? order.value : '', filters: new Map(filters) }, AbortSignal.any([request.signal, AbortSignal.timeout(12000)]));
+        const page = await searchBuildApp({ ...app, ...active, settings: active }, { query, start, rows, sort: options.showSorting ? order.value : '', filters: new Map(filters) }, AbortSignal.any([request.signal, AbortSignal.timeout(12000)]));
+        if (pending !== request) return;
+        mappingNotice = !page.mappingsKnown ? 'Results Fields are unknown for this profile.'
+          : !page.cards.length && page.total ? 'No configured Results Fields have a displayable value on this page.' : '';
+        highlighting = page.highlighting;
         choices = page.sorts;
         banners = page.externalPromotions;
         fields = page.facets;
-        entries = page.results;
+        cards = page.cards;
         total = page.total;
       } else {
         const samplePage = searchDirectory(active, query, options.profileTabs, filters);
         const matches = orderDirectoryResults(samplePage.entries, options.showSorting ? order.value : '', query, options.samplePromotions);
-        entries = matches.slice(start, start + rows);
+        cards = directoryCards(matches.slice(start, start + rows), active, query, thumbnails);
         total = samplePage.total;
         fields = samplePage.facets;
       }
@@ -248,35 +259,24 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       updatePresentation();
       features.showExternalPromotions(banners);
       showFacets(fields);
-      for (const entry of entries) {
+      for (const card of cards) {
         const item = document.createElement('li');
-        const link = document.createElement('a');
-        link.href = entry.url;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        link.textContent = entry.title;
-        if (!app) link.hreflang = 'en';
-        if (entry.promoted) {
+        if (card.promoted) {
           const marker = document.createElement('strong');
           marker.className = 'sample-indexed-promotion';
           marker.textContent = es ? (app ? 'Promocionado' : 'Promoción indexada de ejemplo') : (app ? 'Promoted' : 'Sample indexed promotion');
           item.append(marker);
         }
-        if (!app && thumbnails[entry.url]) {
-          const image = document.createElement('img');
-          image.className = 'profile-result-thumbnail';
-          image.src = thumbnails[entry.url];
-          image.alt = '';
-          item.append(image);
-        }
-        item.append(link);
-        if (entry.description) {
-          const description = document.createElement('p');
-          description.textContent = entry.description;
-          item.append(description);
+        appendResultCard(item, card);
+        const link = item.querySelector('a');
+        if (link) {
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+          if (!app) link.hreflang = 'en';
         }
         list.append(item);
       }
+      reportSettings();
       list.lang = contentLanguageTag(active.language) || '';
       const range = total > rows ? (start + 1) + '–' + Math.min(start + rows, total) + (es ? ' de ' : ' of ') : '';
       const count = es ? (total === 1 ? ' resultado para ' : ' resultados para ') : (total === 1 ? ' result for ' : ' results for ');
@@ -294,19 +294,30 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       if (pending === request) { results.removeAttribute('aria-busy'); pending = undefined; }
     }
   }
+  function reportSettings() {
+    const entitlements = app ? app.configuration?.entitlements ?? {} : { relatedSearches: true, smartAnswers: true };
+    panel.dispatchEvent(new CustomEvent('profile-settings', { detail: {
+      profile: active, entitlements, summary: profileStatus(entitlements, active, highlighting, app ?? undefined),
+    } }));
+  }
+
   function select(item: Experience, focus = false, fromLanguage = false) {
     active = item;
-    order.value = '';
+    highlighting = active.highlighting;
+    reportSettings();
+    order.replaceChildren();
+    filterButton.setAttribute('aria-expanded', 'false');
     sorts = [];
     filters.clear();
     showFacets([]);
     start = 0;
-    const choices = catalog.filter(choice => choice.language === active.language);
+    const choices = catalog.filter(choice => !options.languagePicker || choice.language === active.language);
     tabs.replaceChildren(...choices.map(choice => {
       const button = document.createElement('button');
       button.type = 'button';
       button.id = 'lab-experience-tab-' + catalog.indexOf(choice);
       button.textContent = choice.profile || 'Default profile';
+      if (choices.some(other => other !== choice && other.profile === choice.profile)) button.textContent += ' (' + choice.language + ')';
       button.setAttribute('role', 'tab');
       button.setAttribute('aria-controls', results.id);
       button.setAttribute('aria-selected', String(choice === active));
@@ -348,8 +359,8 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
     select(active, false, fromLanguage);
   }
   language.addEventListener('change', () => {
-    const section = !app && sample.find(item => item.language === active.language && item.profile === active.profile)?.section;
-    const translated = section && sample.find(item => item.language === language.value && item.section === section);
+    const section = !app && demoProfiles.find(item => item.language === active.language && item.profile === active.profile)?.section;
+    const translated = section && demoProfiles.find(item => item.language === language.value && item.section === section);
     active = catalog.find(item => item.language === language.value && translated && item.profile === translated.profile)
       ?? catalog.find(item => item.language === language.value && item.profile === active.profile)
       ?? catalog.find(item => item.language === language.value)!;
@@ -368,6 +379,14 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
   return {
     open(term = query, draft = term) { query = term; input.value = draft; render(); },
     close() { cancelSearch(); recovery.clear(); features.clear(); },
+    setProfiles(choices: Experience[]) {
+      if (!choices.length) return;
+      tabProfiles = choices;
+      if (!options.profileTabs) return;
+      catalog = tabProfiles;
+      if (!catalog.includes(active)) active = catalog[0];
+      if (!panel.hidden) render();
+    },
     get searchState() { return { query, draft: input.value }; },
     submit,
     get spanishDemo() { return !app && spanish(); },
@@ -375,10 +394,12 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
     configure(design: DesignSettings) {
       const previous = options;
       options = { ...design };
+      catalog = options.profileTabs ? tabProfiles : allProfiles;
+      if (!catalog.includes(active)) active = catalog[0];
       panel.dataset.layout = design.layout;
       panel.dataset.filterPlacement = design.filterPlacement;
       panel.dataset.filterStyle = design.topFilterStyle;
-      panel.dataset.descriptions = String(design.showDescriptions);
+      panel.dataset.descriptions = String(Boolean(app) || design.showDescriptions);
       panel.dataset.thumbnails = String(design.showThumbnails);
       panel.dataset.dividers = String(design.listDividers);
       panel.dataset.underline = String(design.underlineTitles);
@@ -396,11 +417,15 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       } else updatePresentation();
     },
     handoff(): ExperienceHandoff {
-      return experienceHandoff(Boolean(app), catalog, active, query);
+      return { ...experienceHandoff(Boolean(app), catalog, active, query), entitlements: app?.configuration?.entitlements };
     },
     setSource(connection: CustomerConnection | null, choices: Experience[], term: string, selected?: Experience) {
-      cancelSearch(); features.clear(); app = connection; catalog = connection ? choices : sample;
+      cancelSearch(); features.clear(); app = connection;
+      allProfiles = choices.length ? choices : connection ? [connection.settings ?? { language: connection.language, profile: connection.profile }] : demoProfiles;
+      tabProfiles = allProfiles;
+      catalog = allProfiles;
       active = catalog.find(item => item.language === selected?.language && item.profile === selected.profile) ?? catalog[0];
+      panel.dataset.descriptions = String(Boolean(app) || options.showDescriptions);
       query = term;
       start = 0;
       list.replaceChildren(); tabs.replaceChildren(); language.replaceChildren();

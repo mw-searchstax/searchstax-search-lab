@@ -1,6 +1,7 @@
 import { setupSearchSuggestions, sampleSuggestionSource } from './sample-suggestions.js';
 import { createCustomerSuggestionSource } from './customer-suggestions.js';
 import { setupRelatedSearches, relatedSource, demoRelatedSource } from './related-searches.js';
+import { featureStatus } from './app-configuration.js';
 import { setupCustomerAnswers } from './customer-answers.js';
 import { createSampleExternalPromotion, updateSampleExternalPromotion, samplePromotionMode, samplePromotionQuery, applySampleIndexedPromotion } from './sample-promotions.js';
 
@@ -82,15 +83,17 @@ export function setupProfileFeatures(panel, submit) {
         suggestions = app
           ? app.suggestEndpoint && createCustomerSuggestionSource({ ...app, ...active }, app.suggestEndpoint)
           : active.language === 'es' ? spanishSuggestions : sampleSuggestionSource;
-        relatedTerms = app ? relatedSource(app.relatedURL, app.discoveryKey, active.language)
+        const entitled = app ? app.configuration?.entitlements.relatedSearches : true;
+        relatedTerms = featureStatus(entitled, active.relatedSearches) !== 'On' ? null
+          : app ? relatedSource(app.relatedURL, app.discoveryKey, active.language, active.profile)
           : active.language === 'es' ? relatedSpanish : relatedEnglish;
       }
       setSuggestions(app || design.showSuggestions ? suggestions : null);
-      void related.show(panel.querySelector('#lab-exp-results'), design.relatedPlacement, query, relatedTerms);
-      sampleAnswer.hidden = Boolean(app) || !design.showSmartAnswersSample;
+      void related.show(panel.querySelector('#lab-exp-results'), app && design.relatedPlacement === 'off' ? 'below' : design.relatedPlacement, query, relatedTerms);
+      sampleAnswer.hidden = Boolean(app) || !active.smartAnswers || !design.showSmartAnswersSample;
       if (sampleAnswer.hidden) sampleAnswer.open = false;
       updateSampleExternalPromotion(sampleBanner, app ? 'off' : promotionMode(query, design.samplePromotions));
-      if (app?.answerEndpoint && answerQuery !== query) {
+      if (app?.answerEndpoint && featureStatus(app.configuration?.entitlements.smartAnswers, active.smartAnswers) === 'On' && answerQuery !== query) {
         answerQuery = query;
         if (query) void answers.start({ ...app, ...active }, query);
         else answers.clear();

@@ -95,7 +95,7 @@ export function setupLabNavigation(root: HTMLElement, activate: (view: LabView, 
   for (const link of controls.querySelectorAll<HTMLButtonElement>('[data-placement-target]')) {
     link.addEventListener('click', () => {
       const field = document.getElementById(link.dataset.placementTarget!)!;
-      selectEditorTab(appearanceTab);
+      selectEditorTab(field.closest('[role=tabpanel]')?.id === 'lab-more-settings' ? featuresTab : appearanceTab);
       field.closest('details')!.open = true;
       field.focus();
     });

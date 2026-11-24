@@ -49,6 +49,7 @@ async function run() {
     assert.ok(await placement.evaluate(el => el === el.ownerDocument.activeElement));
     await placement.selectOption('top');
     await app.getByLabel('Top filter style').selectOption('row');
+    await app.getByRole('tab', { name: 'Appearance', exact: true }).click();
     await app.getByRole('radio', { name: /Cards/ }).check();
     await app.getByRole('tab', { name: 'Appearance', exact: true }).press('Home');
     assert.equal(await app.getByRole('tab', { name: 'Features' }).getAttribute('aria-selected'), 'true');

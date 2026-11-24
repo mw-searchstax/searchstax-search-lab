@@ -17,7 +17,7 @@
 .lab-experiences .experience-results li { margin: 0; padding: .7rem 0; border-bottom: 1px solid var(--search-divider, #d8dfe3); }
 .lab-experiences .experience-results li a { color: var(--search-title-ink, #263f58); font-weight: 700; text-underline-offset: .15em; }
 .lab-experiences .experience-results li p { margin: .3rem 0 0; }
-.lab-experiences[data-descriptions="false"] li p { display: none; }
+.lab-experiences[data-descriptions="false"] li .search-lab__result-description { display: none; }
 .lab-experiences[data-layout="cards"] .experience-results ul { grid-template-columns: repeat(auto-fit, minmax(min(15rem,100%),1fr)); }
 .lab-experiences[data-layout="cards"] .experience-results li { border: 1px solid var(--search-divider, #d8dfe3); border-radius: var(--search-corners, 5px); padding: 1rem; }
 .lab-experiences [data-exp-facets] fieldset { min-width: 0; margin: 0 0 .5rem; border: 0; padding: 0; }
@@ -63,3 +63,8 @@
   .lab-experiences [data-exp-filter-toggle] { display: inline-block; min-height: 44px; }
   .lab-experiences [data-exp-filter-toggle][aria-expanded="false"] + [data-exp-facets] { display: none; }
 }
+
+.mapped-result-thumbnail { display: block; width: min(100%, 12rem); height: auto; margin-bottom: .5rem; }
+
+.mapped-result-card { position: relative; }
+.mapped-result-card a.searchstax-search-result-title::after { content: ''; position: absolute; inset: 0; }
