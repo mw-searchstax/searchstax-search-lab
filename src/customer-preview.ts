@@ -1,6 +1,6 @@
 import { createSearchRecovery } from './search-recovery';
 import { readAppConfiguration, featureStatus, profileStatus, type Profile, type AppConfiguration } from './app-configuration.js';
-import { appendResultCard } from './result-card.js';
+import { resultMappingNotice, appendResultCard } from './result-card.js';
 import type { DesignSettings } from './design';
 import { contentLanguageTag } from './content-language.js';
 import { readAnswerEndpoint, setupCustomerAnswers } from './customer-answers.js';
@@ -246,8 +246,7 @@ export function setupCustomerPreview(
     }));
     grid.hidden = !page.cards.length;
     empty.hidden = Boolean(page.cards.length);
-    empty.textContent = !page.mappingsKnown ? 'Results Fields are unknown for this profile.'
-      : page.total ? 'No configured Results Fields have a displayable value on this page.' : getDesign().noResultsText;
+    empty.textContent = resultMappingNotice(page.mappingsKnown, page.cards.length, page.total) || getDesign().noResultsText;
     if (connection && !get('[data-single-experience]').hidden) {
       get('[data-app-settings-summary]').textContent = profileStatus(connection.configuration?.entitlements ?? {}, connection.settings, page.highlighting, connection);
     }
@@ -483,7 +482,7 @@ export function setupCustomerPreview(
     get experiences() { return connection?.configuration?.profiles ?? []; },
     get discovery() {
       return connection?.relatedURL && connection.discoveryKey && featureStatus(connection.configuration?.entitlements.relatedSearches, connection.settings?.relatedSearches) === 'On'
-        ? { url: connection.relatedURL, key: connection.discoveryKey, language: connection.language, profile: connection.profile } : null;
+        ? { url: connection.relatedURL, key: connection.discoveryKey, language: connection.language } : null;
     },
     get active() { return Boolean(connection); },
     get suggestionSource() { return suggestionSource; },

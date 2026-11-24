@@ -46,11 +46,14 @@ async function run() {
         } });
       }
       if (kind === 'emsuggest') return route.fulfill({ json: { suggest: { terms: { prefix: { suggestions: [{ term: 'Suggested ' + term }] } } } } });
-      if (kind === 'related-search') return route.fulfill({ json: { response: { docs: [{ related_search: 'Related ' + lang + ' ' + term }] } } });
+      if (kind === 'related-search') {
+        assert.deepEqual([...url.searchParams.keys()].sort(), ['language', 'search']);
+        return route.fulfill({ json: { response: { docs: [{ related_search: 'Related ' + lang + ' ' + term }] } } });
+      }
       if (kind === 'answer') return route.fulfill({ contentType: 'text/event-stream', body: 'data: Answer ' + lang + '/' + profile + ' ' + term + '\n\ndata: CLOSE\n\n' });
       return route.abort();
     });
-    // Connect while the fictional demo is still waiting for its first response.
+    // Connect while SearchLabDemo is still waiting for its first response.
     await page.route(url => url.origin !== origin && url.pathname.endsWith('/emselect'), () => {});
     await page.goto(baseURL);
     await page.getByRole('link', { name: 'Start designing' }).click();
@@ -99,10 +102,11 @@ async function run() {
     await page.getByLabel('Show language picker').check();
     await panel.getByRole('tab', { name: 'Directory', exact: true }).click();
     await panel.locator('li h4').filter({ hasText: 'en/Directory ' + query }).waitFor();
-    assert.equal(await panel.locator('li a, li img, li mark, [data-customer-answer]:visible, .search-related-terms:visible').count(), 0);
+    assert.equal(await panel.locator('li a, li img, li mark, [data-customer-answer]:visible').count(), 0);
     assert.equal(await panel.locator('.searchstax-search-result-ribbon, time, .mapped-result-paths').count(), 0);
     assert.doesNotMatch(await panel.innerText(), /Enrollment status|Openings/);
-    assert.equal(requests.some(r => r.profile === 'Directory' && ['related-search', 'answer'].includes(r.kind)), false);
+    await panel.getByRole('button', { name: 'Related en ' + query }).waitFor();
+    assert.equal(requests.some(r => r.profile === 'Directory' && r.kind === 'answer'), false);
     // Change profile again before the previous profile's search can complete.
     let releaseSlow;
     let startedSlow;

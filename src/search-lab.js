@@ -34,7 +34,7 @@ import './smart-answers-sample.css';
 import { setupRelatedSearches, relatedSource } from './related-searches.js';
 import './related-searches.css';
 import profileControls from './profile-controls.html?raw';
-import { resultCards, appendResultCard } from './result-card';
+import { resultCards, resultMappingNotice, appendResultCard } from './result-card';
 import { profileStatus, featureStatus, readAppConfiguration } from './app-configuration';
 import { readAnswerEndpoint } from './customer-answers.js';
 import { readCustomerEndpoint } from './web-url.js';
@@ -211,6 +211,9 @@ import { setupPaginationFocus } from './pagination-focus.js';
   let builtInRelatedSource;
   let builtInAnswerQuery = '';
   let snapshotRequested = false;
+  let lastBuiltInPage;
+  let builtInHighlighting;
+  const unknownResultFields = new WeakSet();
   var singleProfileQuery = '';
   var related = setupRelatedSearches(form, function (term) {
     queryInput.value = term;
@@ -238,19 +241,23 @@ import { setupPaginationFocus } from './pagination-focus.js';
     if (snapshotRequested) return;
     snapshotRequested = true;
     try {
-      const response = await fetch('./config/searchlabdemo.json', { cache: 'no-cache', credentials: 'omit' });
+      const response = await fetch('./config/searchlabdemo.json', { cache: 'no-cache', credentials: 'omit', signal: AbortSignal.timeout(12000) });
       if (!response.ok) throw Error('The built-in app configuration is unavailable.');
       const configuration = readAppConfiguration(await response.text(), builtInApp.endpoint);
       builtInApp.configuration = configuration;
       builtInApp.settings = configuration.profiles.find(p => p.profile === builtInApp.profile && p.language === builtInApp.language);
       if (featureStatus(configuration.entitlements.relatedSearches, builtInApp.settings?.relatedSearches) === 'On') {
-        builtInRelatedSource = relatedSource(builtInApp.relatedURL, builtInApp.discoveryKey, builtInApp.language, builtInApp.profile);
+        builtInRelatedSource = relatedSource(builtInApp.relatedURL, builtInApp.discoveryKey, builtInApp.language);
       }
     } catch {
       // Leave unavailable metadata unknown. Retry on the next visit to Build.
       snapshotRequested = false;
     }
-    if (root.dataset.labView === 'design' && !customerPreview.active && experiencePanel.hidden) {
+    if (root.dataset.labView === 'design' && lastBuiltInPage && lastBuiltInPage.request === expected && completed) {
+      search.dataLayer.setSearchResults(renderBuiltInPage(lastBuiltInPage.items, lastBuiltInPage.response));
+    }
+    if (root.dataset.labView === 'design' && !customerPreview.active && design.previewSource === 'app') {
+      updateExperienceMode();
       builtInAnswerQuery = '';
       syncFeatureControls();
       updateSingleProfileFeatures();
@@ -262,8 +269,11 @@ import { setupPaginationFocus } from './pagination-focus.js';
   const catalogStatus = root.querySelector('[data-profile-catalog-status]');
   const settingsSummary = root.querySelector('[data-app-settings-summary]');
   const sourceLabel = root.querySelector('[data-lab-source-label]');
-  let availableProfiles = demoProfiles;
-  let includedProfiles = [...demoProfiles];
+  const sourcePicker = root.querySelector('#lab-preview-source');
+  const emptyCatalog = [];
+  let navigationSource;
+  let availableProfiles = emptyCatalog;
+  let includedProfiles = [];
   let choiceLanguage = demoProfiles[0].language;
   let selectedSettings;
   function showProfileSettings(profile, entitlements, summary) {
@@ -274,16 +284,19 @@ import { setupPaginationFocus } from './pagination-focus.js';
   }
   function syncFeatureControls() {
     const connected = Boolean(customerPreview?.active);
-    const fixture = !connected && !experiencePanel.hidden;
-    const builtIn = !connected && experiencePanel.hidden;
+    const fixture = !connected && design.previewSource === 'fictional';
+    const builtIn = !connected && !fixture && experiencePanel.hidden;
+    sourcePicker.value = design.previewSource;
+    sourcePicker.closest('[data-preview-source-field]').hidden = connected;
     const profile = builtIn ? builtInApp.settings : selectedSettings?.profile;
     const entitlements = builtIn ? builtInApp.configuration?.entitlements : selectedSettings?.entitlements;
     if (builtIn) {
-      settingsSummary.textContent = profileStatus(entitlements ?? {}, profile, profile?.highlighting, builtInApp);
+      settingsSummary.textContent = profileStatus(entitlements ?? {}, profile, profile?.highlighting ?? builtInHighlighting, builtInApp);
       settingsSummary.hidden = false;
     }
-    sourceLabel.textContent = builtIn && root.dataset.labView === 'design'
-      ? (root.dataset.searchAppName || 'Live app') + ' · ' + builtInApp.profile : 'Fictional demo';
+    const liveProfile = builtIn ? builtInApp.profile : profile?.profile;
+    sourceLabel.textContent = !connected && !fixture && root.dataset.labView === 'design'
+      ? [root.dataset.searchAppName || 'Live app', liveProfile].filter(Boolean).join(' · ') : 'Fictional demo';
     const configured = featureStatus(entitlements?.relatedSearches, profile?.relatedSearches) === 'On';
     const relatedSection = relatedToggle.closest('details');
     relatedSection.hidden = !configured;
@@ -296,7 +309,9 @@ import { setupPaginationFocus } from './pagination-focus.js';
     promotionsInput.closest('details').querySelector('summary').textContent = fixture && profile?.smartAnswers
       ? 'Promotions and answers' : 'Promotions';
     thumbnailToggle.closest('.search-lab__field').hidden = !builtIn;
-    descriptionToggle.closest('.search-lab__field').hidden = connected;
+    descriptionToggle.closest('.search-lab__field').hidden = connected || (!fixture && !builtIn);
+    promotionsInput.closest('details').hidden = connected || (!builtIn && !fixture);
+    suggestionsToggle.closest('details').hidden = connected || (!builtIn && !fixture);
   }
   experiencePanel.addEventListener('profile-settings', event => {
     if (experiencePanel.hidden) return;
@@ -330,26 +345,47 @@ import { setupPaginationFocus } from './pagination-focus.js';
   const languageToggle = root.querySelector('#lab-language-picker');
   const experiencePreview = setupExperiencePreview(experiencePanel, Object.fromEntries(Object.entries(demoThumbnails).map(([url, image]) => [url, image.source])));
   function updateExperienceMode(sourceQuery) {
-    if (!availableProfiles.length) { design.profileTabs = false; design.languagePicker = false; }
-    const enabled = (design.profileTabs || design.languagePicker) && root.dataset.labView === 'design';
-    experienceToggle.disabled = availableProfiles.length === 0;
-    languageToggle.disabled = !availableProfiles.length;
-    experienceToggle.checked = design.profileTabs;
-    profileChoices.hidden = !design.profileTabs || !profileChoices.querySelector('input');
-    languageToggle.checked = design.languagePicker;
-    experiencePreview.configure(design);
-    if (enabled === !experiencePanel.hidden) return;
-    experiencePanel.hidden = !enabled;
-    root.querySelector('[data-single-experience]').hidden = enabled;
-    if (enabled) {
-      const submitted = sourceQuery ?? customerPreview.query ?? expected?.query ?? queryInput.value;
-      customerPreview.suspendAnswers();
-      experiencePreview.open(submitted, sourceQuery ?? queryInput.value);
-    } else {
+    const customer = customerPreview?.connection;
+    const source = customer ?? (design.previewSource === 'fictional' ? null : builtInApp);
+    const catalog = source ? source.configuration?.profiles ?? emptyCatalog : demoProfiles;
+    const changed = navigationSource !== source || catalog !== availableProfiles;
+    const previous = experiencePanel.hidden ? null : experiencePreview.searchState;
+    const submitted = sourceQuery ?? previous?.query ?? customerPreview?.query ?? expected?.query ?? queryInput.value;
+    const draft = sourceQuery ?? previous?.draft ?? queryInput.value;
+    if (changed) {
+      navigationSource = source;
+      availableProfiles = catalog;
+      includedProfiles = [...catalog];
+      choiceLanguage = source ? source.language : demoProfiles[0].language;
       experiencePreview.close();
-      const connection = customerPreview.connection;
-      if (connection) showProfileSettings(connection.settings, connection.configuration?.entitlements ?? {});
-      else { selectedSettings = null; settingsSummary.hidden = true; }
+      experiencePanel.hidden = true;
+      experiencePreview.setSource(source, catalog, submitted, source?.settings);
+      refreshTabChoices();
+    }
+    const hasCatalog = catalog.length > 0;
+    if (customer && !hasCatalog) { design.profileTabs = false; design.languagePicker = false; }
+    const enabled = root.dataset.labView === 'design' && (!source || hasCatalog && (design.profileTabs || design.languagePicker));
+    experienceToggle.disabled = !hasCatalog;
+    languageToggle.disabled = !hasCatalog;
+    experienceToggle.checked = hasCatalog && design.profileTabs;
+    languageToggle.checked = hasCatalog && design.languagePicker;
+    profileChoices.hidden = !experienceToggle.checked || !profileChoices.querySelector('input');
+    catalogStatus.textContent = hasCatalog ? '' : source?.configuration ? 'This snapshot lists no Search Profiles.'
+      : customer ? 'Search Profiles are unknown. Connect with an app configuration snapshot to choose tabs.' : 'Search Profiles are unknown.';
+    root.querySelector('[data-single-experience]').hidden = enabled;
+    const closing = !enabled && !experiencePanel.hidden;
+    if (closing) {
+      experiencePanel.hidden = true;
+      experiencePreview.close();
+    }
+    experiencePreview.configure(design);
+    if (enabled && experiencePanel.hidden) {
+      customerPreview.suspendAnswers();
+      experiencePanel.hidden = false;
+      experiencePreview.open(submitted, draft);
+    } else if (!enabled && (closing || changed)) {
+      if (customer) showProfileSettings(customer.settings, customer.configuration?.entitlements ?? {});
+      else selectedSettings = null;
     }
   }
   function changeNavigation() {
@@ -358,21 +394,31 @@ import { setupPaginationFocus } from './pagination-focus.js';
     design.languagePicker = languageToggle.checked;
     if (previous && !design.profileTabs && !design.languagePicker) singleProfileQuery = previous.query;
     updateDesign();
+    restoreSingleSearch(previous);
+  }
+  function restoreSingleSearch(previous) {
     if (previous && experiencePanel.hidden) {
+      singleProfileQuery = previous.query;
       if (customerPreview.active) {
         if (previous.query === customerPreview.query) customerPreview.resumeAnswers();
         else {
-          singleProfileQuery = previous.query;
           updateSingleProfileFeatures();
           customerPreview.search(previous.query);
         }
-      } else if (previous.query !== expected?.query) {
+      } else if (!search) {
+        initialize(previous.query);
+      } else if (previous.query !== expected?.query || !completed) {
         runSearch(previous.query, true);
       }
       queryInput.value = previous.draft;
     }
   }
-  refreshTabChoices();
+  sourcePicker.addEventListener('change', () => {
+    const previous = experiencePanel.hidden ? null : experiencePreview.searchState;
+    design.previewSource = sourcePicker.value;
+    updateDesign();
+    restoreSingleSearch(previous);
+  });
   experienceToggle.addEventListener('change', changeNavigation);
   languageToggle.addEventListener('change', changeNavigation);
   root.querySelector('[data-exp-disconnect]').addEventListener('click', () => customerPreview.disconnect());
@@ -384,23 +430,10 @@ import { setupPaginationFocus } from './pagination-focus.js';
       demoOutput.removeAttribute('data-searching');
       resultsLayout.setAttribute('aria-busy', 'false');
     }
-    availableProfiles = connected ? customerPreview.experiences : demoProfiles;
-    choiceLanguage = connected ? customerPreview.connection.language : demoProfiles[0].language;
-    includedProfiles = [...availableProfiles];
-    if (!availableProfiles.length) {
-      design.profileTabs = false;
-      design.languagePicker = false;
-    }
-    catalogStatus.textContent = connected && !customerPreview.connection.configuration ? 'Search Profiles are unknown. Connect with an app configuration snapshot to choose tabs.'
-      : !availableProfiles.length ? 'This snapshot lists no Search Profiles.' : '';
-    if (connected) showProfileSettings(customerPreview.connection.settings, customerPreview.connection.configuration?.entitlements ?? {});
-    else { selectedSettings = null; settingsSummary.hidden = true; }
-    refreshTabChoices();
-    experiencePreview.setSource(customerPreview.connection, includedProfiles, query ?? sampleQuery(), customerPreview.connection?.settings);
     root.querySelector('[data-exp-disconnect]').hidden = !connected;
     updateExperienceMode(query ?? sampleQuery());
     var discovery = customerPreview.discovery;
-    connectedRelatedSource = discovery ? relatedSource(discovery.url, discovery.key, discovery.language, discovery.profile) : null;
+    connectedRelatedSource = discovery ? relatedSource(discovery.url, discovery.key, discovery.language) : null;
     singleProfileQuery = query || '';
     updateSingleProfileFeatures();
     root.toggleAttribute('data-customer-connected', connected);
@@ -417,8 +450,10 @@ import { setupPaginationFocus } from './pagination-focus.js';
     queryInput.value = query ?? sampleQuery();
     (experiencePanel.hidden ? queryInput : experiencePanel.querySelector('input')).focus({ preventScroll: true });
     if (!connected) {
-      if (search) runSearch(queryInput.value, true);
-      else initialize();
+      if (experiencePanel.hidden) {
+        if (search) runSearch(queryInput.value, true);
+        else initialize();
+      }
     }
   });
 
@@ -716,7 +751,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
         searchURL: config.searchURL,
         searchAuth: config.searchAuth,
         model: config.before,
-        experience: (design.profileTabs || design.languagePicker) ? experiencePreview.handoff() : undefined,
+        experience: !experiencePanel.hidden ? experiencePreview.handoff() : undefined,
         kitURL: document.querySelector('#searchstax-ui-kit').src,
       };
       var starter = {
@@ -785,7 +820,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
   }
 
   function runSearch(query, clearFilters, preserveDraft = false, previousSearch) {
-    if (!search || customerPreview.active) return;
+    if (!search || customerPreview.active || workspaceMode === 'design' && !experiencePanel.hidden) return;
     if (!query.trim()) {
       queryInput.setCustomValidity('Enter a search term to explore the demo.');
       queryInput.reportValidity();
@@ -815,14 +850,14 @@ import { setupPaginationFocus } from './pagination-focus.js';
       : (!clearFilters || !current.facets.length);
     var unchanged = current.query === cleanQuery && current.model === model && current.page === page &&
       current.order === order && current.itemsPerPage === itemsPerPage && filtersUnchanged;
-    if (unchanged && completed && expected.promotions === promotions) {
+    if (unchanged && completed && expected.view === workspaceMode && expected.promotions === promotions) {
       if (!preserveDraft) queryInput.value = cleanQuery;
       status.textContent = '';
       resultsContent.hidden = false;
       pagination.hidden = false;
       return;
     }
-    expected = { query: cleanQuery, model: model, order: order, itemsPerPage: itemsPerPage, promotions: promotions };
+    expected = { query: cleanQuery, model: model, order: order, itemsPerPage: itemsPerPage, promotions: promotions, view: workspaceMode };
     clearStaleShareLinks();
     completed = false;
     if (workspaceMode === 'examples') summary.textContent = '';
@@ -851,7 +886,31 @@ import { setupPaginationFocus } from './pagination-focus.js';
     }
   }
 
-  function initialize() {
+  function renderBuiltInPage(items, response) {
+    const { cards, mappingsKnown, highlighting } = resultCards(response, response.response.docs, builtInApp.settings?.highlighting);
+    builtInHighlighting = highlighting;
+    const mapped = cards.flatMap((card, index) => {
+      if (card.url && !isDemoResultURL(card.url)) return [];
+      if (!card.url && !card.thumbnail && !card.values.length) return [];
+      for (const value of card.values) {
+        if (value.role === 'title' && !value.highlighted) value.value = demoResultTitle(value.value);
+        else value.value = demoResultText(value.value);
+      }
+      const body = document.createElement('div');
+      appendResultCard(body, card);
+      const link = body.querySelector('a');
+      if (link) link.setAttribute('data-searchstax-unique-result-id', items[index]?.uniqueId ?? '');
+      return [{ ...items[index], url: card.url, mappedBody: body.innerHTML,
+        demoThumbnail: card.thumbnail ? '' : demoThumbnails[card.url]?.source }];
+    });
+    const total = response.response.numFound;
+    const notice = resultMappingNotice(mappingsKnown && !unknownResultFields.has(response), mapped.length, total);
+    summary.textContent = total + (total === 1 ? ' result' : ' results') + ' for “' + response.responseHeader.params.q + '”' + (notice ? '. ' + notice : '');
+    if (experiencePanel.hidden && !customerPreview.active) syncFeatureControls();
+    return applySampleIndexedPromotion(mapped, response, expected.promotions);
+  }
+
+  function initialize(initialQuery = sampleQuery()) {
     var Searchstax = getConstructor();
     if (!validSearchURL(config.searchURL) || !config.searchAuth ||
       !config.before || !config.after || config.before === config.after) {
@@ -864,7 +923,18 @@ import { setupPaginationFocus } from './pagination-focus.js';
     }
 
     try {
-      search = new Searchstax();
+      // UI Kit 4.2.34 reads metadata.results before its public afterSearch hook.
+      // Normalize only a successful Build response at that boundary, retaining the unknown state.
+      class BuildSearch extends Searchstax {
+        parseSearchResultsResponse(response) {
+          if (workspaceMode === 'design' && Array.isArray(response?.response?.docs) && !Array.isArray(response.metadata?.results)) {
+            response = { ...response, metadata: { ...response.metadata, results: [] } };
+            unknownResultFields.add(response);
+          }
+          return super.parseSearchResultsResponse(response);
+        }
+      }
+      search = new BuildSearch();
       search.initialize({
         language: 'en',
         model: config.before,
@@ -888,23 +958,8 @@ import { setupPaginationFocus } from './pagination-focus.js';
             summary.textContent = total + (total === 1 ? ' result' : ' results') + ' for “' + expected.query + '”';
             window.setTimeout(finishSearch, 0);
             if (workspaceMode !== 'design') return applySampleIndexedPromotion(safeResults(items || []), response, expected.promotions);
-            const { cards, mappingsKnown } = resultCards(response, response.response.docs);
-            if (!mappingsKnown) summary.textContent += '. Results Fields are unknown for this profile.';
-            const mapped = cards.flatMap((card, index) => {
-              if (card.url && !isDemoResultURL(card.url)) return [];
-              if (!card.url && !card.thumbnail && !card.values.length) return [];
-              for (const value of card.values) {
-                if (value.role === 'title' && !value.highlighted) value.value = demoResultTitle(value.value);
-                else value.value = demoResultText(value.value);
-              }
-              const body = document.createElement('div');
-              appendResultCard(body, card);
-              const link = body.querySelector('a');
-              if (link) link.setAttribute('data-searchstax-unique-result-id', items[index]?.uniqueId ?? '');
-              return [{ ...items[index], url: card.url, mappedBody: body.innerHTML,
-                demoThumbnail: card.thumbnail ? '' : demoThumbnails[card.url]?.source }];
-            });
-            return applySampleIndexedPromotion(mapped, response, expected.promotions);
+            lastBuiltInPage = { items, response, request: expected };
+            return renderBuiltInPage(items, response);
           },
         },
       });
@@ -957,7 +1012,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
           window.setTimeout(finishSearch, 0);
         }
       });
-      runSearch(sampleQuery(), true);
+      runSearch(initialQuery, true);
     } catch {
       search = null;
       showUnavailable();
@@ -1291,7 +1346,9 @@ import { setupPaginationFocus } from './pagination-focus.js';
     updateScenario();
     queryInput.value = sampleQuery();
     chooseDemoAnchor(queryInput);
-    if (firstVisit) initialize();
-    else if (search) runSearch(queryInput.value, true);
+    if (view === 'examples' || experiencePanel.hidden) {
+      if (firstVisit || !search) initialize();
+      else runSearch(queryInput.value, true);
+    }
   });
 })();

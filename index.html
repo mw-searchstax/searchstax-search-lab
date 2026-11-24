@@ -90,7 +90,7 @@
           <button type="button" aria-expanded="false" aria-controls="lab-connect-panel">Preview with your Search App</button>
         </div>
         <div class="search-lab__handoff-panel" id="lab-share-panel" hidden>
-          <p>Copy a link to reopen these feature and appearance settings with the fictional demo.<span data-lab-local-share hidden> This local link works for teammates who run their copy at the same address. To hand the design to a developer, send a starter ZIP.</span></p>
+          <p>Copy a link to reopen these feature and appearance settings.<span data-lab-local-share hidden> This local link works for teammates who run their copy at the same address. To hand the design to a developer, send a starter ZIP.</span></p>
           <button type="button" class="lt-btn lt-btn--secondary" data-lab-share>Copy design link</button>
           <p class="search-lab__feedback" role="status"></p>
           <input class="search-lab__share-url" aria-label="Design link" type="text" readonly hidden>
@@ -119,7 +119,7 @@
         </div>
         <div class="search-lab__handoff-panel" id="lab-connect-panel" hidden>
           <form data-customer-connect autocomplete="off">
-            <p>Use a read-only token for a Search App you’re allowed to preview. The connection lasts until you leave Design. Shared links reopen the fictional demo. A starter with profile tabs or a language picker includes the selected languages, profile names, and feature settings. Your connection credentials stay out of downloads.</p>
+            <p>Use a read-only token for a Search App you’re allowed to preview. The connection lasts until you leave Design. Shared links reopen the selected built-in preview source. A starter with profile tabs or a language picker includes the selected languages, profile names, and feature settings. Your connection credentials stay out of downloads.</p>
             <fieldset class="search-lab__field">
               <legend>Required to connect</legend>
               <p id="lab-customer-credentials-help">In Site Search, open your Search App and go to <strong>App Settings → All APIs → Search &amp; Indexing</strong> for the Select endpoint and a Read Only token. You can also paste a Select request URL that includes a model or language to fill in those settings.</p>
@@ -197,6 +197,10 @@
               <button type="button" id="lab-appearance-tab" role="tab" aria-selected="false" aria-controls="lab-appearance-panel" tabindex="-1">Appearance</button>
             </div>
             <div id="lab-more-settings" role="tabpanel" aria-labelledby="lab-features-tab" tabindex="0">
+              <div class="search-lab__field" data-preview-source-field>
+                <label for="lab-preview-source">Preview source</label>
+                <select id="lab-preview-source"><option value="app">SearchLabDemo</option><option value="fictional">Fictional demo</option></select>
+              </div>
               <p data-app-settings-summary hidden></p>
 
               <details class="search-lab__disclosure" data-lab-fictional-only>
@@ -283,6 +287,12 @@
                   </div>
                 </div>
                 <div class="search-lab__field">
+                  <label for="lab-related-placement">Related search placement</label>
+                  <select id="lab-related-placement">
+                    <option value="below">Below results</option><option value="above">Below search box</option>
+                  </select>
+                </div>
+                <div class="search-lab__field">
                   <label for="lab-filter-placement">Desktop filter placement</label>
                   <select id="lab-filter-placement" aria-describedby="lab-filter-placement-help"><option value="sidebar">Sidebar</option><option value="top">Above results</option></select>
                   <p id="lab-filter-placement-help">On narrow screens, visitors open Filters above the results.</p>
@@ -312,12 +322,6 @@
                     <label><input type="radio" name="lab-layout" value="cards"><span><span aria-hidden="true">▦</span> Cards</span></label>
                   </div>
                 </fieldset>
-                <div class="search-lab__field">
-                  <label for="lab-related-placement">Related search placement</label>
-                  <select id="lab-related-placement">
-                    <option value="below">Below results</option><option value="above">Below search box</option>
-                  </select>
-                </div>
                 <div class="search-lab__field search-lab__spacing-field">
                   <label for="lab-spacing">Result spacing</label>
                   <select id="lab-spacing">
@@ -428,7 +432,7 @@
                 <span class="search-lab__demo-label" data-lab-fictional-only data-lab-source-label>Fictional demo</span>
               </div>
               <section class="search-lab__site-content lab-experiences" id="lab-experiences" aria-label="Profile tabs and languages preview" hidden>
-                <button type="button" data-exp-disconnect hidden>Return to the fictional demo</button>
+                <button type="button" data-exp-disconnect hidden>Disconnect app</button>
               </section>
               <div class="search-lab__site-content" data-single-experience>
                 <form class="search-lab__search-form" data-lab-search-form role="search">
@@ -478,7 +482,7 @@
                 <section class="search-lab__customer-preview" aria-label="Connected search results" data-customer-preview hidden>
                   <div class="search-lab__customer-source">
                     <p data-customer-source></p>
-                    <button class="lt-btn lt-btn--secondary" type="button" data-customer-disconnect>Return to the fictional demo</button>
+                    <button class="lt-btn lt-btn--secondary" type="button" data-customer-disconnect>Disconnect app</button>
                   </div>
                   <p class="search-lab__status search-lab__search-status" role="status" data-customer-search-feedback></p>
                   <div class="search-lab__results-heading">
@@ -513,7 +517,7 @@
               </div>
             </div>
           </div>
-          <p class="search-lab__preview-footnote" data-lab-fictional-only>Fictional content from <a href="https://mw-searchstax.github.io/university-health-search-demo/">Central County University Health</a>. The preview uses Search Lab’s demo profiles.</p>
+          <p class="search-lab__preview-footnote" data-lab-fictional-only>Fictional content from <a href="https://mw-searchstax.github.io/university-health-search-demo/">Central County University Health</a>.</p>
         </section>
       </div>
       <p class="search-lab__feedback" role="status" aria-live="polite" data-lab-feedback></p>

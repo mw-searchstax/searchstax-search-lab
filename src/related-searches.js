@@ -7,13 +7,12 @@ const demoTerms = new Map([
   ['sports medicine', ['physical therapy']],
 ]);
 
-export function relatedSource(endpoint, key, language, profile) {
+export function relatedSource(endpoint, key, language) {
   const url = readCustomerEndpoint(endpoint || '', 'related-search');
   if (!url || !key?.trim()) return null;
   return async (query, signal) => {
     const request = new URL(url);
     request.search = new URLSearchParams({ search: query });
-    if (profile) request.searchParams.set('model', profile);
     if (language) request.searchParams.set('language', language);
     const response = await fetch(request, {
       signal, headers: { Authorization: key.trim(), Accept: 'application/json' },
@@ -96,7 +95,7 @@ export function setupRelatedSearches(form, selectTerm) {
 export function setupStarterRelated(form, design, connection, isDemo, initialQuery) {
   const field = form.querySelector('input[type="search"]');
   const anchor = form.closest('.search-starter').querySelector('.search-starter__body');
-  const source = isDemo ? demoRelatedSource : relatedSource(connection.relatedURL, connection.discoveryKey, connection.language, connection.profile);
+  const source = isDemo ? demoRelatedSource : relatedSource(connection.relatedURL, connection.discoveryKey, connection.language);
   const related = setupRelatedSearches(form, term => {
     field.value = term;
     field.focus();

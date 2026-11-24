@@ -17,6 +17,7 @@ async function start(browser, width) {
 
 async function spanishDesign(browser) {
   const page = await start(browser, 1440);
+  await page.getByLabel('Preview source').selectOption('fictional');
   await page.locator('#lab-advanced > summary').click();
   await page.getByLabel('Show profile tabs').check();
   await page.getByLabel('Show language picker').check();
@@ -104,7 +105,7 @@ async function connectedDesign(browser) {
   assert.deepEqual(tracking, []);
   const saved = await page.evaluate(() => [location.href, JSON.stringify(localStorage), JSON.stringify(sessionStorage)]);
   assert.ok(saved.every(value => !value.includes(sentinel)));
-  await page.getByRole('button', { name: 'Return to the fictional demo' }).click();
+  await page.getByRole('button', { name: 'Disconnect app' }).click();
   assert.equal(await page.locator('#lab-customer-token').inputValue(), '');
   await page.close();
   console.log('Passed pairing validation, page two, draft, four credential-free ZIPs, default tracking and disconnect.');
@@ -112,6 +113,7 @@ async function connectedDesign(browser) {
 
 async function mobileEditor(browser) {
   const page = await start(browser, 390);
+  await page.getByLabel('Preview source').selectOption('fictional');
   await page.locator('#lab-advanced > summary').click();
   await page.getByLabel('Show profile tabs').check();
   await tab(page, 'Appearance').click();

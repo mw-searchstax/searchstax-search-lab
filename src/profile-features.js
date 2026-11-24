@@ -85,7 +85,7 @@ export function setupProfileFeatures(panel, submit) {
           : active.language === 'es' ? spanishSuggestions : sampleSuggestionSource;
         const entitled = app ? app.configuration?.entitlements.relatedSearches : true;
         relatedTerms = featureStatus(entitled, active.relatedSearches) !== 'On' ? null
-          : app ? relatedSource(app.relatedURL, app.discoveryKey, active.language, active.profile)
+          : app ? relatedSource(app.relatedURL, app.discoveryKey, active.language)
           : active.language === 'es' ? relatedSpanish : relatedEnglish;
       }
       setSuggestions(app || design.showSuggestions ? suggestions : null);

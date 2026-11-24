@@ -1,9 +1,10 @@
 {
   "endpoint": "https://review.searchstax.com/qa/emselect",
   "entitlements": { "relatedSearches": true, "smartAnswers": true },
+  "relatedSearchesByLanguage": { "en": true, "es": true },
   "profiles": [
-    { "language": "en", "profile": "Main", "relatedSearches": true, "smartAnswers": true, "highlighting": true },
-    { "language": "en", "profile": "Directory", "relatedSearches": false, "smartAnswers": false, "highlighting": false },
-    { "language": "es", "profile": "Directorio", "relatedSearches": true, "smartAnswers": true, "highlighting": true }
+    { "language": "en", "profile": "Main", "smartAnswers": true, "highlighting": true },
+    { "language": "en", "profile": "Directory", "smartAnswers": false, "highlighting": false },
+    { "language": "es", "profile": "Directorio", "smartAnswers": true, "highlighting": true }
   ]
 }

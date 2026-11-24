@@ -6,7 +6,7 @@ import { createSearchRecovery } from './search-recovery.js';
 import { searchBuildApp, CustomerSearchError, type BuildPage, type CustomerConnection } from './customer-search.js';
 
 import { profileStatus, type Entitlements, type Profile } from './app-configuration.js';
-import { appendResultCard, mapResultCard, type ResultCard } from './result-card.js';
+import { resultMappingNotice, appendResultCard, mapResultCard, type ResultCard } from './result-card.js';
 
 export type Experience = Profile;
 
@@ -251,8 +251,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       if (app) {
         const page = await searchBuildApp({ ...app, ...active, settings: active }, { query, start, rows, sort: options.showSorting ? order.value : '', filters: new Map(filters) }, AbortSignal.any([request.signal, AbortSignal.timeout(12000)]));
         if (pending !== request) return;
-        mappingNotice = !page.mappingsKnown ? 'Results Fields are unknown for this profile.'
-          : !page.cards.length && page.total ? 'No configured Results Fields have a displayable value on this page.' : '';
+        mappingNotice = resultMappingNotice(page.mappingsKnown, page.cards.length, page.total);
         highlighting = page.highlighting;
         choices = page.sorts;
         banners = page.externalPromotions;
@@ -424,7 +423,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       panel.dataset.thumbnails = String(design.showThumbnails);
       panel.dataset.dividers = String(design.listDividers);
       panel.dataset.underline = String(design.underlineTitles);
-      if (panel.hidden || !(design.profileTabs || design.languagePicker)) return;
+      if (panel.hidden) return;
       if (previous.profileTabs !== design.profileTabs || previous.languagePicker !== design.languagePicker) {
         render();
       } else if (previous.filters !== design.filters || previous.resultsPerPage !== design.resultsPerPage ||

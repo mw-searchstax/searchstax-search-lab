@@ -21,6 +21,7 @@ const CORNER_RADII = { standard: '5px', square: '0px', rounded: '14px' };
 export const PAGE_SIZES = [5, 10, 20] as const;
 
 export type DesignSettings = {
+  previewSource: 'app' | 'fictional';
   layout: 'list' | 'cards';
   resultSpacing: keyof typeof RESULT_GAPS;
   filterPlacement: 'sidebar' | 'top';
@@ -49,6 +50,7 @@ export type DesignSettings = {
 };
 
 export const DEFAULT_DESIGN: Readonly<DesignSettings> = {
+  previewSource: 'app',
   layout: 'list',
   resultSpacing: 'standard',
   filterPlacement: 'sidebar',
@@ -125,6 +127,7 @@ export function readDesignParams(params: URLSearchParams): DesignSettings {
   const background = '#' + (params.get('lab_background') ?? '').toLowerCase();
 
   return {
+    previewSource: params.get('lab_source') === 'fictional' ? 'fictional' : 'app',
     layout: isLayout(layout) ? layout : DEFAULT_DESIGN.layout,
     resultSpacing: isResultSpacing(spacing) ? spacing : DEFAULT_DESIGN.resultSpacing,
     topFilterStyle: topStyle === 'row' || topStyle === 'tabs' ? 'row' : 'list',
@@ -154,6 +157,7 @@ export function readDesignParams(params: URLSearchParams): DesignSettings {
 }
 
 export function writeDesignParams(params: URLSearchParams, design: DesignSettings): void {
+  params.set('lab_source', design.previewSource);
   if (design.languagePicker || design.profileTabs) params.set('lab_languages', design.languagePicker ? 'on' : 'off');
   if (design.profileTabs) params.set('lab_profile_tabs', 'on');
   params.set('lab_layout', design.layout);

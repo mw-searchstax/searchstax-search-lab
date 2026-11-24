@@ -50,10 +50,15 @@ export function resultCards(payload: ResultResponse, documents: Record<string, u
   const cards = documents.map(doc => {
     const key = params?.uniqueId;
     const id = key && doc?.[key];
-    const hits = highlighting !== false && (typeof id === 'string' || typeof id === 'number') ? payload.highlighting?.[id] : undefined;
+    const hits = highlighting === true && (typeof id === 'string' || typeof id === 'number') ? payload.highlighting?.[id] : undefined;
     return mapResultCard(doc ?? {}, mappingsKnown ? fields : [], hits, payload.metadata?.locationSearch?.unit);
   });
   return { cards, mappingsKnown, highlighting };
+}
+
+export function resultMappingNotice(mappingsKnown: boolean, displayed: number, total: number) {
+  if (!mappingsKnown) return 'Results Fields are unknown for this profile.';
+  return !displayed && total > 0 ? 'No configured Results Fields have a displayable value on this page.' : '';
 }
 
 // Preserve highlight boundaries without parsing result content as HTML.

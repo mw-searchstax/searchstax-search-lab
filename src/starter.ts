@@ -57,7 +57,7 @@ import cardRuntime from './result-card.ts?starter-js';
 import appConfigurationRuntime from './app-configuration.ts?starter-js';
 import profileRuntime from './profile-experiences.ts?starter-js';
 import searchRuntime from './customer-search.ts?starter-js';
-import { experienceHandoff, type ExperienceHandoff } from './profile-experiences';
+import type { ExperienceHandoff } from './profile-experiences';
 import profileControls from './profile-controls.html?raw';
 import profileCSS from './profile-controls.css?raw';
 import profileMount from './starter-profile/mount.js?raw';
@@ -220,7 +220,7 @@ function collectThumbnails(enabled: boolean) {
 
 type Framework = 'javascript' | 'react' | 'vue' | 'angular';
 
-function createProfileStarter(framework: Framework, design: DesignSettings, experience = experienceHandoff()) {
+function createProfileStarter(framework: Framework, design: DesignSettings, experience: ExperienceHandoff) {
   const entries: Record<string, string> = {
     'search.css': renderStarterCSS(design),
     'src/profile-experiences.js': profileRuntime,
@@ -283,7 +283,7 @@ When both controls are enabled, the language picker controls which profiles appe
 
 In **src/config.js**, set **settings.source** to **app**. Enter the HTTPS Select endpoint from App Settings → All APIs → Search & Indexing in **connection.endpoint**, and its browser-safe read-only token in **connection.token**. These values are visible to visitors. Use **settings.profiles** for the list of language and profile pairs and **settings.selected** for the starting pair. Empty language and profile values use the app defaults. Set **settings.initialQuery** to your preferred opening query or leave it blank.
 
-To use optional services in your own app, add the HTTPS Auto-Suggest endpoint as **connection.suggestEndpoint**, the streaming Answer endpoint as **connection.answerEndpoint**, or the Related Searches endpoint and Discovery key as **connection.relatedURL** and **connection.discoveryKey**. Use credentials intended for browser use. Set the app’s **settings.entitlements** and each profile’s **relatedSearches** and **smartAnswers** flags from its published configuration. Each service needs both an entitlement and an enabled profile setting. Requests use the selected language and profile where supported.
+To use optional services in your own app, add the HTTPS Auto-Suggest endpoint as **connection.suggestEndpoint**, the streaming Answer endpoint as **connection.answerEndpoint**, or the Related Searches endpoint and Discovery key as **connection.relatedURL** and **connection.discoveryKey**. Use credentials intended for browser use. Set **settings.entitlements** from the app’s entitlements. For each entry in **settings.profiles**, use the published **relatedSearches** setting for its language and the **smartAnswers** setting for its profile. Each service requires its entitlement and published setting. Related Searches requests use the search phrase and language. Smart Answers requests also use the selected profile.
 
 Live results use the Search API. Tracking is off in this starter.
 `;
@@ -296,7 +296,7 @@ export function createStarterZip(
   connection: StarterConnection,
   demoFacetLabels: Record<string, string>,
 ): Blob {
-  if (design.profileTabs || design.languagePicker) return createProfileStarter('javascript', design, connection.experience);
+  if (connection.experience) return createProfileStarter('javascript', design, connection.experience);
   const { kitURL, ...searchConfig } = connection;
   const config = JSON.stringify({
     ...searchConfig,
@@ -424,7 +424,7 @@ export function createReactStarterZip(
   connection: StarterConnection,
   facetLabels: Record<string, string>,
 ): Blob {
-  if (design.profileTabs || design.languagePicker) return createProfileStarter('react', design, connection.experience);
+  if (connection.experience) return createProfileStarter('react', design, connection.experience);
   const archive = zipSync({
     'index.html': strToU8(reactHTML),
     'package.json': strToU8(reactPackage),
@@ -442,7 +442,7 @@ export function createVueStarterZip(
   connection: StarterConnection,
   facetLabels: Record<string, string>,
 ): Blob {
-  if (design.profileTabs || design.languagePicker) return createProfileStarter('vue', design, connection.experience);
+  if (connection.experience) return createProfileStarter('vue', design, connection.experience);
   const archive = zipSync({
     'index.html': strToU8(vueHTML),
     'package.json': strToU8(vuePackage),
@@ -461,7 +461,7 @@ export function createAngularStarterZip(
   connection: StarterConnection,
   facetLabels: Record<string, string>,
 ): Blob {
-  if (design.profileTabs || design.languagePicker) return createProfileStarter('angular', design, connection.experience);
+  if (connection.experience) return createProfileStarter('angular', design, connection.experience);
   const archive = zipSync({
     'package.json': strToU8(angularPackage),
     'package-lock.json': strToU8(angularLock),

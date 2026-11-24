@@ -15,9 +15,11 @@ const { unzipSync, strFromU8 } = loadFflate();
 const frameworks = ['javascript', 'react', 'vue', 'angular'];
 const modes = {
   single: { lab_profile_tabs: 'off', lab_languages: 'off', lab_page_size: '5' },
-  tabs: { lab_profile_tabs: 'on', lab_languages: 'off', lab_page_size: '5' },
-  lang: { lab_profile_tabs: 'off', lab_languages: 'on', lab_page_size: '5' },
-  both: { lab_profile_tabs: 'on', lab_languages: 'on', lab_page_size: '5' },
+  liveTabs: { lab_profile_tabs: 'on', lab_languages: 'off', lab_page_size: '5' },
+  fictionalSingle: { lab_source: 'fictional', lab_profile_tabs: 'off', lab_languages: 'off', lab_page_size: '5' },
+  tabs: { lab_source: 'fictional', lab_profile_tabs: 'on', lab_languages: 'off', lab_page_size: '5' },
+  lang: { lab_source: 'fictional', lab_profile_tabs: 'off', lab_languages: 'on', lab_page_size: '5' },
+  both: { lab_source: 'fictional', lab_profile_tabs: 'on', lab_languages: 'on', lab_page_size: '5' },
 };
 const artifactRoot = process.env.QA_ARTIFACT_DIR || fs.mkdtempSync(path.join(os.tmpdir(), 'search-lab-starters-'));
 
@@ -57,12 +59,19 @@ function checkArchive(mode, framework, files) {
     const match = config.match(/export const settings = ([\s\S]*?);\n\n/);
     assert.ok(match, mode + '/' + framework + ' settings config');
     const settings = JSON.parse(match[1]);
-    assert.equal(settings.navigation.profileTabs, mode === 'tabs' || mode === 'both');
-    assert.equal(settings.navigation.languagePicker, mode === 'lang' || mode === 'both');
+    assert.equal(settings.navigation.profileTabs, modes[mode].lab_profile_tabs === 'on');
+    assert.equal(settings.navigation.languagePicker, modes[mode].lab_languages === 'on');
     assert.equal(settings.navigation.showSorting, true);
     assert.equal(settings.navigation.resultsPerPage, 5);
-    assert.equal(settings.profiles.length, 4);
-    assert.deepEqual([...new Set(settings.profiles.map(item => item.language))].sort(), ['en', 'es']);
+    if (mode === 'liveTabs') {
+      assert.equal(settings.source, 'app');
+      assert.deepEqual(settings.profiles.map(item => item.profile), ['Main Profile', 'SearchLabAfter', 'SearchLabRanking']);
+      assert.deepEqual(settings.thumbnails, {});
+    } else {
+      assert.equal(settings.source, 'demo');
+      assert.equal(settings.profiles.length, 4);
+      assert.deepEqual([...new Set(settings.profiles.map(item => item.language))].sort(), ['en', 'es']);
+    }
     assert.ok(config.includes("export const connection = { endpoint: '', token: '' }"));
   } else {
     const source = framework === 'javascript' ? textFile(files, 'search.js') : textFile(files, 'src/config.js');
@@ -109,9 +118,10 @@ async function downloadCSS(page, mode) {
       const pageErrors = [];
       page.on('pageerror', error => pageErrors.push(error.message));
       await page.goto(pageURL(mode), { waitUntil: 'domcontentloaded' });
+      if (mode === 'liveTabs') await page.getByRole('tab', { name: 'Main Profile', exact: true }).waitFor();
       await page.getByRole('button', { name: 'Get starter code', exact: true }).click();
-      assert.equal(await page.getByLabel('Show profile tabs').isChecked(), mode === 'tabs' || mode === 'both');
-      assert.equal(await page.getByLabel('Show language picker').isChecked(), mode === 'lang' || mode === 'both');
+      assert.equal(await page.getByLabel('Show profile tabs').isChecked(), modes[mode].lab_profile_tabs === 'on');
+      assert.equal(await page.getByLabel('Show language picker').isChecked(), modes[mode].lab_languages === 'on');
       const cssBytes = await downloadCSS(page, mode);
       for (const framework of frameworks) {
         const result = await download(page, mode, framework);

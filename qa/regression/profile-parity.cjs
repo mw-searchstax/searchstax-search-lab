@@ -23,6 +23,8 @@ async function checkBuiltInFeatures(browser) {
   const featureHost = new URL(endpoint).origin;
   let snapshot;
   const requested = [];
+  const searches = [];
+  let releaseSnapshot;
   try {
     await page.route(u => u.pathname === url.pathname && u.origin === url.origin, async route => {
       const html = await (await route.fetch()).text();
@@ -31,15 +33,24 @@ async function checkBuiltInFeatures(browser) {
         .replace('data-before-profile=', 'data-answer-endpoint="' + featureHost + '/api/v1/answer" data-related-endpoint="' + featureHost + '/qa/related-search" data-before-profile=');
       await route.fulfill({ contentType: 'text/html', body });
     });
-    await page.route('**/config/searchlabdemo.json', route => route.fulfill({ json: snapshot }));
+    await page.route('**/config/searchlabdemo.json', async route => {
+      if (releaseSnapshot) await releaseSnapshot;
+      await route.fulfill({ json: snapshot });
+    });
     await page.route(featureHost + '/**', async route => {
       const u = new URL(route.request().url());
       if (u.pathname.endsWith('/emselect')) {
-        return route.fulfill({ json: { responseHeader: { params: Object.fromEntries(u.searchParams) },
-          response: { start: 0, numFound: 0, docs: [] }, metadata: { results: [], facets: [] }, facet_counts: { facet_fields: {} } } });
+        const params = Object.fromEntries(u.searchParams);
+        searches.push([params.model, params.language, params.q]);
+        const fields = [{ name: 'heading', result_card: 'title' }];
+        const metadata = params.q === 'missing fields' ? {} : { results: params.q === 'empty fields' ? [] : fields, facets: [] };
+        return route.fulfill({ json: { responseHeader: { params: { ...params, uniqueId: 'id', hl: true } },
+          response: { start: 0, numFound: 1, docs: [{ id: 'one', heading: 'Campus' }] }, metadata,
+          highlighting: { one: { heading: ['<em>Campus</em>'] } }, facet_counts: { facet_fields: {} } } });
       }
       requested.push(u.pathname);
-      assert.equal(u.searchParams.get('model'), 'Main Profile');
+      if (u.pathname.endsWith('/answer')) assert.equal(u.searchParams.get('model'), 'Main Profile');
+      else assert.deepEqual([...u.searchParams.keys()].sort(), ['language', 'search']);
       assert.equal(u.searchParams.get('language'), 'en');
       if (u.pathname === '/api/v1/answer') return route.fulfill({ contentType: 'text/event-stream', body: 'data: App answer\n\ndata: CLOSE\n\n' });
       assert.equal(u.pathname, '/qa/related-search');
@@ -50,7 +61,7 @@ async function checkBuiltInFeatures(browser) {
     for (const [relatedSearches, smartAnswers, wrongApp] of [[false, false], [true, false], [false, true], [true, true], [true, true, true]]) {
       requested.length = 0;
       snapshot = { endpoint: wrongApp ? endpoint + '-other' : endpoint, entitlements: { relatedSearches: true, smartAnswers: true },
-        profiles: [{ language: 'en', profile: 'Main Profile', relatedSearches, smartAnswers }] };
+        relatedSearchesByLanguage: { en: relatedSearches }, profiles: [{ language: 'en', profile: 'Main Profile', smartAnswers }] };
       await page.goto('about:blank');
       await page.goto(url.href);
       await page.locator('[data-lab-summary]').filter({ hasText: /results? for/ }).waitFor();
@@ -65,19 +76,77 @@ async function checkBuiltInFeatures(browser) {
       assert.equal(requested.includes('/api/v1/answer'), Boolean(smartAnswers && !wrongApp));
       if (relatedSearches && smartAnswers && !wrongApp) {
         const toggle = page.getByLabel('Show profile tabs');
-        await page.locator('#lab-advanced > summary').click();
+        await page.locator('#lab-related-toggle').locator('xpath=ancestor::details[1]').locator('summary').click();
+        await page.getByRole('button', { name: 'Change related search placement' }).click();
+        assert.equal(await page.locator('#lab-related-placement').evaluate(el => el === document.activeElement && el.closest('details').open), true);
         await toggle.check();
         const fixture = page.locator('#lab-experiences');
+        await fixture.getByRole('tab', { name: 'Main Profile', exact: true }).waitFor();
+        await fixture.getByText('App answer', { exact: true }).waitFor();
+        assert.equal(await fixture.locator('.smart-answers-sample:visible').count(), 0);
+        assert.equal(await page.locator('#lab-advanced #lab-related-placement').count(), 1);
+        await page.getByLabel('Preview source').selectOption('fictional');
         await fixture.getByRole('button', { name: 'physical therapy' }).waitFor();
         await fixture.locator('.smart-answers-sample summary').waitFor();
         assert.equal(await live.locator('.search-related-terms').count(), 0);
         assert.equal(await live.locator('[data-customer-answer-content]').textContent(), '');
+        await page.getByLabel('Preview source').selectOption('app');
         await toggle.uncheck();
         await live.getByRole('button', { name: 'App suggestion' }).waitFor();
         await live.getByText('App answer', { exact: true }).waitFor();
         assert.equal(await fixture.isVisible(), false);
       }
     }
+    snapshot = { endpoint, entitlements: { smartAnswers: true, relatedSearches: true }, relatedSearchesByLanguage: { en: false },
+      profiles: [{ language: 'en', profile: 'Main Profile', highlighting: false }, { language: 'en', profile: 'Second', highlighting: true }] };
+    let finishSnapshot;
+    releaseSnapshot = new Promise(resolve => { finishSnapshot = resolve; });
+    await page.goto('about:blank');
+    const delayedRequest = page.waitForRequest('**/config/searchlabdemo.json');
+    await page.goto(url.href, { waitUntil: 'domcontentloaded' });
+    const cards = page.locator('#lab-results-list');
+    await delayedRequest;
+    await cards.locator('mark').waitFor();
+    assert.match(await summary.innerText(), /Hit highlighting — On/);
+    const snapshotResponse = page.waitForResponse('**/config/searchlabdemo.json');
+    finishSnapshot();
+    assert.ok((await snapshotResponse).ok());
+    await summary.filter({ hasText: 'Hit highlighting — Off' }).waitFor();
+    assert.equal(await cards.locator('mark').count(), 0);
+    const query = page.locator('#lab-query');
+    for (const [term, notice] of [['missing fields', 'Results Fields are unknown for this profile.'],
+      ['empty fields', 'No configured Results Fields have a displayable value on this page.']]) {
+      await query.fill(term);
+      await query.press('Enter');
+      await page.locator('[data-lab-summary]').filter({ hasText: notice }).waitFor();
+      assert.equal(await cards.locator('article').count(), 0);
+      assert.equal(await live.getByRole('button', { name: 'Retry search' }).count(), 0);
+    }
+    await query.fill('normal');
+    await query.press('Enter');
+    await cards.getByText('Campus', { exact: true }).waitFor();
+    assert.doesNotMatch(await page.locator('[data-lab-summary]').innerText(), /unknown|displayable/);
+    await page.locator('#lab-advanced > summary').click();
+    await page.getByLabel('Show profile tabs').check();
+    const panel = page.locator('#lab-experiences');
+    assert.deepEqual(await panel.getByRole('tab').allTextContents(), ['Main Profile', 'Second']);
+    await panel.getByRole('tab', { name: 'Second', exact: true }).click();
+    await panel.locator('li mark').waitFor();
+    assert.deepEqual(searches.at(-1), ['Second', 'en', 'normal']);
+    assert.match(await summary.innerText(), /Hit highlighting — On/);
+    await page.getByLabel('Preview source').selectOption('fictional');
+    assert.deepEqual(await panel.getByRole('tab').allTextContents(), ['Programs', 'Locations']);
+    await page.getByLabel('Preview source').selectOption('app');
+    await panel.getByRole('heading', { name: 'Campus' }).waitFor();
+    assert.deepEqual(searches.at(-1), ['Main Profile', 'en', 'normal']);
+    assert.equal(await panel.locator('li mark, .smart-answers-sample:visible').count(), 0);
+    const olderLink = new URL(url);
+    olderLink.search = new URLSearchParams({ lab_layout: 'list', lab_font: 'georgia', lab_color: '123456',
+      lab_filters: 'on', lab_profile_tabs: 'on' });
+    await page.goto(olderLink.href);
+    await panel.getByRole('tab', { name: 'Main Profile', exact: true }).waitFor();
+    assert.equal(await page.getByLabel('Preview source').inputValue(), 'app');
+    console.log('Passed missing and empty field mappings, delayed highlighting settings and live/fictional source switching');
     console.log('Passed independent live service gates and endpoint-mismatched metadata');
   } finally { await page.close(); }
 }
@@ -94,7 +163,7 @@ async function preserve(page, first, second) {
   await page.getByLabel(first).check();
   const panel = page.locator('#lab-experiences');
   const input = panel.locator('input[type=search]');
-  await panel.getByRole('link', { name: 'Orthopedics', exact: true }).waitFor();
+  await panel.getByRole('link', { name: /^Orthopedics/ }).first().waitFor();
   assert.equal(await input.inputValue(), 'unfinished spelling');
   await page.getByLabel(second).check();
   assert.equal(await input.inputValue(), 'unfinished spelling');
@@ -107,7 +176,7 @@ async function preserve(page, first, second) {
   await page.locator('[data-lab-summary]').filter({ hasText: /0 results for “unmatched-123”/ }).waitFor();
   await page.getByLabel(first).check();
   assert.equal(await input.inputValue(), 'the next draft');
-  assert.match(await panel.locator('[data-exp-summary]').innerText(), /unmatched-123/);
+  await panel.locator('[data-exp-summary]').filter({ hasText: 'unmatched-123' }).waitFor();
   console.log('Preserved submitted query, draft and zero matches, starting with', first);
 }
 
@@ -116,7 +185,7 @@ function designURL(mode) {
   const url = new URL(baseURL);
   url.hash = 'lab-design';
   url.search = new URLSearchParams({
-    lab_profile_tabs: tabs, lab_languages: language, lab_layout: 'list', lab_font: 'georgia',
+    lab_source: 'fictional', lab_profile_tabs: tabs, lab_languages: language, lab_layout: 'list', lab_font: 'georgia',
     lab_corners: 'rounded', lab_background: '21354b',
     lab_page_size: '5', lab_sorting: 'on', lab_promotions: 'both', lab_suggestions: 'on',
     lab_thumbnails: 'on', lab_underline: 'on', lab_dividers: 'off', lab_spacing: 'roomy',
@@ -290,6 +359,7 @@ async function run() {
       await preserve(page, 'Show profile tabs', 'Show language picker');
       await preserve(page, 'Show language picker', 'Show profile tabs');
       const ordinaryURL = new URL(designURL('both'));
+      ordinaryURL.searchParams.set('lab_source', 'app');
       ordinaryURL.searchParams.set('lab_profile_tabs', 'off');
       ordinaryURL.searchParams.set('lab_languages', 'off');
       await page.goto(ordinaryURL.href);

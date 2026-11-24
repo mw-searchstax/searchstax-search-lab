@@ -41,6 +41,20 @@ export function readAppConfiguration(text: string, endpoint: string): AppConfigu
     return { language, profile, relatedSearches: flag(item.relatedSearches),
       smartAnswers: flag(item.smartAnswers), highlighting: flag(item.highlighting) };
   });
+  const languageFlags = data.relatedSearchesByLanguage;
+  const settings = new Map<string, boolean | undefined>();
+  if (languageFlags !== undefined) {
+    if (!record(languageFlags)) throw Error('Use a language-to-setting object for Related Searches.');
+    for (const [code, value] of Object.entries(languageFlags)) settings.set(code.toLowerCase().replaceAll('-', '_'), flag(value));
+  } else {
+    // Older snapshots stored the language setting on each profile. Conflicting values are unknown.
+    for (const { language, relatedSearches } of profiles) {
+      if (relatedSearches === undefined) continue;
+      if (!settings.has(language)) settings.set(language, relatedSearches);
+      else if (settings.get(language) !== relatedSearches) settings.set(language, undefined);
+    }
+  }
+  for (const profile of profiles) profile.relatedSearches = settings.get(profile.language);
   const features = data.entitlements ?? {};
   if (!record(features)) throw Error('The snapshot’s entitlements must be an object.');
   return { profiles, entitlements: { relatedSearches: flag(features.relatedSearches), smartAnswers: flag(features.smartAnswers) } };
