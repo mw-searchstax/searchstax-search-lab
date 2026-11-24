@@ -5,8 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>SearchStax JavaScript Starter</title>
   <link rel="stylesheet" href="./search.css">
-  <script defer src="%%UI_KIT_URL%%"></script>
-  <script type="module" src="./search.js"></script>
+  <script id="search-starter-module" type="module" src="./search.js" data-ui-kit="%%UI_KIT_URL%%"></script>
 </head>
 <body class="search-starter-page">
   <main class="search-starter">
@@ -18,13 +17,17 @@
       <input id="search-query" type="search" value="rehabilitation" placeholder="%%SEARCH_FIELD_TEXT%%" autocomplete="off" required>
       <button class="search-starter__submit" type="submit" disabled>%%SEARCH_BUTTON_TEXT%%</button>
     </form>
+    <div id="search-feedback">
+      <p id="search-status" role="status" tabindex="-1">Connecting to search…</p>
+      <button id="search-retry" type="button" class="search-starter__submit" aria-describedby="search-status" hidden>Retry search</button>
+      <button id="search-reload" type="button" class="search-starter__submit" aria-describedby="search-status" hidden>Reload search</button>
+    </div>
     <div id="search-smart-answers-sample" hidden>%%SMART_ANSWERS_SAMPLE%%</div>
     <section class="smart-answers-sample__card search-starter__answer" aria-labelledby="search-customer-answer-heading" data-customer-answer hidden>
       <h2 id="search-customer-answer-heading">Smart Answer</h2>
       <p role="status" data-customer-answer-status></p>
       <div class="search-starter__answer-content" data-customer-answer-content hidden></div>
     </section>
-    <p id="search-status" role="status">Connecting to search…</p>
     <div id="search-sorting" hidden>
       <label class="search-starter__sort" for="search-sort-order">
         Sort by <select id="search-sort-order"></select>

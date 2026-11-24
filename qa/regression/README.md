@@ -43,6 +43,16 @@ To check running downloads, set `QA_PROFILE_EXPORT_DIR` while running `node prof
 QA_STARTER_URL=http://127.0.0.1:8080/ QA_PROFILE_MODE=tabs node profile-parity.cjs
 ```
 
+### Recovery in the JavaScript starter
+
+Download the default JavaScript starter with sorting enabled, profile tabs and the language picker off, and tracking off. Serve the extracted folder over HTTP. From this regression directory, run the following, using the address of the starter.
+
+```sh
+QA_STARTER_URL=http://127.0.0.1:4175/ node javascript-starter-recovery.cjs
+```
+
+The phone-width Chrome check blocks the UI Kit, fails Select requests, and delays healthy responses past the 15-second slow-request message. It checks Reload and Retry, retained results, the recovered sort order, filtered pagination, and zero analytics attempts.
+
 ### Slow paging in the React starter
 
 In Design, choose five results per page and leave profile tabs, the language picker, and analytics off. Download the React ZIP from **Get starter code**. In the extracted project run `npm ci`, then `npm run build`, and serve its `dist` directory. From this regression directory, run the following with the URL of the served starter.

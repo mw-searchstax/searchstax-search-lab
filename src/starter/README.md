@@ -23,6 +23,8 @@ If you enabled sample thumbnails, the ZIP includes fictional images for two Cent
 
 Sorting is on by default and starts in Relevance order. When sorting is enabled, use **Sort by** to put all matching pages in page-address order, even when the results span several pages.
 
+If search can’t start, choose **Reload search**. If a search fails or takes longer than usual, choose **Retry search** to repeat it with the same query, sort, filters and page. When earlier results are still on screen, the status message tells you.
+
 If you enabled sample search suggestions, type `reh` to try them. Choosing a suggestion runs a search against the fictional demo.
 
 If your design shows the Smart Answers sample, expand **Smart Answers Sample** to see the fixed fictional answer and its source link.

@@ -39,6 +39,9 @@ const form = document.querySelector('.search-starter__form');
 const submit = form.querySelector('button');
 const query = document.querySelector('#search-query');
 const status = document.querySelector('#search-status');
+const feedback = document.querySelector('#search-feedback');
+const retry = document.querySelector('#search-retry');
+const reload = document.querySelector('#search-reload');
 const output = document.querySelector('#search-output');
 const smartAnswersSample = document.querySelector('#search-smart-answers-sample');
 smartAnswersSample.hidden = !config.showSmartAnswersSample || !usesDemoProfile;
@@ -65,8 +68,87 @@ if (usesDemoProfile && config.samplePromotions !== 'off') {
   query.value = samplePromotionQuery;
 }
 const noResultsMessage = document.querySelector('#search-no-results');
-let requestTimer;
 let promotionResponse;
+
+function showFeedback(message, action) {
+  status.textContent = message;
+  if ((document.activeElement === retry || document.activeElement === reload) && document.activeElement !== action) {
+    status.focus({ preventScroll: true });
+  }
+  retry.hidden = action !== retry;
+  reload.hidden = action !== reload;
+}
+
+function withPreviousResults(message) {
+  return document.querySelector('#search-results .searchstax-search-result a')
+    ? message + ' Previous results are still showing.' : message;
+}
+
+reload.addEventListener('click', () => window.location.reload());
+
+async function loadUiKit() {
+  const script = document.createElement('script');
+  script.src = document.querySelector('#search-starter-module').dataset.uiKit;
+  const timer = window.setTimeout(() => showFeedback('Connecting to search is taking longer than usual.', reload), 15000);
+  try {
+    await new Promise((resolve, reject) => {
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.append(script);
+    });
+  } finally {
+    window.clearTimeout(timer);
+  }
+}
+
+// UI Kit 4.2.34 does not expose a failure hook for result requests. Keep this
+// adapter on the starter's own instance so other searches on the page are unaffected.
+function enableResultRecovery(search) {
+  const helper = search.searchHelper;
+  const kitSearch = helper.search.bind(helper);
+  let active;
+  helper.search = async (settings, render, ignoreCancellation, forceNotCorrected, facetType) => {
+    if (facetType) return kitSearch(settings, render, ignoreCancellation, forceNotCorrected, facetType);
+    if (!settings.query) return;
+    active?.abort();
+    const request = new AbortController();
+    active = request;
+    search.dataLayer.setSearchTerm(settings.query);
+    search.dataLayer.setLoading(true);
+    output.setAttribute('aria-busy', 'true');
+    noResultsMessage.hidden = true;
+    externalPromotions.hidden = true;
+    promotionResponse = undefined;
+    showFeedback(withPreviousResults('Searching…'));
+    const timer = window.setTimeout(() => {
+      if (active === request) showFeedback(withPreviousResults('Search is taking longer than usual.'), retry);
+    }, 15000);
+    try {
+      const url = helper.url + helper.generateQueryParams(settings, forceNotCorrected);
+      const response = await fetch(url, { headers: helper.authHeader, signal: request.signal });
+      if (!response.ok) throw new Error('Search returned HTTP ' + response.status);
+      const data = await response.json();
+      if (active !== request) return;
+      if (typeof data.response?.numFound !== 'number' || !Array.isArray(data.response.docs)) {
+        throw new Error('Incomplete search response');
+      }
+      render(data);
+      const total = data.response.numFound;
+      showFeedback(total === 1 ? '1 result' : total + ' results');
+      noResultsMessage.hidden = total !== 0;
+    } catch {
+      if (active === request) showFeedback(withPreviousResults('Search couldn’t load the requested results.'), retry);
+    } finally {
+      window.clearTimeout(timer);
+      if (active === request) {
+        active = undefined;
+        output.setAttribute('aria-busy', 'false');
+        search.dataLayer.setLoading(false);
+      }
+    }
+  };
+  retry.addEventListener('click', () => search.search(search.dataLayer.searchObject));
+}
 
 noResultsMessage.textContent = config.noResultsText;
 form.addEventListener('submit', event => event.preventDefault());
@@ -110,10 +192,15 @@ function renderExternalPromotions(entries) {
 }
 
 try {
+  await loadUiKit();
   const kit = window['@searchstaxInc/searchstudioUxJs'] || window.Searchstax;
   const Searchstax = typeof kit === 'function' ? kit : kit.Searchstax;
   const search = new Searchstax();
-  setupPaginationFocus(document.querySelector('[data-pagination-focus]'), () => search);
+  const pager = document.querySelector('[data-pagination-focus]');
+  pager.addEventListener('click', event => {
+    if (event.target.closest('button[data-page-step]')) pager.after(feedback);
+  }, true);
+  setupPaginationFocus(pager, () => search);
   const analytics = getAnalyticsSettings(config);
   search.initialize({
     searchURL: config.searchURL,
@@ -128,9 +215,6 @@ try {
       afterSearch(items, response) {
         const total = response?.response?.numFound;
         if (typeof total !== 'number') return [];
-        window.clearTimeout(requestTimer);
-        status.textContent = total === 1 ? '1 result' : total + ' results';
-        noResultsMessage.hidden = total !== 0;
         const results = items.filter(item => /^https?:\/\//i.test(item.url));
         if (!usesDemoProfile) {
           if (response !== promotionResponse) {
@@ -154,6 +238,7 @@ try {
       },
     },
   });
+  enableResultRecovery(search);
   search.setCookiesDisabled(!analytics.trackApiKey);
   setupResultTracking(document.querySelector('#search-results'), search);
 
@@ -175,6 +260,7 @@ try {
     sortOrder.addEventListener('change', () => {
       const current = search.dataLayer.searchObject;
       if (current.query) {
+        sortField.after(feedback);
         search.dataLayer.setSearchObject({ ...current, order: encodeURIComponent(sortOrder.value), page: 1 });
       }
     });
@@ -198,6 +284,7 @@ try {
   if (config.showFilters) {
     document.querySelector('.search-starter__filters').hidden = false;
     const facets = document.querySelector('#search-facets');
+    facets.addEventListener('change', () => facets.after(feedback), true);
     if (usesDemoProfile) {
       new MutationObserver(() => {
         facets.querySelectorAll('[data-facet-value]').forEach(label => {
@@ -234,25 +321,11 @@ try {
   });
   search.dataLayer.setItemsPerPage(config.resultsPerPage);
 
-  search.dataLayer.$loadingChange.subscribe(loading => {
-    output.setAttribute('aria-busy', String(loading));
-    if (loading) {
-      status.textContent = 'Searching…';
-      noResultsMessage.hidden = true;
-      externalPromotions.hidden = true;
-      promotionResponse = undefined;
-      window.clearTimeout(requestTimer);
-      requestTimer = window.setTimeout(() => {
-        output.setAttribute('aria-busy', 'false');
-        status.textContent = 'Search is unavailable. Try again in a moment.';
-      }, 15000);
-    }
-  });
-
   function runSearch() {
+    form.after(feedback);
     const term = query.value.trim();
     if (!term) {
-      status.textContent = 'Enter a search term.';
+      showFeedback('Enter a search term.');
       return;
     }
     void requestAnswer?.(term);
@@ -271,5 +344,5 @@ try {
   runSearch();
 } catch {
   submit.disabled = true;
-  status.textContent = 'Couldn’t start search. Check the UI Kit and Search App configuration.';
+  showFeedback('Search couldn’t start. Reload to try again.', reload);
 }

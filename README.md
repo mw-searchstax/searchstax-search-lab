@@ -19,7 +19,7 @@ The page loads the SearchStax JavaScript UI Kit from its CDN and sends search re
 
 ## Reproduce the published pilot
 
-Develop and review changes on `main`. GitHub Pages serves the built files from the root of `gh-pages`. The Help Center embeds that deployment. The source baseline corresponds to Pages commit [b09d455](https://github.com/mw-searchstax/searchstax-search-lab/commit/b09d45583610744ae2c34149bd2728fb73da1c79). [Open Search Lab](https://mw-searchstax.github.io/searchstax-search-lab/)
+Develop and review changes on `main`. GitHub Pages serves the built files from the root of `gh-pages`. The Help Center embeds that deployment. Use the verification command below to compare a checkout with the current release. [Open Search Lab](https://mw-searchstax.github.io/searchstax-search-lab/)
 
 From a fresh clone, use the Node version in `.nvmrc` (26.8.2, verified with npm 11.19.1). Run these commands in the repository root.
 
@@ -47,4 +47,4 @@ Leave the preview running. In a second terminal at the repository root, point th
 SEARCH_LAB_BASE_URL=http://127.0.0.1:4173/ npm test
 ```
 
-The default suite checks both onboarding paths, mobile recovery, appearance, and downloads across four starter formats. The QA guide also covers WebKit and tests that run inside a downloaded starter, including slow React paging. [Regression guide](qa/regression/README.md)
+The default suite checks both onboarding paths, mobile recovery, appearance, and downloads across four starter formats. The QA guide also covers WebKit and tests that run inside a downloaded starter, including JavaScript search recovery and slow React paging. [Regression guide](qa/regression/README.md)
