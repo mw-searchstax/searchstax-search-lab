@@ -1,6 +1,6 @@
 import { webURL } from './web-url.js';
 
-export type ResultField = { name: string; result_card: string; title?: string };
+export type ResultField = { name: string; result_card?: string | null; title?: string };
 export type CardValue = { role: string; label: string; value: string; highlighted: boolean };
 export type ResultCard = { url: string; thumbnail: string; values: CardValue[]; promoted: boolean };
 
@@ -13,11 +13,11 @@ export function mapResultCard(doc: Record<string, unknown>, fields: ResultField[
   const card: ResultCard = { url: '', thumbnail: '', values: [], promoted: doc['[elevated]'] === true };
   const mapped = new Set<string>();
   for (const field of fields) {
-    if (!field || typeof field.name !== 'string' || typeof field.result_card !== 'string' || !Object.hasOwn(doc, field.name)) continue;
-    const role = field.result_card;
+    if (!field || typeof field.name !== 'string' || !Object.hasOwn(doc, field.name)) continue;
+    const role = field.result_card ?? '';
     if (role && mapped.has(role)) continue;
     mapped.add(role);
-    const raw = displayText(doc[field.name]);
+    const raw = displayText(doc[field.name], role === 'paths' ? ' / ' : ', ');
     if (role === 'url' || role === 'thumbnail') {
       card[role] = webURL(raw) || '';
       continue;
@@ -105,6 +105,7 @@ export function appendResultCard(node: HTMLElement, card: ResultCard) {
     const line = document.createElement('p');
     if (field.role === 'description') line.className = 'search-lab__result-description';
     if (field.label) line.append(field.label + ': ');
+    if (field.role === 'paths' || field.role === 'date' || field.role === 'distance') line.className = 'mapped-result-' + field.role;
     const imageURL = !field.role && /\.(gif|jpe?g|tiff?|png|webp|bmp)$/i.test(field.value) ? webURL(field.value) : null;
     if (imageURL) {
       const image = document.createElement('img');
@@ -113,6 +114,11 @@ export function appendResultCard(node: HTMLElement, card: ResultCard) {
       image.alt = '';
       image.referrerPolicy = 'no-referrer';
       line.append(image);
+    } else if (field.role === 'date' && /^\d{4}-\d{2}-\d{2}(?:T\S+)?$/.test(field.value) && Number.isFinite(Date.parse(field.value))) {
+      const time = document.createElement('time');
+      time.dateTime = field.value;
+      time.textContent = field.value;
+      line.append(time);
     } else appendValue(line, field);
     node.append(line);
   }

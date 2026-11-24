@@ -87,6 +87,9 @@ async function checkFeatures(page, mode) {
   assert.equal(await input.getAttribute('placeholder'), 'Find a clinic');
   assert.equal(await panel.locator('button[type=submit]').innerText(), 'Find pages');
 
+  await submit(panel, 'nursing');
+  await panel.getByText('Open for enrollment: true', { exact: true }).waitFor();
+  assert.equal(await panel.locator('time').getAttribute('datetime'), '2026-03-16');
   await input.fill('reh');
   await panel.getByRole('option', { name: 'rehabilitation', exact: true }).waitFor();
   await input.press('ArrowDown');
@@ -94,6 +97,9 @@ async function checkFeatures(page, mode) {
   const list = visibleList(panel);
   await list.first().waitFor();
   assert.equal(await input.inputValue(), 'rehabilitation');
+  const ribbon = panel.locator('.searchstax-search-result-ribbon').first();
+  assert.equal(await ribbon.innerText(), 'Programs');
+  assert.ok(await ribbon.evaluate(el => getComputedStyle(el).backgroundColor !== 'rgba(0, 0, 0, 0)'));
   const image = panel.locator('.mapped-result-thumbnail:visible').first();
   await image.waitFor();
   assert.ok(await image.evaluate(el => el.decode().then(() => el.naturalWidth > 0)));
@@ -115,6 +121,7 @@ async function checkFeatures(page, mode) {
   assert.equal(await panel.getAttribute('data-filter-style'), 'row');
 
   await submit(panel, 'campus flu clinic');
+  assert.deepEqual((await panel.locator('time').allTextContents()).sort(), ['2024-09-15', '2026-09-15']);
   await panel.getByText('Sample indexed promotion', { exact: true }).waitFor();
   assert.match(await list.first().innerText(), /2026/);
   assert.ok(await panel.getByRole('link', { name: /fictional flu shot appointment/ }).isVisible());

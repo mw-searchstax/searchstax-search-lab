@@ -21,15 +21,15 @@ export type ExperienceHandoff = {
 
 const demoBase = 'https://mw-searchstax.github.io/university-health-search-demo/';
 const directory = [
-  { section: 'programs', topic: ['Nursing', 'Enfermería'], path: 'education/nursing-simulation/', en: ['Nursing Simulation', 'Explore campus classroom exercises, equipment and observation logs.'], es: ['Simulación de enfermería', 'Explora los ejercicios de aula, los materiales y los registros de observación del campus.'] },
+  { section: 'programs', topic: ['Nursing', 'Enfermería'], path: 'education/nursing-simulation/', enrollment: true, published: '2026-03-16', en: ['Nursing Simulation', 'Explore campus classroom exercises, equipment and observation logs.'], es: ['Simulación de enfermería', 'Explora los ejercicios de aula, los materiales y los registros de observación del campus.'] },
   { section: 'programs', topic: ['Public health', 'Salud pública'], path: 'education/public-health/', en: ['Public Health', 'Explore campus coursework on population health and community education.'], es: ['Salud pública', 'Conoce los cursos del campus sobre salud de la población y educación comunitaria.'] },
   { section: 'locations', topic: ['North campus', 'Campus norte'], path: 'locations/north-campus-clinic/', en: ['North Campus Clinic', 'Find the teaching annex for primary care and neurology.'], es: ['Clínica del campus norte', 'Consulta la sede docente de atención primaria y neurología.'] },
   { section: 'locations', topic: ['South campus', 'Campus sur'], path: 'locations/south-campus-clinic/', en: ['South Campus Clinic', 'Explore the teaching annex with illustration displays and seminar rooms.'], es: ['Clínica del campus sur', 'Conoce la sede docente con salas de seminarios y exposiciones de ilustraciones.'] },
   { section: 'programs', topic: ['Rehabilitation', 'Rehabilitación'], path: 'care/services/rehabilitation/', en: ['Rehabilitation', 'Explore rehabilitation, physical therapy and sports medicine coursework.'], es: ['Rehabilitación', 'Explora la formación en rehabilitación, terapia física y medicina deportiva.'] },
   { section: 'locations', topic: ['Rehabilitation', 'Rehabilitación'], path: 'locations/rehabilitation-center/', en: ['Rehabilitation Center', 'See the rehabilitation center’s physical therapy teaching space.'], es: ['Centro de rehabilitación', 'Conoce el espacio docente de terapia física del centro de rehabilitación.'] },
   { section: 'programs', topic: ['Orthopedics', 'Ortopedia'], path: 'care/services/orthopedics/', en: ['Orthopedics', 'Explore joint models and illustrated teaching materials.'], es: ['Ortopedia', 'Explora modelos articulares y materiales de enseñanza ilustrados.'] },
-  { section: 'shared', topic: ['Flu clinic', 'Clínica de gripe'], path: 'news/flu-clinic-update-2024/', en: ['Flu Clinic Updates — 2024 Archive', 'Archived campus flu clinic teaching notices.'], es: ['Clínica de gripe — Archivo de 2024', 'Avisos anteriores de la clínica de gripe del campus.'] },
-  { section: 'shared', topic: ['Flu clinic', 'Clínica de gripe'], path: 'news/flu-clinic-update-2026/', en: ['Flu Clinic Updates — 2026 Notice', 'The current campus flu clinic notice.'], es: ['Clínica de gripe — Aviso de 2026', 'El aviso actual de la clínica de gripe del campus.'] },
+  { section: 'shared', topic: ['Flu clinic', 'Clínica de gripe'], path: 'news/flu-clinic-update-2024/', published: '2024-09-15', en: ['Flu Clinic Updates — 2024 Archive', 'Archived campus flu clinic teaching notices.'], es: ['Clínica de gripe — Archivo de 2024', 'Avisos anteriores de la clínica de gripe del campus.'] },
+  { section: 'shared', topic: ['Flu clinic', 'Clínica de gripe'], path: 'news/flu-clinic-update-2026/', published: '2026-09-15', en: ['Flu Clinic Updates — 2026 Notice', 'The current campus flu clinic notice.'], es: ['Clínica de gripe — Aviso de 2026', 'El aviso actual de la clínica de gripe del campus.'] },
 ];
 export const demoProfiles = [
   { language: 'en', profile: 'Programs', section: 'programs' },
@@ -44,7 +44,8 @@ function searchDirectory(active: Experience, query: string, tabs: boolean, filte
   const items = directory.filter(doc => !tabs || doc.section === scope?.section || doc.section === 'shared').map(doc => {
     const [title, description] = spanish ? doc.es : doc.en;
     const type = demoProfiles.find(item => item.language === active.language && item.section === doc.section)?.profile ?? (spanish ? 'Avisos' : 'Notices');
-    return { title, description, url: demoBase + doc.path, type, topic: doc.topic[spanish ? 1 : 0] };
+    return { title, description, url: demoBase + doc.path, type, topic: doc.topic[spanish ? 1 : 0],
+      enrollment: doc.enrollment, published: doc.published };
   }).filter(doc => query.toLocaleLowerCase().split(/\s+/).every(word => (doc.title + ' ' + doc.description).toLocaleLowerCase().includes(word)));
   const field = tabs ? 'topic' : 'type';
   const valueOf = (doc: typeof items[number]) => tabs ? doc.topic : doc.type;
@@ -61,6 +62,8 @@ function directoryCards(entries: (ReturnType<typeof searchDirectory>['entries'][
   const fields = [
     { name: 'title', result_card: 'title' }, { name: 'url', result_card: 'url' },
     { name: 'description', result_card: 'description' }, { name: 'type', result_card: locations ? 'paths' : 'ribbon' },
+    { name: 'published', result_card: 'date', title: profile.language === 'es' ? 'Fecha de publicación' : 'Published' },
+    { name: 'enrollment', result_card: '', title: profile.language === 'es' ? 'Inscripción abierta' : 'Open for enrollment' },
     { name: 'topic', result_card: '', title: profile.language === 'es' ? 'Tema' : 'Topic' },
   ];
   return entries.map(entry => {

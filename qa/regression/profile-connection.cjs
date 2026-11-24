@@ -28,7 +28,9 @@ async function run() {
         const directory = profile === 'Directory';
         const title = lang + '/' + profile + ' ' + term;
         const doc = { uid_s: 'first', caption_s: title, address_s: 'https://example.org/result', image_s: 'https://example.org/thumb.jpg',
-          staff_s: title, topics_ss: ['One', 'Two'], private_search_t: 'never display this', '[elevated]': true };
+          staff_s: title, topics_ss: ['One', 'Two'], category_s: 'Community program', published_dt: '2026-09-15',
+          path_ss: ['Education', 'Programs'], openForEnrollment_b: false, openings_i: 0,
+          private_search_t: 'never display this', '[elevated]': true };
         return route.fulfill({ json: {
           response: { numFound: 1, docs: [doc] }, responseHeader: { params: { uniqueId: 'uid_s', qf: 'private_search_t' } },
           highlighting: { first: { caption_s: ['<em>' + title + '</em>'], staff_s: ['<em>Wrong highlight</em>'] } },
@@ -36,6 +38,9 @@ async function run() {
           metadata: { results: directory ? [{ name: 'staff_s', result_card: 'title' }, { name: 'missing_link', result_card: 'url' }, { name: 'missing_photo', result_card: 'thumbnail' }] : [
             { name: 'caption_s', result_card: 'title' }, { name: 'address_s', result_card: 'url' },
             { name: 'image_s', result_card: 'thumbnail' }, { name: 'topics_ss', result_card: '', title: 'Topics' },
+            { name: 'category_s', result_card: 'ribbon' }, { name: 'published_dt', result_card: 'date' },
+            { name: 'path_ss', result_card: 'paths' }, { name: 'openForEnrollment_b', result_card: '', title: 'Enrollment status' },
+            { name: 'openings_i', title: 'Openings' },
           ], facets: [{ name: 'type', label: 'Content type' }], sorts: [{ name: 'title', order: 'asc', label: 'Title' }] },
           facet_counts: { facet_fields: { type: ['Library', 1] } },
         } });
@@ -63,10 +68,20 @@ async function run() {
     await page.locator('#lab-app-configuration').setInputFiles(snapshot);
     await page.locator('[data-customer-submit]').click();
     const single = page.locator('[data-customer-grid]');
+    async function checkMappedFields(container) {
+      const ribbon = container.locator('.searchstax-search-result-ribbon');
+      assert.equal(await ribbon.innerText(), 'Community program');
+      assert.ok(await ribbon.evaluate(el => getComputedStyle(el).backgroundColor !== 'rgba(0, 0, 0, 0)'));
+      assert.equal(await container.locator('time').getAttribute('datetime'), '2026-09-15');
+      assert.equal(await container.locator('.mapped-result-paths').innerText(), 'Education / Programs');
+      await container.getByText('Enrollment status: false', { exact: true }).waitFor();
+      await container.getByText('Openings: 0', { exact: true }).waitFor();
+    }
     await single.getByRole('link', { name: 'en/Main ' + query }).waitFor();
     assert.equal(await single.locator('mark').innerText(), 'en/Main ' + query);
     assert.equal(await single.locator('img').getAttribute('src'), 'https://example.org/thumb.jpg');
     await single.getByText('Topics: One, Two').waitFor();
+    await checkMappedFields(single);
     assert.doesNotMatch(await single.innerText(), /never display this/);
     await page.getByLabel('Show profile tabs').check();
     const panel = page.locator('#lab-experiences');
@@ -74,6 +89,7 @@ async function run() {
     const choices = page.locator('[data-profile-choices] label');
     const picker = panel.locator('[data-exp-language] select');
     await panel.getByRole('link', { name: 'en/Main ' + query }).waitFor();
+    await checkMappedFields(panel);
     assert.equal(await page.locator('[data-lab-demo-output]').getAttribute('data-searching'), null);
     assert.equal(await panel.locator('[data-exp-sort] select option:checked').textContent(), 'Relevance');
     assert.equal(await page.getByLabel('Show language picker').isChecked(), false);
@@ -84,6 +100,8 @@ async function run() {
     await panel.getByRole('tab', { name: 'Directory', exact: true }).click();
     await panel.locator('li h4').filter({ hasText: 'en/Directory ' + query }).waitFor();
     assert.equal(await panel.locator('li a, li img, li mark, [data-customer-answer]:visible, .search-related-terms:visible').count(), 0);
+    assert.equal(await panel.locator('.searchstax-search-result-ribbon, time, .mapped-result-paths').count(), 0);
+    assert.doesNotMatch(await panel.innerText(), /Enrollment status|Openings/);
     assert.equal(requests.some(r => r.profile === 'Directory' && ['related-search', 'answer'].includes(r.kind)), false);
     // Change profile again before the previous profile's search can complete.
     let releaseSlow;
