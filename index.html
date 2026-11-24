@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet">
   <script defer id="searchstax-ui-kit" src="https://cdn.jsdelivr.net/npm/@searchstax-inc/searchstudio-ux-js@4.2.34/dist/@searchstax-inc/searchstudio-ux-js.iife.js"></script>
-  <script type="module" crossorigin src="./assets/index-T4wMif9Z.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-BiDAfKJe.css">
+  <script type="module" crossorigin src="./assets/index-DbVnSDuG.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-DvTz6Lyq.css">
 </head>
 <body>
 <main
@@ -20,6 +20,7 @@
   data-search-app-name="SearchLabDemo"
   data-search-url="https://searchcloud-29-us-east-1.searchstax.com/29847/searchlabdemo-16707/emselect"
   data-search-credential="ef1ccc4d470be7a6eaa07e87a2ee577d08bba67c"
+  data-build-profile="SearchLabBuild"
   data-before-profile="Main Profile"
   data-after-profile="SearchLabAfter"
   data-ranking-profile="SearchLabRanking"
@@ -113,7 +114,7 @@
         </div>
         <div class="search-lab__handoff-panel" id="lab-connect-panel" hidden>
           <form data-customer-connect autocomplete="off">
-            <p>Use a read-only token for a Search App you’re allowed to preview. The connection lasts until you leave Design. Shared links carry your design settings. A starter with profile tabs or a language picker includes the selected languages, profile names, and feature settings. Your connection credentials stay out of downloads.</p>
+            <p>Use a read-only token for a Search App you’re allowed to preview. The connection lasts until you leave Design. Shared links carry your design settings. Starter downloads include your selected profile, language, and verified feature settings. Add your app’s endpoints and read-only credentials after extracting the ZIP.</p>
             <fieldset class="search-lab__field">
               <legend>Required to connect</legend>
               <p id="lab-customer-credentials-help">In Site Search, open your Search App and go to <strong>App Settings → All APIs → Search &amp; Indexing</strong> for the Select endpoint and a Read Only token. You can also paste a Select request URL that includes a model or language to fill in those settings.</p>
@@ -330,6 +331,29 @@
                 <div class="search-lab__field search-lab__field--inline">
                   <label for="lab-underline">Underline result titles</label>
                   <input id="lab-underline" type="checkbox">
+                </div>
+              </details>
+              <details class="search-lab__disclosure" open data-default-open>
+                <summary><span class="search-lab__hit-label">Hit highlighting</span></summary>
+                <div class="search-lab__field">
+                  <label for="lab-hit-style">Matched text</label>
+                  <select id="lab-hit-style" aria-describedby="lab-hit-hint">
+                    <option value="default">Default emphasis</option>
+                    <option value="bold">Bold</option>
+                    <option value="italic">Italic</option>
+                    <option value="color">Colored background</option>
+                    <option value="plain">Plain text</option>
+                  </select>
+                  <p class="search-lab__help" id="lab-hit-hint"></p>
+                </div>
+                <div id="lab-hit-colors" class="search-lab__quick-fields" hidden>
+                  <div class="search-lab__field search-lab__field--inline">
+                    <label for="lab-hit-text">Matched text color</label><input id="lab-hit-text" type="color">
+                  </div>
+                  <div class="search-lab__field search-lab__field--inline">
+                    <label for="lab-hit-bg">Highlight background</label><input id="lab-hit-bg" type="color">
+                  </div>
+                  <p class="search-lab__help" id="lab-hit-contrast" role="status"></p>
                 </div>
               </details>
               <details class="search-lab__disclosure" open data-default-open>
