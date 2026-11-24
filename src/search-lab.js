@@ -31,11 +31,13 @@ import {
 import './sample-promotions.css';
 import smartAnswersSampleHTML from './smart-answers-sample.html?raw';
 import './smart-answers-sample.css';
-import { setupRelatedSearches, relatedSource, demoRelatedSource } from './related-searches.js';
+import { setupRelatedSearches, relatedSource } from './related-searches.js';
 import './related-searches.css';
 import profileControls from './profile-controls.html?raw';
 import { resultCards, appendResultCard } from './result-card';
-import { profileStatus, featureStatus } from './app-configuration';
+import { profileStatus, featureStatus, readAppConfiguration } from './app-configuration';
+import { readAnswerEndpoint } from './customer-answers.js';
+import { readCustomerEndpoint } from './web-url.js';
 import { demoProfiles, setupExperiencePreview } from './profile-experiences';
 import { createSearchRecovery } from './search-recovery';
 import { setupCustomerPreview } from './customer-preview';
@@ -99,9 +101,6 @@ import { setupPaginationFocus } from './pagination-focus.js';
   var sortingToggle = root.querySelector('#lab-sorting');
   var suggestionsToggle = root.querySelector('#lab-suggestions');
   var smartAnswersSampleToggle = root.querySelector('#lab-smart-answers-sample');
-  var answerSampleHost = root.querySelector('[data-lab-answer-sample]');
-  answerSampleHost.innerHTML = smartAnswersSampleHTML;
-  var answerSample = answerSampleHost.querySelector('details');
   var promotionsInput = root.querySelector('#lab-sample-promotions');
   var setSuggestionSource = setupSearchSuggestions(form, 'lab-search-suggestions');
   var sortOrder = root.querySelector('#lab-sort-order');
@@ -181,6 +180,13 @@ import { setupPaginationFocus } from './pagination-focus.js';
   var demoConnection = {
     endpoint: config.searchURL, token: config.searchAuth, profile: config.before, language: 'en',
   };
+  const builtInApp = {
+    ...demoConnection,
+    answerEndpoint: readAnswerEndpoint(root.dataset.answerEndpoint || ''),
+    relatedURL: readCustomerEndpoint(root.dataset.relatedEndpoint || '', 'related-search'),
+    discoveryKey: root.dataset.discoveryKey || '',
+  };
+  root.removeAttribute('data-discovery-key');
   var showImprovePreview = setupImprovePreview(root, demoConnection, config.after, config.rankingAfter);
   var showDataFilters = setupDataFilters(root, demoConnection);
   var relevanceComparison = setupRelevanceComparison(root, demoConnection);
@@ -202,23 +208,60 @@ import { setupPaginationFocus } from './pagination-focus.js';
   var topFilterStyle = root.querySelector('#lab-top-filter-style');
   var filterPlacement = root.querySelector('#lab-filter-placement');
   var connectedRelatedSource;
-  var relatedQuery = '';
+  let builtInRelatedSource;
+  let builtInAnswerQuery = '';
+  let snapshotRequested = false;
+  var singleProfileQuery = '';
   var related = setupRelatedSearches(form, function (term) {
     queryInput.value = term;
     queryInput.focus();
     form.requestSubmit();
   });
-  function updateRelated() {
-    if (root.dataset.labView !== 'design' || !experiencePanel.hidden) { related.clear(); return; }
-    var connected = customerPreview.active;
-    var anchor = connected ? root.querySelector('[data-customer-layout]') : resultsLayout;
-    void related.show(anchor, connected && design.relatedPlacement === 'off' ? 'below' : design.relatedPlacement, relatedQuery, connected ? connectedRelatedSource : demoRelatedSource);
+  function updateSingleProfileFeatures() {
+    const connected = customerPreview.active;
+    if (root.dataset.labView !== 'design' || !experiencePanel.hidden) {
+      related.clear();
+      if (builtInAnswerQuery) customerPreview.suspendAnswers();
+      builtInAnswerQuery = '';
+      return;
+    }
+    const anchor = connected ? root.querySelector('[data-customer-layout]') : resultsLayout;
+    const placement = design.relatedPlacement === 'off' ? 'below' : design.relatedPlacement;
+    void related.show(anchor, placement, singleProfileQuery, connected ? connectedRelatedSource : builtInRelatedSource);
+    if (connected) builtInAnswerQuery = '';
+    else if (singleProfileQuery !== builtInAnswerQuery) {
+      builtInAnswerQuery = singleProfileQuery;
+      customerPreview.showAnswers(builtInApp, singleProfileQuery);
+    }
+  }
+  async function loadBuiltInConfiguration() {
+    if (snapshotRequested) return;
+    snapshotRequested = true;
+    try {
+      const response = await fetch('./config/searchlabdemo.json', { cache: 'no-cache', credentials: 'omit' });
+      if (!response.ok) throw Error('The built-in app configuration is unavailable.');
+      const configuration = readAppConfiguration(await response.text(), builtInApp.endpoint);
+      builtInApp.configuration = configuration;
+      builtInApp.settings = configuration.profiles.find(p => p.profile === builtInApp.profile && p.language === builtInApp.language);
+      if (featureStatus(configuration.entitlements.relatedSearches, builtInApp.settings?.relatedSearches) === 'On') {
+        builtInRelatedSource = relatedSource(builtInApp.relatedURL, builtInApp.discoveryKey, builtInApp.language, builtInApp.profile);
+      }
+    } catch {
+      // Leave unavailable metadata unknown. Retry on the next visit to Build.
+      snapshotRequested = false;
+    }
+    if (root.dataset.labView === 'design' && !customerPreview.active && experiencePanel.hidden) {
+      builtInAnswerQuery = '';
+      syncFeatureControls();
+      updateSingleProfileFeatures();
+    }
   }
   const experiencePanel = root.querySelector('#lab-experiences');
   experiencePanel.insertAdjacentHTML('afterbegin', profileControls.replace('<!-- smart-answer-sample -->', () => smartAnswersSampleHTML));
   const profileChoices = root.querySelector('[data-profile-choices]');
   const catalogStatus = root.querySelector('[data-profile-catalog-status]');
   const settingsSummary = root.querySelector('[data-app-settings-summary]');
+  const sourceLabel = root.querySelector('[data-lab-source-label]');
   let availableProfiles = demoProfiles;
   let includedProfiles = [...demoProfiles];
   let choiceLanguage = demoProfiles[0].language;
@@ -231,17 +274,28 @@ import { setupPaginationFocus } from './pagination-focus.js';
   }
   function syncFeatureControls() {
     const connected = Boolean(customerPreview?.active);
-    const appDriven = connected || !experiencePanel.hidden;
-    const configured = !appDriven || (selectedSettings && featureStatus(selectedSettings.entitlements.relatedSearches, selectedSettings.profile?.relatedSearches) === 'On');
+    const fixture = !connected && !experiencePanel.hidden;
+    const builtIn = !connected && experiencePanel.hidden;
+    const profile = builtIn ? builtInApp.settings : selectedSettings?.profile;
+    const entitlements = builtIn ? builtInApp.configuration?.entitlements : selectedSettings?.entitlements;
+    if (builtIn) {
+      settingsSummary.textContent = profileStatus(entitlements ?? {}, profile, profile?.highlighting, builtInApp);
+      settingsSummary.hidden = false;
+    }
+    sourceLabel.textContent = builtIn && root.dataset.labView === 'design'
+      ? (root.dataset.searchAppName || 'Live app') + ' · ' + builtInApp.profile : 'Fictional demo';
+    const configured = featureStatus(entitlements?.relatedSearches, profile?.relatedSearches) === 'On';
     const relatedSection = relatedToggle.closest('details');
     relatedSection.hidden = !configured;
-    relatedToggle.disabled = connected;
-    relatedToggle.checked = connected ? Boolean(configured) : design.relatedPlacement !== 'off';
+    relatedToggle.disabled = !fixture;
+    relatedToggle.checked = configured && (!fixture || design.relatedPlacement !== 'off');
     relatedPlacement.closest('.search-lab__field').hidden = !configured || !relatedToggle.checked;
     root.querySelector('[data-placement-target="lab-related-placement"]').hidden = !configured || !relatedToggle.checked;
-    if (connected && design.relatedPlacement === 'off') relatedPlacement.value = 'below';
-    smartAnswersSampleToggle.closest('.search-lab__field').hidden = connected || (appDriven && !selectedSettings?.profile?.smartAnswers);
-    thumbnailToggle.closest('.search-lab__field').hidden = appDriven;
+    if (!fixture && design.relatedPlacement === 'off') relatedPlacement.value = 'below';
+    smartAnswersSampleToggle.closest('.search-lab__field').hidden = !fixture || !profile?.smartAnswers;
+    promotionsInput.closest('details').querySelector('summary').textContent = fixture && profile?.smartAnswers
+      ? 'Promotions and answers' : 'Promotions';
+    thumbnailToggle.closest('.search-lab__field').hidden = !builtIn;
     descriptionToggle.closest('.search-lab__field').hidden = connected;
   }
   experiencePanel.addEventListener('profile-settings', event => {
@@ -302,13 +356,14 @@ import { setupPaginationFocus } from './pagination-focus.js';
     const previous = experiencePanel.hidden ? null : experiencePreview.searchState;
     design.profileTabs = experienceToggle.checked;
     design.languagePicker = languageToggle.checked;
+    if (previous && !design.profileTabs && !design.languagePicker) singleProfileQuery = previous.query;
     updateDesign();
     if (previous && experiencePanel.hidden) {
       if (customerPreview.active) {
         if (previous.query === customerPreview.query) customerPreview.resumeAnswers();
         else {
-          relatedQuery = previous.query;
-          updateRelated();
+          singleProfileQuery = previous.query;
+          updateSingleProfileFeatures();
           customerPreview.search(previous.query);
         }
       } else if (previous.query !== expected?.query) {
@@ -346,15 +401,15 @@ import { setupPaginationFocus } from './pagination-focus.js';
     updateExperienceMode(query ?? sampleQuery());
     var discovery = customerPreview.discovery;
     connectedRelatedSource = discovery ? relatedSource(discovery.url, discovery.key, discovery.language, discovery.profile) : null;
-    relatedQuery = query || '';
-    updateRelated();
+    singleProfileQuery = query || '';
+    updateSingleProfileFeatures();
     root.toggleAttribute('data-customer-connected', connected);
     root.toggleAttribute('data-hide-result-descriptions', !connected && !design.showDescriptions);
     previewBrand.hidden = !connected;
     demoOutput.hidden = connected;
     fictionalElements.forEach(function (element) { element.hidden = connected; });
     syncFeatureControls();
-    updateFeatureSamples();
+    updateSuggestions();
     updatePreviewText();
     if (root.dataset.labView !== 'design') return;
     queryInput.disabled = false;
@@ -383,9 +438,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
     noResultsMessage.textContent = text.noResultsText;
   }
 
-  function updateFeatureSamples() {
-    answerSample.hidden = customerPreview.active || !design.showSmartAnswersSample;
-    if (answerSample.hidden) answerSample.open = false;
+  function updateSuggestions() {
     var source = customerPreview.active ? customerPreview.suggestionSource : (design.showSuggestions ? sampleSuggestionSource : null);
     setSuggestionSource(root.dataset.labView === 'design' && experiencePanel.hidden ? source : null);
   }
@@ -415,7 +468,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
     relatedPlacement.closest('.search-lab__field').hidden = !relatedToggle.checked;
     root.querySelector('[data-placement-target="lab-related-placement"]').hidden = !relatedToggle.checked;
     if (relatedToggle.checked) relatedPlacement.value = design.relatedPlacement;
-    updateRelated();
+    updateSingleProfileFeatures();
     designSurface.toggleAttribute('data-hide-list-dividers', !design.listDividers);
     designSurface.toggleAttribute('data-underline-titles', design.underlineTitles);
     resultsLayout.setAttribute('data-filters', design.filters ? 'on' : 'off');
@@ -429,7 +482,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
     promotionsInput.value = design.samplePromotions;
     sampleButton.textContent = sampleQuery();
     syncFeatureControls();
-    updateFeatureSamples();
+    updateSuggestions();
     if (!design.showSorting) sortOrder.value = '';
     colorInput.value = design.color;
     backgroundInput.value = design.background;
@@ -747,8 +800,8 @@ import { setupPaginationFocus } from './pagination-focus.js';
       showUnavailable('The Ranking example hasn’t been configured yet.');
       return;
     }
-    relatedQuery = query.trim();
-    updateRelated();
+    singleProfileQuery = query.trim();
+    updateSingleProfileFeatures();
     var cleanQuery = query.trim();
     if (workspaceMode === 'examples') {
       var afterProfile = state.scenario === 'ranking' ? config.rankingAfter : config.after;
@@ -1014,17 +1067,12 @@ import { setupPaginationFocus } from './pagination-focus.js';
   relatedToggle.addEventListener('change', function () {
     design.relatedPlacement = relatedToggle.checked ? relatedPlacement.value : 'off';
     updateDesign();
-    if (!relatedToggle.checked || customerPreview.active) return;
+    if (!relatedToggle.checked || customerPreview.active || experiencePanel.hidden) return;
     showDesignPreview();
-    if (!experiencePanel.hidden) {
-      if (!experiencePanel.querySelector('.search-related-terms:not([hidden])')) {
-        experiencePreview.submit(experiencePreview.spanishDemo ? 'rehabilitación' : 'rehabilitation');
-      }
-      requestAnimationFrame(() => experiencePanel.querySelector('.search-related-terms:not([hidden])')?.scrollIntoView({ block: 'center' }));
-      return;
+    if (!experiencePanel.querySelector('.search-related-terms:not([hidden])')) {
+      experiencePreview.submit(experiencePreview.spanishDemo ? 'rehabilitación' : 'rehabilitation');
     }
-    if (!demoRelatedSource(relatedQuery).length) runSearch('rehabilitation', true);
-    requestAnimationFrame(() => root.querySelector('#lab-preview .search-related-terms:not([hidden])')?.scrollIntoView({ block: 'center' }));
+    requestAnimationFrame(() => experiencePanel.querySelector('.search-related-terms:not([hidden])')?.scrollIntoView({ block: 'center' }));
   });
   filterToggle.addEventListener('change', function () {
     design.filters = filterToggle.checked;
@@ -1094,8 +1142,8 @@ import { setupPaginationFocus } from './pagination-focus.js';
   form.addEventListener('submit', function (event) {
     event.preventDefault();
     if (customerPreview.active) {
-      relatedQuery = queryInput.value.trim();
-      updateRelated();
+      singleProfileQuery = queryInput.value.trim();
+      updateSingleProfileFeatures();
       customerPreview.search(queryInput.value);
       return;
     }
@@ -1183,7 +1231,6 @@ import { setupPaginationFocus } from './pagination-focus.js';
     root.querySelectorAll('#lab-design-controls details').forEach(details => {
       details.open = details.hasAttribute('data-default-open');
     });
-    answerSample.open = false;
     if (!customerPreview.active) {
       queryInput.value = sampleQuery();
       runSearch(queryInput.value, true);
@@ -1218,10 +1265,11 @@ import { setupPaginationFocus } from './pagination-focus.js';
     showImprovePreview(view, hash);
     showDataFilters(view === 'data-filters');
     if (view !== 'examples') relevanceComparison.clear();
-    if (view !== 'design') related.clear();
+    if (view === 'design') void loadBuiltInConfiguration();
+    else updateSingleProfileFeatures();
     if (view !== 'design') customerPreview.disconnect();
     syncFeatureControls();
-    updateFeatureSamples();
+    updateSuggestions();
     if (view !== 'design' && view !== 'examples') return;
     var exampleRoute = exampleRoutes.get(hash);
     if (view === 'examples') {

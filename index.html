@@ -23,6 +23,7 @@
   class="search-lab lt-container"
   id="main-content"
   data-search-lab
+  data-search-app-name="SearchLabDemo"
   data-search-url="https://searchcloud-29-us-east-1.searchstax.com/29847/searchlabdemo-16707/emselect"
   data-search-credential="ef1ccc4d470be7a6eaa07e87a2ee577d08bba67c"
   data-before-profile="Main Profile"
@@ -424,7 +425,7 @@
                 <img class="search-lab__site-logo" data-lab-preview-logo alt="Company logo" referrerpolicy="no-referrer" hidden>
                 <h3 class="search-lab__site-brand search-lab__site-wordmark" data-lab-fictional-only><span>Central County</span> <small>University Health</small></h3>
                 <h3 class="search-lab__site-brand" data-lab-preview-brand hidden>Your Search App</h3>
-                <span class="search-lab__demo-label" data-lab-fictional-only>Fictional demo</span>
+                <span class="search-lab__demo-label" data-lab-fictional-only data-lab-source-label>Fictional demo</span>
               </div>
               <section class="search-lab__site-content lab-experiences" id="lab-experiences" aria-label="Profile tabs and languages preview" hidden>
                 <button type="button" data-exp-disconnect hidden>Return to the fictional demo</button>
@@ -437,7 +438,12 @@
                 </form>
                 <p class="search-lab__sample" data-lab-fictional-only>Try <button type="button" data-lab-sample>rehabilitation</button></p>
 
-                <div data-lab-answer-sample data-lab-design-only hidden></div>
+                <p class="search-lab__sr-only" role="status" aria-atomic="true" data-customer-answer-announcement></p>
+                <section class="search-lab__customer-answer" aria-labelledby="lab-customer-answer-heading" data-customer-answer hidden>
+                  <h4 id="lab-customer-answer-heading">Smart Answer</h4>
+                  <p class="search-lab__status" data-customer-answer-status></p>
+                  <div class="search-lab__customer-answer-content" data-customer-answer-content hidden></div>
+                </section>
 
                 <div data-lab-demo-output>
                   <p class="search-lab__status search-lab__search-status" role="status" data-lab-status>Connecting to the demo…</p>
@@ -469,17 +475,11 @@
                     </div>
                   </div>
                 </div>
-                <p class="search-lab__sr-only" role="status" aria-atomic="true" data-customer-answer-announcement></p>
                 <section class="search-lab__customer-preview" aria-label="Connected search results" data-customer-preview hidden>
                   <div class="search-lab__customer-source">
                     <p data-customer-source></p>
                     <button class="lt-btn lt-btn--secondary" type="button" data-customer-disconnect>Return to the fictional demo</button>
                   </div>
-                  <section class="search-lab__customer-answer" aria-labelledby="lab-customer-answer-heading" data-customer-answer hidden>
-                    <h4 id="lab-customer-answer-heading">Smart Answer</h4>
-                    <p class="search-lab__status" data-customer-answer-status></p>
-                    <div class="search-lab__customer-answer-content" data-customer-answer-content hidden></div>
-                  </section>
                   <p class="search-lab__status search-lab__search-status" role="status" data-customer-search-feedback></p>
                   <div class="search-lab__results-heading">
                     <span class="search-lab__previous-results" data-customer-previous-results hidden>Previous results</span>

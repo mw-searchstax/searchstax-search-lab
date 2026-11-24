@@ -352,7 +352,7 @@ export function setupCustomerPreview(
   }
 
   function showAnswers(app: CustomerConnection, term: string) {
-    if (featureStatus(app.configuration?.entitlements.smartAnswers, app.settings?.smartAnswers) === 'On') void answers.start(app, term);
+    if (term && app.answerEndpoint && featureStatus(app.configuration?.entitlements.smartAnswers, app.settings?.smartAnswers) === 'On') void answers.start(app, term);
     else answers.clear();
   }
 
@@ -475,6 +475,7 @@ export function setupCustomerPreview(
     get query() { return options?.query; },
     get highlighting() { return latestPage?.highlighting; },
     get order() { return options?.sort; },
+    showAnswers,
     suspendAnswers: answers.clear,
     resumeAnswers() {
       if (connection && options?.query) showAnswers(connection, options.query);

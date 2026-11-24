@@ -1,0 +1,7 @@
+{
+  "endpoint": "https://searchcloud-29-us-east-1.searchstax.com/29847/searchlabdemo-16707/emselect",
+  "entitlements": { "relatedSearches": true, "smartAnswers": true },
+  "profiles": [
+    { "language": "en", "profile": "Main Profile", "relatedSearches": false, "smartAnswers": false, "highlighting": false }
+  ]
+}
