@@ -1,0 +1,7 @@
+:where(.search-starter, .search-lab[data-lab-view='design'] #lab-preview) {
+  --search-result-title-size: 1rem;
+  --search-result-title-line-height: 1.35;
+  --search-result-title-letter-spacing: -.025em;
+  --search-result-description-size: .875rem;
+  --search-result-description-line-height: 1.5;
+}

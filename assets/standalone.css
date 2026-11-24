@@ -1,39 +1,70 @@
 :root {
   --color-bg: #fff;
-  --color-bg-secondary: #f7f7f7;
-  --color-border: #ddd;
+  --color-bg-secondary: #f9f9f9;
+  --color-border: #d6d6d6;
   --color-brand-primary: #eb3500;
-  --color-brand-tint: #fff8f4;
+  --color-brand-primary-inverse: #fff;
+  --color-brand-primary-hover: #b82900;
+  --color-brand-primary-pressed: #9f2400;
+  --color-brand-tint: color-mix(in srgb, var(--color-brand-primary) 5%, white);
   --color-brand-border-muted: rgb(235 53 0 / 45%);
-  --color-heading-primary: #333;
-  --color-link: #333;
+  --color-heading-primary: #333333;
+  --color-text-primary: var(--color-heading-primary);
+  --color-text-secondary: #555;
+  --color-link: var(--color-text-primary);
+  --font-family-body: Barlow, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-family-heading: Montserrat, var(--font-family-body);
+  --font-weight-bold: 600;
+  --font-weight-heading: 600;
+  --line-height-body: 1.5;
+  --line-height-heading: 1.2;
+  --button-color-secondary: var(--color-text-primary);
   --border-radius-base: 6px;
-  --border-radius-lg: 8px;
+  --border-radius-lg: 10px;
+  --focus-ring-color: var(--color-text-primary);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 3px;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-body { margin: 0; color: #333; font-family: Barlow, sans-serif; line-height: 1.5; }
+body { margin: 0; color: var(--color-text-primary); background: var(--color-bg); font-family: var(--font-family-body); line-height: var(--line-height-body); }
 button, input, select { font: inherit; }
 a { color: var(--color-link); }
 h1, h2, h3, h4, p { margin-top: 0; }
-h1 { font-size: 2rem; line-height: 1.2; }
-h2 { font-size: 1.5rem; line-height: 1.25; }
-.site-header { padding: 16px 24px; border-bottom: 1px solid #e6e6e6; }
-.site-header__brand { display: flex; align-items: center; gap: 12px; color: #222; text-decoration: none; }
-.site-header__brand img { width: 22px; height: 25px; }
-.site-header__wordmark { margin-left: -6px; font-size: 1rem; font-weight: 500; letter-spacing: .08em; }
-.site-header__brand span { padding-left: 12px; border-left: 1px solid #ccc; font-weight: 600; }
+h1, h2, h3, h4 {
+  color: var(--color-heading-primary);
+  font-family: var(--font-family-heading);
+  font-weight: var(--font-weight-heading);
+  line-height: var(--line-height-heading);
+  letter-spacing: -.018em;
+}
+h1 { font-size: clamp(1.875rem, 4vw, 2.5rem); text-wrap: balance; }
+h2 { font-size: clamp(1.25rem, 2.25vw, 1.5rem); }
 .lt-container { padding-right: 24px; padding-left: 24px; }
 .lt-container-inner { max-width: 1240px; margin-right: auto; margin-left: auto; }
-.breadcrumbs { display: flex; gap: .75rem; padding: 0; margin: 0; list-style: none; }
-.breadcrumbs li + li::before { margin-right: .75rem; color: #888; content: '/'; }
-.lt-btn { display: inline-flex; align-items: center; justify-content: center; padding: .55rem .9rem; border: 1px solid #333; border-radius: 4px; background: #fff; color: #333; font-weight: 600; cursor: pointer; }
-.lt-btn:hover { background: #f5f5f5; }
+.lt-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .45rem;
+  min-height: 44px;
+  padding: .55rem .9rem;
+  border: 1px solid transparent;
+  border-radius: var(--border-radius-base);
+  font-weight: var(--font-weight-bold);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.lt-btn--secondary { border-color: var(--button-color-secondary); color: var(--button-color-secondary); background: var(--color-bg); }
+.lt-btn--secondary:hover { background: var(--color-bg-secondary); }
+.lt-btn--secondary:active { background: #eee; }
+/* The darker brand state preserves contrast for white button labels. */
+.lt-btn--primary { color: var(--color-brand-primary-inverse); background: var(--color-brand-primary-hover); }
+.lt-btn--primary:hover { background: var(--color-brand-primary-pressed); }
+.lt-btn--primary:active { background: #812000; }
 
 @media (max-width: 600px) {
-  .site-header { padding: 14px 16px; }
-  .site-header__brand img { width: 20px; height: 23px; }
-  .site-header__wordmark { font-size: .875rem; }
-  .site-header__brand span { font-size: .875rem; }
   .lt-container { padding-right: 16px; padding-left: 16px; }
 }

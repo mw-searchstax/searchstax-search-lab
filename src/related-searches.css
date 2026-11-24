@@ -1,0 +1,4 @@
+.search-related-terms { margin-block: 1rem; }
+.search-related-terms[hidden] { display: none; }
+.search-related-terms > div { display: flex; flex-wrap: wrap; gap: .5rem; margin-block-start: .4rem; }
+.search-related-terms button { font: inherit; color: inherit; background: transparent; cursor: pointer; padding: .35em .65em; border: 1px solid currentColor; border-radius: var(--search-corners, 5px); }

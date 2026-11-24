@@ -1,0 +1,17 @@
+.search-promotion-banner {
+  margin-block: 12px;
+  padding: 12px 16px;
+  border: 1px solid #d7e0da;
+  border-inline-start: 3px solid var(--preview-accent, var(--search-accent, #263f58));
+  border-radius: 5px;
+  color: #253a34;
+  background: #f3f7f4;
+  overflow-wrap: anywhere;
+}
+
+.search-promotion-banner[hidden] { display: none; }
+.search-promotion-banner p { margin: 4px 0 0; }
+.search-promotion-banner .sample-external-promotion__label { margin: 0 0 4px; }
+.search-promotion-banner a { color: #244a39; font-weight: 600; text-decoration: underline; }
+.sample-external-promotion__label, .sample-indexed-promotion, .search-promotion-marker { font-size: .8125rem; font-weight: 600; }
+.sample-indexed-promotion, .search-promotion-marker { display: block; margin-bottom: 4px; color: #364e40; }

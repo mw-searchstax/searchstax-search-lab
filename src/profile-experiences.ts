@@ -1,0 +1,411 @@
+import { DEFAULT_DESIGN, type DesignSettings } from './design.js';
+import { setupProfileFeatures, orderDirectoryResults, spanishPromotionQuery } from './profile-features.js';
+import { demoSortOptions } from './demo-sorting.js';
+import { contentLanguageTag } from './content-language.js';
+import { createSearchRecovery } from './search-recovery.js';
+import { readCustomerEndpoint, searchCustomerApp, CustomerSearchError, type CustomerPage, type CustomerConnection } from './customer-search.js';
+
+export type Experience = Pick<CustomerConnection, 'language' | 'profile'>;
+
+export function readExperienceCatalog(endpoint: string, first: Experience, text: string) {
+  const items: Experience[] = [];
+  const add = ({ language, profile }: Experience) => {
+    const code = language.trim().replaceAll('-', '_').toLowerCase();
+    if (code && !/^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$/.test(code)) throw Error('Enter the language code from your app, such as en or es_mx.');
+    if (!items.some(item => item.language === code && item.profile === profile)) items.push({ language: code, profile });
+  };
+  add(first);
+  for (const raw of text.split(/\r?\n/)) {
+    const line = raw.trim();
+    if (!line) continue;
+    if (/^https:\/\//i.test(line)) {
+      let url: URL;
+      try { url = new URL(line); } catch { throw Error('Check the search request URL.'); }
+      const base = new URL(url); base.search = '';
+      if (!readCustomerEndpoint(base.href) || base.origin !== new URL(endpoint).origin ||
+          base.pathname.replace(/\/$/, '') !== new URL(endpoint).pathname.replace(/\/$/, '')) throw Error('Use search request URLs from this app’s Select endpoint.');
+      add({ language: url.searchParams.get('language') || '', profile: url.searchParams.get('model')?.trim() || '' });
+    } else {
+      const parts = line.split('|').map(value => value.trim());
+      if (parts.length !== 2 || !parts[0]) throw Error('Enter one language code and profile per line, such as en | Campus directory.');
+      add({ language: parts[0], profile: parts[1] });
+    }
+  }
+  return items;
+}
+
+export type ExperienceHandoff = {
+  source: 'app' | 'demo';
+  profiles: Experience[];
+  selected: Experience;
+  initialQuery: string;
+};
+
+const demoBase = 'https://mw-searchstax.github.io/university-health-search-demo/';
+const directory = [
+  { section: 'programs', topic: ['Nursing', 'Enfermería'], path: 'education/nursing-simulation/', en: ['Nursing Simulation', 'Explore campus classroom exercises, equipment and observation logs.'], es: ['Simulación de enfermería', 'Explora los ejercicios de aula, los materiales y los registros de observación del campus.'] },
+  { section: 'programs', topic: ['Public health', 'Salud pública'], path: 'education/public-health/', en: ['Public Health', 'Explore campus coursework on population health and community education.'], es: ['Salud pública', 'Conoce los cursos del campus sobre salud de la población y educación comunitaria.'] },
+  { section: 'locations', topic: ['North campus', 'Campus norte'], path: 'locations/north-campus-clinic/', en: ['North Campus Clinic', 'Find the teaching annex for primary care and neurology.'], es: ['Clínica del campus norte', 'Consulta la sede docente de atención primaria y neurología.'] },
+  { section: 'locations', topic: ['South campus', 'Campus sur'], path: 'locations/south-campus-clinic/', en: ['South Campus Clinic', 'Explore the teaching annex with illustration displays and seminar rooms.'], es: ['Clínica del campus sur', 'Conoce la sede docente con salas de seminarios y exposiciones de ilustraciones.'] },
+  { section: 'programs', topic: ['Rehabilitation', 'Rehabilitación'], path: 'care/services/rehabilitation/', en: ['Rehabilitation', 'Explore rehabilitation, physical therapy and sports medicine coursework.'], es: ['Rehabilitación', 'Explora la formación en rehabilitación, terapia física y medicina deportiva.'] },
+  { section: 'locations', topic: ['Rehabilitation', 'Rehabilitación'], path: 'locations/rehabilitation-center/', en: ['Rehabilitation Center', 'See the rehabilitation center’s physical therapy teaching space.'], es: ['Centro de rehabilitación', 'Conoce el espacio docente de terapia física del centro de rehabilitación.'] },
+  { section: 'programs', topic: ['Orthopedics', 'Ortopedia'], path: 'care/services/orthopedics/', en: ['Orthopedics', 'Explore joint models and illustrated teaching materials.'], es: ['Ortopedia', 'Explora modelos articulares y materiales de enseñanza ilustrados.'] },
+  { section: 'shared', topic: ['Flu clinic', 'Clínica de gripe'], path: 'news/flu-clinic-update-2024/', en: ['Flu Clinic Updates — 2024 Archive', 'Archived campus flu clinic teaching notices.'], es: ['Clínica de gripe — Archivo de 2024', 'Avisos anteriores de la clínica de gripe del campus.'] },
+  { section: 'shared', topic: ['Flu clinic', 'Clínica de gripe'], path: 'news/flu-clinic-update-2026/', en: ['Flu Clinic Updates — 2026 Notice', 'The current campus flu clinic notice.'], es: ['Clínica de gripe — Aviso de 2026', 'El aviso actual de la clínica de gripe del campus.'] },
+];
+const sample = [
+  { language: 'en', profile: 'Programs', section: 'programs' },
+  { language: 'en', profile: 'Locations', section: 'locations' },
+  { language: 'es', profile: 'Programas', section: 'programs' },
+  { language: 'es', profile: 'Ubicaciones', section: 'locations' },
+];
+
+type Result = { title: string; description: string; url: string; promoted?: boolean };
+
+function searchDirectory(active: Experience, query: string, tabs: boolean, filters: Map<string, string>) {
+  const spanish = active.language === 'es';
+  const scope = sample.find(item => item.language === active.language && item.profile === active.profile);
+  const items = directory.filter(doc => !tabs || doc.section === scope?.section || doc.section === 'shared').map(doc => {
+    const [title, description] = spanish ? doc.es : doc.en;
+    const type = sample.find(item => item.language === active.language && item.section === doc.section)?.profile ?? (spanish ? 'Avisos' : 'Notices');
+    return { title, description, url: demoBase + doc.path, type, topic: doc.topic[spanish ? 1 : 0] };
+  }).filter(doc => query.toLocaleLowerCase().split(/\s+/).every(word => (doc.title + ' ' + doc.description).toLocaleLowerCase().includes(word)));
+  const field = tabs ? 'topic' : 'type';
+  const valueOf = (doc: typeof items[number]) => tabs ? doc.topic : doc.type;
+  const counts = new Map<string, number>();
+  for (const doc of items) counts.set(valueOf(doc), (counts.get(valueOf(doc)) ?? 0) + 1);
+  const entries = items.filter(doc => !filters.has(field) || valueOf(doc) === filters.get(field));
+  return { entries, total: entries.length, facets: [{ field, label: tabs ? (scope?.section === 'locations' ? 'Campus' : (spanish ? 'Área de estudio' : 'Field of study')) : (spanish ? 'Tipo de contenido' : 'Content type'),
+    choices: [...counts].map(([value, count]) => ({ value, count })) }] };
+}
+
+export function experienceHandoff(connected = false, catalog: Experience[] = sample, active = catalog[0], query = 'campus'): ExperienceHandoff {
+  return {
+    source: connected ? 'app' : 'demo',
+    profiles: catalog.map(({ language, profile }) => ({ language, profile })),
+    selected: { language: active.language, profile: active.profile },
+    initialQuery: connected ? '' : query,
+  };
+}
+
+const languageName = (code: string) => {
+  if (!code) return 'App default language';
+  const tag = contentLanguageTag(code);
+  if (!tag) return code;
+  try { return new Intl.DisplayNames(['en'], { type: 'language' }).of(tag) || code; }
+  catch { return code; }
+};
+
+export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<string, string>) {
+  const field = <T extends HTMLElement>(selector: string) => panel.querySelector<T>(selector)!;
+  const language = field<HTMLSelectElement>('[data-exp-language] select');
+  const tabs = field('[role="tablist"]');
+  const results = field('[role="tabpanel"]');
+  const list = field('.experience-results ul');
+  const status = results.querySelector<HTMLElement>('[role="status"]')!;
+  const input = field<HTMLInputElement>('input[type="search"]');
+  const previous = field<HTMLButtonElement>('[data-exp-prev]');
+  const next = field<HTMLButtonElement>('[data-exp-next]');
+  const info = field('[data-exp-source]');
+  const pages = field('[data-exp-pages]');
+  let app: CustomerConnection | null = null;
+  let catalog: Experience[] = sample;
+  let active = catalog[0];
+  let query = 'campus';
+  let start = 0;
+  let displayedStart = 0;
+  const searchForm = field<HTMLFormElement>('form');
+  let lastAnchor: HTMLElement = searchForm;
+  let lastControl: HTMLElement = input;
+  const recovery = createSearchRecovery(input, () => { void search(lastAnchor, lastControl); });
+  let options: DesignSettings = { ...DEFAULT_DESIGN };
+  const filters = new Map<string, string>();
+  const facets = field('[data-exp-facets]');
+  const filterPanel = field('[data-exp-filter-panel]');
+  const filterButton = field<HTMLButtonElement>('[data-exp-filter-toggle]');
+  const order = field<HTMLSelectElement>('[data-exp-sort] select');
+  const empty = field('[data-exp-empty]');
+  let sorts: CustomerPage['sorts'] = [];
+  let noMatches = false;
+  const features = setupProfileFeatures(panel, submit);
+  const spanish = () => active.language.split(/[-_]/)[0] === 'es';
+
+  function updatePresentation() {
+    const es = spanish();
+    const fieldText = es && options.searchFieldText === DEFAULT_DESIGN.searchFieldText ? 'Buscar en el sitio' : options.searchFieldText;
+    input.placeholder = fieldText;
+    field('form label').textContent = fieldText;
+    field('form').setAttribute('aria-label', fieldText);
+    field('button[type="submit"]').textContent = es && options.searchButtonText === DEFAULT_DESIGN.searchButtonText ? 'Buscar' : options.searchButtonText;
+    empty.textContent = es && options.noResultsText === DEFAULT_DESIGN.noResultsText ? 'No hay coincidencias. Prueba otra búsqueda o quita un filtro.' : options.noResultsText;
+    empty.hidden = !noMatches;
+    previous.textContent = es ? 'Página anterior' : 'Previous page';
+    next.textContent = es ? 'Página siguiente' : 'Next page';
+    filterButton.textContent = (es ? 'Filtros' : 'Filters') + (filters.size ? ' (' + filters.size + ')' : '');
+    field('[data-exp-sort] span').textContent = es ? 'Ordenar por' : 'Sort by';
+    field('[data-exp-sort]').hidden = !options.showSorting || !sorts.length;
+    field('[data-exp-sort-hint]').hidden = !app || !options.showSorting || Boolean(sorts.length);
+    features.update(options, app, active, query);
+  }
+
+  filterButton.addEventListener('click', () => {
+    filterButton.setAttribute('aria-expanded', String(filterButton.getAttribute('aria-expanded') !== 'true'));
+  });
+  order.addEventListener('change', () => { start = 0; void search(field('[data-exp-sort]'), order); });
+
+  function showFacets(fields: CustomerPage['facets']) {
+    const focused = document.activeElement as HTMLInputElement | null;
+    const hadFocus = facets.contains(focused);
+    facets.replaceChildren();
+    for (const { field: name, label, choices } of fields) {
+      if (!options.filters || !choices.length && !filters.has(name)) continue;
+      const group = document.createElement('fieldset');
+      const legend = document.createElement('legend');
+      legend.textContent = label;
+      group.append(legend);
+      const all = active.language === 'es' && !app ? 'Todas las opciones' : 'All';
+      const values = [{ value: '', count: 0 }, ...choices];
+      const selected = filters.get(name) || '';
+      if (!values.some(choice => choice.value === selected)) values.push({ value: selected, count: 0 });
+      for (const choice of values) {
+        const text = document.createElement('label');
+        const radio = document.createElement('input');
+        radio.type = 'radio'; radio.name = 'exp-' + name; radio.value = choice.value;
+        radio.checked = selected === choice.value;
+        radio.addEventListener('change', () => {
+          if (choice.value) filters.set(name, choice.value);
+          else filters.delete(name);
+          start = 0; void search(text, radio);
+        });
+        text.append(radio, choice.value ? choice.value + ' (' + choice.count + ')' : all);
+        group.append(text);
+      }
+      facets.append(group);
+    }
+    filterPanel.hidden = !facets.childElementCount;
+    if (hadFocus) [...facets.querySelectorAll('input')].find(r => r.name === focused?.name && r.checked)?.focus();
+  }
+  let pending: AbortController | undefined;
+
+  function cancelSearch() {
+    pending?.abort();
+    pending = undefined;
+    results.removeAttribute('aria-busy');
+  }
+  async function search(anchor = searchForm as HTMLElement, control = input as HTMLElement) {
+    cancelSearch();
+    lastAnchor = anchor;
+    lastControl = control;
+    recovery.begin(anchor, control);
+    noMatches = false;
+    updatePresentation();
+    features.showExternalPromotions([]);
+    if (anchor !== pages) list.replaceChildren();
+    if (!options.filters || !query || app && (!app.endpoint || !app.token)) showFacets([]);
+    if (anchor !== pages) pages.hidden = true;
+    if (app && (!app.endpoint || !app.token)) {
+      status.textContent = 'To search your app, set the Select endpoint and read-only token in src/config.js.';
+      return;
+    }
+    const es = spanish();
+    if (!query) { status.textContent = es ? 'Escribe un término de búsqueda.' : 'Enter a search term.'; return; }
+    const request = new AbortController();
+    pending = request;
+    results.setAttribute('aria-busy', 'true');
+    status.textContent = 'Searching…';
+    try {
+      let entries: Result[];
+      let choices = demoSortOptions.slice(1).map(({ order, label }) => ({
+        value: order, label: es ? label.replace('Page address', 'Dirección de página') : label,
+      }));
+      let banners: CustomerPage['externalPromotions'] = [];
+      let fields: CustomerPage['facets'];
+      const rows = options.resultsPerPage;
+      let total: number;
+      if (app) {
+        const page = await searchCustomerApp({ ...app, ...active }, { query, start, rows, sort: options.showSorting ? order.value : '', filters: new Map(filters) }, AbortSignal.any([request.signal, AbortSignal.timeout(12000)]));
+        choices = page.sorts;
+        banners = page.externalPromotions;
+        fields = page.facets;
+        entries = page.results;
+        total = page.total;
+      } else {
+        const samplePage = searchDirectory(active, query, options.profileTabs, filters);
+        const matches = orderDirectoryResults(samplePage.entries, options.showSorting ? order.value : '', query, options.samplePromotions);
+        entries = matches.slice(start, start + rows);
+        total = samplePage.total;
+        fields = samplePage.facets;
+      }
+      if (pending !== request) return;
+      recovery.clear();
+      displayedStart = start;
+      list.replaceChildren();
+      sorts = choices;
+      const selected = order.value;
+      order.replaceChildren(new Option(es ? 'Relevancia' : 'Relevance', ''), ...sorts.map(choice => new Option(choice.label, choice.value)));
+      if (sorts.some(choice => choice.value === selected)) order.value = selected;
+      noMatches = total === 0;
+      updatePresentation();
+      features.showExternalPromotions(banners);
+      showFacets(fields);
+      for (const entry of entries) {
+        const item = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = entry.url;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = entry.title;
+        if (!app) link.hreflang = 'en';
+        if (entry.promoted) {
+          const marker = document.createElement('strong');
+          marker.className = 'sample-indexed-promotion';
+          marker.textContent = es ? (app ? 'Promocionado' : 'Promoción indexada de ejemplo') : (app ? 'Promoted' : 'Sample indexed promotion');
+          item.append(marker);
+        }
+        if (!app && thumbnails[entry.url]) {
+          const image = document.createElement('img');
+          image.className = 'profile-result-thumbnail';
+          image.src = thumbnails[entry.url];
+          image.alt = '';
+          item.append(image);
+        }
+        item.append(link);
+        if (entry.description) {
+          const description = document.createElement('p');
+          description.textContent = entry.description;
+          item.append(description);
+        }
+        list.append(item);
+      }
+      list.lang = contentLanguageTag(active.language) || '';
+      const range = total > rows ? (start + 1) + '–' + Math.min(start + rows, total) + (es ? ' de ' : ' of ') : '';
+      const count = es ? (total === 1 ? ' resultado para ' : ' resultados para ') : (total === 1 ? ' result for ' : ' results for ');
+      status.textContent = total ? range + total + count + '“' + query + '”' : (es ? 'Sin resultados para ' : 'No results for ') + '“' + query + '”.';
+      previous.disabled = start === 0;
+      next.disabled = start + rows >= total;
+      pages.hidden = total <= rows;
+    } catch (error) {
+      if (pending !== request) return;
+      status.textContent = anchor === pages ? (es ? 'Resultados de la página anterior.' : 'Showing the previous page.') : '';
+      const message = error instanceof CustomerSearchError ? error.message
+        : es ? 'No se pudo cargar la búsqueda. Inténtalo de nuevo.' : 'Couldn’t load this search. Try again.';
+      recovery.error(message, es ? 'Volver a intentar' : 'Retry search');
+    } finally {
+      if (pending === request) { results.removeAttribute('aria-busy'); pending = undefined; }
+    }
+  }
+  function select(item: Experience, focus = false, fromLanguage = false) {
+    active = item;
+    order.value = '';
+    sorts = [];
+    filters.clear();
+    showFacets([]);
+    start = 0;
+    const choices = catalog.filter(choice => choice.language === active.language);
+    tabs.replaceChildren(...choices.map(choice => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.id = 'lab-experience-tab-' + catalog.indexOf(choice);
+      button.textContent = choice.profile || 'Default profile';
+      button.setAttribute('role', 'tab');
+      button.setAttribute('aria-controls', results.id);
+      button.setAttribute('aria-selected', String(choice === active));
+      button.tabIndex = choice === active ? 0 : -1;
+      button.addEventListener('click', () => select(choice, true));
+      button.addEventListener('keydown', event => {
+        const index = choices.indexOf(choice);
+        const targets: Record<string, number> = { ArrowLeft: (index + choices.length - 1) % choices.length, ArrowRight: (index + 1) % choices.length, Home: 0, End: choices.length - 1 };
+        if (Object.hasOwn(targets, event.key)) { event.preventDefault(); select(choices[targets[event.key]], true); }
+      });
+      return button;
+    }));
+    const selected = tabs.querySelector<HTMLButtonElement>('[aria-selected="true"]')!;
+    results.setAttribute('role', options.profileTabs ? 'tabpanel' : 'region');
+    if (options.profileTabs) {
+      results.removeAttribute('aria-label');
+      results.setAttribute('aria-labelledby', selected.id);
+    } else {
+      results.removeAttribute('aria-labelledby');
+      results.setAttribute('aria-label', 'Search results');
+    }
+    if (focus) selected.focus();
+    if (fromLanguage) void search(field('[data-exp-language]'), language);
+    else if (focus) void search(tabs, selected);
+    else void search();
+  }
+  function render(fromLanguage = false) {
+    const languages = [...new Set(catalog.map(item => item.language))];
+    language.replaceChildren(...languages.map(code => new Option(!app && code === 'es' ? 'Español' : languageName(code), code)));
+    language.value = active.language;
+    language.disabled = languages.length === 1;
+    field('[data-exp-language]').hidden = !options.languagePicker;
+    tabs.hidden = !options.profileTabs;
+    const es = spanish();
+    field('[data-exp-language] span').textContent = es ? 'Idioma de búsqueda' : 'Search language';
+    info.textContent = !app && active.language === 'es' ? 'Los enlaces abren páginas del campus en inglés.' : '';
+    if (app && !options.profileTabs) info.textContent = 'Search Profile: ' + (active.profile || 'Default');
+    info.hidden = !info.textContent;
+    select(active, false, fromLanguage);
+  }
+  language.addEventListener('change', () => {
+    const section = !app && sample.find(item => item.language === active.language && item.profile === active.profile)?.section;
+    const translated = section && sample.find(item => item.language === language.value && item.section === section);
+    active = catalog.find(item => item.language === language.value && translated && item.profile === translated.profile)
+      ?? catalog.find(item => item.language === language.value && item.profile === active.profile)
+      ?? catalog.find(item => item.language === language.value)!;
+    render(true);
+  });
+  function submit(term: string) {
+    query = term.trim();
+    input.value = term;
+    filters.clear();
+    start = 0;
+    void search();
+  }
+  field('form').addEventListener('submit', event => { event.preventDefault(); submit(input.value); });
+  previous.addEventListener('click', () => { start = Math.max(0, displayedStart - options.resultsPerPage); void search(pages, previous); });
+  next.addEventListener('click', () => { start = displayedStart + options.resultsPerPage; void search(pages, next); });
+  return {
+    open(term = query, draft = term) { query = term; input.value = draft; render(); },
+    close() { cancelSearch(); recovery.clear(); features.clear(); },
+    get searchState() { return { query, draft: input.value }; },
+    submit,
+    get spanishDemo() { return !app && spanish(); },
+    get promotionQuery() { return spanish() ? spanishPromotionQuery : 'campus flu clinic'; },
+    configure(design: DesignSettings) {
+      const previous = options;
+      options = { ...design };
+      panel.dataset.layout = design.layout;
+      panel.dataset.filterPlacement = design.filterPlacement;
+      panel.dataset.filterStyle = design.topFilterStyle;
+      panel.dataset.descriptions = String(design.showDescriptions);
+      panel.dataset.thumbnails = String(design.showThumbnails);
+      panel.dataset.dividers = String(design.listDividers);
+      panel.dataset.underline = String(design.underlineTitles);
+      if (panel.hidden || !(design.profileTabs || design.languagePicker)) return;
+      if (previous.profileTabs !== design.profileTabs || previous.languagePicker !== design.languagePicker) {
+        if (!design.languagePicker && active.language !== catalog[0].language) active = catalog[0];
+        else if (!design.profileTabs) active = catalog.find(item => item.language === active.language)!;
+        render();
+      } else if (previous.filters !== design.filters || previous.resultsPerPage !== design.resultsPerPage ||
+                 previous.showSorting !== design.showSorting || previous.samplePromotions !== design.samplePromotions) {
+        start = 0;
+        if (!design.filters) filters.clear();
+        if (!design.showSorting || previous.samplePromotions !== design.samplePromotions) order.value = '';
+        void search();
+      } else updatePresentation();
+    },
+    handoff(): ExperienceHandoff {
+      return experienceHandoff(Boolean(app), catalog, active, query);
+    },
+    setSource(connection: CustomerConnection | null, choices: Experience[], term: string, selected?: Experience) {
+      cancelSearch(); features.clear(); app = connection; catalog = connection ? choices : sample;
+      active = catalog.find(item => item.language === selected?.language && item.profile === selected.profile) ?? catalog[0];
+      query = term;
+      start = 0;
+      list.replaceChildren(); tabs.replaceChildren(); language.replaceChildren();
+      input.value = term; info.textContent = ''; status.textContent = ''; pages.hidden = true;
+      if (!panel.hidden) render();
+    },
+  };
+}

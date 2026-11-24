@@ -3,25 +3,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Explore how SearchStax design and relevance settings affect a search experience.">
+  <meta name="description" content="Design a search page and learn how to improve search results with SearchStax Site Search.">
   <title>Search Lab | SearchStax</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/standalone.css">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/standalone.css">
+  <link rel="stylesheet" href="./assets/search-lab.css">
+  <link rel="stylesheet" href="./assets/promotions.css">
+  <script defer id="searchstax-ui-kit" src="https://cdn.jsdelivr.net/npm/@searchstax-inc/searchstudio-ux-js@4.2.34/dist/@searchstax-inc/searchstudio-ux-js.iife.js"></script>
+  <script type="module" src="./src/search-lab.js"></script>
+  <script type="module" src="./src/promotions.ts"></script>
+  <script type="module" src="./src/promotion-checklist.ts"></script>
+  <script type="module" src="./src/relevance-test-plan.ts"></script>
+  <script type="module" src="./src/spell-check.ts"></script>
 </head>
 <body>
-  <header class="site-header">
-    <a class="site-header__brand" href="https://support.searchstax.com/hc/en-us">
-      <img src="assets/searchstax-logo.svg" alt="SearchStax">
-      <strong class="site-header__wordmark" aria-hidden="true">SEARCHSTAX</strong>
-      <span>Site Search Documentation</span>
-    </a>
-  </header>
-<link rel="stylesheet" href="assets/search-lab.css">
-<script defer src="https://cdn.jsdelivr.net/npm/@searchstax-inc/searchstudio-ux-js@4.2.34/dist/@searchstax-inc/searchstudio-ux-js.iife.js"></script>
-<script defer src="assets/search-lab.js"></script>
-
 <main
   class="search-lab lt-container"
   id="main-content"
@@ -33,143 +30,1049 @@
   data-ranking-profile="SearchLabRanking"
 >
   <div class="search-lab__inner lt-container-inner">
-    <nav class="search-lab__breadcrumb" aria-label="Breadcrumb">
-      <ol class="breadcrumbs"><li><a href="https://support.searchstax.com/hc/en-us">Help Center</a></li><li aria-current="page">Search Lab</li></ol>
-    </nav>
-
-    <header class="search-lab__intro">
-      <div>
-        <h1>Search Lab</h1>
-        <p>Design a search experience, then explore how a small change can help people find what they need.</p>
-      </div>
-      <div class="search-lab__actions">
-        <button type="button" class="lt-btn lt-btn--secondary" data-lab-share>Share settings</button>
-        <button type="button" class="lt-btn lt-btn--secondary" data-lab-reset>Reset</button>
-      </div>
-    </header>
-
-    <div class="search-lab__workspace">
-      <aside class="search-lab__controls" aria-label="Search Lab controls">
-        <section class="search-lab__control-section" aria-labelledby="lab-design-heading">
-          <div class="search-lab__section-heading">
-            <span>01 / DESIGN</span>
-            <h2 id="lab-design-heading">Make it yours</h2>
-            <p>Change the look of the search experience.</p>
+    <section class="search-lab__home" data-lab-screen="home" aria-labelledby="lab-home">
+      <header class="search-lab__intro">
+        <h1 id="lab-home" tabindex="-1">Search Lab</h1>
+        <p>Use a fictional university health website to explore SearchStax Site Search. Start with <strong>Design a Search Page</strong> to try a visitor’s search and prepare a design for your developer. You can use the demo without an account.</p>
+      </header>
+      <div class="search-lab__paths">
+        <section class="search-lab__path" aria-labelledby="lab-design-path">
+          <div class="path-illustration path-illustration--design" aria-hidden="true">
+            <div class="path-window"><i></i><div class="path-layout"><b></b><b></b><b></b></div></div>
           </div>
-
-          <fieldset class="search-lab__field">
-            <legend>Results layout</legend>
-            <div class="search-lab__layout-options">
-              <label><input type="radio" name="lab-layout" value="list" checked><span><span aria-hidden="true">☰</span> List</span></label>
-              <label><input type="radio" name="lab-layout" value="cards"><span><span aria-hidden="true">▦</span> Cards</span></label>
-            </div>
-          </fieldset>
-
-          <div class="search-lab__field search-lab__field--inline">
-            <div><label for="lab-filters">Show filters</label><p>Help visitors narrow their results.</p></div>
-            <input id="lab-filters" type="checkbox" checked>
-          </div>
-
-          <div class="search-lab__field search-lab__field--inline">
-            <div><label for="lab-accent">Accent color</label><p>Make the experience feel like your brand.</p></div>
-            <input id="lab-accent" type="color" value="#a33c22">
-          </div>
-
-          <div class="search-lab__field search-lab__font-field">
-            <label for="lab-font">Preview font</label>
-            <p>Choose a common font with a fallback.</p>
-            <select id="lab-font">
-              <option value="arial">Arial</option>
-              <option value="verdana">Verdana</option>
-              <option value="tahoma">Tahoma</option>
-              <option value="trebuchet">Trebuchet MS</option>
-              <option value="georgia">Georgia</option>
-              <option value="times">Times New Roman</option>
-              <option value="courier">Courier New</option>
-            </select>
-          </div>
+          <h2 id="lab-design-path">Design a Search Page</h2>
+          <p>Try different layouts, colors, and fonts for a search results page. Share your design or get starter code.</p>
+          <a class="lt-btn lt-btn--secondary" href="#lab-design">Start designing <span aria-hidden="true">→</span></a>
         </section>
-
-        <section class="search-lab__control-section search-lab__control-section--lesson" aria-labelledby="lab-relevance-heading">
-          <div class="search-lab__section-heading">
-            <span>02 / EXPLORE RELEVANCE</span>
-            <h2 id="lab-relevance-heading">Try a real example</h2>
-            <p data-lab-lesson-intro>See how Search Fields can help a page match a search.</p>
+        <section class="search-lab__path" aria-labelledby="lab-improve-path">
+          <div class="path-illustration path-illustration--improve" aria-hidden="true">
+            <div class="path-order"><i></i><i></i><i></i></div><span>→</span><div class="path-order path-order--after"><i></i><i></i><i></i></div>
           </div>
-          <div class="search-lab__field search-lab__scenario">
-            <label for="lab-scenario">Scenario</label>
-            <select id="lab-scenario" aria-describedby="lab-scenario-help">
-              <option value="fields">Search Fields</option>
-              <option value="ranking">Ranking</option>
-            </select>
-            <p id="lab-scenario-help">Choosing a scenario starts its example search.</p>
-          </div>
-          <div class="search-lab__lesson-label"><span data-lab-lesson-name>SEARCH FIELDS</span><span>GUIDED EXAMPLE</span></div>
-          <p class="search-lab__lesson-copy" data-lab-lesson-copy>The fictional International Health page includes “Travel Vaccinations” in a service-name field.</p>
-          <div class="search-lab__comparison" role="group" aria-label="Search Fields comparison" data-lab-comparison>
-            <button type="button" data-lab-phase="before" aria-pressed="true">Before</button>
-            <button type="button" data-lab-phase="after" aria-pressed="false">After</button>
-          </div>
-          <p class="search-lab__comparison-description" data-lab-explanation>Before: the service-name field isn’t included in Search Fields.</p>
-          <p class="search-lab__lesson-note" data-lab-lesson-note>The same query runs against a prepared demo profile. Adding a field can make a page eligible to match; it doesn’t guarantee its position.</p>
-          <a class="search-lab__learn" href="https://support.searchstax.com/hc/en-us/articles/40483375841421-Search-Fields" data-lab-doc><span data-lab-doc-label>Learn about Search Fields</span> <span aria-hidden="true">↗</span></a>
-          <a class="search-lab__learn" href="https://support.searchstax.com/hc/en-us/articles/50357414946317-Search-Fields-Video" data-lab-video><span data-lab-video-label>Watch the Search Fields video</span> <span aria-hidden="true">↗</span></a>
+          <h2 id="lab-improve-path">Improve What People Find</h2>
+          <p>Compare example search results before and after a change, then find the setting in your own Search App.</p>
+          <a class="lt-btn lt-btn--secondary" href="#lab-improve">Start improving <span aria-hidden="true">→</span></a>
         </section>
+      </div>
+    </section>
 
-        <div class="search-lab__handoff">
-          <strong>Like what you see?</strong>
-          <p>Copy starter CSS for a JavaScript UI Kit implementation.</p>
-          <button type="button" class="lt-btn lt-btn--secondary" data-lab-copy-css>Copy starter CSS <span aria-hidden="true">↗</span></button>
-        </div>
-      </aside>
-
-      <section class="search-lab__preview" aria-labelledby="lab-preview-heading">
-        <div class="search-lab__preview-topline">
-          <div><span>LIVE PREVIEW</span><h2 id="lab-preview-heading">Your search experience</h2></div>
-          <span class="search-lab__preview-badge"><span></span> DEMO CONTENT</span>
-        </div>
-
-        <div class="search-lab__browser">
-          <div class="search-lab__browser-bar" aria-hidden="true">
-            <span class="search-lab__browser-dots"><i></i><i></i><i></i></span>
-            <span class="search-lab__browser-address">aldercoast.edu / search</span>
+    <section data-lab-screen="workspace" hidden>
+      <header class="search-lab__intro search-lab__intro--design" data-lab-design-only>
+        <a class="search-lab__back" href="#lab-home"><span aria-hidden="true">←</span> Back to Search Lab</a>
+        <div class="search-lab__design-heading">
+          <div>
+            <h1 id="lab-design" tabindex="-1">Design a Search Page</h1>
+            <p>Choose what visitors can do in <strong>Features</strong>. In <strong>Appearance</strong>, try a card layout or change the page colors. Use <strong>Get starter code</strong> to share your design with a developer.<span class="search-lab__narrow-design-help"> Use <strong>Edit</strong> to change settings and <strong>Preview</strong> to try them.</span></p>
           </div>
-          <div class="search-lab__site">
-            <div class="search-lab__site-header">
-              <div class="search-lab__site-brand"><span class="search-lab__site-mark" aria-hidden="true"><svg viewBox="0 0 28 28" fill="none"><path d="M14 2v24M2 14h24M5.5 5.5l17 17m0-17-17 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span><span>ALDER COAST<br><small>UNIVERSITY HEALTH</small></span></div>
-              <span class="search-lab__site-nav" aria-hidden="true">Care &nbsp;&nbsp; Education &nbsp;&nbsp; Research</span>
+          <div class="search-lab__design-reset">
+            <div class="search-lab__actions">
+              <button type="button" class="lt-btn lt-btn--secondary" data-lab-reset>Reset design</button>
+              <button type="button" class="lt-btn lt-btn--secondary" data-lab-undo-reset hidden>Undo reset</button>
             </div>
-            <div class="search-lab__site-content">
-              <p class="search-lab__site-kicker">EXPLORE ALDER COAST</p>
-              <h3>What are you looking for?</h3>
-              <p>Search care, education, research, and community resources.</p>
-              <form class="search-lab__search-form" data-lab-search-form role="search">
-                <label class="search-lab__sr-only" for="lab-query">Search the demo site</label>
-                <input id="lab-query" type="search" value="travel vaccinations" placeholder="Search the demo site" autocomplete="off">
-                <button type="submit">Search</button>
-              </form>
-              <p class="search-lab__sample">Try: <button type="button" data-lab-sample>travel vaccinations</button></p>
-
-              <div class="search-lab__results-heading"><strong data-lab-summary>Search results</strong><span data-lab-profile-label>Before</span></div>
-              <p class="search-lab__status" role="status" aria-live="polite" data-lab-status>Connecting to the demo…</p>
-              <div class="search-lab__results-layout" data-lab-results-layout aria-busy="false">
-                <aside class="search-lab__facets" aria-label="Filter search results" data-lab-facets-panel>
-                  <strong>Filter by</strong>
-                  <div id="lab-facets"></div>
-                  <p class="search-lab__facet-empty" data-lab-facet-empty hidden>No filters available for this search.</p>
-                </aside>
-                <div class="search-lab__results-column">
-                  <div id="lab-results"></div>
-                  <div id="lab-pagination"></div>
+            <p class="search-lab__feedback" role="status" data-lab-design-feedback></p>
+          </div>
+        </div>
+      </header>
+      <header class="search-lab__intro" data-lab-example-only hidden>
+        <a class="search-lab__back" href="#lab-improve" data-lab-example-back><span aria-hidden="true">←</span> <span data-lab-example-back-label>Back to Improve What People Find</span></a>
+        <h1 id="lab-examples" tabindex="-1">Explore Search Fields and Ranking</h1>
+        <p>Compare how settings affect which results appear and where they appear.</p>
+        <div class="search-lab__actions">
+          <button type="button" class="lt-btn lt-btn--secondary" data-lab-share>Share example</button>
+          <p class="search-lab__feedback" role="status"></p>
+          <input class="search-lab__share-url" aria-label="Example link" type="text" readonly hidden>
+        </div>
+      </header>
+      <div class="search-lab__handoff" role="group" aria-label="Design handoff and data source" data-lab-design-only>
+        <div class="search-lab__handoff-actions">
+          <button type="button" aria-expanded="false" aria-controls="lab-share-panel">Share Design</button>
+          <button type="button" aria-expanded="false" aria-controls="lab-code-panel">Get starter code</button>
+          <button type="button" aria-expanded="false" aria-controls="lab-connect-panel">Preview with your Search App</button>
+        </div>
+        <div class="search-lab__handoff-panel" id="lab-share-panel" hidden>
+          <p>Copy a link to reopen these feature and appearance settings with the fictional demo.<span data-lab-local-share hidden> This local link works for teammates who run their copy at the same address. To hand the design to a developer, send a starter ZIP.</span></p>
+          <button type="button" class="lt-btn lt-btn--secondary" data-lab-share>Copy design link</button>
+          <p class="search-lab__feedback" role="status"></p>
+          <input class="search-lab__share-url" aria-label="Design link" type="text" readonly hidden>
+        </div>
+        <div class="search-lab__handoff-panel" id="lab-code-panel" hidden>
+          <div class="search-lab__code-group">
+            <h2>Stylesheet</h2>
+            <p>Choose CSS if your developer already has a search page and needs the styles. The selectors match the starter markup.</p>
+            <div class="search-lab__code-actions">
+              <button type="button" class="lt-btn lt-btn--secondary" data-lab-copy-css>Copy CSS</button>
+              <button type="button" class="lt-btn lt-btn--secondary" data-lab-download-css>Download CSS</button>
+            </div>
+            <p class="search-lab__feedback" role="status" data-lab-css-feedback></p>
+          </div>
+          <div class="search-lab__code-group">
+            <h2>Starter projects</h2>
+            <p>For a working example, choose the <strong>JavaScript ZIP</strong>. If your team uses React, Vue, or Angular, choose that ZIP. Send one ZIP to your developer. It includes your search layout, styles, and a <code>README.md</code> with setup steps.</p>
+            <div class="search-lab__code-actions search-lab__starter-actions">
+              <button type="button" class="lt-btn lt-btn--secondary" data-lab-download-starter="javascript">Download JavaScript ZIP</button>
+              <button type="button" class="lt-btn lt-btn--secondary" data-lab-download-starter="react">Download React ZIP</button>
+              <button type="button" class="lt-btn lt-btn--secondary" data-lab-download-starter="vue">Download Vue ZIP</button>
+              <button type="button" class="lt-btn lt-btn--secondary" data-lab-download-starter="angular">Download Angular ZIP</button>
+            </div>
+          </div>
+          <p class="search-lab__feedback" role="status" data-lab-code-feedback></p>
+        </div>
+        <div class="search-lab__handoff-panel" id="lab-connect-panel" hidden>
+          <form data-customer-connect autocomplete="off">
+            <p>Use a read-only token for a Search App you’re allowed to preview. The connection lasts until you leave Design. Shared links reopen the fictional demo. A starter with profile tabs or a language picker includes your language and profile names. Your connection credentials stay out of downloads.</p>
+            <fieldset class="search-lab__field">
+              <legend>Required to connect</legend>
+              <p id="lab-customer-credentials-help">In Site Search, open your Search App and go to <strong>App Settings → All APIs → Search &amp; Indexing</strong> for the Select endpoint and a Read Only token. You can also paste a Select request URL that includes a model or language to fill in those settings.</p>
+              <div class="search-lab__field search-lab__text-field">
+                <label for="lab-customer-endpoint">Search API Select endpoint</label>
+                <input id="lab-customer-endpoint" type="url" required placeholder="https://…/emselect" aria-describedby="lab-customer-credentials-help">
+              </div>
+              <div class="search-lab__field search-lab__text-field">
+                <label for="lab-customer-token">Read-only token</label>
+                <input id="lab-customer-token" type="password" required autocomplete="off" spellcheck="false" aria-describedby="lab-customer-credentials-help">
+              </div>
+              <div class="search-lab__field search-lab__text-field">
+                <label for="lab-customer-query">Test search</label>
+                <input id="lab-customer-query" type="text" required aria-describedby="lab-customer-query-help">
+                <p id="lab-customer-query-help">Use a query you expect to find a page on your site.</p>
+              </div>
+            </fieldset>
+            <details class="search-lab__disclosure" data-customer-options>
+              <summary>Search Profile, language, and optional API connections</summary>
+              <div class="search-lab__field search-lab__text-field">
+                <label for="lab-customer-answer-endpoint">Smart Answers endpoint (optional)</label>
+                <input id="lab-customer-answer-endpoint" type="url" aria-describedby="lab-customer-answer-help">
+                <p id="lab-customer-answer-help">Use the streaming Answer endpoint for this app. Each submitted search requests a Smart Answer. <a href="https://support.searchstax.com/hc/en-us/articles/40243570123021-Smart-Answers-API">Find the Answer endpoint</a>.</p>
+              </div>
+              <div class="search-lab__field search-lab__text-field">
+                <label for="lab-related-endpoint">Related Searches endpoint (optional)</label>
+                <input id="lab-related-endpoint" type="url" aria-describedby="lab-discovery-help">
+                <label for="lab-discovery-key">Discovery key</label>
+                <input id="lab-discovery-key" type="password" autocomplete="off" aria-describedby="lab-discovery-help">
+                <p id="lab-discovery-help">Find both under App Settings → All APIs → Discovery. Use a test app with Related Searches enabled.</p>
+              </div>
+              <div class="search-lab__field search-lab__text-field">
+                <label for="lab-customer-profile">Search Profile (<span data-customer-profile-requirement>optional</span>)</label>
+                <input id="lab-customer-profile" type="text" placeholder="App default">
+              </div>
+              <div class="search-lab__field search-lab__text-field">
+                <label for="lab-customer-language">Language code</label>
+                <input id="lab-customer-language" type="text" placeholder="App default">
+              </div>
+              <div class="search-lab__field search-lab__text-field">
+                <label for="lab-experience-list">Additional profiles and languages (optional)</label>
+                <p id="lab-exp-import-help">The Select endpoint searches one experience at a time. To preview others, enter one language and profile per line, such as <strong>en | Campus directory</strong>. You can also paste search request URLs from this same Select endpoint. Search Lab reads their language and model locally. Find enabled languages in App Settings → Languages and profile names in the profile selector.</p>
+                <textarea id="lab-experience-list" rows="3" spellcheck="false" aria-describedby="lab-exp-import-help" placeholder="en | Campus directory&#10;es | Directorio"></textarea>
+              </div>
+              <div class="search-lab__field search-lab__text-field">
+                <label for="lab-customer-suggest-endpoint">Auto-Suggest endpoint (optional)</label>
+                <input id="lab-customer-suggest-endpoint" type="url" aria-describedby="lab-customer-suggest-help">
+                <p id="lab-customer-suggest-help">Use the Auto-Suggest endpoint for this app to preview suggestions as you type. <a href="https://support.searchstax.com/hc/en-us/articles/40243330090893-Auto-Suggest-API">Find the Auto-Suggest endpoint</a>.</p>
+              </div>
+              <fieldset class="search-lab__field" disabled aria-describedby="lab-tracking-setup-help">
+                <legend>Analytics setup (preview only)</legend>
+                <p id="lab-tracking-setup-help">Tracking is off in this preview. Your app’s Tracking endpoint and key are under App Settings → All APIs → Analytics. The starter README explains how to enable tracking on your own site.</p>
+                <label for="lab-tracking-endpoint">Tracking endpoint</label>
+                <input id="lab-tracking-endpoint" type="url" placeholder="https://…/api/v2/track/">
+                <label for="lab-tracking-key">Tracking key</label>
+                <input id="lab-tracking-key" type="password" autocomplete="off">
+              </fieldset>
+            </details>
+            <div class="search-lab__actions">
+              <button type="submit" class="lt-btn lt-btn--primary" data-customer-submit disabled>Connect</button>
+            </div>
+          </form>
+          <p class="search-lab__feedback" role="status" data-customer-connect-status></p>
+        </div>
+      </div>
+      <div class="search-lab__workspace">
+        <div class="search-lab__design-switch" role="group" aria-label="Design view" data-lab-design-only>
+          <button type="button" aria-pressed="false" aria-controls="lab-workspace-controls" data-lab-design-mode="edit">Edit</button>
+          <button type="button" aria-pressed="true" aria-controls="lab-preview" data-lab-design-mode="preview">Preview</button>
+        </div>
+        <aside class="search-lab__controls" id="lab-workspace-controls" aria-label="Search Lab controls">
+          <section class="search-lab__control-section" id="lab-design-controls" aria-label="Design controls" tabindex="-1" data-lab-design-only>
+            <div class="search-lab__editor-tabs" role="tablist" aria-label="Design settings">
+              <button type="button" id="lab-features-tab" role="tab" aria-selected="true" aria-controls="lab-more-settings">Features</button>
+              <button type="button" id="lab-appearance-tab" role="tab" aria-selected="false" aria-controls="lab-appearance-panel" tabindex="-1">Appearance</button>
+            </div>
+            <div id="lab-more-settings" role="tabpanel" aria-labelledby="lab-features-tab" tabindex="0">
+              <details class="search-lab__disclosure" open data-default-open>
+                <summary>Search navigation</summary>
+                <div class="search-lab__field">
+                  <div class="search-lab__field--inline"><label for="lab-profile-tabs">Show profile tabs</label><input type="checkbox" id="lab-profile-tabs"></div>
+                  <p>Let visitors switch between searches such as Programs and Locations.</p>
                 </div>
+                <div class="search-lab__field search-lab__field--inline"><label for="lab-language-picker">Show language picker</label><input type="checkbox" id="lab-language-picker"></div>
+              </details>
+              <details class="search-lab__disclosure">
+                <summary>Search box</summary>
+                <div class="search-lab__field" data-lab-fictional-only>
+                  <div class="search-lab__field--inline">
+                    <label for="lab-suggestions">Suggest terms as visitors type</label>
+                    <input id="lab-suggestions" type="checkbox">
+                  </div>
+                </div>
+                <div class="search-lab__field search-lab__text-field">
+                  <label for="lab-field-text">Search field text</label>
+                  <input id="lab-field-text" type="text" value="Search the website" aria-describedby="lab-field-text-help">
+                  <p id="lab-field-text-help">This text appears when the search box is empty.</p>
+                </div>
+                <div class="search-lab__field search-lab__text-field">
+                  <label for="lab-button-text">Search button text</label>
+                  <input id="lab-button-text" type="text" value="Search">
+                </div>
+              </details>
+              <details class="search-lab__disclosure">
+                <summary>Filters and sorting</summary>
+                <div class="search-lab__field search-lab__field--inline">
+                  <label for="lab-filters">Show filters</label>
+                  <input id="lab-filters" type="checkbox" checked>
+                </div>
+                <button type="button" class="search-lab__placement-link" data-placement-target="lab-filter-placement">Change filter placement</button>
+                <div class="search-lab__field search-lab__field--inline">
+                  <label for="lab-sorting">Show sort options</label>
+                  <input id="lab-sorting" type="checkbox" checked>
+                </div>
+              </details>
+              <details class="search-lab__disclosure">
+                <summary>Results</summary>
+                <div class="search-lab__field">
+                  <label for="lab-page-size">Results per page</label>
+                  <select id="lab-page-size"></select>
+                </div>
+                <div class="search-lab__field search-lab__field--inline">
+                  <label for="lab-descriptions">Show result descriptions</label>
+                  <input id="lab-descriptions" type="checkbox" checked>
+                </div>
+                <div class="search-lab__field search-lab__field--inline" data-lab-fictional-only>
+                  <label for="lab-thumbnails">Show sample thumbnails</label>
+                  <input id="lab-thumbnails" type="checkbox">
+                </div>
+                <div class="search-lab__field search-lab__text-field">
+                  <label for="lab-no-results-text">No-results message</label>
+                  <input id="lab-no-results-text" type="text" aria-describedby="lab-no-results-help">
+                  <p id="lab-no-results-help">This message appears when a search finds no matches. Leave it blank to use the default.</p>
+                  <div class="search-lab__actions" data-lab-fictional-only>
+                    <button type="button" class="lt-btn lt-btn--secondary" data-lab-try-no-results disabled>Try empty state in preview</button>
+                  </div>
+                </div>
+              </details>
+              <details class="search-lab__disclosure">
+                <summary>Related searches</summary>
+                <div class="search-lab__field search-lab__field--inline">
+                  <label for="lab-related-toggle">Show related searches</label>
+                  <input id="lab-related-toggle" type="checkbox" checked>
+                </div>
+                <button type="button" class="search-lab__placement-link" data-placement-target="lab-related-placement">Change related search placement</button>
+              </details>
+              <details class="search-lab__disclosure" data-lab-fictional-only>
+                <summary>Promotions and answers</summary>
+                <div class="search-lab__field">
+                  <label for="lab-sample-promotions">Sample promotions</label>
+                  <select id="lab-sample-promotions" aria-describedby="lab-sample-promotions-help">
+                    <option value="off">Off</option>
+                    <option value="indexed">Indexed result</option>
+                    <option value="external">External banner</option>
+                    <option value="both">Indexed result and external banner</option>
+                  </select>
+                  <p id="lab-sample-promotions-help">Choosing a sample runs <strong>campus flu clinic</strong>. The indexed result moves to the top in Relevance order. The external banner appears above the results.</p>
+                </div>
+                <div class="search-lab__field search-lab__field--inline">
+                  <label for="lab-smart-answers-sample">Show Smart Answers sample</label>
+                  <input id="lab-smart-answers-sample" type="checkbox" checked>
+                </div>
+              </details>
+            </div>
+            <div id="lab-appearance-panel" role="tabpanel" aria-labelledby="lab-appearance-tab" tabindex="0" hidden>
+              <details class="search-lab__disclosure" open data-default-open>
+                <summary>Layout</summary>
+                <fieldset class="search-lab__field">
+                  <legend>Results layout</legend>
+                  <div class="search-lab__layout-options">
+                    <label><input type="radio" name="lab-layout" value="list" checked><span><span aria-hidden="true">☰</span> List</span></label>
+                    <label><input type="radio" name="lab-layout" value="cards"><span><span aria-hidden="true">▦</span> Cards</span></label>
+                  </div>
+                </fieldset>
+                <div class="search-lab__field">
+                  <label for="lab-filter-placement">Desktop filter placement</label>
+                  <select id="lab-filter-placement" aria-describedby="lab-filter-placement-help"><option value="sidebar">Sidebar</option><option value="top">Above results</option></select>
+                  <p id="lab-filter-placement-help">On narrow screens, visitors open Filters above the results.</p>
+                </div>
+                <div class="search-lab__field" data-top-filter-options hidden>
+                  <label for="lab-top-filter-style">Top filter style</label>
+                  <select id="lab-top-filter-style">
+                    <option value="list">Vertical list</option>
+                    <option value="row">Horizontal row</option>
+                  </select>
+                </div>
+                <div class="search-lab__field">
+                  <label for="lab-related-placement">Related search placement</label>
+                  <select id="lab-related-placement">
+                    <option value="below">Below results</option><option value="above">Below search box</option>
+                  </select>
+                </div>
+                <div class="search-lab__field search-lab__spacing-field">
+                  <label for="lab-spacing">Result spacing</label>
+                  <select id="lab-spacing">
+                    <option value="compact">Compact</option>
+                    <option value="standard" selected>Standard</option>
+                    <option value="roomy">Roomy</option>
+                  </select>
+                </div>
+                <div class="search-lab__field search-lab__field--inline" data-lab-list-option>
+                  <label for="lab-dividers">Show list dividers</label>
+                  <input id="lab-dividers" type="checkbox" checked>
+                </div>
+                <div class="search-lab__field search-lab__field--inline">
+                  <label for="lab-underline">Underline result titles</label>
+                  <input id="lab-underline" type="checkbox">
+                </div>
+              </details>
+              <details class="search-lab__disclosure" open data-default-open>
+                <summary>Page style</summary>
+                <div class="search-lab__quick-fields">
+                  <div class="search-lab__field search-lab__field--inline">
+                    <label for="lab-accent">Accent color</label>
+                    <input id="lab-accent" type="color" value="#263f58">
+                  </div>
+                  <div class="search-lab__field search-lab__field--inline">
+                    <label for="lab-background">Background color</label>
+                    <input id="lab-background" type="color" value="#ffffff">
+                  </div>
+                  <div class="search-lab__field search-lab__font-field">
+                    <label for="lab-font">Search page font</label>
+                    <select id="lab-font">
+                      <option value="arial">Arial</option>
+                      <option value="verdana">Verdana</option>
+                      <option value="tahoma">Tahoma</option>
+                      <option value="trebuchet">Trebuchet MS</option>
+                      <option value="georgia">Georgia</option>
+                      <option value="times">Times New Roman</option>
+                      <option value="courier">Courier New</option>
+                    </select>
+                  </div>
+                  <div class="search-lab__field">
+                    <label for="lab-corners">Corner shape</label>
+                    <select id="lab-corners">
+                      <option value="standard">Standard</option>
+                      <option value="square">Square</option>
+                      <option value="rounded">Rounded</option>
+                    </select>
+                  </div>
+                  <div class="search-lab__field search-lab__text-field">
+                    <label for="lab-logo-url">Company logo URL</label>
+                    <input id="lab-logo-url" type="url" inputmode="url" placeholder="https://…" aria-describedby="lab-logo-help">
+                    <p id="lab-logo-help">Use a publicly accessible HTTPS image URL. Leave it blank to use the preview’s wordmark.</p>
+                    <p data-lab-logo-status role="status" hidden></p>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
+
+          <section class="search-lab__control-section search-lab__control-section--lesson" aria-labelledby="lab-relevance-heading" data-lab-example-only hidden>
+            <div class="search-lab__section-heading">
+              <h2 id="lab-relevance-heading">Compare search settings</h2>
+              <p data-lab-lesson-intro>See how Search Fields can help a page match a search.</p>
+            </div>
+            <div class="search-lab__field search-lab__scenario">
+              <label for="lab-scenario">Choose a feature to compare</label>
+              <select id="lab-scenario" aria-describedby="lab-scenario-help">
+                <option value="fields">Search Fields</option>
+                <option value="ranking">Ranking</option>
+              </select>
+              <p id="lab-scenario-help">Choosing a feature runs its example search.</p>
+            </div>
+            <div class="search-lab__lesson-label"><span data-lab-lesson-name>SEARCH FIELDS</span><span>GUIDED EXAMPLE</span></div>
+            <p class="search-lab__lesson-copy" data-lab-lesson-copy>The fictional International Health page includes “Travel Vaccinations” in a service-name field.</p>
+            <div class="search-lab__lesson-copy" role="group" aria-label="Ranking test searches" data-lab-ranking-queries hidden>
+              <div class="search-lab__actions">
+                <button class="lt-btn lt-btn--secondary" type="button" data-lab-ranking-query="campus flu clinic">campus flu clinic</button>
+                <button class="lt-btn lt-btn--secondary" type="button" data-lab-ranking-query="rehabilitation">rehabilitation</button>
+                <button class="lt-btn lt-btn--secondary" type="button" data-lab-ranking-query="transit access">transit access</button>
+              </div>
+            </div>
+            <div class="search-lab__comparison" role="group" aria-label="Search Fields comparison" data-lab-comparison>
+              <button type="button" data-lab-phase="before" aria-pressed="true">Before</button>
+              <button type="button" data-lab-phase="after" aria-pressed="false">After</button>
+            </div>
+            <p class="search-lab__comparison-description" data-lab-explanation>Before: the service-name field isn’t included in Search Fields.</p>
+            <p class="search-lab__comparison-outcome" role="status" data-lab-comparison-outcome></p>
+            <table class="search-lab__comparison-table" data-lab-comparison-table hidden>
+              <caption></caption>
+              <thead>
+                <tr><th scope="col">Rank</th><th scope="col">Before</th><th scope="col">After</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <p class="search-lab__lesson-note" data-lab-lesson-note>The same query runs against a prepared demo profile. Adding a field can make a page eligible to match; it doesn’t guarantee its position.</p>
+            <a class="search-lab__learn" href="https://support.searchstax.com/hc/en-us/articles/40483375841421-Search-Fields" data-lab-doc><span data-lab-doc-label>Learn about Search Fields</span> <span aria-hidden="true">↗</span></a>
+            <a class="search-lab__learn" href="https://support.searchstax.com/hc/en-us/articles/50357414946317-Search-Fields-Video" data-lab-video><span data-lab-video-label>Watch the Search Fields video</span> <span aria-hidden="true">↗</span></a>
+            <a class="search-lab__learn" href="#lab-missing-page-steps" data-lab-field-checklist>Test Search Fields in your app</a>
+            <a class="search-lab__learn" href="#lab-ranking-steps" data-lab-ranking-checklist hidden>Test Ranking in your app</a>
+          </section>
+        </aside>
+
+        <section class="search-lab__preview" id="lab-preview" aria-label="Live Preview" tabindex="-1">
+          <div class="search-lab__preview-heading" data-lab-example-only hidden>
+            <h2>Live Preview</h2>
+          </div>
+          <div class="search-lab__browser">
+            <div class="search-lab__site">
+              <div class="search-lab__site-header">
+                <img class="search-lab__site-logo" data-lab-preview-logo alt="Company logo" referrerpolicy="no-referrer" hidden>
+                <h3 class="search-lab__site-brand search-lab__site-wordmark" data-lab-fictional-only><span>Central County</span> <small>University Health</small></h3>
+                <h3 class="search-lab__site-brand" data-lab-preview-brand hidden>Your Search App</h3>
+                <span class="search-lab__demo-label" data-lab-fictional-only>Fictional demo</span>
+              </div>
+              <section class="search-lab__site-content lab-experiences" id="lab-experiences" aria-label="Profile tabs and languages preview" hidden>
+                <button type="button" data-exp-disconnect hidden>Return to the fictional demo</button>
+              </section>
+              <div class="search-lab__site-content" data-single-experience>
+                <form class="search-lab__search-form" data-lab-search-form role="search">
+                  <label class="search-lab__sr-only" for="lab-query">Search the website</label>
+                  <input id="lab-query" type="search" value="rehabilitation" placeholder="Search the website" autocomplete="off">
+                  <button type="submit">Search</button>
+                </form>
+                <p class="search-lab__sample" data-lab-fictional-only>Try <button type="button" data-lab-sample>rehabilitation</button></p>
+
+                <div data-lab-answer-sample data-lab-design-only hidden></div>
+
+                <div data-lab-demo-output>
+                  <p class="search-lab__status search-lab__search-status" role="status" data-lab-status>Connecting to the demo…</p>
+                  <div class="search-lab__results-heading">
+                    <span class="search-lab__previous-results" data-lab-previous-results hidden>Previous results</span>
+                    <strong data-lab-summary aria-live="polite" aria-atomic="true">Search results</strong>
+                    <span data-lab-profile-label data-lab-example-only hidden>Before</span>
+                    <label class="search-lab__sort" for="lab-sort-order" data-lab-design-only hidden>
+                      Sort by <select id="lab-sort-order" disabled></select>
+                    </label>
+                  </div>
+                  <p class="search-lab__no-results" data-lab-no-results hidden></p>
+                  <div class="search-lab__results-layout" data-lab-results-layout aria-busy="false">
+                    <aside class="search-lab__facets" aria-label="Filter search results" data-lab-facets-panel>
+                      <button class="lt-btn lt-btn--secondary search-lab__filter-toggle" type="button" aria-expanded="false" aria-controls="lab-demo-filter-options">Filters<span></span></button>
+                      <div class="search-lab__facet-body" id="lab-demo-filter-options">
+                        <strong>Filter by</strong>
+                        <div id="lab-facets"></div>
+                        <p class="search-lab__facet-empty" data-lab-facet-empty hidden>No filters available for this search.</p>
+                      </div>
+                    </aside>
+                    <div class="search-lab__results-column">
+                      <div data-lab-results-content>
+                        <div id="lab-results"></div>
+                      </div>
+                      <div data-pagination-focus tabindex="-1" role="group" aria-label="Search result pagination">
+                        <div id="lab-pagination"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <p class="search-lab__sr-only" role="status" aria-atomic="true" data-customer-answer-announcement></p>
+                <section class="search-lab__customer-preview" aria-label="Connected search results" data-customer-preview hidden>
+                  <div class="search-lab__customer-source">
+                    <p data-customer-source></p>
+                    <button class="lt-btn lt-btn--secondary" type="button" data-customer-disconnect>Return to the fictional demo</button>
+                  </div>
+                  <section class="search-lab__customer-answer" aria-labelledby="lab-customer-answer-heading" data-customer-answer hidden>
+                    <h4 id="lab-customer-answer-heading">Smart Answer</h4>
+                    <p class="search-lab__status" data-customer-answer-status></p>
+                    <div class="search-lab__customer-answer-content" data-customer-answer-content hidden></div>
+                  </section>
+                  <p class="search-lab__status search-lab__search-status" role="status" data-customer-search-feedback></p>
+                  <div class="search-lab__results-heading">
+                    <span class="search-lab__previous-results" data-customer-previous-results hidden>Previous results</span>
+                    <strong role="status" data-customer-status></strong>
+                    <label class="search-lab__sort" for="lab-customer-sort" data-customer-sort-field hidden>
+                      Sort by <select id="lab-customer-sort"></select>
+                    </label>
+                  </div>
+                  <p class="search-lab__status" data-customer-sort-hint hidden>This Search Profile hasn’t provided sort options.</p>
+                  <section aria-label="External promotions" data-customer-promotions hidden></section>
+                  <p class="search-lab__no-results" data-customer-empty hidden></p>
+                  <div class="search-lab__results-layout" data-customer-layout>
+                    <aside class="search-lab__facets" aria-label="Filter search results" data-customer-facets>
+                      <button class="lt-btn lt-btn--secondary search-lab__filter-toggle" type="button" aria-expanded="false" aria-controls="lab-customer-filter-options">Filters<span></span></button>
+                      <div class="search-lab__facet-body" id="lab-customer-filter-options">
+                        <strong>Filter by</strong>
+                        <div data-customer-facet-fields></div>
+                        <p class="search-lab__facet-empty" data-customer-facet-hint hidden>No filters available for this search.</p>
+                      </div>
+                    </aside>
+                    <div class="search-lab__results-column">
+                      <div class="searchstax-search-results" data-customer-grid></div>
+                      <nav class="search-lab__pagination" aria-label="Search result pages" data-customer-pager hidden>
+                        <span tabindex="-1" data-customer-range></span>
+                        <button type="button" data-customer-prev>Previous</button>
+                        <button type="button" data-customer-next>Next</button>
+                      </nav>
+                    </div>
+                  </div>
+                </section>
               </div>
             </div>
           </div>
+          <p class="search-lab__preview-footnote" data-lab-fictional-only>Fictional content from <a href="https://mw-searchstax.github.io/university-health-search-demo/">Central County University Health</a>. The preview uses Search Lab’s demo profiles.</p>
+        </section>
+      </div>
+      <p class="search-lab__feedback" role="status" aria-live="polite" data-lab-feedback></p>
+    </section>
+
+    <section data-lab-screen="improve" aria-labelledby="lab-improve" hidden>
+      <header class="search-lab__intro improve-workspace__intro" tabindex="-1">
+        <a class="search-lab__back" href="#lab-home"><span aria-hidden="true">←</span> Back to Search Lab</a>
+        <h1 id="lab-improve" tabindex="-1">Improve What People Find</h1>
+        <p>Each lesson starts with a preset search. Try one change on the Central County demo, then see what to check in your own SearchStax app.</p>
+      </header>
+      <div class="search-lab__workspace improve-workspace">
+        <aside class="improve-workspace__sidebar" aria-label="Lesson options" data-improve-sidebar>
+          <fieldset class="improve-workspace__picker" id="lab-improve-scenario" aria-controls="lab-improve-preview">
+            <legend>Choose a lesson</legend>
+            <label><input type="radio" name="improve-lesson" value="missing-page"> Search Fields · Match text</label>
+            <label><input type="radio" name="improve-lesson" value="synonyms"> Synonyms · Link terms</label>
+            <label><input type="radio" name="improve-lesson" value="flu-clinic-order"> Ranking · Order results</label>
+            <label><input type="radio" name="improve-lesson" value="facets"> Faceting · Narrow results</label>
+          </fieldset>
+        </aside>
+        <div class="improve-workspace__preview" id="lab-improve-preview">
+          <div data-improve-lesson="missing-page" hidden>
+            <div class="improve-workspace__action" id="lab-missing-page-takeaway" tabindex="-1" role="group" aria-labelledby="lab-missing-page" data-improve-controls="missing-page" hidden>
+              <h2 id="lab-missing-page" tabindex="-1">Why did this search miss a page?</h2>
+              <p id="lab-service-setting"><strong>Search Fields</strong> controls which parts of a page can match.</p>
+              <p class="improve-workspace__term-pair" id="lab-service-clue">International Health’s <strong>Service name</strong> is “Travel Vaccinations.”</p>
+              <p id="lab-service-rerun">Look for International Health.</p>
+              <button class="lt-btn lt-btn--primary" type="button" data-improve-toggle aria-describedby="lab-service-setting lab-service-clue lab-service-rerun" disabled>Include Service name</button>
+            </div>
+            <p class="improve-preview__baseline-note" data-improve-baseline-note hidden>International Health is missing from the results.</p>
+            <div class="promotions-lab__checklist-body improve-wrap-up__guidance" data-improve-own-site hidden>
+              <div class="improve-own-site__paths">
+                <section>
+                  <h3>If you manage the SearchStax app</h3>
+                  <p>Try a visitor’s exact search in your app’s <strong>Preview</strong>. If an expected page is missing, check whether <strong>Search Fields</strong> includes the part of the page that uses those words.</p>
+                </section>
+                <section>
+                  <h3>If a teammate manages search</h3>
+                  <blockquote>“I searched for [exact words] and expected [page URL]. Can you check whether Search Fields includes the part of the page that contains those words?”</blockquote>
+                </section>
+              </div>
+              <details class="search-lab__disclosure">
+                <summary id="lab-missing-page-steps">Troubleshoot a missing page in Site Search</summary>
+                <div class="promotions-lab__checklist-body">
+                  <p>To investigate a missing page on your own site, open <strong>Preview</strong> in SearchStax Site Search. Select the Search App, language, and profile your site uses. Search for a distinctive part of the page title and check the result’s URL. Then try the visitor’s exact query.</p>
+                  <dl class="promotions-lab__outcomes">
+                    <div>
+                      <dt>Preview finds the page for the visitor’s query, but the site doesn’t</dt>
+                      <dd>Ask the web team to compare the live query, profile, request filters, and how the site displays results.</dd>
+                    </div>
+                    <div>
+                      <dt>Preview finds the page by title, but misses it for the visitor’s query</dt>
+                      <dd>Ask your search owner to check which indexed field contains the visitor’s words and whether that field is included in Search Fields.</dd>
+                    </div>
+                    <div>
+                      <dt>Preview misses the page even by title</dt>
+                      <dd>Ask the indexing owner to verify the record by URL. If it exists, check whether the profile’s <a href="#lab-data-filters">Data Filters</a> exclude it.</dd>
+                    </div>
+                    <div>
+                      <dt>You can’t access Preview</dt>
+                      <dd>Send the search owner the page URL, the visitor’s exact query, and what the site returned so they can reproduce it.</dd>
+                    </div>
+                  </dl>
+                  <details class="search-lab__disclosure">
+                    <summary>Confirm the Search Profile and indexed page</summary>
+                    <div class="promotions-lab__checklist-body">
+                      <p>Ask the web team which Search App, language, profile, and request filters the site uses. If the site sends no profile, use the default for that language.</p>
+                      <p>Give the indexing owner the published URL or document ID, the App and profile, and the queries you tried. If the record is absent, check whether the crawler or connector picked up the page and indexing has finished. <a href="https://support.searchstax.com/hc/en-us/articles/45864244713101-Troubleshoot-Crawler-Failures-Repeated-Hits-and-Host-Slowdown">Troubleshoot a missing crawled page</a>.</p>
+                    </div>
+                  </details>
+                  <details class="search-lab__disclosure">
+                    <summary>Test Search Fields in Your App</summary>
+                    <div class="promotions-lab__checklist-body">
+                      <p>Use this test when the indexed field contains the visitor’s words and the profile leaves that field out of Search Fields.</p>
+                      <ol class="promotions-lab__steps">
+                        <li><strong>Choose a safe test profile.</strong> Confirm with your web team which App and profile live search uses. Use a Sandbox or staging App if available. Confirm no live site uses the App and profile you’ll test.</li>
+                        <li><strong>Record the baseline in Preview.</strong> Select the test App, language, and profile. Try the visitor’s query, the distinctive title query, and an unrelated query. Record whether the target page appears and which results appear first.</li>
+                        <li>Go to <strong>Configurations</strong>, then <strong>Basic Configurations</strong>, then <strong>Search Fields</strong>. Select the indexed text field that contains the visitor’s words and save a draft. If the field is unavailable, reload the schema to refresh the field list. If it’s still missing, ask the indexing owner to verify that the field is populated.</li>
+                        <li>Publish to the confirmed test profile only and repeat the same searches in <strong>Preview</strong>. Check that the visitor’s query finds the correct URL and that the page is still findable by title. Compare the top results for the unrelated query and review unexpected changes with your team before publishing to live search.</li>
+                      </ol>
+                      <p><a href="https://support.searchstax.com/hc/en-us/articles/40483375841421-Search-Fields">Read the Search Fields setup guide</a></p>
+                    </div>
+                  </details>
+                  <details class="search-lab__disclosure" data-lab-test-plan="fields">
+                    <summary>Explain it to a teammate</summary>
+                    <div class="promotions-lab__checklist-body">
+                      <p>“People search for these words, and we expect them to find this page. Can we check which field contains those words and whether our search uses it?”</p>
+                      <p>Fill in what you know and copy the test plan. All fields are optional.</p>
+                      <div class="promotions-lab__inputs">
+                        <label>Test Search App, language, and profile
+                          <input type="text" name="scope">
+                        </label>
+                        <label>Target page URL or title
+                          <input type="text" name="page">
+                        </label>
+                        <label>Visitor’s query
+                          <input type="text" name="query">
+                        </label>
+                        <label>Query using the page title
+                          <input type="text" name="title-query">
+                        </label>
+                        <label>Unrelated control query
+                          <input type="text" name="control">
+                        </label>
+                        <label>Baseline in Preview
+                          <textarea name="baseline" rows="3"></textarea>
+                        </label>
+                        <label>Expected change
+                          <textarea name="expected" rows="3"></textarea>
+                        </label>
+                      </div>
+                      <div class="promotions-lab__checklist-actions">
+                        <button class="lt-btn lt-btn--secondary promotions-lab__copy" type="button" data-test-plan-copy>Copy test plan for a teammate</button>
+                      </div>
+                      <p class="promotions-lab__copy-status" role="status" data-test-plan-status></p>
+                      <textarea class="promotions-lab__request" aria-label="Search Fields test plan for a teammate" rows="8" data-test-plan-request readonly hidden></textarea>
+                    </div>
+                  </details>
+                </div>
+              </details>
+            </div>
+          </div>
+          <div data-improve-lesson="synonyms" hidden>
+            <div class="improve-workspace__action" data-improve-controls="synonyms" hidden>
+              <h2 id="lab-synonyms" tabindex="-1">Can visitors find the ENT department?</h2>
+              <p>A visitor searches for “ENT” to find the ear, nose, and throat department. In <strong>Synonyms</strong>, connect what visitors type to the words on the page.</p>
+              <p class="improve-workspace__term-pair" id="lab-synonym-term-pair"><strong>ENT <span aria-hidden="true">→</span><span class="search-lab__sr-only"> leads to </span> Otolaryngology</strong></p>
+              <button class="lt-btn lt-btn--primary" type="button" data-improve-toggle aria-describedby="lab-synonym-term-pair">Add a synonym</button>
+            </div>
+            <div class="promotions-lab__checklist-body improve-wrap-up__guidance" data-improve-own-site hidden>
+              <p>Try an abbreviation your visitors use. Compare it with the words on the page you expected to find. The related Site Search setting is <strong>Synonyms</strong>.</p>
+              <h3>Ask your search owner</h3>
+              <blockquote>“Could we connect [visitor’s term] to [wording on the page] so that search finds [page URL]?”</blockquote>
+              <details class="search-lab__disclosure">
+                <summary id="lab-synonyms-own-app">Detailed Synonyms setup</summary>
+                <div class="promotions-lab__checklist-body">
+                  <p>In <strong>Optimizations → Synonyms</strong>, the visitor’s abbreviation goes in <strong>Word</strong> and the wording on the page goes in <strong>Synonym to</strong>. Use the one-way arrow to connect them.</p>
+                  <ol class="promotions-lab__steps">
+                    <li><strong>Choose where to test.</strong> Use a Sandbox or staging App that serves no live searches. Confirm the App and language with your team. The Search Profiles in that language share the App’s synonym dictionary.</li>
+                    <li><strong>Record your baseline.</strong> In <strong>Preview</strong>, select that App, language, and the profile you want to check. Search for the visitor’s term, the term on the page, and an unrelated phrase. Note the result count, the first result, and where the target page appears. Confirm the target page is indexed and its wording is in a tokenized full-text Search Field.</li>
+                    <li>Open <strong>Optimizations</strong>, then <strong>Synonyms</strong>. In <strong>Word</strong>, enter the visitor’s term. Choose the one-way arrow in <strong>Is</strong> and enter the term the page uses in <strong>Synonym to</strong>. Add the pair and save a draft. If both terms should match content written with either term, consider the two-way option and test both directions.</li>
+                    <li><strong>Review what will publish.</strong> Check that the Synonyms draft contains the intended change. If your account has Smart Match Assist, publishing Synonyms also applies any pending Smart Match Assist changes. Open <strong>Optimizations</strong> → <strong>Smart Match Assist</strong> and review <strong>Recommendations</strong> and <strong>Activity Log</strong> if available. Confirm with your team that the pending changes are ready before selecting <strong>Publish</strong> in Synonyms for the test App and language.</li>
+                    <li><strong>Repeat the three searches in Preview.</strong> Confirm the visitor’s term now finds the target page, the page’s own term still finds it, and the unrelated search returns the same results in the same order. Repeat in other affected profiles your team uses. Share the comparison with your team before rolling out to live search.</li>
+                  </ol>
+                  <p><a href="https://support.searchstax.com/hc/en-us/articles/40499553207053-Synonyms">Read the Synonyms setup guide</a></p>
+                </div>
+              </details>
+            </div>
+          </div>
+          <div data-improve-lesson="facets" hidden>
+            <div class="improve-workspace__action" data-improve-controls="facets" hidden>
+              <h2 id="lab-facets-example" tabindex="-1">What if I only want to see providers?</h2>
+              <p>This lesson adds a content type filter to the visitor preview. Apply <strong>Providers</strong> to the same search and watch which results remain.</p>
+              <button class="lt-btn lt-btn--primary" type="button" data-improve-toggle>Apply Providers filter</button>
+              <fieldset class="improve-workspace__facet">
+                <legend>Filter by content type</legend>
+                <label><input type="checkbox" data-improve-provider> Providers</label>
+              </fieldset>
+            </div>
+            <div class="promotions-lab__checklist-body improve-wrap-up__guidance" data-improve-own-site hidden>
+              <p>Try a broad search and look for a filter that narrows the list to what visitors came to find. The related Site Search setting is <strong>Faceting</strong>.</p>
+              <h3>Ask your search owner</h3>
+              <blockquote>“Could visitors filter [example search] by [content type or category] so they can find [what they’re looking for]?”</blockquote>
+              <details class="search-lab__disclosure">
+                <summary id="lab-facets-own-app">Detailed Faceting setup</summary>
+                <div class="promotions-lab__checklist-body">
+                  <ol class="promotions-lab__steps">
+                    <li><strong>Confirm where to test.</strong> Identify the App, language, and Search Profile the site uses. Use a test profile that serves no live searches. In <strong>Preview</strong>, run a broad query and record its result count and the kinds of pages it returns.</li>
+                    <li><strong>Choose an indexed field.</strong> For categories like content type, use a String field so values stay intact. If the field or expected values are missing, ask the indexing owner to check how they’re populated.</li>
+                    <li>Open <strong>Configurations</strong>, then <strong>Basic Configurations</strong>, then <strong>Faceting</strong>. Select <strong>Enable Faceting</strong>, then choose a <strong>Facet Field</strong> and enter a <strong>Label</strong> visitors will understand. Set <strong>Max. Facet Values</strong> and <strong>Value Sorting</strong>. Add the facet, save a draft, and publish to the test profile only.</li>
+                    <li><strong>Repeat the broad query in Preview.</strong> Check the facet label and values. Select a value and confirm the count drops and the remaining pages share that value. Clear it and confirm the original results return. If the facet works in Preview but is missing or behaves differently on your test site, ask your web team to verify the filter controls and the profile your site uses.</li>
+                  </ol>
+                  <p><a href="https://support.searchstax.com/hc/en-us/articles/40836775695117-Faceting">Read the Faceting setup guide</a></p>
+                  <p><a href="#lab-filters">Adjust the filter display in Design</a></p>
+                </div>
+              </details>
+            </div>
+          </div>
+          <div data-improve-lesson="flu-clinic-order" hidden>
+            <div class="improve-workspace__action" data-improve-controls="flu-clinic-order" hidden>
+              <h2 id="lab-flu-clinic-order" tabindex="-1">What changes the order of flu clinic results?</h2>
+              <p id="lab-clinic-setting"><strong>Ranking</strong> affects which results appear first. Try giving matches in page titles more influence on the order. <span data-ranking-watch></span></p>
+              <button class="lt-btn lt-btn--primary" type="button" data-improve-toggle aria-describedby="lab-clinic-setting" disabled>Give title matches more weight</button>
+            </div>
+            <details class="search-lab__disclosure promotions-lab__result-promotion" data-clinic-promotion hidden>
+              <summary id="lab-clinic-promotion">Need this year’s notice first?</summary>
+              <div class="promotions-lab__checklist-body">
+                <p>An indexed <strong>Promotion</strong> can feature that specific notice for searches containing “flu clinic.” Here’s the original ranking with that promotion applied.</p>
+                <p class="promotions-lab__source">Simulated promotion · first three results</p>
+                <ol class="promotions-lab__results" aria-label="Simulated order with a promotion" data-clinic-promoted-order></ol>
+                <p><a href="#lab-promotions">Try the full Promotions walkthrough</a></p>
+              </div>
+            </details>
+            <div class="promotions-lab__checklist-body improve-wrap-up__guidance" data-improve-own-site hidden>
+              <p>Repeat the visitor’s search and try a few related searches. If useful pages consistently appear too low, check how much weight matches in page titles and other fields have in <strong>Ranking</strong>.</p>
+              <h3>Ask your search owner</h3>
+              <blockquote>“For [visitor’s search], I expected [page URL] higher. Can you check how much weight title matches have and compare what happens on related searches?”</blockquote>
+              <p><a href="#lab-ranking-guide">See the detailed Ranking walkthrough</a></p>
+            </div>
+          </div>
         </div>
-        <p class="search-lab__preview-footnote">Alder Coast University Health is a fictional site created for SearchStax training.</p>
+      </div>
+    </section>
+
+    <template id="lab-improve-preview-template">
+      <section class="search-lab__preview improve-preview" aria-label="Live search preview">
+        <div class="improve-preview__toolbar">
+          <strong data-preview-label>Live visitor preview</strong>
+          <strong data-browsing-label hidden>Live visitor search</strong>
+          <span data-improve-phase hidden></span>
+        </div>
+        <div class="search-lab__browser search-lab__site">
+          <div class="search-lab__site-header">
+            <a class="search-lab__site-brand search-lab__site-wordmark" href="https://mw-searchstax.github.io/university-health-search-demo/"><span>Central County</span> <small>University Health</small></a>
+            <nav class="improve-preview__site-nav" aria-label="Central County">
+              <a href="https://mw-searchstax.github.io/university-health-search-demo/care/">Departments</a>
+              <a href="https://mw-searchstax.github.io/university-health-search-demo/education/">Education</a>
+              <a href="https://mw-searchstax.github.io/university-health-search-demo/locations/">Locations</a>
+            </nav>
+          </div>
+          <div class="search-lab__site-content">
+            <form class="improve-preview__search" data-visitor-form role="search" aria-label="Central County">
+              <label><span>Search the website</span><input type="search" data-improve-query required autocomplete="off"></label>
+              <button type="submit">Search</button>
+            </form>
+            <button type="button" class="improve-preview__return" data-visitor-return hidden>Return to lesson search</button>
+            <div data-lesson-results>
+              <div class="improve-preview__summary">
+                <h3 tabindex="-1" data-improve-count>Search results</h3>
+                <span data-improve-context>Across all content</span>
+              </div>
+              <div data-improve-facet></div>
+              <p class="search-lab__status search-lab__search-status" data-improve-status role="status" aria-atomic="true"></p>
+              <p class="improve-preview__empty-hint" data-improve-empty-hint hidden>Try the full name or a broader search term.</p>
+              <button class="lt-btn lt-btn--secondary" type="button" data-improve-retry hidden>Retry search</button>
+              <div data-improve-note-anchor></div>
+              <ol class="improve-preview__results" role="list" aria-label="Results in rank order" data-improve-results></ol>
+            </div>
+            <section data-visitor-output aria-label="Visitor search results" hidden>
+              <p data-visitor-status tabindex="-1" role="status" aria-atomic="true"></p>
+              <button type="button" class="lt-btn lt-btn--secondary" data-visitor-retry hidden>Retry search</button>
+              <ol class="improve-preview__results" data-visitor-results></ol>
+              <div class="improve-preview__pages">
+                <button type="button" class="lt-btn lt-btn--secondary" data-visitor-prev hidden>Previous</button>
+                <button type="button" class="lt-btn lt-btn--secondary" data-visitor-next hidden>Next</button>
+              </div>
+            </section>
+          </div>
+        </div>
+        <p class="search-lab__preview-footnote">Live results from Search Lab’s demo profiles for the fictional Central County website.</p>
+        <div data-improve-takeaway hidden>
+          <button type="button" class="improve-preview__takeaway-toggle" aria-expanded="true" data-improve-takeaway-toggle>
+            <span data-improve-takeaway-label>Search Lab note</span>
+            <span class="improve-preview__takeaway-icon" aria-hidden="true"></span>
+          </button>
+          <div class="improve-preview__callout" data-improve-callout></div>
+        </div>
+        <section class="improve-wrap-up__actions" data-improve-next hidden aria-label="Next steps">
+          <button class="lt-btn lt-btn--secondary" type="button" aria-expanded="false" data-improve-own-site-toggle>Check this on your own site</button>
+          <button class="improve-choose-scenario" type="button" data-improve-choose>Choose another lesson</button>
+        </section>
+        <div data-improve-preview-followup></div>
       </section>
-    </div>
-    <p class="search-lab__feedback" role="status" aria-live="polite" data-lab-feedback></p>
+    </template>
+
+    <section class="promotions-lab" data-lab-screen="spell-check" aria-labelledby="lab-spell-check" hidden>
+      <header class="search-lab__intro">
+        <a class="search-lab__back" href="#lab-improve"><span aria-hidden="true">←</span> Back to Improve What People Find</a>
+        <h1 id="lab-spell-check" tabindex="-1">Recover Searches With a Typo</h1>
+        <p>Spell Check can retry a search with a corrected term when the original search returns zero results. Searches that already find results keep their original spelling.</p>
+      </header>
+      <section class="promotions-lab__demo" aria-labelledby="lab-spell-check-example">
+        <h2 id="lab-spell-check-example">Try It on a Fictional Site</h2>
+        <p>See how a missing letter affects the search, then try the correct spelling.</p>
+        <fieldset class="promotions-lab__choices">
+          <legend>What the visitor searches for</legend>
+          <div class="promotions-lab__options">
+            <label><input type="radio" name="spell-check-query" value="typo" checked> rehabilitaton <span>(typo)</span></label>
+            <label><input type="radio" name="spell-check-query" value="correct"> rehabilitation</label>
+          </div>
+        </fieldset>
+        <p class="promotions-lab__outcome" role="status" data-spell-status></p>
+        <div class="promotions-lab__example search-lab__query-comparison">
+          <section class="promotions-lab__setup" aria-labelledby="lab-spell-check-before">
+            <h3 id="lab-spell-check-before">Before Spell Check</h3>
+            <p data-spell-no-results>No results</p>
+            <div data-spell-before-results hidden></div>
+          </section>
+          <section class="promotions-lab__preview" aria-labelledby="lab-spell-check-after">
+            <h3 id="lab-spell-check-after">With Spell Check</h3>
+            <p data-spell-correction>Showing results for <strong>rehabilitation</strong>.</p>
+            <div data-spell-after-results></div>
+          </section>
+        </div>
+        <template data-spell-results>
+          <p>First 2 of 8 results</p>
+          <ol class="promotions-lab__results">
+            <li><a href="https://mw-searchstax.github.io/university-health-search-demo/care/services/rehabilitation/">Rehabilitation</a></li>
+            <li><a href="https://mw-searchstax.github.io/university-health-search-demo/care/providers/simon-kelver/">Simon Kelver</a></li>
+          </ol>
+        </template>
+        <p class="promotions-lab__source">Simulated correction using results from the fictional demo.</p>
+      </section>
+      <section class="promotions-lab__demo promotions-lab__next" aria-labelledby="lab-spell-check-own-app">
+        <h2 id="lab-spell-check-own-app">Try This in Your Search App</h2>
+        <ol class="promotions-lab__steps">
+          <li><strong>Choose a safe test App.</strong> Confirm with the web team which App, language, and profile your site uses. Use a Sandbox or staging App that serves no live searches. In Preview, use the test App, intended language, and profile.</li>
+          <li><strong>Record the baseline.</strong> Pick a typo from your no-results searches. Confirm the typo returns zero results and the correct spelling finds the intended page. Record the target URL and the top results for the correctly spelled search.</li>
+          <li>Open <strong>Configurations</strong>, then <strong>Basic Configurations</strong>, then <strong>Spell Check</strong>. Select <strong>Enable Spell Checking</strong>. To target a specific word, choose <strong>Dictionary-Driven</strong> and add the correctly spelled word. For <strong>Data-Driven</strong>, choose an indexed source field that contains the terms you want to recover. Choose <strong>Data+Dictionary-Driven</strong> to use both methods.</li>
+          <li>Save a draft and publish in the confirmed test App and language. In <strong>Preview</strong>, repeat both searches in the same profile. Check that the typo recovers the intended page and that the correctly spelled query still returns the expected results. If Preview works but the test site differs, ask the web team to check whether its search request enables spelling correction and how the site displays corrected results.</li>
+        </ol>
+        <p><a href="https://support.searchstax.com/hc/en-us/articles/40075144737037-Spell-Check">Read the Spell Check setup guide</a></p>
+      </section>
+    </section>
+
+    <section class="promotions-lab" data-lab-screen="ranking-guide" aria-labelledby="lab-ranking-guide" hidden>
+      <header class="search-lab__intro">
+        <a class="search-lab__back" href="#lab-improve"><span aria-hidden="true">←</span> Back to Improve What People Find</a>
+        <h1 id="lab-ranking-guide" tabindex="-1">Move Stronger Matches Up</h1>
+        <p>Use Ranking when useful pages are already in the results, but less useful matches keep appearing first across several searches. If you want one specific page first for a known query, <a href="#lab-find-page">compare Ranking with Promotions</a>.</p>
+      </header>
+      <section class="promotions-lab__demo" aria-labelledby="lab-ranking-test">
+        <h2 id="lab-ranking-test">Compare Three Searches</h2>
+        <p>In the fictional demo, After applies a 1.5 Search Field boost to the title. Compare the top five before and after for each search.</p>
+        <ul class="promotions-lab__steps">
+          <li><strong>campus flu clinic</strong> — Check where the clinic pages rank relative to the news archives.</li>
+          <li><strong>rehabilitation</strong> — Check where the service and center pages rank relative to the individual profiles.</li>
+          <li><strong>transit access</strong> — This search already puts the intended page first. Check whether its top five stay in the same order.</li>
+        </ul>
+        <a class="lt-btn lt-btn--secondary" href="#lab-compare-ranking">Compare the Ranking boost <span aria-hidden="true">→</span></a>
+      </section>
+      <section class="promotions-lab__demo promotions-lab__next" aria-labelledby="lab-ranking-steps">
+        <h2 id="lab-ranking-steps" tabindex="-1">Test Ranking in Your App</h2>
+        <ol class="promotions-lab__steps">
+          <li><strong>Choose a safe test profile.</strong> Confirm the App, language, and profile used on the live site. Select a test profile that serves no live searches. Use a Sandbox or staging App if available.</li>
+          <li><strong>Record the baseline in Preview.</strong> Select the test App, language, and profile. Pick two common searches where you want useful matches higher and one search that already works well. Record the top five in relevance order and the positions of the pages you expect to move.</li>
+          <li>Go to <strong>Configurations</strong>, then <strong>Advanced Configurations</strong>, then <strong>Ranking</strong>. Enable <strong>Field Ranking</strong> if needed. Under <strong>Search Field</strong>, add the field you want to boost. Try a small value, such as 1.5 for the title, if that field is already searchable and its matches are useful. If it’s empty or inconsistent, ask the indexing owner to check it first.</li>
+          <li>Save a draft and publish to the confirmed test profile only. Rerun the same searches in <strong>Preview</strong>. Check that the intended pages move up for the first two searches and compare the top five for the search you want to keep stable. Review any unwanted changes before publishing to live search.</li>
+        </ol>
+        <p><a href="https://support.searchstax.com/hc/en-us/articles/40151648011149-Ranking">Read the Ranking setup guide</a></p>
+        <div class="promotions-lab__followup">
+          <details class="search-lab__disclosure" data-lab-test-plan="ranking">
+            <summary>Get Help From a Teammate</summary>
+            <div class="promotions-lab__checklist-body">
+              <p>Fill in what you know and copy the test plan. All fields are optional.</p>
+              <div class="promotions-lab__inputs">
+                <label>Test Search App, language, and profile
+                  <input type="text" name="scope">
+                </label>
+                <label>Target page URLs or titles
+                  <input type="text" name="page">
+                </label>
+                <label>Two queries to improve
+                  <input type="text" name="query">
+                </label>
+                <label>Control query that already works well
+                  <input type="text" name="control">
+                </label>
+                <label>Baseline in Preview
+                  <textarea name="baseline" rows="3"></textarea>
+                </label>
+                <label>Expected change
+                  <textarea name="expected" rows="3"></textarea>
+                </label>
+              </div>
+              <div class="promotions-lab__checklist-actions">
+                <button class="lt-btn lt-btn--secondary promotions-lab__copy" type="button" data-test-plan-copy>Copy test plan for a teammate</button>
+              </div>
+              <p class="promotions-lab__copy-status" role="status" data-test-plan-status></p>
+              <textarea class="promotions-lab__request" aria-label="Ranking test plan for a teammate" rows="8" data-test-plan-request readonly hidden></textarea>
+            </div>
+          </details>
+        </div>
+      </section>
+    </section>
+
+    <section class="promotions-lab" data-lab-screen="data-filters" aria-labelledby="lab-data-filters" hidden>
+      <header class="search-lab__intro">
+        <a class="search-lab__back" href="#lab-improve"><span aria-hidden="true">←</span> Back to Improve What People Find</a>
+        <h1 id="lab-data-filters" tabindex="-1">Keep Results in the Right Section</h1>
+        <p>Use Data Filters when a Search Profile should always keep results within a section, content type, or audience. <a href="#lab-facets-example">Try facets</a> to let visitors narrow results themselves.</p>
+      </header>
+      <section class="promotions-lab__demo" aria-labelledby="lab-data-filters-example">
+        <h2 id="lab-data-filters-example">Try It on a Fictional Site</h2>
+        <p>A search for <strong>campus flu clinic</strong> returns both clinic locations and news archives. The comparison uses the demo’s <strong data-lab-filter-profile></strong> profile. Try each rule and check which pages can still appear.</p>
+        <fieldset class="promotions-lab__choices">
+          <legend>Rule to try</legend>
+          <div class="promotions-lab__options">
+            <label><input type="radio" name="lab-data-filter-rule" value="include" checked> Include Locations</label>
+            <label><input type="radio" name="lab-data-filter-rule" value="exclude"> Exclude News</label>
+          </div>
+        </fieldset>
+        <p class="promotions-lab__outcome" role="status" data-lab-filter-status></p>
+        <button type="button" class="lt-btn lt-btn--secondary" data-lab-filter-retry hidden>Try again</button>
+        <div class="promotions-lab__example search-lab__query-comparison" data-lab-filter-results hidden>
+          <section class="promotions-lab__setup" aria-labelledby="lab-data-filters-before">
+            <h3 id="lab-data-filters-before">Before the Rule</h3>
+            <p data-lab-filter-before-count></p>
+            <ol class="promotions-lab__results" data-lab-filter-before-list></ol>
+          </section>
+          <section class="promotions-lab__preview" aria-labelledby="lab-data-filters-after">
+            <h3 id="lab-data-filters-after">With the Rule</h3>
+            <p data-lab-filter-effect></p>
+            <p data-lab-filter-after-count></p>
+            <ol class="promotions-lab__results" data-lab-filter-after-list></ol>
+          </section>
+        </div>
+        <p class="promotions-lab__source">The Lab applies each rule to a live search request to show how a saved profile rule would scope results.</p>
+      </section>
+      <section class="promotions-lab__demo promotions-lab__next" aria-labelledby="lab-data-filters-own-app">
+        <h2 id="lab-data-filters-own-app">Try This in Your Search App</h2>
+        <ol class="promotions-lab__steps">
+          <li><strong>Confirm the profile in use.</strong> Ask the web team which App, language, and Search Profile the site uses, including the default profile if the site omits it. Choose a test profile that serves no live searches. Use a Sandbox or staging App if available.</li>
+          <li><strong>Record the baseline in Preview.</strong> Select the test App, language, and profile. Pick a query that returns pages from both scopes. Record a page that should remain and one that should disappear, including their URLs and the indexed field values that distinguish them. If the values are missing or inconsistent, ask the indexing owner to check them.</li>
+          <li>Open <strong>Configurations</strong>, then <strong>Advanced Configurations</strong>, then <strong>Data Filters</strong>. Select <strong>Enable Data Filters</strong> if needed. Choose <strong>Include</strong> to require a field value or <strong>Exclude</strong> to hide pages with that value. Select the field, enter its exact indexed value, and select <strong>+</strong>. Choose one rule type per field.</li>
+          <li>Save a draft and publish to the confirmed test profile only. Repeat the baseline search in <strong>Preview</strong>. Confirm the intended URL is still findable and the out-of-scope URL is absent, including when you search for its title. Try another query that should still work. If the live site behaves differently from Preview, ask the web team to confirm which profile and request filters it uses before rollout.</li>
+        </ol>
+        <p><a href="https://support.searchstax.com/hc/en-us/articles/40074203048461-Data-Filters">Read the Data Filters setup guide</a></p>
+      </section>
+    </section>
+
+
+    <section class="promotions-lab" data-lab-screen="find-page" aria-labelledby="lab-find-page" hidden>
+      <header class="search-lab__intro">
+        <a class="search-lab__back" href="#lab-improve"><span aria-hidden="true">←</span> Back to Improve What People Find</a>
+        <h1 id="lab-find-page" tabindex="-1">An Important Page Is Hard to Find</h1>
+        <p>At the fictional Central County site, two older flu clinic notices appear above the current 2026 notice. Try either change in the fictional demo.</p>
+      </header>
+      <div class="search-lab__paths">
+        <section class="search-lab__path" aria-labelledby="lab-promotions-option">
+          <h2 id="lab-promotions-option">Put One Page First</h2>
+          <p>Use <strong>Promotions</strong> to put a specific page first for searches that match a phrase.</p>
+          <a class="lt-btn lt-btn--secondary" href="#lab-promotions">Try the Promotions walkthrough <span aria-hidden="true">→</span></a>
+        </section>
+        <section class="search-lab__path" aria-labelledby="lab-ranking-option">
+          <h2 id="lab-ranking-option">Give Matching Titles More Weight</h2>
+          <p>Use <strong>Ranking</strong> to give title matches more weight across searches. A boost can move several pages.</p>
+          <a class="lt-btn lt-btn--secondary" href="#lab-ranking">See a Ranking example <span aria-hidden="true">→</span></a>
+        </section>
+      </div>
+      <table class="promotions-lab__comparison">
+        <caption>Top Five Results for “campus flu clinic”</caption>
+        <thead>
+          <tr>
+            <th scope="col">Rank</th>
+            <th scope="col">Original</th>
+            <th scope="col">Promotion</th>
+            <th scope="col">Title Boost</th>
+          </tr>
+        </thead>
+        <tbody data-clinic-comparison></tbody>
+      </table>
+      <p class="promotions-lab__source">The original and title boost orders were recorded from Search Lab’s demo profiles. The promotion is simulated.</p>
+    </section>
+
+
+    <section class="promotions-lab" data-lab-screen="promotions" aria-labelledby="lab-promotions" hidden>
+      <header class="search-lab__intro">
+        <a class="search-lab__back" href="#lab-flu-clinic-order"><span aria-hidden="true">←</span> Back to the result-order example</a>
+        <h1 id="lab-promotions" tabindex="-1">How can I put this year’s flu clinic notice first?</h1>
+        <p>A Central County visitor searches for “campus flu clinic.” This year’s notice is there, but two archived notices appear above it. You want visitors to find the current notice first and still be able to reach the archives.</p>
+      </header>
+      <div class="promotions-lab__example search-lab__query-comparison">
+        <section class="promotions-lab__preview" aria-labelledby="lab-clinic-site">
+          <h2 id="lab-clinic-site">Central County University Health</h2>
+          <p class="promotions-lab__query">Visitor’s search<br><strong data-promotion-query>campus flu clinic</strong></p>
+          <ol class="promotions-lab__results" id="lab-clinic-results" data-promotion-results aria-label="Search results"></ol>
+        </section>
+        <section class="promotions-lab__preview" aria-labelledby="lab-clinic-action">
+          <h2 id="lab-clinic-action">Try one change</h2>
+          <p>You can choose a page to show first when a search contains the words “flu clinic.” Try it on this search.</p>
+          <div class="promotions-lab__options">
+            <label><input type="checkbox" data-promotion-feature aria-controls="lab-clinic-results lab-clinic-outcome"> Put the 2026 notice first</label>
+          </div>
+          <div id="lab-clinic-outcome" aria-live="polite">
+            <div class="promotions-lab__takeaway" data-promotion-why hidden>
+              <h3 data-promotion-heading></h3>
+              <p data-promotion-outcome></p>
+            </div>
+          </div>
+          <div data-promotion-optional hidden>
+            <p><strong>Optional check</strong></p>
+            <p>Would someone searching for “transit access” see the flu notice too?</p>
+            <button class="lt-btn lt-btn--secondary" type="button" data-promotion-switch>Check “transit access”</button>
+          </div>
+        </section>
+      </div>
+      <p class="promotions-lab__source">These sample results simulate a promotion.</p>
+      <section class="promotions-lab__demo promotions-lab__next" data-promotion-next aria-labelledby="lab-promotion-next" hidden>
+        <h2 id="lab-promotion-next">Where would you like to go next?</h2>
+        <div class="promotions-lab__checklist-actions">
+          <a href="#lab-improve">Back to Improve What People Find</a>
+          <a href="#lab-promotion-checklist">Try it in my app</a>
+          <a href="#lab-promotion-teammate">Explain it to a teammate</a>
+        </div>
+      </section>
+    </section>
+
+    <section class="promotions-lab promotions-lab__checklist" data-lab-screen="promotion-checklist" aria-labelledby="lab-promotion-checklist" data-promotion-checklist hidden>
+      <header class="search-lab__intro">
+        <a class="search-lab__back" href="#lab-promotions"><span aria-hidden="true">←</span> Back to the Promotions Walkthrough</a>
+        <h1 id="lab-promotion-checklist" tabindex="-1">Do This in My Search App</h1>
+        <p>Choose the page you want to put first and the words visitors use to find it. You can set up the promotion if you have permission to manage Promotions in your Search App.</p>
+      </header>
+      <ol class="promotions-lab__steps">
+        <li><strong>Confirm where you'll test.</strong> Ask your web team which Search App and Search Profile the live site uses, including which default profile it uses if none is specified. Use a Sandbox or staging App if available. Confirm that no live search uses the App and profile you plan to test. If you're unsure, ask your Search App admin before publishing.</li>
+        <li><strong>Record what you see now.</strong> In <strong>Preview</strong> for the test profile, run the trigger phrase, a longer search that includes it, and an unrelated search. For each, note what comes first and where your page appears, if at all.</li>
+        <li>Go to <strong>Optimizations</strong> → <strong>Promotions</strong> and select <strong>Create a Promotion</strong>. Name the promotion and select <strong>Create</strong>.</li>
+        <li>Enter a trigger phrase. Choose <strong>Contains</strong> to include longer searches with the full phrase, or <strong>Exact Match</strong> to match just the phrase.</li>
+        <li>Under <strong>Indexed Items</strong>, select the page you want to feature. Select <strong>Save Draft</strong>.</li>
+        <li><strong>Publish to the test profile only.</strong> Check the selected profile before you publish. Open <strong>Preview</strong>, select that same profile, and repeat the three searches. Confirm the correct page is first in the regular results for the trigger phrase. For the longer search, it should be promoted only with <strong>Contains</strong>. For the unrelated search, the page should get no promotion and the first result should match what you recorded.</li>
+        <li>Record the before-and-after results. If a check fails, review the trigger, match type, and selected page in the test profile. Once the checks pass, share your results and follow your team's process for publishing to live search.</li>
+      </ol>
+      <div class="promotions-lab__followup">
+        <details class="search-lab__disclosure">
+          <summary id="lab-promotion-teammate">Explain it to a teammate</summary>
+          <div class="promotions-lab__checklist-body">
+            <p>“Could we test putting [current page] first when a search contains [phrase]? Here’s a search where an older page comes up first today: [visitor’s search].”</p>
+            <p>If someone else manages Promotions, fill in what you know and copy the request. All fields are optional.</p>
+            <div class="promotions-lab__inputs">
+              <label for="lab-promotion-profile">Test Search App and profile
+                <input id="lab-promotion-profile" type="text" data-promotion-input="profile">
+              </label>
+              <label for="lab-promotion-query">Trigger phrase
+                <input id="lab-promotion-query" type="text" data-promotion-input="query">
+              </label>
+              <label for="lab-promotion-page">Page to feature
+                <input id="lab-promotion-page" type="text" data-promotion-input="page">
+              </label>
+              <label for="lab-promotion-match">Match type
+                <select id="lab-promotion-match" data-promotion-request-match>
+                  <option value="">Help me choose</option>
+                  <option value="contains">Contains</option>
+                  <option value="exact">Exact Match</option>
+                </select>
+              </label>
+              <label for="lab-promotion-longer-query">Longer query containing the trigger phrase
+                <input id="lab-promotion-longer-query" type="text" data-promotion-input="longerQuery">
+              </label>
+              <label for="lab-promotion-control-query">Unrelated control query
+                <input id="lab-promotion-control-query" type="text" data-promotion-input="controlQuery">
+              </label>
+              <label for="lab-promotion-baseline">Recorded baseline in Preview
+                <textarea id="lab-promotion-baseline" rows="3" data-promotion-input="baseline"></textarea>
+              </label>
+            </div>
+            <div class="promotions-lab__checklist-actions">
+              <button class="lt-btn lt-btn--secondary promotions-lab__copy" type="button" data-promotion-copy>Copy request for a teammate</button>
+            </div>
+            <p class="promotions-lab__copy-status" role="status" data-promotion-copy-status></p>
+            <textarea class="promotions-lab__request" aria-label="Promotion request for a teammate" rows="8" data-promotion-request readonly hidden></textarea>
+          </div>
+        </details>
+      </div>
+      <p class="promotions-lab__checklist-actions">
+        <a href="https://support.searchstax.com/hc/en-us/articles/40155433600397-Promotions" data-promotion-guide>Promotions guide</a>
+        <a href="https://support.searchstax.com/hc/en-us/articles/39977208328717-Access-Management">Access Management guide</a>
+      </p>
+    </section>
   </div>
 </main>
 

@@ -1,25 +1,50 @@
 # SearchStax Search Lab
 
-A standalone preview for exploring SearchStax design and relevance settings using the fictional Alder Coast University Health content.
+A standalone preview for exploring SearchStax design and relevance settings using the fictional Central County University Health content.
 
-The preview includes the Search Fields and Ranking scenarios, layout and styling controls, shareable settings, and starter CSS. Searches use the existing isolated demo Search App and its prepared Search Profiles.
+Choose **Design a Search Page** to try a layout, share your design, or download starter code. Choose **Improve What People Find** to try the guided search and explore examples of synonyms, result order, and filtering. The live examples use Search Lab’s dedicated demo profiles. The public Central County website uses a separate search app.
 
 ## Run locally
 
-From this directory, start a static server:
+Use Node.js 20.19 or later in the Node.js 20 series, or Node.js 22.12 or later. From this directory, install the locked dependencies and start Vite.
 
 ```sh
-python3 -m http.server 4173 --bind 127.0.0.1
+npm ci
+npm run dev
 ```
 
-Open `http://127.0.0.1:4173/`. Searches connect automatically to the isolated demo app using the Search Endpoint, read-only Search API credential, and prepared profile names configured in `index.html`.
+Open the local URL printed by Vite. Searches connect automatically to the isolated demo app using the Search Endpoint, read-only Search API credential, and prepared profile names configured in `index.html`.
 
 The page loads the SearchStax JavaScript UI Kit from its CDN and sends search requests directly to the configured SearchStax endpoint. Use the isolated demo app and public fictional content only. Don't use a read/write or administrative credential.
 
-## Hosting
+## Reproduce the published pilot
 
-The preview is publicly hosted at https://mw-searchstax.github.io/searchstax-search-lab/. GitHub Pages deploys the root of the `main` branch.
+Develop and review changes on `main`. GitHub Pages serves the built files from the root of `gh-pages`. The Help Center embeds that deployment. The source baseline corresponds to Pages commit [b09d455](https://github.com/mw-searchstax/searchstax-search-lab/commit/b09d45583610744ae2c34149bd2728fb73da1c79). [Open Search Lab](https://mw-searchstax.github.io/searchstax-search-lab/)
 
-The demo endpoint and read-only credential in `index.html` are public and visible to visitors. They must be limited to the isolated demo app and its fictional content. Don't use a read/write or administrative credential. Use a server-side proxy if a credential must remain private.
+From a fresh clone, use the Node version in `.nvmrc` (26.8.2, verified with npm 11.19.1). Run these commands in the repository root.
 
-A staff-only Zendesk draft test saved the iframe markup but omitted both the Search Lab and an Alder Coast control iframe from the rendered article preview. No Zendesk Admin settings or theme templates were changed for this test.
+```sh
+npm ci
+npm run build
+git fetch origin refs/heads/gh-pages:refs/remotes/origin/gh-pages
+npm run verify:pages
+```
+
+The build type-checks the TypeScript and writes the static site to `dist/`. Verification compares every emitted file byte for byte with the fetched Pages commit and the public site, then prints its SHA-256 digest. It expects this checkout to correspond to the current deployment. Older assets retained on the hosting branch belong to earlier releases.
+
+## Test a clean build
+
+Install Google Chrome and the locked QA dependencies. The ordinary demo and its UI Kit need network access. The connection tests use synthetic data and run with SearchStax Analytics off.
+
+```sh
+npm --prefix qa/regression ci --ignore-scripts
+npm run preview -- --host 127.0.0.1 --port 4173 --strictPort
+```
+
+Leave the preview running. In a second terminal at the repository root, point the tests at the freshly built site.
+
+```sh
+SEARCH_LAB_BASE_URL=http://127.0.0.1:4173/ npm test
+```
+
+The default suite checks both onboarding paths, mobile recovery, appearance, and downloads across four starter formats. The QA guide also covers WebKit and tests that run inside a downloaded starter, including slow React paging. [Regression guide](qa/regression/README.md)

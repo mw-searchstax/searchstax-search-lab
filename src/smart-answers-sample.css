@@ -1,0 +1,19 @@
+.smart-answers-sample {
+  margin: 8px 0 13px;
+  border-bottom: 1px solid var(--lab-border, #d7e0da);
+}
+
+.smart-answers-sample[hidden] { display: none; }
+.smart-answers-sample[open] { padding-bottom: .75rem; }
+.smart-answers-sample summary { min-height: 44px; padding: .6rem .25rem; font-weight: 600; cursor: pointer; }
+.smart-answers-sample__card {
+  padding: 12px 16px;
+  border: 1px solid var(--lab-border, #d7e0da);
+  border-inline-start: 3px solid var(--preview-accent, var(--search-accent, #263f58));
+  border-radius: 5px;
+  overflow-wrap: anywhere;
+}
+.smart-answers-sample__card p { margin: 0 0 8px; }
+.smart-answers-sample__card p:last-child { margin-bottom: 0; }
+.smart-answers-sample__note { color: var(--lab-muted, #526759); font-size: .875rem; }
+.smart-answers-sample__card a { color: #244a39; text-decoration: underline; }

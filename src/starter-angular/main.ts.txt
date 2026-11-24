@@ -1,0 +1,7 @@
+import { bootstrapApplication } from '@angular/platform-browser';
+import { SearchApp } from './search-app';
+
+bootstrapApplication(SearchApp).catch(() => {
+  const host = document.querySelector('search-app');
+  if (host) host.textContent = 'Couldn’t start search. Check the starter setup and connection settings.';
+});

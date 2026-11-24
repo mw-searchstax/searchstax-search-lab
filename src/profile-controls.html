@@ -1,0 +1,32 @@
+<label data-exp-language><span>Search language</span> <select></select></label>
+<form class="search-lab__search-form" role="search" aria-label="Search this profile">
+  <label class="search-lab__sr-only" for="lab-exp-query">Search this profile</label>
+  <input type="search" id="lab-exp-query" required>
+  <button type="submit">Search</button>
+</form>
+<div role="tablist" aria-label="Search Profiles"></div>
+<!-- smart-answer-sample -->
+<section aria-label="Smart Answer" data-customer-answer hidden>
+  <strong>Smart Answer</strong>
+  <p data-customer-answer-status></p>
+  <div data-customer-answer-content hidden></div>
+</section>
+<p class="search-lab__sr-only" role="status" data-customer-answer-announcement></p>
+<div data-exp-promotions></div>
+<div role="tabpanel" id="lab-exp-results" tabindex="0">
+  <div class="search-results-toolbar">
+    <strong role="status" data-exp-summary></strong>
+    <label data-exp-sort hidden><span>Sort by</span> <select></select></label>
+  </div>
+  <p data-exp-empty hidden></p>
+  <p data-exp-sort-hint hidden>This Search Profile hasn’t provided sort options.</p>
+  <div class="experience-results">
+    <aside data-exp-filter-panel aria-label="Filter results" hidden>
+      <button type="button" data-exp-filter-toggle aria-controls="lab-exp-facets" aria-expanded="false">Filters</button>
+      <div id="lab-exp-facets" data-exp-facets></div>
+    </aside>
+    <ul></ul>
+  </div>
+  <div data-exp-pages hidden><button type="button" data-exp-prev>Previous page</button> <button type="button" data-exp-next>Next page</button></div>
+</div>
+<p data-exp-source></p>

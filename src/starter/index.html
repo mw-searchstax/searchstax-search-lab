@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SearchStax JavaScript Starter</title>
+  <link rel="stylesheet" href="./search.css">
+  <script defer src="%%UI_KIT_URL%%"></script>
+  <script type="module" src="./search.js"></script>
+</head>
+<body class="search-starter-page">
+  <main class="search-starter">
+    %%COMPANY_LOGO%%
+    <h1>Search Central County</h1>
+    <p>Search fictional university health content with the SearchStax JavaScript UI Kit.</p>
+    <form class="search-starter__form" role="search">
+      <label class="search-starter__sr-only" for="search-query">%%SEARCH_FIELD_TEXT%%</label>
+      <input id="search-query" type="search" value="rehabilitation" placeholder="%%SEARCH_FIELD_TEXT%%" autocomplete="off" required>
+      <button class="search-starter__submit" type="submit" disabled>%%SEARCH_BUTTON_TEXT%%</button>
+    </form>
+    <div id="search-smart-answers-sample" hidden>%%SMART_ANSWERS_SAMPLE%%</div>
+    <section class="smart-answers-sample__card search-starter__answer" aria-labelledby="search-customer-answer-heading" data-customer-answer hidden>
+      <h2 id="search-customer-answer-heading">Smart Answer</h2>
+      <p role="status" data-customer-answer-status></p>
+      <div class="search-starter__answer-content" data-customer-answer-content hidden></div>
+    </section>
+    <p id="search-status" role="status">Connecting to search…</p>
+    <div id="search-sorting" hidden>
+      <label class="search-starter__sort" for="search-sort-order">
+        Sort by <select id="search-sort-order"></select>
+      </label>
+    </div>
+    <div class="search-starter__body" id="search-output" aria-busy="false">
+      <aside class="search-starter__filters" aria-label="Filter search results" hidden>
+        <div id="search-facets"></div>
+      </aside>
+      <div>
+        <div id="search-results"></div>
+        <p class="search-starter__no-results" id="search-no-results" hidden></p>
+        <div data-pagination-focus tabindex="-1" role="group" aria-label="Search result pagination">
+          <div id="search-pagination"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

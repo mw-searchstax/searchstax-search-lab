@@ -1,0 +1,53 @@
+/* Visitor controls used by the preview and the downloadable search pages. */
+.search-lab__results-heading,
+.search-results-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 13px;
+  border-bottom: 1px solid var(--search-divider, #d8dfe3);
+  color: var(--search-ink, #202e3a);
+  font-size: .8125rem;
+}
+
+.search-lab__sort,
+.search-starter__sort,
+.lab-experiences [data-exp-sort] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem;
+  max-width: 100%;
+  font-size: .8125rem;
+}
+
+:is(.search-lab__sort, .search-starter__sort, [data-exp-sort], [data-exp-language]) select {
+  max-width: 100%;
+  min-height: 36px;
+  appearance: none;
+  padding: 4px 8px;
+  padding-inline-end: 28px;
+  border: 1px solid var(--search-ink, #465766);
+  border-radius: var(--search-corners, 5px);
+  color: var(--search-ink, #202e3a);
+  background-color: var(--search-background, #fff);
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: right 14px center, right 9px center;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+  font: inherit;
+}
+
+:is(.search-lab__sort, .search-starter__sort, [data-exp-sort], [data-exp-language]) select:dir(rtl) {
+  background-position: left 9px center, left 14px center;
+}
+
+@media (forced-colors: active) {
+  :is(.search-lab__sort, .search-starter__sort, [data-exp-sort], [data-exp-language]) select {
+    appearance: auto;
+    background-image: none;
+  }
+}

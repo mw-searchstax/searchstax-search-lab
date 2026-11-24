@@ -1,0 +1,20 @@
+{
+  "name": "searchstax-react-starter",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1"
+  },
+  "engines": { "node": "^20.19.0 || >=22.12.0" },
+  "dependencies": {
+    "@searchstax-inc/searchstudio-ux-react": "4.2.70",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "vite": "8.3.8"
+  }
+}

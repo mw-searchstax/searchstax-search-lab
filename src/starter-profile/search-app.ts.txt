@@ -1,0 +1,10 @@
+import { AfterViewInit, Component, ElementRef, OnDestroy } from '@angular/core';
+import { mountProfileSearch } from './mount.js';
+
+@Component({ selector: 'search-app', standalone: true, template: '' })
+export class SearchApp implements AfterViewInit, OnDestroy {
+  private dispose?: () => void;
+  constructor(private host: ElementRef<HTMLElement>) {}
+  ngAfterViewInit() { this.dispose = mountProfileSearch(this.host.nativeElement); }
+  ngOnDestroy() { this.dispose?.(); }
+}

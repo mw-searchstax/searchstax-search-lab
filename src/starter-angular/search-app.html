@@ -1,0 +1,148 @@
+<main class="search-starter">
+  @if (design.logoURL) {
+    <img class="search-starter__logo" [src]="design.logoURL" alt="Company logo"
+      referrerpolicy="no-referrer" (error)="$any($event.target).hidden = true">
+  }
+  <h1>{{ isDemo ? 'Search Central County' : 'Search' }}</h1>
+  @if (isDemo) {
+    <p>Search fictional university health content with the SearchStax Angular UI Kit.</p>
+  }
+  <app-searchstax-wrapper
+    [searchURL]="connection.searchURL" [searchAuth]="connection.searchAuth" [model]="connection.model"
+    [language]="connection.language" authType="token" suggesterURL="" [trackApiKey]="analytics.trackApiKey" [analyticsBaseUrl]="analytics.analyticsBaseUrl"
+    [router]="{ enabled: false }" [afterSearch]="afterSearch" (initialized)="initialized($event)"
+  >
+    <div>
+      <form #searchForm class="search-starter__form" role="search" (submit)="submit($event)">
+        <label class="search-starter__sr-only" for="starter-query">{{ design.searchFieldText }}</label>
+        <input #searchField id="starter-query" type="search" [placeholder]="design.searchFieldText" autocomplete="off" required>
+        <button type="submit" class="search-starter__submit">{{ design.searchButtonText }}</button>
+      </form>
+    </div>
+    @if (isDemo && design.showSmartAnswersSample) {
+      %%SMART_ANSWERS_SAMPLE%%
+    }
+    <div #answerHost></div>
+    <p role="status">{{ status() }}</p>
+    @if (design.showSorting) {
+      <app-searchstax-search-sorting [templateOverride]="sortControls">
+        <ng-template #sortControls let-context="context">
+          @if (context.sortingData?.searchExecuted && sortChoices(context.sortingData).length) {
+            <label class="search-starter__sort">
+              Sort by
+              <select [value]="context.selectedSorting" (change)="sortSearch($event)">
+                @for (choice of sortChoices(context.sortingData); track choice.order) {
+                  <option [value]="choice.order">{{ choice.label }}</option>
+                }
+              </select>
+            </label>
+          }
+        </ng-template>
+      </app-searchstax-search-sorting>
+    }
+    @if (promotionMode() === 'external' || promotionMode() === 'both') {
+      <section class="sample-external-promotion search-promotion-banner" aria-label="Sample external promotion">
+        <p class="sample-external-promotion__label">Sample external promotion</p>
+        <a [href]="sampleExternalPromotion.url" referrerpolicy="no-referrer">{{ sampleExternalPromotion.title }}</a>
+      </section>
+    }
+    @if (!isDemo) {
+      <app-searchstax-external-promotions [templateOverride]="externalPromotions">
+        <ng-template #externalPromotions let-data="externalPromotionsData">
+          @if (livePromotions(data?.externalPromotions); as links) {
+            @if (links.length) {
+              <section aria-label="External promotions">
+                @for (entry of links; track entry.id ?? entry.url) {
+                  <div class="search-promotion-banner">
+                    <span class="search-promotion-marker">Promoted</span>
+                    <a [href]="entry.url" [attr.lang]="resultLanguage" referrerpolicy="no-referrer">{{ entry.name || entry.url }}</a>
+                    @if (entry.description) {
+                      <p [attr.lang]="resultLanguage">{{ entry.description }}</p>
+                    }
+                  </div>
+                }
+              </section>
+            }
+          }
+        </ng-template>
+      </app-searchstax-external-promotions>
+    }
+    <div class="search-starter__body">
+      @if (design.showFilters) {
+        <aside class="search-starter__filters" aria-label="Filter search results">
+          <app-searchstax-search-facets
+            facetingType="or" [itemsPerPageDesktop]="20" [itemsPerPageMobile]="20"
+            [templateOverrideDesktop]="facetControls" [templateOverrideMobile]="emptyMobileFacets"
+          >
+            <ng-template #facetControls let-data="facetsTemplateDataDesktop" let-context="context"
+              let-facetValues="facetValues" let-isChecked="isChecked" let-selectFacet="selectFacet">
+              @for (facet of data?.facets ?? []; track facet.name) {
+                <fieldset>
+                  <legend>{{ facet.label || facet.name }}</legend>
+                  <div class="search-facet-choices">
+                    @for (option of facetValues(facet); track option.value) {
+                      <label #facetRow>
+                        <input type="checkbox" class="searchstax-facet-input-checkbox" [checked]="!!isChecked(option, context)"
+                          [disabled]="option.disabled" (click)="selectFacet(facetRow, $event, option, true, context)">
+                        <span>{{ facetLabel(option.value) }}</span><small>{{ option.count }}</small>
+                      </label>
+                    }
+                  </div>
+                </fieldset>
+              }
+            </ng-template>
+            <ng-template #emptyMobileFacets></ng-template>
+          </app-searchstax-search-facets>
+        </aside>
+      }
+      <div #resultHost>
+        <app-searchstax-results renderMethod="pagination" [resultsPerPage]="design.resultsPerPage"
+          [resultsTemplate]="resultCards" [noResultsTemplate]="emptyState">
+          <ng-template #resultCards let-items="searchResults">
+            <div class="searchstax-search-results">
+              @for (item of items ?? []; track item.uniqueId || item.url) {
+                <article class="searchstax-search-result">
+                  @if (item.sampleIndexedPromotion) {
+                    <span class="sample-indexed-promotion">Sample indexed promotion</span>
+                  }
+                  @if (!isDemo && item.promoted) {
+                    <span class="search-promotion-marker">Promoted</span>
+                  }
+                  @if (item.previewThumbnail && item.previewThumbnailAlt !== null) {
+                    <img class="search-starter__result-thumbnail" [src]="item.previewThumbnail"
+                      [alt]="item.previewThumbnailAlt" [attr.lang]="resultLanguage" loading="lazy" referrerpolicy="no-referrer">
+                  }
+                  <h2 [attr.lang]="resultLanguage"><a [href]="item.url" [attr.data-result-id]="item.uniqueId" referrerpolicy="no-referrer">{{ item.title || item.url }}</a></h2>
+                  @if (item.description) {
+                    <p class="search-starter__result-description" [attr.lang]="resultLanguage">{{ item.description }}</p>
+                  }
+                </article>
+              }
+            </div>
+          </ng-template>
+          <ng-template #emptyState>
+            <p class="search-starter__no-results">{{ design.noResultsText }}</p>
+          </ng-template>
+        </app-searchstax-results>
+        <div #pagination tabindex="-1" role="group" aria-label="Search result pagination">
+          <app-searchstax-search-pagination [templateOverride]="pageControls">
+            <ng-template #pageControls let-page="paginationData">
+              @if (page?.totalResults) {
+                <nav class="search-starter__pagination" aria-label="Search result pages">
+                  <span tabindex="-1" data-page-range [attr.data-page-start]="page.startResultIndex">{{ page.startResultIndex }}–{{ page.endResultIndex }} of {{ page.totalResults }} results</span>
+                  @if (!page.isFirstPage) {
+                    <button type="button" data-page-step="previous">Previous</button>
+                  }
+                  @if (!page.isLastPage) {
+                    <button type="button" data-page-step="next">Next</button>
+                  }
+                </nav>
+              }
+            </ng-template>
+          </app-searchstax-search-pagination>
+          <span class="search-starter__sr-only" role="status" data-page-announcement></span>
+        </div>
+      </div>
+    </div>
+  </app-searchstax-wrapper>
+</main>
