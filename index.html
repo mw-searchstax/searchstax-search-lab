@@ -254,6 +254,20 @@
               </details>
 
               <details class="search-lab__disclosure">
+                <summary>Pagination</summary>
+                <div class="search-lab__field">
+                  <label for="lab-pagination-mode">How visitors see more results</label>
+                  <select id="lab-pagination-mode">
+                    <option value="paged">Paged results</option>
+                    <option value="loadMore">Load more</option>
+                  </select>
+                </div>
+                <div class="search-lab__field" data-load-more-text-field hidden>
+                  <label for="lab-load-more-text">Load more button text</label>
+                  <input id="lab-load-more-text" type="text" value="Load more">
+                </div>
+              </details>
+              <details class="search-lab__disclosure">
                 <summary>Related searches</summary>
                 <div class="search-lab__field search-lab__field--inline">
                   <label for="lab-related-toggle">Show related searches</label>
@@ -550,6 +564,7 @@
                       </div>
                       <div data-pagination-focus tabindex="-1" role="group" aria-label="Search result pagination">
                         <div id="lab-pagination"></div>
+                        <span class="search-lab__sr-only" role="status" data-page-announcement></span>
                       </div>
                     </div>
                   </div>

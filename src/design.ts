@@ -47,6 +47,8 @@ export type DesignSettings = {
   showSuggestions: boolean;
   showSmartAnswersSample: boolean;
   samplePromotions: 'off' | 'indexed' | 'external' | 'both';
+  paginationMode: 'paged' | 'loadMore';
+  loadMoreText: string;
   resultsPerPage: typeof PAGE_SIZES[number];
   color: string;
   background: string;
@@ -87,6 +89,8 @@ export const DEFAULT_DESIGN: Readonly<DesignSettings> = {
   showSuggestions: false,
   showSmartAnswersSample: true,
   samplePromotions: 'off',
+  paginationMode: 'paged',
+  loadMoreText: 'Load more',
   resultsPerPage: 10,
   color: '#263f58',
   background: '#ffffff',
@@ -188,6 +192,8 @@ export function readDesignParams(params: URLSearchParams, allowFictionalPreview 
     showSuggestions: params.get('lab_suggestions') === 'on',
     showSmartAnswersSample: params.get('lab_answer_sample') !== 'off',
     samplePromotions: readSamplePromotions(params.get('lab_promotions')),
+    paginationMode: params.get('lab_pagination') === 'loadMore' ? 'loadMore' : 'paged',
+    loadMoreText: resolveSearchText(params.get('lab_load_more_text'), DEFAULT_DESIGN.loadMoreText),
     resultsPerPage: readPageSize(params.get('lab_page_size')),
     color: isHexColor(color) ? color : DEFAULT_DESIGN.color,
     background: isHexColor(background) ? background : DEFAULT_DESIGN.background,
@@ -255,6 +261,8 @@ export function writeDesignParams(params: URLSearchParams, design: DesignSetting
   if (design.samplePromotions !== 'off') {
     params.set('lab_promotions', design.samplePromotions);
   }
+  if (design.paginationMode === 'loadMore') params.set('lab_pagination', design.paginationMode);
+  if (design.loadMoreText !== DEFAULT_DESIGN.loadMoreText) params.set('lab_load_more_text', design.loadMoreText);
   if (design.resultsPerPage !== DEFAULT_DESIGN.resultsPerPage) {
     params.set('lab_page_size', String(design.resultsPerPage));
   }

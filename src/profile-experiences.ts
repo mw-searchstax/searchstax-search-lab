@@ -115,8 +115,14 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
   const input = field<HTMLInputElement>('input[type="search"]');
   const previous = field<HTMLButtonElement>('[data-exp-prev]');
   const next = field<HTMLButtonElement>('[data-exp-next]');
-  const info = field('[data-exp-source]');
   const pages = field('[data-exp-pages]');
+  const loadMore = document.createElement('button');
+  loadMore.type = 'button';
+  loadMore.textContent = DEFAULT_DESIGN.loadMoreText;
+  loadMore.hidden = true;
+  pages.append(loadMore);
+  status.tabIndex = -1;
+  const info = field('[data-exp-source]');
   let app: CustomerConnection | null = null;
   let allProfiles: Experience[] = demoProfiles;
   let tabProfiles = allProfiles;
@@ -150,6 +156,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
   let highlighting: boolean | undefined;
   const features = setupProfileFeatures(panel, submit);
   const spanish = () => active.language.split(/[-_]/)[0] === 'es';
+  const paginationMode = () => options.paginationMode;
 
   function updatePresentation() {
     const es = spanish();
@@ -163,6 +170,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
     empty.hidden = !noMatches && !mappingNotice;
     previous.textContent = es ? 'Página anterior' : 'Previous page';
     next.textContent = es ? 'Página siguiente' : 'Next page';
+    loadMore.textContent = es && options.loadMoreText === DEFAULT_DESIGN.loadMoreText ? 'Cargar más' : options.loadMoreText;
     const selectedCount = Array.from(filters.values()).reduce((count, values) => count + values.length, 0);
     filterButton.textContent = (es ? 'Filtros' : 'Filters') + (selectedCount ? ' (' + selectedCount + ')' : '');
     field('[data-exp-sort] span').textContent = es ? 'Ordenar por' : 'Sort by';
@@ -202,7 +210,9 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
     mappingNotice = '';
     updatePresentation();
     features.showExternalPromotions([]);
-    if (anchor !== pages) list.replaceChildren();
+    const append = paginationMode() === 'loadMore' && anchor === pages && list.childElementCount > 0;
+    const keepPagedResults = paginationMode() === 'paged' && anchor === pages;
+    if (!append && !keepPagedResults) list.replaceChildren();
     if (!options.filters || !query || app && (!app.endpoint || !app.token)) showFacets([]);
     if (anchor !== pages) pages.hidden = true;
     if (!active.profile) {
@@ -249,7 +259,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       if (pending !== request) return;
       recovery.clear();
       displayedStart = start;
-      list.replaceChildren();
+      if (!append) list.replaceChildren();
       sorts = choices;
       const selected = order.value;
       order.replaceChildren(new Option(es ? 'Relevancia' : 'Relevance', ''), ...sorts.map(choice => new Option(choice.label, choice.value)));
@@ -278,12 +288,20 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       }
       reportSettings();
       list.lang = contentLanguageTag(active.language) || '';
-      const range = total > rows ? (start + 1) + '–' + Math.min(start + rows, total) + (es ? ' de ' : ' of ') : '';
+      const loaded = list.children.length;
+      const range = total > rows ? (append ? '1–' + loaded : (start + 1) + '–' + Math.min(start + rows, total)) + (es ? ' de ' : ' of ') : '';
       const count = es ? (total === 1 ? ' resultado para ' : ' resultados para ') : (total === 1 ? ' result for ' : ' results for ');
       status.textContent = total ? range + total + count + '“' + query + '”' : (es ? 'Sin resultados para ' : 'No results for ') + '“' + query + '”.';
+      const moreAvailable = start + rows < total;
+      const loadingMore = paginationMode() === 'loadMore';
+      previous.hidden = loadingMore;
+      next.hidden = loadingMore;
       previous.disabled = start === 0;
-      next.disabled = start + rows >= total;
-      pages.hidden = total <= rows;
+      next.disabled = moreAvailable ? false : true;
+      loadMore.hidden = !loadingMore || !moreAvailable;
+      if (loadingMore && !moreAvailable && append) status.textContent = es ? 'Se cargaron los ' + total + ' resultados' : 'All ' + total + ' results loaded';
+      pages.hidden = total === 0 || (total <= rows && !loadingMore);
+      if (document.activeElement === loadMore) (loadMore.hidden ? status : loadMore).focus({ preventScroll: true });
     } catch (error) {
       if (pending !== request) return;
       status.textContent = anchor === pages ? (es ? 'Resultados de la página anterior.' : 'Showing the previous page.') : '';
@@ -377,6 +395,11 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
   field('form').addEventListener('submit', event => { event.preventDefault(); submit(input.value); });
   previous.addEventListener('click', () => { start = Math.max(0, displayedStart - options.resultsPerPage); void search(pages, previous); });
   next.addEventListener('click', () => { start = displayedStart + options.resultsPerPage; void search(pages, next); });
+  loadMore.addEventListener('click', () => {
+    if (pending || paginationMode() !== 'loadMore') return;
+    start = displayedStart + options.resultsPerPage;
+    void search(pages, loadMore);
+  });
   return {
     open(term = query, draft = term) { query = term; input.value = draft; render(); },
     close() { cancelSearch(); recovery.clear(); features.clear(); },
@@ -412,6 +435,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       if (previous.profileTabs !== design.profileTabs || previous.languagePicker !== design.languagePicker) {
         render();
       } else if (previous.facetMode !== design.facetMode || previous.filters !== design.filters || previous.resultsPerPage !== design.resultsPerPage ||
+                 previous.paginationMode !== design.paginationMode ||
                  previous.showSorting !== design.showSorting || previous.samplePromotions !== design.samplePromotions) {
         start = 0;
         if (!design.filters || previous.facetMode !== design.facetMode) filters.clear();

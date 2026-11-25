@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   SearchstaxExternalPromotionsWidget,
   SearchstaxFacetsWidget,
+  SearchstaxPaginationWidget,
   SearchstaxResultWidget,
   SearchstaxSortingWidget,
   SearchstaxWrapper,
@@ -16,11 +17,13 @@ import { createCustomerSuggestionSource } from './customer-suggestions.js';
 import { sampleSuggestionSource, setupSearchSuggestions } from './suggestions.js';
 import { getAnalyticsSettings, setupResultTracking } from './result-tracking.js';
 import { setupPaginationFocus } from './pagination-focus.js';
+import { createResultPages } from './result-pages.js';
 
 const analytics = getAnalyticsSettings(connection);
 const resultLanguage = contentLanguageTag(connection.language);
 const isDemo = connection.searchURL === demo.searchURL && connection.model === demo.model && resultLanguage === demo.language;
 const initialQuery = connection.initialQuery || (isDemo ? 'rehabilitation' : '');
+const resultPages = createResultPages();
 
 function publicLink(value) {
   try {
@@ -158,6 +161,10 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
       timer.current = window.setTimeout(() => setStatus('Search is unavailable. Try again in a moment.'), 15000);
     });
     api.dataLayer.setItemsPerPage(design.resultsPerPage);
+    // Keep Results Widget replacement-based so the accumulated projection from
+    // afterSearch is rendered once; Pagination Widget still uses its native
+    // infinite-scroll controls through this data-layer flag.
+    api.dataLayer.setIsInfiniteScroll(design.paginationMode === 'loadMore');
     services.current = setupStarterServices(form.current, answerHost.current, connection, design);
     if (initialQuery) runSearch(initialQuery);
     else setStatus('Enter a search term.');
@@ -205,8 +212,21 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
           resultsTemplate={resultCards}
           noResultTemplate={() => <p className="search-starter__no-results">{design.noResultsText}</p>} />
         <div ref={pagination} tabIndex={-1} role="group" aria-label="Search result pagination">
-          {pageControls(summary)}
-          <span className="search-starter__sr-only" role="status" data-page-announcement="" />
+          {design.paginationMode === 'loadMore' ? (
+            <SearchstaxPaginationWidget
+              infiniteScrollTemplate={(data, nextPage) => (
+                <button type="button" className="searchstax-pagination-load-more search-starter__load-more"
+                  data-test-id="searchstax-pagination-load-more" onClick={nextPage}>
+                  {design.loadMoreText}
+                </button>
+              )}
+            />
+          ) : pageControls(summary)}
+          <span className={design.paginationMode === 'loadMore' ? undefined : 'search-starter__sr-only'} role="status" data-page-announcement="">
+            {design.paginationMode === 'loadMore' && summary.end > 0
+              ? `Loaded ${summary.end} of ${summary.total} results${summary.end >= summary.total ? ' (all results loaded)' : ''}`
+              : ''}
+          </span>
         </div>
       </div>
     </div>
@@ -225,12 +245,9 @@ export default function SearchApp() {
     if (typeof total !== 'number') return [];
     window.clearTimeout(timer.current);
     // The requested page can change while the previous response is still on screen.
-    const start = response.response.start ?? 0;
-    const end = Math.min(total, start + (response.response.docs?.length ?? design.resultsPerPage));
-    setSummary({ start, end, total });
     setStatus(total + (total === 1 ? ' result' : ' results'));
     const passages = starterPassages(response, isDemo);
-    const results = items.flatMap((item) => {
+    const mapped = items.flatMap((item) => {
       const url = publicLink(item.url);
       return url ? [{
         ...item,
@@ -244,6 +261,14 @@ export default function SearchApp() {
         ),
       }] : [];
     });
+    const start = response.response.start ?? 0;
+    const results = design.paginationMode === 'loadMore'
+      ? resultPages.collect(start, mapped)
+      : mapped;
+    const end = design.paginationMode === 'loadMore'
+      ? results.length
+      : Math.min(total, start + (response.response.docs?.length ?? design.resultsPerPage));
+    setSummary({ start: design.paginationMode === 'loadMore' ? 0 : start, end, total });
     return results;
   }
 

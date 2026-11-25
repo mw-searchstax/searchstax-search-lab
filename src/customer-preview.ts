@@ -62,6 +62,12 @@ export function setupCustomerPreview(
   const range = get('[data-customer-range]');
   const previous = get<HTMLButtonElement>('[data-customer-prev]');
   const next = get<HTMLButtonElement>('[data-customer-next]');
+  const loadMore = document.createElement('button');
+  loadMore.type = 'button';
+  loadMore.className = 'search-lab__load-more';
+  loadMore.textContent = getDesign().loadMoreText;
+  loadMore.hidden = true;
+  pager.insertBefore(loadMore, range);
   const searchForm = get<HTMLFormElement>('[data-lab-search-form]');
   const queryInput = get<HTMLInputElement>('#lab-query');
   let place: HTMLElement = searchForm;
@@ -115,7 +121,9 @@ export function setupCustomerPreview(
   let options: BuildSearch | null = null;
   let latestPage: BuildPage | null = null;
   let request: AbortController | null = null;
+  let activePaginationMode: DesignSettings['paginationMode'] = getDesign().paginationMode;
   let tokenDestinations: string[] | null = null;
+  const paginationMode = () => getDesign().paginationMode;
 
   function clearFormToken() {
     token.value = '';
@@ -180,27 +188,37 @@ export function setupCustomerPreview(
     sort.replaceChildren(new Option('Relevance', ''), ...page.sorts.map(item => new Option(item.label, item.value)));
     sort.value = page.sorts.some(item => item.value === active.sort) ? active.sort : '';
     renderFacets(page, active);
-    grid.replaceChildren(...page.cards.map(card => {
+    const append = paginationMode() === 'loadMore' && active.start > 0 && grid.childElementCount > 0;
+    const rendered = page.cards.map(card => {
       const result = document.createElement('article');
       result.className = 'searchstax-search-result';
       if (language) result.lang = language;
       if (card.promoted) result.append(promotionLabel());
       appendResultCard(result, card);
       return result;
-    }));
-    grid.hidden = !page.cards.length;
-    empty.hidden = Boolean(page.cards.length);
+    });
+    if (append) grid.append(...rendered);
+    else grid.replaceChildren(...rendered);
+    grid.hidden = grid.childElementCount === 0;
+    empty.hidden = grid.childElementCount > 0;
     empty.textContent = resultMappingNotice(page.mappingsKnown, page.cards.length, page.total) || getDesign().noResultsText;
     if (settingsSummary && connection && !get('[data-single-experience]').hidden) {
       settingsSummary.textContent = profileStatus(connection.configuration?.entitlements ?? {}, connection.settings, page.highlighting, connection);
     }
 
     const focusedPageButton = document.activeElement;
+    const focusedLoadMore = focusedPageButton === loadMore;
     pager.hidden = !page.resultCount;
-    range.textContent = (active.start + 1) + '–' + (active.start + page.resultCount) + ' of ' + page.total + ' results';
-    previous.hidden = active.start === 0;
-    next.hidden = active.start + active.rows >= page.total;
+    const loaded = append ? grid.childElementCount : page.resultCount;
+    range.textContent = (append ? 1 : active.start + 1) + '–' + (append ? loaded : active.start + page.resultCount) + ' of ' + page.total + ' results';
+    const moreAvailable = active.start + page.resultCount < page.total;
+    const loadingMore = paginationMode() === 'loadMore';
+    previous.hidden = loadingMore || active.start === 0;
+    next.hidden = loadingMore || !moreAvailable;
+    loadMore.hidden = !loadingMore || !moreAvailable;
+    if (loadingMore && !moreAvailable && append) range.textContent = 'All ' + page.total + ' results loaded';
     if ((focusedPageButton === previous && previous.hidden) || (focusedPageButton === next && next.hidden)) range.focus();
+    if (focusedLoadMore) (loadMore.hidden ? range : loadMore).focus({ preventScroll: true });
     updateVisibility();
   }
 
@@ -406,6 +424,10 @@ export function setupCustomerPreview(
   next.addEventListener('click', () => {
     if (options && !request) run({ start: displayedStart + options.rows }, pager, next);
   });
+  loadMore.addEventListener('click', () => {
+    if (!connection || !options || !latestPage || request) return;
+    run({ start: displayedStart + latestPage.resultCount }, pager, loadMore);
+  });
 
   return {
     get connection() { return connection; },
@@ -441,12 +463,16 @@ export function setupCustomerPreview(
       if (!connection || !options) return;
       updateVisibility();
       const design = getDesign();
+      const previousMode = activePaginationMode;
+      const nextMode = design.paginationMode;
+      activePaginationMode = nextMode;
+      loadMore.textContent = design.loadMoreText;
       placePromotionBanners(promotions, layout, design.bannerPlacement);
       updatePromotionLabels(panel, design);
       facetView.refresh();
       const nextOrder = design.showSorting ? (order ?? options.sort) : '';
       const clearSelection = !design.filters || options.facetMode !== design.facetMode;
-      if (design.resultsPerPage !== options.rows || (clearSelection && options.filters.size) ||
+      if (design.resultsPerPage !== options.rows || previousMode !== nextMode || (clearSelection && options.filters.size) ||
         options.facetMode !== design.facetMode || nextOrder !== options.sort) {
         run({
           rows: design.resultsPerPage,

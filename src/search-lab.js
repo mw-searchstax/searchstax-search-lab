@@ -45,6 +45,7 @@ import { setupDataFilters } from './demo-filter-comparison';
 import { setupImprovePreview } from './improve-preview';
 import { demoResultText, demoResultTitle } from './demo-content.js';
 import { setupRelevanceComparison } from './relevance-comparison';
+import { createResultPages } from './result-pages.js';
 import { setupPaginationFocus } from './pagination-focus.js';
 
 (function () {
@@ -92,6 +93,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
   var queryLabel = form.querySelector('label[for="lab-query"]');
   var submitButton = form.querySelector('button[type="submit"]');
   var textInputs = {
+    loadMoreText: root.querySelector('#lab-load-more-text'),
     promotionHeading: root.querySelector('#lab-promo-heading'),
     promotionBadge: root.querySelector('#lab-promo-badge'),
     searchFieldText: root.querySelector('#lab-field-text'),
@@ -119,6 +121,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
   var designSurface = root.querySelector('#lab-preview .search-lab__site');
   var fontInput = root.querySelector('#lab-font');
   var spacingInput = root.querySelector('#lab-spacing');
+  const paginationModeInput = root.querySelector('#lab-pagination-mode');
   var pageSizeInput = root.querySelector('#lab-page-size');
   var scenarioInput = root.querySelector('#lab-scenario');
   var facetsPanel = root.querySelector('[data-lab-facets-panel]');
@@ -132,6 +135,11 @@ import { setupPaginationFocus } from './pagination-focus.js';
   var previousResults = root.querySelector('[data-lab-previous-results]');
   var noResultsMessage = root.querySelector('[data-lab-no-results]');
   var pagination = root.querySelector('#lab-pagination');
+  function updateLoadMoreLabel() {
+    const button = pagination.querySelector('[data-load-more]');
+    if (button && button.textContent !== design.loadMoreText) button.textContent = design.loadMoreText;
+  }
+  new MutationObserver(updateLoadMoreLabel).observe(pagination, { childList: true, subtree: true });
   setupPaginationFocus(pagination.parentElement, function () { return search; });
   var status = root.querySelector('[data-lab-status]');
   var previewBrand = root.querySelector('[data-lab-preview-brand]');
@@ -228,6 +236,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
   let builtInAnswerQuery = '';
   let snapshotRequest;
   let lastBuiltInPage;
+  const resultPages = createResultPages();
   let builtInHighlighting;
   const unknownResultFields = new WeakSet();
   var singleProfileQuery = '';
@@ -498,6 +507,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
     queryLabel.textContent = fieldText;
     queryInput.placeholder = fieldText;
     submitButton.textContent = text.searchButtonText;
+    updateLoadMoreLabel();
     noResultsMessage.textContent = text.noResultsText;
   }
 
@@ -585,6 +595,11 @@ import { setupPaginationFocus } from './pagination-focus.js';
     underlineToggle.checked = design.underlineTitles;
     fontInput.value = design.font;
     spacingInput.value = design.resultSpacing;
+    paginationModeInput.value = design.paginationMode;
+    textInputs.loadMoreText.closest('[data-load-more-text-field]').hidden = design.paginationMode !== 'loadMore';
+    if (syncPaginationMode() && search.dataLayer.searchObject.query && experiencePanel.hidden && !customerPreview.active) {
+      runSearch(search.dataLayer.searchObject.query, false, true);
+    }
     pageSizeInput.value = String(design.resultsPerPage);
     Object.keys(textInputs).forEach(function (key) { textInputs[key].value = design[key]; });
     updatePreviewText();
@@ -884,6 +899,15 @@ import { setupPaginationFocus } from './pagination-focus.js';
     return workspaceMode === 'design' && design.showSorting ? sortOrder.value : '';
   }
 
+  function syncPaginationMode() {
+    const loadMore = workspaceMode === 'design' && design.paginationMode === 'loadMore';
+    if (!search || search.dataLayer.isInfiniteScroll === loadMore) return false;
+    search.dataLayer.setIsInfiniteScroll(loadMore);
+    resultPages.clear();
+    completed = false;
+    return true;
+  }
+
   function selectedPageSize() {
     return workspaceMode === 'design' ? design.resultsPerPage : DEFAULT_DESIGN.resultsPerPage;
   }
@@ -896,6 +920,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
       queryInput.setCustomValidity('');
       return;
     }
+    syncPaginationMode();
     var current = search.dataLayer.searchObject;
     var compareRanking = workspaceMode === 'examples' && state.scenario === 'ranking' && state.phase === 'after';
     var model = workspaceMode === 'design' ? config.build : state.phase === 'before' ? config.before
@@ -972,7 +997,9 @@ import { setupPaginationFocus } from './pagination-focus.js';
     summary.textContent = total + (total === 1 ? ' result' : ' results') + ' for “' + response.responseHeader.params.q + '”' + (notice ? '. ' + notice : '');
     if (experiencePanel.hidden && !customerPreview.active) syncFeatureControls();
     renderPromotionBanners(externalPromotion, promotionEntries(response.externalLinks), design.promotionHeading, 'en');
-    return mapped;
+    // The kit can deliver a batch again after configuration loads. Replacing
+    // that batch also keeps earlier result IDs available to the kit.
+    return search.dataLayer.isInfiniteScroll ? resultPages.collect(response.response.start ?? 0, mapped) : mapped;
   }
 
   function initialize(initialQuery = sampleQuery()) {
@@ -1023,6 +1050,8 @@ import { setupPaginationFocus } from './pagination-focus.js';
             summary.textContent = total + (total === 1 ? ' result' : ' results') + ' for “' + expected.query + '”';
             window.setTimeout(finishSearch, 0);
             if (workspaceMode !== 'design') return safeResults(items || []);
+            // The kit also notifies afterSearch with its already-rendered results.
+            if (response === lastBuiltInPage?.response && items === search.dataLayer.searchResults) return items;
             lastBuiltInPage = { items, response, request: expected };
             return renderBuiltInPage(items, response);
           },
@@ -1063,9 +1092,12 @@ import { setupPaginationFocus } from './pagination-focus.js';
         },
       });
       new MutationObserver(labelFacets).observe(facets, { childList: true, subtree: true });
+      syncPaginationMode();
       search.addPaginationWidget('lab-pagination', {
         templates: { mainTemplate: {
           template: '{{#results.length}}<nav class="search-lab__pagination" aria-label="Search result pages"><span tabindex="-1" data-page-range data-page-start="{{startResultIndex}}">{{startResultIndex}}–{{endResultIndex}} of {{totalResults}} results</span>{{^isFirstPage}}<button type="button" data-page-step="previous">Previous</button>{{/isFirstPage}}{{^isLastPage}}<button type="button" data-page-step="next">Next</button>{{/isLastPage}}</nav>{{/results.length}}',
+        }, infiniteScrollTemplate: {
+          template: '{{#results.length}}<nav class="search-lab__pagination" aria-label="Search result pages"><span tabindex="-1" data-page-range data-page-start="{{startResultIndex}}">{{#isLastPage}}{{endResultIndex}} of {{totalResults}} loaded{{/isLastPage}}{{^isLastPage}}Showing {{endResultIndex}} of {{totalResults}} results{{/isLastPage}}</span>{{^isLastPage}}<button type="button" data-page-step="next" data-load-more>Load more</button>{{/isLastPage}}</nav>{{/results.length}}',
         } },
       });
       search.dataLayer.$loadingChange.subscribe(function (loading) {
@@ -1161,6 +1193,10 @@ import { setupPaginationFocus } from './pagination-focus.js';
     if (isResultSpacing(spacingInput.value)) design.resultSpacing = spacingInput.value;
     updateDesign();
   });
+  paginationModeInput.addEventListener('change', () => {
+    design.paginationMode = paginationModeInput.value === 'loadMore' ? 'loadMore' : 'paged';
+    updateDesign();
+  });
   pageSizeInput.addEventListener('change', function () {
     design.resultsPerPage = readPageSize(pageSizeInput.value);
     updateDesign();
@@ -1170,6 +1206,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
     var input = textInputs[key];
     input.addEventListener('input', function () {
       design[key] = resolveSearchText(input.value, DEFAULT_DESIGN[key]);
+      if (key === 'loadMoreText' && customerPreview.active) customerPreview.updateDesign();
       clearDesignFeedback();
       updatePreviewText();
       experiencePreview.configure(design);
@@ -1377,7 +1414,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
     if (preview && !customerPreview.active) {
       sortOrder.value = preview.order;
       queryInput.value = preview.draft;
-      runSearch(preview.query, false, true, preview);
+      runSearch(preview.query, false, true, design.paginationMode === 'loadMore' ? { ...preview, page: 1 } : preview);
     }
     if (profileSearch && !experiencePanel.hidden) experiencePreview.open(profileSearch.query, profileSearch.draft);
     designFeedback.textContent = 'Previous design restored.';

@@ -12,6 +12,7 @@ import { createCustomerSuggestionSource } from './customer-suggestions.js';
 import { sampleSuggestionSource, setupSearchSuggestions } from './suggestions.js';
 import { getAnalyticsSettings, setupResultTracking } from './result-tracking.js';
 import { setupPaginationFocus } from './pagination-focus.js';
+import { createResultPages } from './result-pages.js';
 
 const facetLabels: Record<string, string> = demo.facetLabels;
 const thumbnailPaths: Record<string, string> = demo.thumbnailPaths;
@@ -48,6 +49,10 @@ export class SearchApp implements AfterViewInit, OnDestroy {
   readonly resultLanguage = contentLanguageTag(connection.language);
   readonly isDemo = connection.searchURL === demo.searchURL && connection.model === demo.model && this.resultLanguage === demo.language;
   readonly status = signal('Connecting to search…');
+  readonly loadedResults = signal(0);
+  readonly pageStart = signal(1);
+  readonly totalResults = signal(0);
+  private readonly resultPages = createResultPages();
   private readonly initialQuery = connection.initialQuery ||
     (this.isDemo ? 'rehabilitation' : '');
   private api?: Searchstax;
@@ -130,10 +135,15 @@ export class SearchApp implements AfterViewInit, OnDestroy {
   readonly afterSearch = (items: ISearchstaxParsedResult[], response?: ISearchstaxSearchResponse) => {
     const total = response?.response?.numFound;
     if (typeof total !== 'number') return [];
+    // The Angular Results widget initializes asynchronously and resets this
+    // flag. Set it after initialization, before the kit builds the page data.
+    if (design.paginationMode === 'loadMore' && this.api && !this.api.dataLayer.isInfiniteScroll) {
+      this.api.dataLayer.setIsInfiniteScroll(true);
+    }
     window.clearTimeout(this.timer);
     this.status.set(total + (total === 1 ? ' result' : ' results'));
     const passages = starterPassages(response, this.isDemo);
-    const results = items.flatMap(item => {
+    const mapped = items.flatMap(item => {
       const url = publicLink(item.url);
       return url ? [{
         ...item,
@@ -147,6 +157,12 @@ export class SearchApp implements AfterViewInit, OnDestroy {
         ),
       }] : [];
     });
+    const results = design.paginationMode === 'loadMore'
+      ? this.resultPages.collect(response?.response?.start ?? 0, mapped)
+      : mapped;
+    this.pageStart.set((response?.response?.start ?? 0) + 1);
+    this.loadedResults.set(design.paginationMode === 'loadMore' ? results.length : 0);
+    this.totalResults.set(total);
     return results;
   };
 

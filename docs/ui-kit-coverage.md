@@ -32,7 +32,7 @@ The ten widget families below follow the [Help Center catalog](https://support.s
 | `groupedBy` | Flat list. | Features · native after upgrade. Off, then one supported field. | A groupable field and at least two groups. Confirm counts on a running export. | Upgrade | Gap | Gap | Gap |
 | `itemsPerGroup` | No group size. | Features · native after upgrade. Start with kit default when grouping is selected. | Group with multiple hits. Page size no longer directly sets the number of groups or documents. | Upgrade | Gap | Gap | Gap |
 | Group heading | No groups. | Appearance · template and CSS. Start with the group value as its heading. | Two distinct group values and a missing value. | Gap | Gap | Gap | Gap |
-| `renderMethod` | Paged results. | Features · native. Start paged, offer infinite-scroll/load-more mode. | More than one page. Preserve position and announced count. | Fixed | Fixed | Fixed | Fixed |
+| `renderMethod` | Paged results or Load more. | Features · start paged. The pager requests each batch and the result template retains earlier cards. | More than one page, including a final partial batch. | Wired | Wired | Wired | Wired |
 | `resultsPerPage` | 5, 10 or 20 in Advanced Options. | Advanced Options · native widget size plus custom pager coordination. Default 10. | Ungrouped results exceeding the chosen size. | Wired | Wired | Wired | Wired |
 | Empty-result template | Custom empty-state wording. | Appearance · template. Keep the current no-match message. | A query with zero results and a successful response. | Wired | Wired | Wired | Wired |
 | `afterLinkClick` | Click tracking uses result IDs where enabled. | Handoff · native hook. Preserve link destination and opt-in tracking. | A returned unique ID and developer analytics setup. | Setup | Setup | Setup | Setup |
@@ -87,7 +87,7 @@ The ten widget families below follow the [Help Center catalog](https://support.s
 | Option | Build today | Destination, mechanism and proposed default | Prerequisite or review example | JS | React | Vue | Angular |
 |---|---|---|---|---|---|---|---|
 | Paged navigation template | Previous and Next and result range. | Appearance · template. Keep existing labels and let designers change each. | A first, middle and last page. | Fixed | Fixed | Fixed | Fixed |
-| Infinite-scroll template | No Load more mode. | Features · native render method plus template. Start paged and expose button text in load-more mode. | More results than one page, end-of-results announcement. | Gap | Gap | Gap | Gap |
+| Infinite-scroll template | Load more button with editable text and a cumulative count. | Features → Pagination · widget and template. The default button text is “Load more.” | More than one page, with keyboard focus and an end-of-results message. | Wired | Wired | Wired | Wired |
 | Multiple pagination instances | One pager below results. | Advanced Options · widget placement. Offer above, below or both, default below. | Two controls synchronized to one page and focus target. | Gap | Gap | Gap | Gap |
 | Range text | Range appears as results are paged. | Appearance · template. Start with the existing range and total. | Final partial page. | Fixed | Fixed | Fixed | Fixed |
 
@@ -214,6 +214,18 @@ Local download verification on November 24, 2026 covered JavaScript, React, Vue 
 
 On November 25, 2026, the local ordinary and tabbed previews and the JavaScript, React, Vue and Angular downloads used SearchLabBuild’s published Content type facet. Searching **campus** returned 37 results. Selecting **Location** returned eight cards with the **Location** ribbon. Clearing it restored 37. In OR mode, adding **Providers** returned 16. AND mode narrowed the choices to Location, and Show unavailable kept the other choices visible and disabled. All four downloads honored independent limits of three desktop values and five mobile values. Facet selection, ordering and facet tabs across multiple fields remain open for a later example with a second populated facet.
 
+### Load more
+
+In **Features → Pagination**, choose **Load more**. Paged results are the default for new and existing designs. The button uses the batch size set in Advanced Options. Its label and the selected mode are saved in the design, share link, and starter downloads.
+
+On November 25, 2026, the ordinary and tabbed Build previews loaded **campus** on English SearchLabBuild in batches of 10, 10, 10, and seven. The ordinary preview kept the first 10 cards after a failed second request and showed 20 distinct cards after retry. Changing the sort or switching profiles started a fresh list.
+
+The JavaScript, React, Vue and Angular downloads each ran the same query locally with a custom button label. Keyboard activation showed 10, 20, 30, then 37 distinct results in order, with a visible final count. Selecting **Location** showed eight results. Clearing it restored the first 10 of 37.
+
+### Published URL sorts
+
+SearchLabDemo’s English SearchLabBuild profile publishes **Page address (A–Z)** and **Page address (Z–A)**. With **campus**, relevance returns **North Campus Clinic** first. Sorting the 37 results by ascending URL puts **Central County University Health** first. Descending URL puts **Sleep Health Center** first. The November 25 API check found neither option in the published metadata for Main Profile, SearchLabAfter or SearchLabRanking.
+
 ## Template bindings for the developer handoff
 
 Each row is a distinct replacement point. Keep the kit template by default when building a new native integration. The Build column identifies the current equivalent and the user-facing row above supplies its design defaults and app prerequisites. Custom templates own the accessible controls, result IDs and callbacks inside them. These are package bindings for implementation review. Runtime verification applies only to the behaviors recorded below.
@@ -234,7 +246,7 @@ Each row is a distinct replacement point. Keep the kit template by default when 
 | Open mobile filters | Mobile filter action | filterByTemplate | within mobile template | within mobileFacets | within mobile template |
 | Selected filter chips | No chip treatment control | selectedFacetsTemplate | within facet templates | within facet slots | within facet templates |
 | Pagination | Previous, range, next | mainTemplate | paginationTemplate | pagination | templateOverride |
-| Load more | Gap | infiniteScrollTemplate | infiniteScrollTemplate | infiniteScroll | infiniteScrollTemplateOverride |
+| Load more | Load more button and cumulative count | infiniteScrollTemplate | infiniteScrollTemplate | infiniteScroll | infiniteScrollTemplateOverride |
 | Count and corrections | Count today, correction handoff needed | main | searchOverviewTemplate | searchFeedback | templateOverride |
 | Sorting | Fixed dropdown treatment | main | searchSortingTemplate | sorting | templateOverride |
 | External promotions shell | Banner | mainTemplate | searchExternalPromotionsTemplate | externalPromotions | templateOverride |
@@ -266,7 +278,7 @@ The JavaScript template objects also expose markup bindings. They belong in the 
 | originalQueryClass | Feedback, retry the original spelling | Build integration gap |
 | previousButtonClass | Pagination, go back one page | Previous button |
 | nextButtonClass | Pagination, advance one page | Next button |
-| loadMoreButtonClass | Pagination, append another batch | Build integration gap |
+| loadMoreButtonClass | Pagination, append another batch | Load more button |
 | relatedSearchesContainerClass | Related Searches, mount the list | Related suggestions |
 | relatedSearchContainerClass | Related Searches, bind the suggestion | Clickable term |
 | externalPromotionsContainerId | External Promotions, mount returned items | Promotion region |

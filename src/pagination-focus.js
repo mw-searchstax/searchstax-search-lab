@@ -14,8 +14,20 @@ export function setupPaginationFocus(host, getSearch) {
 
   function changePage(event) {
     const button = event.target instanceof Element && event.target.closest('button[data-page-step]');
+    const loadMore = event.target instanceof Element && event.target.closest('.searchstax-pagination-load-more');
     const api = getSearch();
     const current = api?.dataLayer.searchObject;
+    if (loadMore) {
+      if (pending?.loadMore) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        return;
+      }
+      if (loadMore.matches(':disabled')) return;
+      pending = { loadMore: true };
+      host.focus({ preventScroll: true });
+      return;
+    }
     if (!button || button.disabled || !current?.itemsPerPage || api.dataLayer.loading) return;
     const range = host.querySelector('[data-page-range]');
     const from = Number(range?.dataset.pageStart);
@@ -34,7 +46,28 @@ export function setupPaginationFocus(host, getSearch) {
   }
 
   function restoreAfterRender() {
-    if (!pending || document.activeElement !== host) return;
+    if (!pending || (!pending.loadMore && document.activeElement !== host)) return;
+    if (pending.loadMore) {
+      if (getSearch()?.dataLayer.loading) {
+        frame ??= requestAnimationFrame(() => {
+          frame = undefined;
+          restoreAfterRender();
+        });
+        return;
+      }
+      // Native nextPage() briefly focuses body while the request is in flight.
+      // If the visitor tabbed to another control meanwhile, leave their focus
+      // alone rather than pulling it back into the result list.
+      if (document.activeElement !== document.body && document.activeElement !== host) {
+        pending = undefined;
+        return;
+      }
+      const loadMoreButton = host.querySelector('.searchstax-pagination-load-more:not(:disabled)');
+      pending = undefined;
+      if (loadMoreButton instanceof HTMLElement) loadMoreButton.focus();
+      else host.focus({ preventScroll: true });
+      return;
+    }
     const range = host.querySelector('[data-page-range]');
     const text = range?.textContent.trim();
     if (!text || text === pending.range) return;
@@ -57,17 +90,19 @@ export function setupPaginationFocus(host, getSearch) {
   }
 
   function leavePagination(event) {
-    if (event.target === host) pending = undefined;
+    if (event.target === host && !pending?.loadMore) pending = undefined;
   }
 
   const observer = new MutationObserver(restoreAfterRender);
   observer.observe(host, { childList: true, characterData: true, subtree: true });
-  host.addEventListener('click', changePage);
+  // Capture load-more clicks before framework widget handlers stop
+  // propagation, while paged controls continue through this helper.
+  host.addEventListener('click', changePage, true);
   host.addEventListener('focusout', leavePagination);
   return () => {
     if (frame !== undefined) cancelAnimationFrame(frame);
     observer.disconnect();
-    host.removeEventListener('click', changePage);
+    host.removeEventListener('click', changePage, true);
     host.removeEventListener('focusout', leavePagination);
   };
 }

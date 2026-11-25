@@ -18,6 +18,7 @@ import { createCustomerSuggestionSource } from './customer-suggestions.js';
 import { sampleSuggestionSource, setupSearchSuggestions } from './suggestions.js';
 import { getAnalyticsSettings, setupResultTracking } from './result-tracking.js';
 import { setupPaginationFocus } from './pagination-focus.js';
+import { createResultPages } from './result-pages.js';
 
 function Passage({ parts }) {
   return parts.map(part => part.matched ? h('mark', { class: 'search-result-hit' }, part.text) : part.text);
@@ -27,6 +28,7 @@ const analytics = getAnalyticsSettings(connection);
 const resultLanguage = contentLanguageTag(connection.language);
 const isDemo = connection.searchURL === demo.searchURL && connection.model === demo.model && resultLanguage === demo.language;
 const initialQuery = connection.initialQuery || (isDemo ? 'rehabilitation' : '');
+const resultPages = createResultPages();
 const form = ref(null);
 const filterHost = ref(null);
 let facetLimits;
@@ -36,6 +38,8 @@ const resultHost = ref(null);
 const answerHost = ref(null);
 let services;
 const status = ref('Connecting to search…');
+const loadedResults = ref(0);
+const totalResults = ref(0);
 let api;
 let loadingSubscription;
 let timer;
@@ -57,7 +61,7 @@ function afterSearch(items, response) {
   window.clearTimeout(timer);
   status.value = total + (total === 1 ? ' result' : ' results');
   const passages = starterPassages(response, isDemo);
-  const results = items.flatMap(item => {
+  const mapped = items.flatMap(item => {
     const url = publicLink(item.url);
     return url ? [{
       ...item,
@@ -71,6 +75,11 @@ function afterSearch(items, response) {
       ),
     }] : [];
   });
+  const results = design.paginationMode === 'loadMore'
+    ? resultPages.collect(response.response.start ?? 0, mapped)
+    : mapped;
+  loadedResults.value = design.paginationMode === 'loadMore' ? results.length : 0;
+  totalResults.value = total;
   return results;
 }
 
@@ -124,6 +133,10 @@ watch(form, async (element) => {
     timer = window.setTimeout(() => { status.value = 'Search is unavailable. Try again in a moment.'; }, 15000);
   });
   api.dataLayer.setItemsPerPage(design.resultsPerPage);
+  // Keep Results Widget replacement-based so the accumulated projection from
+  // afterSearch is rendered once; Pagination Widget still uses its native
+  // infinite-scroll controls through this data-layer flag.
+  api.dataLayer.setIsInfiniteScroll(design.paginationMode === 'loadMore');
   queryField.value.value = initialQuery;
   if (design.showSuggestions) {
     const source = isDemo ? sampleSuggestionSource : connection.suggesterURL
@@ -246,14 +259,23 @@ onBeforeUnmount(() => {
           <div ref="pagination" tabindex="-1" role="group" aria-label="Search result pagination">
             <SearchstaxPaginationWidget>
               <template #pagination="{ paginationData }">
-                <nav v-if="paginationData?.totalResults" class="search-starter__pagination" aria-label="Search result pages">
+                <nav v-if="design.paginationMode !== 'loadMore' && paginationData?.totalResults" class="search-starter__pagination" aria-label="Search result pages">
                   <span tabindex="-1" data-page-range :data-page-start="paginationData.startResultIndex">{{ paginationData.startResultIndex }}–{{ paginationData.endResultIndex }} of {{ paginationData.totalResults }} results</span>
                   <button v-if="!paginationData.isFirstPage" type="button" data-page-step="previous">Previous</button>
                   <button v-if="!paginationData.isLastPage" type="button" data-page-step="next">Next</button>
                 </nav>
               </template>
+              <template #infiniteScroll="{ paginationData, nextPage }">
+                <button v-if="design.paginationMode === 'loadMore' && paginationData?.totalResults && !paginationData.isLastPage" type="button"
+                  class="searchstax-pagination-load-more search-starter__load-more"
+                  data-test-id="searchstax-pagination-load-more" @click="nextPage">
+                  {{ design.loadMoreText }}
+                </button>
+              </template>
             </SearchstaxPaginationWidget>
-            <span class="search-starter__sr-only" role="status" data-page-announcement></span>
+            <span :class="{ 'search-starter__sr-only': design.paginationMode !== 'loadMore' }" role="status" data-page-announcement>
+              {{ design.paginationMode === 'loadMore' && loadedResults ? `Loaded ${loadedResults} of ${totalResults} results${loadedResults >= totalResults ? ' (all results loaded)' : ''}` : '' }}
+            </span>
           </div>
         </div>
       </div>

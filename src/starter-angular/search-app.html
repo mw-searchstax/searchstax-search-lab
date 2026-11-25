@@ -127,7 +127,7 @@
           </ng-template>
         </app-searchstax-results>
         <div #pagination tabindex="-1" role="group" aria-label="Search result pagination">
-          <app-searchstax-search-pagination [templateOverride]="pageControls">
+          <app-searchstax-search-pagination [templateOverride]="pageControls" [infiniteScrollTemplateOverride]="loadMoreControls">
             <ng-template #pageControls let-page="paginationData">
               @if (page?.totalResults) {
                 <nav class="search-starter__pagination" aria-label="Search result pages">
@@ -141,7 +141,19 @@
                 </nav>
               }
             </ng-template>
+            <ng-template #loadMoreControls let-page="paginationData">
+              @if (page?.totalResults && !page.isLastPage) {
+                <button type="button" class="search-starter__load-more" data-page-step="next">
+                  {{ design.loadMoreText }}
+                </button>
+              }
+            </ng-template>
           </app-searchstax-search-pagination>
+          @if (design.paginationMode === 'loadMore' && loadedResults()) {
+            <span tabindex="-1" data-page-range [attr.data-page-start]="pageStart()">
+              Loaded {{ loadedResults() }} of {{ totalResults() }} results{{ loadedResults() >= totalResults() ? ' (all results loaded)' : '' }}
+            </span>
+          }
           <span class="search-starter__sr-only" role="status" data-page-announcement></span>
         </div>
       </div>

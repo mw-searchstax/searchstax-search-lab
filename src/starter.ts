@@ -15,6 +15,7 @@ import demoContentJS from './demo-content.js?raw';
 import suggestionsCSS from './sample-suggestions.css?raw';
 import suggestionsJS from './sample-suggestions.js?raw';
 import resultTrackingJS from './result-tracking.js?raw';
+import resultPagesJS from './result-pages.js?raw';
 import paginationFocusJS from './pagination-focus.js?raw';
 import contentLanguageJS from './content-language.js?raw';
 import webURLJS from './web-url.js?raw';
@@ -223,6 +224,8 @@ function starterFeatures(design: DesignSettings) {
     promotionBadge: design.promotionBadge,
     promotionHeading: design.promotionHeading,
     bannerPlacement: design.bannerPlacement,
+    paginationMode: design.paginationMode,
+    loadMoreText: design.loadMoreText,
     resultsPerPage: design.resultsPerPage,
     noResultsText: design.noResultsText,
   };
@@ -394,6 +397,7 @@ export function createStarterZip(
     'result-tracking.js': strToU8(resultTrackingJS),
     'related-searches.js': strToU8(relatedJS),
     'pagination-focus.js': strToU8(paginationFocusJS),
+    'result-pages.js': strToU8(resultPagesJS),
     'promotion-display.js': strToU8(promotionDisplay),
     'README.md': strToU8(readme),
     ...thumbnailFiles,
@@ -440,6 +444,7 @@ export const design = ${JSON.stringify(settings, null, 2)};
     'src/result-tracking.js': strToU8(resultTrackingJS),
     'src/related-searches.js': strToU8(relatedJS),
     'src/pagination-focus.js': strToU8(paginationFocusJS),
+    'src/result-pages.js': strToU8(resultPagesJS),
     'src/content-language.js': strToU8(contentLanguageJS),
     'src/web-url.js': strToU8(webURLJS),
     'src/facet-limits.js': strToU8(facetLimits),
