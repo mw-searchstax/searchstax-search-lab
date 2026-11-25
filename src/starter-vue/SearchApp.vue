@@ -19,6 +19,7 @@ import { sampleSuggestionSource, setupSearchSuggestions } from './suggestions.js
 import { getAnalyticsSettings, setupResultTracking } from './result-tracking.js';
 import { setupPaginationFocus } from './pagination-focus.js';
 import { createResultPages } from './result-pages.js';
+import { formatResultSummary } from './result-summary.js';
 import { decodedSort, encodedSort, createSortController, readResponseSortOptions, readSortOptions } from './sorting.js';
 
 function Passage({ parts }) {
@@ -61,7 +62,6 @@ function afterSearch(items, response) {
   const total = response?.response?.numFound;
   if (typeof total !== 'number') return [];
   window.clearTimeout(timer);
-  status.value = total + (total === 1 ? ' result' : ' results');
   const options = readResponseSortOptions(response);
   if (sortController?.handle(options)) return [];
   const passages = starterPassages(response, isDemo);
@@ -84,6 +84,9 @@ function afterSearch(items, response) {
     : mapped;
   loadedResults.value = design.paginationMode === 'loadMore' ? results.length : 0;
   totalResults.value = total;
+  status.value = formatResultSummary(design.summaryMode, {
+    total, start: design.paginationMode === 'loadMore' ? 0 : (response.response.start ?? 0), visible: results.length,
+  });
   return results;
 }
 
@@ -203,7 +206,7 @@ onBeforeUnmount(() => {
         </form>
       </div>
       <div ref="answerHost"></div>
-      <p role="status">{{ status }}</p>
+      <p v-if="design.summaryPlacement !== 'below'" role="status" data-result-summary>{{ status }}</p>
       <SearchstaxSortingWidget v-if="design.showSorting && design.sortPlacement !== 'below'">
         <template #sorting="{ sortingData, selectedSorting }">
           <label v-if="sortingData?.searchExecuted && sortChoices(sortingData).length" class="search-starter__sort">
@@ -283,7 +286,7 @@ onBeforeUnmount(() => {
                 </button>
               </template>
             </SearchstaxPaginationWidget>
-            <span :class="{ 'search-starter__sr-only': design.paginationMode !== 'loadMore' }" role="status" data-page-announcement>
+            <span :class="{ 'search-starter__sr-only': design.paginationMode !== 'loadMore' }" role="status" :aria-live="design.summaryMode === 'range' ? 'off' : 'polite'" data-page-announcement>
               {{ design.paginationMode === 'loadMore' && loadedResults ? `Loaded ${loadedResults} of ${totalResults} results${loadedResults >= totalResults ? ' (all results loaded)' : ''}` : '' }}
             </span>
           </div>
@@ -300,6 +303,7 @@ onBeforeUnmount(() => {
         </SearchstaxSortingWidget>
       </div>
       <div id="starter-promotions-below"></div>
+      <p v-if="design.summaryPlacement === 'below'" role="status" data-result-summary>{{ status }}</p>
     </SearchstaxWrapper>
   </main>
 </template>

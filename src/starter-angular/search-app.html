@@ -41,7 +41,9 @@
       </form>
     </div>
     <div #answerHost></div>
-    <p role="status">{{ status() }}</p>
+    @if (design.summaryPlacement !== 'below') {
+      <p role="status" data-result-summary>{{ status() }}</p>
+    }
     @if (design.showSorting && design.sortPlacement !== 'below') {
       <app-searchstax-search-sorting [templateOverride]="sortControls" />
     }
@@ -153,7 +155,7 @@
               Loaded {{ loadedResults() }} of {{ totalResults() }} results{{ loadedResults() >= totalResults() ? ' (all results loaded)' : '' }}
             </span>
           }
-          <span class="search-starter__sr-only" role="status" data-page-announcement></span>
+          <span class="search-starter__sr-only" role="status" [attr.aria-live]="design.summaryMode === 'range' ? 'off' : 'polite'" data-page-announcement></span>
         </div>
       </div>
       @if (design.showSorting && design.sortPlacement === 'below') {
@@ -162,6 +164,9 @@
     </div>
     @if (design.bannerPlacement === 'below') {
       <ng-container [ngTemplateOutlet]="promotionWidget" />
+    }
+    @if (design.summaryPlacement === 'below') {
+      <p role="status" data-result-summary>{{ status() }}</p>
     }
   </app-searchstax-wrapper>
   }

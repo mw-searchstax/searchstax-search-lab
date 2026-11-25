@@ -1,4 +1,15 @@
 /* Visitor controls used by the preview and the downloadable search pages. */
+:is(.search-lab__results-heading, .search-results-toolbar):not(:has(> :not([hidden]))) {
+  display: none;
+}
+
+.search-lab__results-layout + :is([data-lab-summary], [data-customer-status]),
+[data-exp-pages] + [data-exp-summary] {
+  display: block;
+  margin-block-start: 1rem;
+  font-size: .8125rem;
+}
+
 .search-lab__results-heading,
 .search-results-toolbar {
   display: flex;

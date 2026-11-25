@@ -45,6 +45,8 @@ export type DesignSettings = {
   showThumbnails: boolean;
   showSorting: boolean;
   sortLabel: string;
+  summaryMode: 'count' | 'range';
+  summaryPlacement: 'above' | 'below';
   sortPlacement: 'above' | 'below';
   startingSort: string;
   showSuggestions: boolean;
@@ -90,6 +92,8 @@ export const DEFAULT_DESIGN: Readonly<DesignSettings> = {
   showThumbnails: false,
   showSorting: true,
   sortLabel: 'Sort by',
+  summaryMode: 'count',
+  summaryPlacement: 'above',
   sortPlacement: 'above',
   startingSort: '',
   showSuggestions: false,
@@ -196,6 +200,8 @@ export function readDesignParams(params: URLSearchParams, allowFictionalPreview 
     showThumbnails: params.get('lab_thumbnails') === 'on',
     showSorting: params.has('lab_sorting') ? params.get('lab_sorting') === 'on' : !savedDesign && DEFAULT_DESIGN.showSorting,
     sortLabel: resolveSearchText(params.get('lab_sort_label'), DEFAULT_DESIGN.sortLabel),
+    summaryMode: params.get('lab_summary') === 'range' ? 'range' : 'count',
+    summaryPlacement: params.get('lab_summary_placement') === 'below' ? 'below' : 'above',
     sortPlacement: params.get('lab_sort_placement') === 'below' ? 'below' : 'above',
     startingSort: params.get('lab_starting_sort') ?? '',
     showSuggestions: params.get('lab_suggestions') === 'on',
@@ -262,6 +268,8 @@ export function writeDesignParams(params: URLSearchParams, design: DesignSetting
   }
   params.set('lab_sorting', design.showSorting ? 'on' : 'off');
   if (design.sortLabel !== DEFAULT_DESIGN.sortLabel) params.set('lab_sort_label', design.sortLabel);
+  if (design.summaryMode === 'range') params.set('lab_summary', 'range');
+  if (design.summaryPlacement === 'below') params.set('lab_summary_placement', 'below');
   if (design.sortPlacement !== DEFAULT_DESIGN.sortPlacement) params.set('lab_sort_placement', design.sortPlacement);
   if (design.startingSort) params.set('lab_starting_sort', design.startingSort);
   if (design.showSuggestions) {

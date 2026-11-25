@@ -4,6 +4,7 @@ import { createSearchRecovery } from './search-recovery';
 import { readAppConfiguration, featureStatus, profileStatus, type Profile, type AppConfiguration } from './app-configuration.js';
 import { resultMappingNotice, appendResultCard } from './result-card.js';
 import type { DesignSettings } from './design';
+import { formatResultSummary, placeResultSummary, type ResultWindow } from './result-summary.js';
 import { contentLanguageTag } from './content-language.js';
 import { readAnswerEndpoint, setupCustomerAnswers } from './customer-answers.js';
 import { createCustomerSuggestionSource } from './customer-suggestions.js';
@@ -46,6 +47,8 @@ export function setupCustomerPreview(
   const answers = setupCustomerAnswers(get('[data-single-experience]'));
   const source = get('[data-customer-source]');
   const status = get('[data-customer-status]');
+  const summaryToolbar = status.parentElement!;
+  let resultWindow: ResultWindow | undefined;
   const searchFeedback = get('[data-customer-search-feedback]');
   const previousResults = get('[data-customer-previous-results]');
   const layout = get('[data-customer-layout]');
@@ -179,6 +182,11 @@ export function setupCustomerPreview(
 
   function updateVisibility() {
     const design = getDesign();
+    placeResultSummary(status, design.summaryPlacement, summaryToolbar, layout);
+    if (resultWindow) {
+      const text = formatResultSummary(design.summaryMode, resultWindow);
+      if (status.textContent !== text) status.textContent = text;
+    }
     applySortPresentation();
     facets.hidden = !design.filters;
     layout.dataset.filters = design.filters ? 'on' : 'off';
@@ -202,7 +210,6 @@ export function setupCustomerPreview(
   }
 
   function renderResults(page: BuildPage, active: BuildSearch, language?: string) {
-    status.textContent = page.total + (page.total === 1 ? ' result' : ' results') + ' for “' + active.query + '”';
     renderPromotionBanners(promotions, page.externalPromotions, getDesign().promotionHeading, language);
     placePromotionBanners(promotions, layout, getDesign().bannerPlacement);
     sort.replaceChildren(new Option('Relevance', ''), ...page.sorts.map(item => new Option(item.label, item.value)));
@@ -220,6 +227,7 @@ export function setupCustomerPreview(
     });
     if (append) grid.append(...rendered);
     else grid.replaceChildren(...rendered);
+    resultWindow = { total: page.total, start: append ? 0 : active.start, visible: grid.childElementCount, query: active.query };
     grid.hidden = grid.childElementCount === 0;
     empty.hidden = grid.childElementCount > 0;
     empty.textContent = resultMappingNotice(page.mappingsKnown, page.cards.length, page.total) || getDesign().noResultsText;
@@ -357,6 +365,7 @@ export function setupCustomerPreview(
     suggestionSource = null;
     options = null;
     latestPage = null;
+    resultWindow = undefined;
     panel.hidden = true;
     panel.removeAttribute('data-searching');
     layout.setAttribute('aria-busy', 'false');

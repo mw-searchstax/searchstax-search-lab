@@ -18,6 +18,7 @@ import { sampleSuggestionSource, setupSearchSuggestions } from './suggestions.js
 import { getAnalyticsSettings, setupResultTracking } from './result-tracking.js';
 import { setupPaginationFocus } from './pagination-focus.js';
 import { createResultPages } from './result-pages.js';
+import { formatResultSummary } from './result-summary.js';
 import { decodedSort, encodedSort, createSortController, readResponseSortOptions, readSortOptions } from './sorting.js';
 
 const analytics = getAnalyticsSettings(connection);
@@ -139,6 +140,7 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
   const services = useRef(null);
   const setSuggestionSource = useRef(null);
   const sortWidget = design.showSorting ? <SearchstaxSortingWidget searchSortingTemplate={(data, _, selected) => sortControls(data, selected, api)} /> : null;
+  const feedback = <p role="status" data-result-summary="">{status}</p>;
 
   function runSearch(query) {
     const term = query.trim();
@@ -200,7 +202,7 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
       <button type="submit" className="search-starter__submit">{design.searchButtonText}</button>
     </form>
     <div ref={answerHost} />
-    <p role="status">{status}</p>
+    {design.summaryPlacement !== 'below' && feedback}
     {design.sortPlacement === 'below' ? null : sortWidget}
     {design.bannerPlacement === 'above' && <SearchstaxExternalPromotionsWidget searchExternalPromotionsTemplate={livePromotions} />}
     <div className="search-starter__body">
@@ -224,7 +226,7 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
               )}
             />
           ) : pageControls(summary)}
-          <span className={design.paginationMode === 'loadMore' ? undefined : 'search-starter__sr-only'} role="status" data-page-announcement="">
+          <span className={design.paginationMode === 'loadMore' ? undefined : 'search-starter__sr-only'} role="status" aria-live={design.summaryMode === 'range' ? 'off' : 'polite'} data-page-announcement="">
             {design.paginationMode === 'loadMore' && summary.end > 0
               ? `Loaded ${summary.end} of ${summary.total} results${summary.end >= summary.total ? ' (all results loaded)' : ''}`
               : ''}
@@ -233,6 +235,7 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
       </div>
     </div>
     {design.sortPlacement === 'below' && sortWidget}
+    {design.summaryPlacement === 'below' && feedback}
     {design.bannerPlacement === 'below' && <SearchstaxExternalPromotionsWidget searchExternalPromotionsTemplate={livePromotions} />}
   </>;
 }
@@ -249,7 +252,6 @@ export default function SearchApp() {
     if (typeof total !== 'number') return [];
     window.clearTimeout(timer.current);
     // The requested page can change while the previous response is still on screen.
-    setStatus(total + (total === 1 ? ' result' : ' results'));
     const options = readResponseSortOptions(response);
     if (sortController.current?.handle(options)) return [];
     const passages = starterPassages(response, isDemo);
@@ -275,6 +277,9 @@ export default function SearchApp() {
       ? results.length
       : Math.min(total, start + (response.response.docs?.length ?? design.resultsPerPage));
     setSummary({ start: design.paginationMode === 'loadMore' ? 0 : start, end, total });
+    setStatus(formatResultSummary(design.summaryMode, {
+      total, start: design.paginationMode === 'loadMore' ? 0 : start, visible: results.length,
+    }));
     return results;
   }
 

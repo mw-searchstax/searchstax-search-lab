@@ -97,7 +97,7 @@ The ten widget families below follow the [Help Center catalog](https://support.s
 
 | Option | Build today | Destination, mechanism and proposed default | Prerequisite or review example | JS | React | Vue | Angular |
 |---|---|---|---|---|---|---|---|
-| Feedback or overview template | Search status and result count. Improve has a prepared spelling example. | Appearance · template. Choose count or range wording and placement, keep the existing live status. | Zero, one and many hits. Announce once per submitted search. | Fixed | Fixed | Fixed | Fixed |
+| Feedback or overview template | Result count or visible range above or below results. Load more reports the accumulated range. | Appearance → Search feedback · response data and template. Default to the count above results. | Use the campus fixture to page, append, filter to Location, and clear. A search with zero hits shows a count in either mode. | Wired | Wired | Wired | Wired |
 | Corrected query | Build has no complete live correction presentation. | Features · response and template. Display corrected and original terms when supplied. | A real misspelling with a corrected-query response. | Gap | Gap | Gap | Gap |
 | Retry original query | No live original-query action in Build. | Features · native feedback action or custom template. Offer only when the response includes an original term. | Retry must suppress correction for that request. | Gap | Gap | Gap | Gap |
 
@@ -222,6 +222,10 @@ On November 25, 2026, the ordinary and tabbed Build previews loaded **campus** o
 
 The JavaScript, React, Vue and Angular downloads each ran the same query locally with a custom button label. Keyboard activation showed 10, 20, 30, then 37 distinct results in order, with a visible final count. Selecting **Location** showed eight results. Clearing it restored the first 10 of 37.
 
+### Result summary
+
+Local fixture QA on November 25, 2026 covered Build and 16 starter ZIPs, four designs in each framework. Paging showed **1–10**, **11–20**, **21–30**, and **31–37 of 37**. Load more kept the start at **1**. Selecting **Location** showed **1–8 of 8**, and clearing it restored **1–10 of 37**. Both placements, count-only summaries, one hit, zero hits, saved designs, and share links passed. The tabbed and connected previews also updated their summaries on page two without a new search.
+
 ### Published URL sorts
 
 SearchLabDemo’s English SearchLabBuild profile publishes **Page address (A–Z)** and **Page address (Z–A)**. With **campus**, relevance returns **North Campus Clinic** first. Sorting the 37 results by ascending URL puts **Central County University Health** first. Descending URL puts **Sleep Health Center** first. The November 25 API check found neither option in the published metadata for Main Profile, SearchLabAfter or SearchLabRanking.
@@ -251,7 +255,7 @@ Each row is a distinct replacement point. Keep the kit template by default when 
 | Selected filter chips | No chip treatment control | selectedFacetsTemplate | within facet templates | within facet slots | within facet templates |
 | Pagination | Previous, range, next | mainTemplate | paginationTemplate | pagination | templateOverride |
 | Load more | Load more button and cumulative count | infiniteScrollTemplate | infiniteScrollTemplate | infiniteScroll | infiniteScrollTemplateOverride |
-| Count and corrections | Count today, correction handoff needed | main | searchOverviewTemplate | searchFeedback | templateOverride |
+| Count and corrections | Count, visible range and placement wired. Corrected-query display and retry remain open. | main | searchOverviewTemplate | searchFeedback | templateOverride |
 | Sorting | Labeled dropdown above or below results | main | searchSortingTemplate | sorting | templateOverride |
 | External promotions shell | Banner | mainTemplate | searchExternalPromotionsTemplate | externalPromotions | templateOverride |
 | One external promotion | Fixed treatment | externalPromotion | within promotions template | within externalPromotions | within promotions template |

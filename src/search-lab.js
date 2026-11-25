@@ -46,6 +46,7 @@ import { setupImprovePreview } from './improve-preview';
 import { demoResultText, demoResultTitle } from './demo-content.js';
 import { setupRelevanceComparison } from './relevance-comparison';
 import { createResultPages } from './result-pages.js';
+import { formatResultSummary, placeResultSummary } from './result-summary';
 import { setupPaginationFocus } from './pagination-focus.js';
 
 (function () {
@@ -178,6 +179,10 @@ import { setupPaginationFocus } from './pagination-focus.js';
   }
   var fictionalElements = root.querySelectorAll('[data-lab-fictional-only]');
   var summary = root.querySelector('[data-lab-summary]');
+  const summaryToolbar = summary.parentElement;
+  const summaryMode = root.querySelector('#lab-summary-mode');
+  const summaryPlacement = root.querySelector('#lab-summary-placement');
+  let builtInSummary;
   var feedback = root.querySelector('[data-lab-feedback]');
   var shareFields = root.querySelectorAll('.search-lab__share-url');
   var cssFeedback = root.querySelector('[data-lab-css-feedback]');
@@ -546,6 +551,9 @@ import { setupPaginationFocus } from './pagination-focus.js';
 
   function updatePreviewText() {
     var text = workspaceMode === 'examples' ? DEFAULT_DESIGN : design;
+    placeResultSummary(summary, text.summaryPlacement, summaryToolbar, resultsLayout);
+    if (workspaceMode === 'design' && builtInSummary) updateBuiltInSummary();
+    pagination.parentElement.querySelector('[data-page-announcement]').setAttribute('aria-live', text.summaryMode === 'range' ? 'off' : 'polite');
     var fieldText = customerPreview.active && text.searchFieldText === DEFAULT_DESIGN.searchFieldText
       ? 'Search your site' : text.searchFieldText;
     queryLabel.textContent = fieldText;
@@ -639,6 +647,8 @@ import { setupPaginationFocus } from './pagination-focus.js';
     underlineToggle.checked = design.underlineTitles;
     fontInput.value = design.font;
     spacingInput.value = design.resultSpacing;
+    summaryMode.value = design.summaryMode;
+    summaryPlacement.value = design.summaryPlacement;
     paginationModeInput.value = design.paginationMode;
     textInputs.loadMoreText.closest('[data-load-more-text-field]').hidden = design.paginationMode !== 'loadMore';
     if (syncPaginationMode() && search.dataLayer.searchObject.query && experiencePanel.hidden && !customerPreview.active) {
@@ -1023,6 +1033,11 @@ import { setupPaginationFocus } from './pagination-focus.js';
     }
   }
 
+  function updateBuiltInSummary() {
+    const text = formatResultSummary(design.summaryMode, builtInSummary) + (builtInSummary.notice ? '. ' + builtInSummary.notice : '');
+    if (summary.textContent !== text) summary.textContent = text;
+  }
+
   function renderBuiltInPage(items, response) {
     const { cards, mappingsKnown, highlighting } = resultCards(response, response.response.docs, builtInApp.settings?.highlighting);
     builtInHighlighting = highlighting;
@@ -1038,12 +1053,14 @@ import { setupPaginationFocus } from './pagination-focus.js';
     });
     const total = response.response.numFound;
     const notice = resultMappingNotice(mappingsKnown && !unknownResultFields.has(response), mapped.length, total);
-    summary.textContent = total + (total === 1 ? ' result' : ' results') + ' for “' + response.responseHeader.params.q + '”' + (notice ? '. ' + notice : '');
+    const start = response.response.start ?? 0;
+    const loadMore = search.dataLayer.isInfiniteScroll;
+    const displayed = loadMore ? resultPages.collect(start, mapped) : mapped;
+    builtInSummary = { total, start: loadMore ? 0 : start, visible: displayed.length, query: response.responseHeader.params.q, notice };
+    updateBuiltInSummary();
     if (experiencePanel.hidden && !customerPreview.active) syncFeatureControls();
     renderPromotionBanners(externalPromotion, promotionEntries(response.externalLinks), design.promotionHeading, 'en');
-    // The kit can deliver a batch again after configuration loads. Replacing
-    // that batch also keeps earlier result IDs available to the kit.
-    return search.dataLayer.isInfiniteScroll ? resultPages.collect(response.response.start ?? 0, mapped) : mapped;
+    return displayed;
   }
 
   function initialize(initialQuery = sampleQuery()) {
@@ -1103,9 +1120,11 @@ import { setupPaginationFocus } from './pagination-focus.js';
             }
             completed = true;
             noMatches = total === 0;
-            summary.textContent = total + (total === 1 ? ' result' : ' results') + ' for “' + expected.query + '”';
             window.setTimeout(finishSearch, 0);
-            if (workspaceMode !== 'design') return safeResults(items || []);
+            if (workspaceMode !== 'design') {
+              summary.textContent = total + (total === 1 ? ' result' : ' results') + ' for “' + expected.query + '”';
+              return safeResults(items || []);
+            }
             // The kit also notifies afterSearch with its already-rendered results.
             if (response === lastBuiltInPage?.response && items === search.dataLayer.searchResults) return items;
             lastBuiltInPage = { items, response, request: expected };
@@ -1251,6 +1270,14 @@ import { setupPaginationFocus } from './pagination-focus.js';
   });
   paginationModeInput.addEventListener('change', () => {
     design.paginationMode = paginationModeInput.value === 'loadMore' ? 'loadMore' : 'paged';
+    updateDesign();
+  });
+  summaryMode.addEventListener('change', () => {
+    design.summaryMode = summaryMode.value;
+    updateDesign();
+  });
+  summaryPlacement.addEventListener('change', () => {
+    design.summaryPlacement = summaryPlacement.value;
     updateDesign();
   });
   pageSizeInput.addEventListener('change', function () {

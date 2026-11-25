@@ -11,7 +11,8 @@
     "test": "npm --prefix qa/regression test",
     "qa:release": "node qa/regression/release.cjs",
     "qa:preview": "node qa/regression/preview.cjs",
-    "qa:sorting": "node qa/regression/sort-downloads.cjs"
+    "qa:sorting": "node qa/regression/sort-downloads.cjs",
+    "qa:result-summary": "node qa/regression/result-summary.cjs"
   },
   "engines": {
     "node": "^20.19.0 || >=22.12.0"

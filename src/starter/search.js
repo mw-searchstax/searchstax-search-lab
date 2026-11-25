@@ -9,6 +9,7 @@ import { readCustomerEndpoint } from './web-url.js';
 import { setupFacetLimits } from './facet-limits.js';
 import { promotionEntries, renderPromotionBanners, placePromotionBanners } from './promotion-display.js';
 import { createResultPages } from './result-pages.js';
+import { formatResultSummary } from './result-summary.js';
 import { decodedSort, encodedSort, createSortController, readResponseSortOptions, readSortOptions } from './sorting.js';
 
 const logo = document.querySelector('.search-starter__logo');
@@ -67,7 +68,7 @@ function applySortOptions(options) {
 
 
 function showFeedback(message, action) {
-  status.textContent = message;
+  if (status.textContent !== message) status.textContent = message;
   if ((document.activeElement === retry || document.activeElement === reload) && document.activeElement !== action) {
     status.focus({ preventScroll: true });
   }
@@ -78,6 +79,15 @@ function showFeedback(message, action) {
 function withPreviousResults(message) {
   return document.querySelector('#search-results .searchstax-search-result a')
     ? message + ' Previous results are still showing.' : message;
+}
+
+function showResultSummary(total, start, visible) {
+  const hadFocus = feedback.contains(document.activeElement);
+  if (config.summaryPlacement === 'below') {
+    if (output.nextElementSibling !== feedback) output.after(feedback);
+  } else if (form.nextElementSibling !== feedback) form.after(feedback);
+  showFeedback(formatResultSummary(config.summaryMode, { total, start, visible }));
+  if (hadFocus) status.focus({ preventScroll: true });
 }
 
 reload.addEventListener('click', () => window.location.reload());
@@ -129,7 +139,7 @@ function enableResultRecovery(search) {
       }
       render(data);
       const total = data.response.numFound;
-      showFeedback(total === 1 ? '1 result' : total + ' results');
+      if (total === 0) showResultSummary(0, 0, 0);
       noResultsMessage.hidden = total !== 0;
     } catch {
       if (active === request) showFeedback(withPreviousResults('Search couldn’t load the requested results.'), retry);
@@ -174,6 +184,7 @@ async function startSearch() {
   });
   placeSortField();
   const pager = document.querySelector('[data-pagination-focus]');
+  if (config.summaryMode === 'range') pager.querySelector('[data-page-announcement]').setAttribute('aria-live', 'off');
   pager.addEventListener('click', event => {
     if (event.target.closest('button[data-page-step], .searchstax-pagination-load-more')) pager.after(feedback);
   }, true);
@@ -202,9 +213,11 @@ async function startSearch() {
         const options = readResponseSortOptions(response);
         applySortOptions(options);
         if (sortController?.handle(options)) return [];
-        return config.paginationMode === 'loadMore'
-          ? resultPages.collect(response.response.start ?? 0, mapped)
-          : mapped;
+        const start = response.response.start ?? 0;
+        const loadMore = config.paginationMode === 'loadMore';
+        const displayed = loadMore ? resultPages.collect(start, mapped) : mapped;
+        showResultSummary(total, loadMore ? 0 : start, displayed.length);
+        return displayed;
       },
     },
   });

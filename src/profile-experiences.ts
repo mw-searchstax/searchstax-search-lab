@@ -7,6 +7,7 @@ import { createSearchRecovery } from './search-recovery.js';
 import { searchBuildApp, CustomerSearchError, type BuildPage, type CustomerConnection } from './customer-search.js';
 
 import { profileStatus, type Entitlements, type Profile } from './app-configuration.js';
+import { formatResultSummary, placeResultSummary, type ResultWindow } from './result-summary.js';
 import { resultMappingNotice, appendResultCard, mapResultCard, type ResultCard } from './result-card.js';
 
 export type Experience = Profile;
@@ -112,10 +113,13 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
   const results = field('[role="tabpanel"]');
   const list = field('.experience-results ul');
   const status = results.querySelector<HTMLElement>('[role="status"]')!;
+  const summaryToolbar = status.parentElement!;
+  let resultWindow: ResultWindow | undefined;
   const input = field<HTMLInputElement>('input[type="search"]');
   const previous = field<HTMLButtonElement>('[data-exp-prev]');
   const next = field<HTMLButtonElement>('[data-exp-next]');
   const pages = field('[data-exp-pages]');
+  const loadedStatus = field('[data-exp-loaded]');
   const resultsGrid = list.parentElement;
   const sortToolbar = field('[data-exp-sort]').parentElement;
   const loadMore = document.createElement('button');
@@ -178,6 +182,11 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
 
   function updatePresentation() {
     const es = spanish();
+    placeResultSummary(status, options.summaryPlacement, summaryToolbar, pages);
+    if (resultWindow) {
+      const text = formatResultSummary(options.summaryMode, resultWindow);
+      if (status.textContent !== text) status.textContent = text;
+    }
     const fieldText = es && options.searchFieldText === DEFAULT_DESIGN.searchFieldText ? 'Buscar en el sitio' : options.searchFieldText;
     input.placeholder = fieldText;
     field('form label').textContent = fieldText;
@@ -227,6 +236,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
     recovery.begin(anchor, control);
     noMatches = false;
     mappingNotice = '';
+    resultWindow = undefined;
     updatePresentation();
     features.showExternalPromotions([]);
     let append = paginationMode() === 'loadMore' && anchor === pages && list.childElementCount > 0;
@@ -312,20 +322,20 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       }
       reportSettings();
       list.lang = contentLanguageTag(active.language) || '';
-      const loaded = list.children.length;
-      const range = total > rows ? (append ? '1–' + loaded : (start + 1) + '–' + Math.min(start + rows, total)) + (es ? ' de ' : ' of ') : '';
-      const count = es ? (total === 1 ? ' resultado para ' : ' resultados para ') : (total === 1 ? ' result for ' : ' results for ');
-      status.textContent = total ? range + total + count + '“' + query + '”' : (es ? 'Sin resultados para ' : 'No results for ') + '“' + query + '”.';
+      resultWindow = { total, start: append ? 0 : start, visible: list.childElementCount, query, spanish: es };
+      status.textContent = formatResultSummary(options.summaryMode, resultWindow);
       const moreAvailable = start + rows < total;
       const loadingMore = paginationMode() === 'loadMore';
+      const focusedLoadMore = document.activeElement === loadMore;
+      loadedStatus.textContent = loadingMore && append && !moreAvailable
+        ? (es ? 'Se cargaron los ' + total + ' resultados' : 'All ' + total + ' results loaded') : '';
       previous.hidden = loadingMore;
       next.hidden = loadingMore;
       previous.disabled = start === 0;
       next.disabled = moreAvailable ? false : true;
       loadMore.hidden = !loadingMore || !moreAvailable;
-      if (loadingMore && !moreAvailable && append) status.textContent = es ? 'Se cargaron los ' + total + ' resultados' : 'All ' + total + ' results loaded';
       pages.hidden = total === 0 || (total <= rows && !loadingMore);
-      if (document.activeElement === loadMore) (loadMore.hidden ? status : loadMore).focus({ preventScroll: true });
+      if (focusedLoadMore) (loadMore.hidden ? loadedStatus : loadMore).focus({ preventScroll: true });
     } catch (error) {
       if (pending !== request) return;
       status.textContent = anchor === pages ? (es ? 'Resultados de la página anterior.' : 'Showing the previous page.') : '';
@@ -479,6 +489,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
     },
     setSource(connection: CustomerConnection | null, choices: Experience[], term: string, selected?: Experience, sourceLanguage?: string) {
       cancelSearch(); features.clear(); app = connection;
+      resultWindow = undefined;
       allProfiles = choices.length ? choices : connection ? [connection.settings ?? { language: connection.language, profile: connection.profile }] : demoProfiles;
       tabProfiles = allProfiles;
       catalog = allProfiles;
