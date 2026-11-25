@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet">
   <script defer id="searchstax-ui-kit" src="https://cdn.jsdelivr.net/npm/@searchstax-inc/searchstudio-ux-js@4.2.34/dist/@searchstax-inc/searchstudio-ux-js.iife.js"></script>
-  <script type="module" crossorigin src="./assets/index-CPAuNE_O.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-Df_aJObs.css">
+  <script type="module" crossorigin src="./assets/index-CSNdh64s.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-Ba9WchXQ.css">
 </head>
 <body>
 <main
@@ -211,6 +211,34 @@
                 <div class="search-lab__field search-lab__field--inline">
                   <label for="lab-filters">Show filters</label>
                   <input id="lab-filters" type="checkbox" checked>
+                </div>
+                <div data-lab-facet-options>
+                  <div class="search-lab__field">
+                    <label for="lab-facet-mode">Match selected filter values</label>
+                    <select id="lab-facet-mode">
+                      <option value="or">Any selected value (OR)</option>
+                      <option value="and">All selected values (AND)</option>
+                      <option value="showUnavailable">Show unavailable values</option>
+                    </select>
+                  </div>
+                  <div class="search-lab__field">
+                    <label for="lab-facet-desktop">Values before Show more on desktop</label>
+                    <select id="lab-facet-desktop">
+                      <option value="3">3</option>
+                      <option value="5">5</option>
+                      <option value="10">10</option>
+                      <option value="20">20</option>
+                    </select>
+                  </div>
+                  <div class="search-lab__field">
+                    <label for="lab-facet-mobile">Values before Show more on mobile</label>
+                    <select id="lab-facet-mobile">
+                      <option value="3">3</option>
+                      <option value="5">5</option>
+                      <option value="10">10</option>
+                      <option value="20">20</option>
+                    </select>
+                  </div>
                 </div>
                 <button type="button" class="search-lab__placement-link" data-placement-target="lab-filter-placement">Change filter placement</button>
                 <div class="search-lab__field search-lab__field--inline">
