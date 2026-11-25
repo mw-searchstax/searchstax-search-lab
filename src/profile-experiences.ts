@@ -116,6 +116,8 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
   const previous = field<HTMLButtonElement>('[data-exp-prev]');
   const next = field<HTMLButtonElement>('[data-exp-next]');
   const pages = field('[data-exp-pages]');
+  const resultsGrid = list.parentElement;
+  const sortToolbar = field('[data-exp-sort]').parentElement;
   const loadMore = document.createElement('button');
   loadMore.type = 'button';
   loadMore.textContent = DEFAULT_DESIGN.loadMoreText;
@@ -151,12 +153,28 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
   const order = field<HTMLSelectElement>('[data-exp-sort] select');
   const empty = field('[data-exp-empty]');
   let sorts: BuildPage['sorts'] = [];
+  let initialSort: string | undefined;
   let noMatches = false;
   let mappingNotice = '';
   let highlighting: boolean | undefined;
   const features = setupProfileFeatures(panel, submit);
   const spanish = () => active.language.split(/[-_]/)[0] === 'es';
   const paginationMode = () => options.paginationMode;
+
+  function emitSortOptions(choices: BuildPage['sorts']) {
+    panel.dispatchEvent(new CustomEvent('lab-sort-options', {
+      bubbles: true,
+      detail: { choices: choices.map(choice => ({ value: choice.value, label: choice.label })) },
+    }));
+  }
+
+  function applySortPlacement() {
+    const sortField = field('[data-exp-sort]');
+    sortField.dataset.placement = options.sortPlacement;
+    if (options.sortPlacement === 'below') {
+      if (resultsGrid && sortField.previousElementSibling !== resultsGrid) resultsGrid.after(sortField);
+    } else if (sortField.parentElement !== sortToolbar) sortToolbar?.append(sortField);
+  }
 
   function updatePresentation() {
     const es = spanish();
@@ -173,7 +191,8 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
     loadMore.textContent = es && options.loadMoreText === DEFAULT_DESIGN.loadMoreText ? 'Cargar más' : options.loadMoreText;
     const selectedCount = Array.from(filters.values()).reduce((count, values) => count + values.length, 0);
     filterButton.textContent = (es ? 'Filtros' : 'Filters') + (selectedCount ? ' (' + selectedCount + ')' : '');
-    field('[data-exp-sort] span').textContent = es ? 'Ordenar por' : 'Sort by';
+    field('[data-exp-sort] span').textContent = es && options.sortLabel === DEFAULT_DESIGN.sortLabel ? 'Ordenar por' : options.sortLabel;
+    applySortPlacement();
     field('[data-exp-sort]').hidden = !options.showSorting || !sorts.length;
     field('[data-exp-sort-hint]').hidden = !app || !active.profile || !options.showSorting || Boolean(sorts.length);
     if (active.profile) features.update(options, app, active, query);
@@ -210,7 +229,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
     mappingNotice = '';
     updatePresentation();
     features.showExternalPromotions([]);
-    const append = paginationMode() === 'loadMore' && anchor === pages && list.childElementCount > 0;
+    let append = paginationMode() === 'loadMore' && anchor === pages && list.childElementCount > 0;
     const keepPagedResults = paginationMode() === 'paged' && anchor === pages;
     if (!append && !keepPagedResults) list.replaceChildren();
     if (!options.filters || !query || app && (!app.endpoint || !app.token)) showFacets([]);
@@ -239,9 +258,13 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       let fields: BuildPage['facets'];
       const rows = options.resultsPerPage;
       let total: number;
+      let selected = options.showSorting ? initialSort ?? order.value : '';
       if (app) {
-        const page = await searchBuildApp({ ...app, ...active, settings: active }, { query, start, rows, sort: options.showSorting ? order.value : '', filters: new Map(filters), facetMode: options.facetMode }, AbortSignal.any([request.signal, AbortSignal.timeout(12000)]));
+        const page = await searchBuildApp({ ...app, ...active, settings: active }, { query, start, rows, sort: selected, filters: new Map(filters), facetMode: options.facetMode }, AbortSignal.any([request.signal, AbortSignal.timeout(12000)]), sorts);
         if (pending !== request) return;
+        selected = page.sort;
+        start = page.start;
+        if (start === 0) append = false;
         mappingNotice = resultMappingNotice(page.mappingsKnown, page.cards.length, page.total);
         highlighting = page.highlighting;
         choices = page.sorts;
@@ -251,7 +274,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
         total = page.total;
       } else {
         const samplePage = searchDirectory(active, query, options.profileTabs, filters, options.facetMode);
-        const matches = orderDirectoryResults(samplePage.entries, options.showSorting ? order.value : '', query, options.samplePromotions);
+        const matches = orderDirectoryResults(samplePage.entries, selected, query, options.samplePromotions);
         cards = directoryCards(matches.slice(start, start + rows), active, query, thumbnails);
         total = samplePage.total;
         fields = samplePage.facets;
@@ -261,9 +284,10 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       displayedStart = start;
       if (!append) list.replaceChildren();
       sorts = choices;
-      const selected = order.value;
+      emitSortOptions(choices);
       order.replaceChildren(new Option(es ? 'Relevancia' : 'Relevance', ''), ...sorts.map(choice => new Option(choice.label, choice.value)));
       if (sorts.some(choice => choice.value === selected)) order.value = selected;
+      initialSort = undefined;
       noMatches = total === 0;
       updatePresentation();
       features.showExternalPromotions(banners);
@@ -324,6 +348,8 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
     highlighting = active.highlighting;
     reportSettings();
     order.replaceChildren();
+    initialSort = options.showSorting ? options.startingSort : '';
+    emitSortOptions([]);
     filterButton.setAttribute('aria-expanded', 'false');
     sorts = [];
     filters.clear();
@@ -435,11 +461,16 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       if (previous.profileTabs !== design.profileTabs || previous.languagePicker !== design.languagePicker) {
         render();
       } else if (previous.facetMode !== design.facetMode || previous.filters !== design.filters || previous.resultsPerPage !== design.resultsPerPage ||
-                 previous.paginationMode !== design.paginationMode ||
+                 previous.paginationMode !== design.paginationMode || previous.startingSort !== design.startingSort ||
                  previous.showSorting !== design.showSorting || previous.samplePromotions !== design.samplePromotions) {
         start = 0;
         if (!design.filters || previous.facetMode !== design.facetMode) filters.clear();
-        if (!design.showSorting || previous.samplePromotions !== design.samplePromotions) order.value = '';
+        if (!design.showSorting || previous.samplePromotions !== design.samplePromotions) {
+          order.value = '';
+          initialSort = design.showSorting ? design.startingSort : '';
+        } else if (previous.startingSort !== design.startingSort || (!previous.showSorting && design.showSorting)) {
+          initialSort = design.startingSort;
+        }
         void search();
       } else updatePresentation();
     },

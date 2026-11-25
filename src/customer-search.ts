@@ -42,6 +42,12 @@ type SearchPayload = ResultResponse & {
 
 const fieldName = /^[A-Za-z_][\w.-]*$/;
 
+export function publishedSorts(metadata: SearchPayload['metadata']) {
+  return (Array.isArray(metadata?.sorts) ? metadata.sorts : [])
+    .filter(sort => sort && typeof sort.name === 'string' && fieldName.test(sort.name) && (sort.order === 'asc' || sort.order === 'desc'))
+    .map(sort => ({ value: sort.name + ' ' + sort.order, label: typeof sort.label === 'string' && sort.label || sort.name }));
+}
+
 export class CustomerSearchError extends Error {}
 export class CustomerSearchTokenError extends CustomerSearchError {}
 
@@ -113,21 +119,35 @@ async function readPage(connection: CustomerConnection, options: CustomerSearch<
     }
     return { field: field.name, label: field.label || field.name, choices };
   });
-  const sorts = (Array.isArray(payload.metadata?.sorts) ? payload.metadata.sorts : [])
-    .filter(sort => sort && typeof sort.name === 'string' && fieldName.test(sort.name) && (sort.order === 'asc' || sort.order === 'desc'))
-    .map(sort => ({ value: sort.name + ' ' + sort.order, label: sort.label || sort.name }));
+  const sorts = publishedSorts(payload.metadata);
   return { payload, response, total: response.numFound, resultCount: response.docs.length, externalPromotions, facets, sorts };
 }
 
-export async function searchBuildApp(connection: CustomerConnection, options: BuildSearch, signal: AbortSignal) {
-  const { payload, response, ...page } = await readPage(connection, options, signal);
+export async function searchBuildApp(connection: CustomerConnection, options: BuildSearch, signal: AbortSignal, knownSorts: ReturnType<typeof publishedSorts> = []) {
+  let sort = knownSorts.some(choice => choice.value === options.sort) ? options.sort : '';
+  let start = options.start;
+  const fetchPage = () => readPage(connection, { ...options, sort, start }, signal);
+  let result = await fetchPage();
+  // A new profile supplies its own choices. Validate a saved order before
+  // sending it, and discard a sorted batch if its response withdraws that sort.
+  if (!sort && options.sort && result.sorts.some(choice => choice.value === options.sort)) {
+    sort = options.sort;
+    start = 0;
+    result = await fetchPage();
+  }
+  if (sort && !result.sorts.some(choice => choice.value === sort)) {
+    sort = '';
+    start = 0;
+    result = await fetchPage();
+  }
+  const { payload, response, ...page } = result;
   const params = payload.responseHeader?.params;
   const profile = connection.profile || params?.model;
   const language = (connection.language || params?.language)?.toLowerCase().replaceAll('-', '_');
   const matches = connection.configuration?.profiles.filter(item => item.profile === profile && (!language || item.language === language));
   const settings = connection.settings ?? (matches?.length === 1 ? matches[0] : undefined);
   const { cards, ...metadata } = resultCards(payload, response.docs, settings?.highlighting);
-  return { ...page, ...metadata, settings, language, cards: cards.filter(card => card.url || card.thumbnail || card.values.length) };
+  return { ...page, ...metadata, settings, language, start, sort, cards: cards.filter(card => card.url || card.thumbnail || card.values.length) };
 }
 
 // The prepared Improve lessons use the demo’s original linked-result projection.

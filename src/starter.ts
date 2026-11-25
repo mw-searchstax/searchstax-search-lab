@@ -1,7 +1,7 @@
 import { strToU8, zipSync } from 'fflate';
 import { designVariables, type DesignSettings } from './design';
 import { demoThumbnails } from './demo-thumbnails';
-import { demoSortOptions } from './demo-sorting';
+import starterSorting from './starter/sorting.js?raw';
 import htmlTemplate from './starter/index.html?raw';
 import jsTemplate from './starter/search.js?raw';
 import readme from './starter/README.md?raw';
@@ -220,6 +220,9 @@ function starterFeatures(design: DesignSettings) {
     facetDesktop: design.facetDesktop,
     facetMobile: design.facetMobile,
     showSorting: design.showSorting,
+    sortLabel: design.sortLabel,
+    sortPlacement: design.sortPlacement,
+    startingSort: design.startingSort,
     showSuggestions: design.showSuggestions,
     promotionBadge: design.promotionBadge,
     promotionHeading: design.promotionHeading,
@@ -373,12 +376,11 @@ export function createStarterZip(
       return escapeHTML(htmlValues[key]);
     },
   );
-  const demoFacets = JSON.stringify({ searchURL: connection.searchURL, labels: demoFacetLabels }, null, 2);
+  const demoFacets = JSON.stringify({ searchURL: connection.searchURL, model: connection.demoModel, labels: demoFacetLabels }, null, 2);
   const { paths: thumbnailPaths, files: thumbnailFiles } = collectThumbnails(design.showThumbnails);
   const javascript = jsTemplate
     .replace('%%STARTER_CONFIG%%', () => config)
     .replace('%%DEMO_FACETS%%', () => demoFacets)
-    .replace('%%DEMO_SORTING%%', () => JSON.stringify({ model: connection.demoModel, options: demoSortOptions }, null, 2))
     .replace('%%DEMO_THUMBNAILS%%', () => JSON.stringify(thumbnailPaths, null, 2));
   const archive = zipSync({
     ...ordinaryServiceFiles(connection, ''),
@@ -386,6 +388,7 @@ export function createStarterZip(
     'search.css': strToU8(renderStarterCSS(design)),
     'facet-limits.js': strToU8(facetLimits),
     'search.js': strToU8(javascript),
+    'sorting.js': strToU8(starterSorting),
     'demo-content.js': strToU8(demoContentJS),
     'content-language.js': strToU8(contentLanguageJS),
     'web-url.js': strToU8(webURLJS),
@@ -416,7 +419,6 @@ function frameworkStarterFiles(
     searchURL: selected.searchURL, model: selected.demoModel,
     language: 'en',
     facetLabels,
-    sortOptions: demoSortOptions,
     thumbnailPaths: Object.fromEntries(Object.entries(paths).map(([url, path]) => [url, '/' + path])),
   };
   const settings = {
@@ -439,6 +441,7 @@ export const design = ${JSON.stringify(settings, null, 2)};
   return {
     'search.css': strToU8(renderStarterCSS(design)),
     'src/config.js': strToU8(config),
+    'src/sorting.js': strToU8(starterSorting),
     'src/demo-content.js': strToU8(demoContentJS),
     'src/suggestions.js': strToU8(suggestionsJS),
     'src/result-tracking.js': strToU8(resultTrackingJS),

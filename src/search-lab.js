@@ -22,7 +22,7 @@ import { createAngularStarterZip, createReactStarterZip, createStarterZip, creat
 import { tryCopyText } from './copy-checklist-request';
 import { setupLabNavigation } from './navigation';
 import { demoThumbnails } from './demo-thumbnails';
-import { demoSortOptions } from './demo-sorting';
+import { publishedSorts } from './customer-search';
 import { sampleSuggestionSource, setupSearchSuggestions } from './sample-suggestions';
 import './sample-suggestions.css';
 import { samplePromotionQuery } from './sample-promotions';
@@ -93,6 +93,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
   var queryLabel = form.querySelector('label[for="lab-query"]');
   var submitButton = form.querySelector('button[type="submit"]');
   var textInputs = {
+    sortLabel: root.querySelector('#lab-sort-label'),
     loadMoreText: root.querySelector('#lab-load-more-text'),
     promotionHeading: root.querySelector('#lab-promo-heading'),
     promotionBadge: root.querySelector('#lab-promo-badge'),
@@ -109,6 +110,16 @@ import { setupPaginationFocus } from './pagination-focus.js';
   var promotionsInput = root.querySelector('#lab-sample-promotions');
   var setSuggestionSource = setupSearchSuggestions(form, 'lab-search-suggestions');
   var sortOrder = root.querySelector('#lab-sort-order');
+  const sortField = sortOrder.closest('label');
+  const aboveSort = sortField.parentElement;
+  const startingSort = root.querySelector('#lab-starting-sort');
+  const sortPlacement = root.querySelector('#lab-sort-placement');
+  const sortHint = root.querySelector('#lab-sort-hint');
+  const sortSettings = root.querySelectorAll('[data-sort-setting]');
+  const customerPanel = root.querySelector('[data-customer-preview]');
+  const sortPanels = new Map();
+  let builtInSorts = [];
+  let visitorSort;
   var colorInput = root.querySelector('#lab-accent');
   var backgroundInput = root.querySelector('#lab-background');
   var cornersInput = root.querySelector('#lab-corners');
@@ -311,6 +322,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
     syncFeatureControls();
   }
   function syncFeatureControls() {
+    syncSorting();
     const connected = Boolean(customerPreview?.active);
     const fixture = !connected && design.previewSource === 'fictional';
     const builtIn = !connected && !fixture && experiencePanel.hidden;
@@ -426,6 +438,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
   }
   function changeNavigation() {
     const previous = experiencePanel.hidden ? null : experiencePreview.searchState;
+    visitorSort = undefined;
     design.profileTabs = experienceToggle.checked;
     design.languagePicker = languageToggle.checked;
     if (previous && !design.profileTabs && !design.languagePicker) singleProfileQuery = previous.query;
@@ -451,6 +464,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
   }
   sourcePicker.addEventListener('change', () => {
     if (!localPreview) return;
+    visitorSort = undefined;
     const previous = experiencePanel.hidden ? null : experiencePreview.searchState;
     design.previewSource = sourcePicker.value;
     updateDesign();
@@ -461,6 +475,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
   root.querySelector('[data-exp-disconnect]').addEventListener('click', () => customerPreview.disconnect());
   var customerPreview = setupCustomerPreview(root, function () { return design; }, function (query) {
     var connected = query !== null;
+    visitorSort = undefined;
     if (connected) {
       window.clearTimeout(requestTimer);
       demoRecovery.clear();
@@ -497,8 +512,37 @@ import { setupPaginationFocus } from './pagination-focus.js';
   // The credential is for the public, read-only demo search only. Remove it
   // from the DOM and only include it in the runnable demo starter.
   root.removeAttribute('data-search-credential');
-  sortOrder.replaceChildren(...demoSortOptions.map(({ label, order }) => new Option(label, order)));
   pageSizeInput.replaceChildren(...PAGE_SIZES.map(size => new Option(String(size), String(size))));
+
+  function syncSortMenu(select, choices, selected) {
+    const options = select.options;
+    if (options.length !== choices.length + 1 || choices.some((choice, i) =>
+      options[i + 1].value !== choice.value || options[i + 1].text !== choice.label)) {
+      select.replaceChildren(new Option('Relevance', ''), ...choices.map(choice => new Option(choice.label, choice.value)));
+    }
+    select.value = choices.some(choice => choice.value === selected) ? selected : '';
+  }
+
+  function syncSorting() {
+    const activePanel = !experiencePanel.hidden ? experiencePanel : customerPreview?.active ? customerPanel : null;
+    const choices = activePanel ? sortPanels.get(activePanel) ?? [] : builtInSorts;
+    syncSortMenu(startingSort, choices, design.startingSort);
+    startingSort.disabled = !choices.length;
+    sortHint.hidden = choices.length > 0;
+    sortSettings.forEach(field => { field.hidden = !design.showSorting; });
+    textInputs.sortLabel.disabled = sortPlacement.disabled = !choices.length;
+    sortPlacement.value = design.sortPlacement;
+    syncSortMenu(sortOrder, builtInSorts, design.showSorting ? visitorSort ?? design.startingSort : '');
+    sortField.hidden = root.dataset.labView !== 'design' || !design.showSorting || !builtInSorts.length;
+    if (design.sortPlacement === 'below') {
+      if (resultsContent.nextElementSibling !== sortField) resultsContent.after(sortField);
+    } else if (sortField.parentElement !== aboveSort) aboveSort.append(sortField);
+  }
+
+  root.addEventListener('lab-sort-options', event => {
+    sortPanels.set(event.target, event.detail.choices);
+    syncSorting();
+  });
 
   function updatePreviewText() {
     var text = workspaceMode === 'examples' ? DEFAULT_DESIGN : design;
@@ -507,6 +551,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
     queryLabel.textContent = fieldText;
     queryInput.placeholder = fieldText;
     submitButton.textContent = text.searchButtonText;
+    sortField.querySelector('span').textContent = text.sortLabel;
     updateLoadMoreLabel();
     noResultsMessage.textContent = text.noResultsText;
   }
@@ -571,7 +616,6 @@ import { setupPaginationFocus } from './pagination-focus.js';
     sampleButton.textContent = sampleQuery();
     syncFeatureControls();
     updateSuggestions();
-    if (!design.showSorting) sortOrder.value = '';
     colorInput.value = design.color;
     backgroundInput.value = design.background;
     for (const [id, key] of promotionStyles) root.querySelector(id).value = design[key];
@@ -972,7 +1016,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
   }
 
   function refreshSearchOptions() {
-    if (!experiencePanel.hidden) return;
+    if (!experiencePanel.hidden || customerPreview.active) return;
     var current = search?.dataLayer.searchObject;
     if (current?.query && (current.order !== selectedOrder() || current.itemsPerPage !== selectedPageSize())) {
       runSearch(current.query, false, true);
@@ -1044,6 +1088,18 @@ import { setupPaginationFocus } from './pagination-focus.js';
               (params.sort || 'score desc') !== (expected.order || 'score desc') ||
               Number(params.rows) !== expected.itemsPerPage || typeof total !== 'number') {
               return search.dataLayer.searchResults || [];
+            }
+            if (workspaceMode === 'design') {
+              builtInSorts = publishedSorts(response.metadata);
+              if (expected.order && !builtInSorts.some(choice => choice.value === expected.order)) visitorSort = '';
+              syncSorting();
+              if (experiencePanel.hidden && !customerPreview.active && selectedOrder() !== expected.order) {
+                // A shared design can name a sort before the first response
+                // supplies the published choices. Only show its validated order.
+                const request = expected;
+                queueMicrotask(() => { if (expected === request) refreshSearchOptions(); });
+                return search.dataLayer.searchResults || [];
+              }
             }
             completed = true;
             noMatches = total === 0;
@@ -1206,7 +1262,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
     var input = textInputs[key];
     input.addEventListener('input', function () {
       design[key] = resolveSearchText(input.value, DEFAULT_DESIGN[key]);
-      if (key === 'loadMoreText' && customerPreview.active) customerPreview.updateDesign();
+      if ((key === 'loadMoreText' || key === 'sortLabel') && customerPreview.active) customerPreview.updateDesign();
       clearDesignFeedback();
       updatePreviewText();
       experiencePreview.configure(design);
@@ -1261,10 +1317,24 @@ import { setupPaginationFocus } from './pagination-focus.js';
   });
   sortingToggle.addEventListener('change', function () {
     design.showSorting = sortingToggle.checked;
+    visitorSort = undefined;
     updateDesign();
     refreshSearchOptions();
   });
-  sortOrder.addEventListener('change', refreshSearchOptions);
+  startingSort.addEventListener('change', () => {
+    design.startingSort = startingSort.value;
+    visitorSort = undefined;
+    updateDesign();
+    refreshSearchOptions();
+  });
+  sortPlacement.addEventListener('change', () => {
+    design.sortPlacement = sortPlacement.value === 'below' ? 'below' : 'above';
+    updateDesign();
+  });
+  sortOrder.addEventListener('change', () => {
+    visitorSort = sortOrder.value;
+    refreshSearchOptions();
+  });
   function showSuggestionDemo() {
     if (!suggestionDemoPending || (experiencePanel.hidden && queryInput.disabled)) return;
     suggestionDemoPending = false;
@@ -1391,7 +1461,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
       } : null,
     };
     design = { ...DEFAULT_DESIGN };
-    sortOrder.value = '';
+    visitorSort = undefined;
     updateDesign('');
     setHandoffPanel(null);
     root.querySelectorAll('#lab-design-controls details').forEach(details => {
@@ -1409,6 +1479,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
     if (!designBeforeReset) return;
     const { design: previousDesign, preview, profileSearch, connectedOrder } = designBeforeReset;
     design = previousDesign;
+    visitorSort = preview?.order;
     resetButton.focus({ preventScroll: true });
     updateDesign(connectedOrder);
     if (preview && !customerPreview.active) {

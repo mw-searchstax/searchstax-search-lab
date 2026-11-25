@@ -9,6 +9,7 @@ import { readCustomerEndpoint } from './web-url.js';
 import { setupFacetLimits } from './facet-limits.js';
 import { promotionEntries, renderPromotionBanners, placePromotionBanners } from './promotion-display.js';
 import { createResultPages } from './result-pages.js';
+import { decodedSort, encodedSort, createSortController, readResponseSortOptions, readSortOptions } from './sorting.js';
 
 const logo = document.querySelector('.search-starter__logo');
 if (logo) {
@@ -24,12 +25,11 @@ const resultPages = createResultPages();
 // Display labels for the demo facet values.
 const demoFacets = %%DEMO_FACETS%%;
 const demoThumbnails = %%DEMO_THUMBNAILS%%;
-const demoSorting = %%DEMO_SORTING%%;
 const language = config.language;
 const resultLanguage = contentLanguageTag(language);
 const loadMoreText = String(config.loadMoreText || 'Load more').replace(/[&<>"'{}]/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '{': '&#123;', '}': '&#125;' }[character]));
 const usesDemoProfile = config.searchURL === demoFacets.searchURL &&
-  config.model === demoSorting.model && resultLanguage === 'en';
+  config.model === demoFacets.model && resultLanguage === 'en';
 
 const form = document.querySelector('.search-starter__form');
 const submit = form.querySelector('button');
@@ -44,6 +44,26 @@ externalPromotions.setAttribute('aria-label', 'External promotions');
 externalPromotions.hidden = true;
 placePromotionBanners(externalPromotions, output, config.bannerPlacement);
 const noResultsMessage = document.querySelector('#search-no-results');
+const sortField = document.querySelector('#search-sorting');
+const sortOrder = document.querySelector('#search-sort-order');
+const sortLabel = sortField?.querySelector('label');
+let activeSearch;
+let sortController;
+
+function placeSortField() {
+  if (!sortField) return;
+  if (sortLabel?.firstChild) sortLabel.firstChild.nodeValue = String(config.sortLabel || 'Sort by') + ' ';
+  sortField.dataset.sortPlacement = config.sortPlacement === 'below' ? 'below' : 'above';
+  const output = document.querySelector('#search-output');
+  if (config.sortPlacement === 'below') output?.after(sortField);
+}
+
+function applySortOptions(options) {
+  if (!sortField || !sortOrder) return;
+  sortOrder.replaceChildren(...options.map(({ label, order }) => new Option(label, order)));
+  sortOrder.value = decodedSort(activeSearch?.dataLayer.searchObject.order || '');
+  sortField.hidden = !config.showSorting || options.length === 0;
+}
 
 
 function showFeedback(message, action) {
@@ -145,6 +165,14 @@ async function startSearch() {
   const kit = window['@searchstaxInc/searchstudioUxJs'] || window.Searchstax;
   const Searchstax = typeof kit === 'function' ? kit : kit.Searchstax;
   const search = new Searchstax();
+  activeSearch = search;
+  sortController = createSortController({
+    enabled: config.showSorting,
+    requested: config.startingSort,
+    getSearchObject: () => search.dataLayer.searchObject,
+    setSearchObject: value => search.dataLayer.setSearchObject(value),
+  });
+  placeSortField();
   const pager = document.querySelector('[data-pagination-focus]');
   pager.addEventListener('click', event => {
     if (event.target.closest('button[data-page-step], .searchstax-pagination-load-more')) pager.after(feedback);
@@ -171,6 +199,9 @@ async function startSearch() {
           ...item, ...passages(item), resultLanguage, promotionBadge: config.promotionBadge,
           demoThumbnail: usesDemoProfile ? demoThumbnails[item.url] : '',
         }));
+        const options = readResponseSortOptions(response);
+        applySortOptions(options);
+        if (sortController?.handle(options)) return [];
         return config.paginationMode === 'loadMore'
           ? resultPages.collect(response.response.start ?? 0, mapped)
           : mapped;
@@ -182,25 +213,12 @@ async function startSearch() {
   setupResultTracking(document.querySelector('#search-results'), search);
 
   if (config.showSorting) {
-    const sortField = document.querySelector('#search-sorting');
-    const sortOrder = document.querySelector('#search-sort-order');
-    if (usesDemoProfile) {
-      sortOrder.replaceChildren(...demoSorting.options.map(({ label, order }) => new Option(label, order)));
-      sortField.hidden = false;
-    } else {
-      search.dataLayer.$searchResultsMetadata.subscribe(metadata => {
-        const options = metadata?.sorting?.options ?? [];
-        sortOrder.replaceChildren(...options.map(({ key, value }) => new Option(value || key, key)));
-        const order = search.dataLayer.searchObject.order;
-        sortOrder.value = options.find(({ key }) => encodeURIComponent(key) === order)?.key ?? '';
-        sortField.hidden = options.length === 0;
-      });
-    }
+    search.dataLayer.$searchResultsMetadata.subscribe(metadata => applySortOptions(readSortOptions(metadata)));
     sortOrder.addEventListener('change', () => {
       const current = search.dataLayer.searchObject;
       if (current.query) {
         sortField.after(feedback);
-        search.dataLayer.setSearchObject({ ...current, order: encodeURIComponent(sortOrder.value), page: 1 });
+        search.dataLayer.setSearchObject({ ...current, order: encodedSort(sortOrder.value), page: 1 });
       }
     });
   }

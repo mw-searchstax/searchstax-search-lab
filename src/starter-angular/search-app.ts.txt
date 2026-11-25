@@ -13,9 +13,11 @@ import { sampleSuggestionSource, setupSearchSuggestions } from './suggestions.js
 import { getAnalyticsSettings, setupResultTracking } from './result-tracking.js';
 import { setupPaginationFocus } from './pagination-focus.js';
 import { createResultPages } from './result-pages.js';
+import { decodedSort, encodedSort, createSortController, readResponseSortOptions, readSortOptions } from './sorting.js';
 
 const facetLabels: Record<string, string> = demo.facetLabels;
 const thumbnailPaths: Record<string, string> = demo.thumbnailPaths;
+type SearchObject = Parameters<Searchstax['dataLayer']['setSearchObject']>[0];
 
 function publicLink(value: unknown) {
   if (typeof value !== 'string') return '';
@@ -52,6 +54,7 @@ export class SearchApp implements AfterViewInit, OnDestroy {
   readonly loadedResults = signal(0);
   readonly pageStart = signal(1);
   readonly totalResults = signal(0);
+  private sortController?: ReturnType<typeof createSortController>;
   private readonly resultPages = createResultPages();
   private readonly initialQuery = connection.initialQuery ||
     (this.isDemo ? 'rehabilitation' : '');
@@ -66,6 +69,12 @@ export class SearchApp implements AfterViewInit, OnDestroy {
   initialized(instance: Searchstax) {
     this.api = instance;
     instance.setCookiesDisabled(!this.analytics.trackApiKey);
+    this.sortController = createSortController({
+      enabled: design.showSorting,
+      requested: design.startingSort,
+      getSearchObject: () => instance.dataLayer.searchObject,
+      setSearchObject: (value: SearchObject) => instance.dataLayer.setSearchObject(value),
+    });
   }
 
   ngAfterViewInit() {
@@ -142,6 +151,8 @@ export class SearchApp implements AfterViewInit, OnDestroy {
     }
     window.clearTimeout(this.timer);
     this.status.set(total + (total === 1 ? ' result' : ' results'));
+    const options = readResponseSortOptions(response);
+    if (this.sortController?.handle(options)) return [];
     const passages = starterPassages(response, this.isDemo);
     const mapped = items.flatMap(item => {
       const url = publicLink(item.url);
@@ -171,13 +182,17 @@ export class SearchApp implements AfterViewInit, OnDestroy {
   }
 
   sortChoices(data: ISearchstaxSearchSortingData | null) {
-    return this.isDemo ? demo.sortOptions : data?.sortOptions?.map(item => ({ label: item.value, order: item.key })) ?? [];
+    return readSortOptions(data);
   }
 
   sortSearch(event: Event) {
     if (!this.api || !(event.target instanceof HTMLSelectElement)) return;
     const data = this.api.dataLayer;
-    data.setSearchObject({ ...data.searchObject, order: encodeURIComponent(event.target.value), page: 1 });
+    data.setSearchObject({ ...data.searchObject, order: encodedSort(event.target.value), page: 1 });
+  }
+
+  decodedSort(value: string) {
+    return decodedSort(value);
   }
 
   livePromotions(entries: IExternalPromotion[] | undefined) {

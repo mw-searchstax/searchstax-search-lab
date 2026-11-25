@@ -18,6 +18,7 @@ import { sampleSuggestionSource, setupSearchSuggestions } from './suggestions.js
 import { getAnalyticsSettings, setupResultTracking } from './result-tracking.js';
 import { setupPaginationFocus } from './pagination-focus.js';
 import { createResultPages } from './result-pages.js';
+import { decodedSort, encodedSort, createSortController, readResponseSortOptions, readSortOptions } from './sorting.js';
 
 const analytics = getAnalyticsSettings(connection);
 const resultLanguage = contentLanguageTag(connection.language);
@@ -83,14 +84,14 @@ function facetControls(data, containers, isExpanded, toggle, selectFacet, isChec
 }
 
 function sortControls(data, selected, api) {
-  const choices = isDemo ? demo.sortOptions : data?.sortOptions?.map(item => ({ label: item.value, order: item.key }));
+  const choices = readSortOptions(data);
   if (!data?.searchExecuted || !choices?.length) return null;
   return (
     <label className="search-starter__sort">
-      Sort by
-      <select value={selected} onChange={(event) => {
+      {design.sortLabel || 'Sort by'}
+      <select aria-label={design.sortLabel || 'Sort by'} value={decodedSort(selected)} onChange={(event) => {
         const current = api.dataLayer.searchObject;
-        api.dataLayer.setSearchObject({ ...current, order: encodeURIComponent(event.target.value), page: 1 });
+        api.dataLayer.setSearchObject({ ...current, order: encodedSort(event.target.value), page: 1 });
       }}>
         {choices.map(option => <option key={option.order} value={option.order}>{option.label}</option>)}
       </select>
@@ -137,6 +138,7 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
   const answerHost = useRef(null);
   const services = useRef(null);
   const setSuggestionSource = useRef(null);
+  const sortWidget = design.showSorting ? <SearchstaxSortingWidget searchSortingTemplate={(data, _, selected) => sortControls(data, selected, api)} /> : null;
 
   function runSearch(query) {
     const term = query.trim();
@@ -199,7 +201,7 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
     </form>
     <div ref={answerHost} />
     <p role="status">{status}</p>
-    {design.showSorting && <SearchstaxSortingWidget searchSortingTemplate={(data, _, selected) => sortControls(data, selected, api)} />}
+    {design.sortPlacement === 'below' ? null : sortWidget}
     {design.bannerPlacement === 'above' && <SearchstaxExternalPromotionsWidget searchExternalPromotionsTemplate={livePromotions} />}
     <div className="search-starter__body">
       {design.showFilters &&
@@ -230,6 +232,7 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
         </div>
       </div>
     </div>
+    {design.sortPlacement === 'below' && sortWidget}
     {design.bannerPlacement === 'below' && <SearchstaxExternalPromotionsWidget searchExternalPromotionsTemplate={livePromotions} />}
   </>;
 }
@@ -239,6 +242,7 @@ export default function SearchApp() {
   const [summary, setSummary] = useState({ start: 0, end: 0, total: 0 });
   const [status, setStatus] = useState('Connecting to search…');
   const timer = useRef();
+  const sortController = useRef(null);
 
   function afterSearch(items, response) {
     const total = response?.response?.numFound;
@@ -246,6 +250,8 @@ export default function SearchApp() {
     window.clearTimeout(timer.current);
     // The requested page can change while the previous response is still on screen.
     setStatus(total + (total === 1 ? ' result' : ' results'));
+    const options = readResponseSortOptions(response);
+    if (sortController.current?.handle(options)) return [];
     const passages = starterPassages(response, isDemo);
     const mapped = items.flatMap((item) => {
       const url = publicLink(item.url);
@@ -286,7 +292,16 @@ export default function SearchApp() {
         authType="token" model={connection.model} language={connection.language}
         suggesterURL=""
         {...analytics} router={{ enabled: false }} afterSearch={afterSearch}
-        initialized={(instance) => { instance.setCookiesDisabled(!analytics.trackApiKey); setApi(instance); }}>
+        initialized={(instance) => {
+          instance.setCookiesDisabled(!analytics.trackApiKey);
+          sortController.current = createSortController({
+            enabled: design.showSorting,
+            requested: design.startingSort,
+            getSearchObject: () => instance.dataLayer.searchObject,
+            setSearchObject: value => instance.dataLayer.setSearchObject(value),
+          });
+          setApi(instance);
+        }}>
         {api && <SearchExperience api={api} summary={summary} status={status} setStatus={setStatus} timer={timer} />}
       </SearchstaxWrapper>
     </main>

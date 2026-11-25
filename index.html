@@ -251,6 +251,11 @@
                   <label for="lab-sorting">Show sort options</label>
                   <input id="lab-sorting" type="checkbox" checked>
                 </div>
+                <div class="search-lab__field" data-sort-setting>
+                  <label for="lab-starting-sort">Starting sort</label>
+                  <select id="lab-starting-sort" aria-describedby="lab-sort-hint"><option value="">Relevance</option></select>
+                  <p id="lab-sort-hint" hidden>The selected profile hasn’t returned any sort options.</p>
+                </div>
               </details>
 
               <details class="search-lab__disclosure">
@@ -295,6 +300,10 @@
               <details class="search-lab__disclosure" id="lab-advanced">
                 <summary>Advanced Options</summary>
                 <p>These controls need custom templates, layout, or search logic in your implementation.</p>
+                <div class="search-lab__field" data-sort-setting>
+                  <label for="lab-sort-placement">Sort placement</label>
+                  <select id="lab-sort-placement"><option value="above">Above results</option><option value="below">Below results</option></select>
+                </div>
                 <div class="search-lab__field">
                   <label for="lab-banner-placement">External promotion placement</label>
                   <select id="lab-banner-placement"><option value="above">Above results</option><option value="below">Below results</option></select>
@@ -359,6 +368,13 @@
               </details>
             </div>
             <div id="lab-appearance-panel" role="tabpanel" aria-labelledby="lab-appearance-tab" tabindex="0" hidden>
+              <details class="search-lab__disclosure" data-sort-setting>
+                <summary>Sorting</summary>
+                <div class="search-lab__field search-lab__text-field">
+                  <label for="lab-sort-label">Sort label</label>
+                  <input id="lab-sort-label" type="text" value="Sort by">
+                </div>
+              </details>
               <details class="search-lab__disclosure" open data-default-open>
                 <summary>Layout</summary>
                 <fieldset class="search-lab__field">
@@ -544,8 +560,8 @@
                     <span class="search-lab__previous-results" data-lab-previous-results hidden>Previous results</span>
                     <strong data-lab-summary aria-live="polite" aria-atomic="true">Search results</strong>
                     <span data-lab-profile-label data-lab-example-only hidden>Before</span>
-                    <label class="search-lab__sort" for="lab-sort-order" data-lab-design-only hidden>
-                      Sort by <select id="lab-sort-order" disabled></select>
+                    <label class="search-lab__sort" for="lab-sort-order" hidden>
+                      <span>Sort by</span> <select id="lab-sort-order" disabled></select>
                     </label>
                   </div>
                   <p class="search-lab__no-results" data-lab-no-results hidden></p>
@@ -579,7 +595,7 @@
                     <span class="search-lab__previous-results" data-customer-previous-results hidden>Previous results</span>
                     <strong role="status" data-customer-status></strong>
                     <label class="search-lab__sort" for="lab-customer-sort" data-customer-sort-field hidden>
-                      Sort by <select id="lab-customer-sort"></select>
+                      <span data-sort-label>Sort by</span> <select id="lab-customer-sort"></select>
                     </label>
                   </div>
                   <p class="search-lab__status" data-customer-sort-hint hidden>This Search Profile hasn’t provided sort options.</p>

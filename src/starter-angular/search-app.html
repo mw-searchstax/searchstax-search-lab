@@ -4,6 +4,18 @@
     @else {<ng-container>{{ part.text }}</ng-container>}
   }
 </ng-template>
+<ng-template #sortControls let-context="context">
+  @if (context.sortingData?.searchExecuted && sortChoices(context.sortingData).length) {
+    <label class="search-starter__sort">
+      {{ design.sortLabel || 'Sort by' }}
+      <select [attr.aria-label]="design.sortLabel || 'Sort by'" [value]="decodedSort(context.selectedSorting)" (change)="sortSearch($event)">
+        @for (choice of sortChoices(context.sortingData); track choice.order) {
+          <option [value]="choice.order" [selected]="choice.order === decodedSort(context.selectedSorting)">{{ choice.label }}</option>
+        }
+      </select>
+    </label>
+  }
+</ng-template>
 <main class="search-starter">
   @if (design.logoURL) {
     <img class="search-starter__logo" [src]="design.logoURL" alt="Company logo"
@@ -30,21 +42,8 @@
     </div>
     <div #answerHost></div>
     <p role="status">{{ status() }}</p>
-    @if (design.showSorting) {
-      <app-searchstax-search-sorting [templateOverride]="sortControls">
-        <ng-template #sortControls let-context="context">
-          @if (context.sortingData?.searchExecuted && sortChoices(context.sortingData).length) {
-            <label class="search-starter__sort">
-              Sort by
-              <select [value]="context.selectedSorting" (change)="sortSearch($event)">
-                @for (choice of sortChoices(context.sortingData); track choice.order) {
-                  <option [value]="choice.order">{{ choice.label }}</option>
-                }
-              </select>
-            </label>
-          }
-        </ng-template>
-      </app-searchstax-search-sorting>
+    @if (design.showSorting && design.sortPlacement !== 'below') {
+      <app-searchstax-search-sorting [templateOverride]="sortControls" />
     }
     <ng-template #promotionWidget>
       <app-searchstax-external-promotions [templateOverride]="externalPromotions">
@@ -157,6 +156,9 @@
           <span class="search-starter__sr-only" role="status" data-page-announcement></span>
         </div>
       </div>
+      @if (design.showSorting && design.sortPlacement === 'below') {
+        <app-searchstax-search-sorting [templateOverride]="sortControls" />
+      }
     </div>
     @if (design.bannerPlacement === 'below') {
       <ng-container [ngTemplateOutlet]="promotionWidget" />

@@ -19,6 +19,7 @@ import { sampleSuggestionSource, setupSearchSuggestions } from './suggestions.js
 import { getAnalyticsSettings, setupResultTracking } from './result-tracking.js';
 import { setupPaginationFocus } from './pagination-focus.js';
 import { createResultPages } from './result-pages.js';
+import { decodedSort, encodedSort, createSortController, readResponseSortOptions, readSortOptions } from './sorting.js';
 
 function Passage({ parts }) {
   return parts.map(part => part.matched ? h('mark', { class: 'search-result-hit' }, part.text) : part.text);
@@ -41,6 +42,7 @@ const status = ref('Connecting to search…');
 const loadedResults = ref(0);
 const totalResults = ref(0);
 let api;
+let sortController;
 let loadingSubscription;
 let timer;
 let setSuggestionSource;
@@ -60,6 +62,8 @@ function afterSearch(items, response) {
   if (typeof total !== 'number') return [];
   window.clearTimeout(timer);
   status.value = total + (total === 1 ? ' result' : ' results');
+  const options = readResponseSortOptions(response);
+  if (sortController?.handle(options)) return [];
   const passages = starterPassages(response, isDemo);
   const mapped = items.flatMap(item => {
     const url = publicLink(item.url);
@@ -88,11 +92,11 @@ function facetLabel(field, value) {
 }
 
 function sortChoices(data) {
-  return isDemo ? demo.sortOptions : data?.sortOptions?.map(item => ({ label: item.value, order: item.key })) ?? [];
+  return readSortOptions(data);
 }
 
 function sortSearch(order) {
-  api.dataLayer.setSearchObject({ ...api.dataLayer.searchObject, order: encodeURIComponent(order), page: 1 });
+  api.dataLayer.setSearchObject({ ...api.dataLayer.searchObject, order: encodedSort(order), page: 1 });
 }
 
 function livePromotions(data) {
@@ -118,6 +122,12 @@ function runSearch(value) {
 function initialized(instance) {
   api = instance;
   api.setCookiesDisabled(!analytics.trackApiKey);
+  sortController = createSortController({
+    enabled: design.showSorting,
+    requested: design.startingSort,
+    getSearchObject: () => instance.dataLayer.searchObject,
+    setSearchObject: value => instance.dataLayer.setSearchObject(value),
+  });
 }
 
 // The wrapper emits initialized before mounting its slot and the widgets.
@@ -194,11 +204,11 @@ onBeforeUnmount(() => {
       </div>
       <div ref="answerHost"></div>
       <p role="status">{{ status }}</p>
-      <SearchstaxSortingWidget v-if="design.showSorting">
+      <SearchstaxSortingWidget v-if="design.showSorting && design.sortPlacement !== 'below'">
         <template #sorting="{ sortingData, selectedSorting }">
           <label v-if="sortingData?.searchExecuted && sortChoices(sortingData).length" class="search-starter__sort">
-            Sort by
-            <select :value="selectedSorting" @change="sortSearch($event.target.value)">
+            {{ design.sortLabel || 'Sort by' }}
+            <select :aria-label="design.sortLabel || 'Sort by'" :value="decodedSort(selectedSorting)" @change="sortSearch($event.target.value)">
               <option v-for="choice in sortChoices(sortingData)" :key="choice.order" :value="choice.order">{{ choice.label }}</option>
             </select>
           </label>
@@ -278,6 +288,16 @@ onBeforeUnmount(() => {
             </span>
           </div>
         </div>
+        <SearchstaxSortingWidget v-if="design.showSorting && design.sortPlacement === 'below'">
+          <template #sorting="{ sortingData, selectedSorting }">
+            <label v-if="sortingData?.searchExecuted && sortChoices(sortingData).length" class="search-starter__sort">
+              {{ design.sortLabel || 'Sort by' }}
+              <select :aria-label="design.sortLabel || 'Sort by'" :value="decodedSort(selectedSorting)" @change="sortSearch($event.target.value)">
+                <option v-for="choice in sortChoices(sortingData)" :key="choice.order" :value="choice.order">{{ choice.label }}</option>
+              </select>
+            </label>
+          </template>
+        </SearchstaxSortingWidget>
       </div>
       <div id="starter-promotions-below"></div>
     </SearchstaxWrapper>

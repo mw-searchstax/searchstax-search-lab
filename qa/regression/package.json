@@ -3,6 +3,7 @@
   "private": true,
   "description": "Standalone checks for the Search Lab pilot",
   "scripts": {
+    "test:sort-controls": "node sort-controls.cjs",
     "test:live-load-more": "node load-more.cjs",
     "test:live-facets": "node facets.cjs",
     "test": "node entry.cjs && node design.cjs && node sorting-defaults.cjs && node editor-accessibility.cjs && node hit-highlighting.cjs && node promotions.cjs && node profile-parity.cjs && node profile-connection.cjs && node improve.cjs && node search-fields-recovery.cjs && node ranking-recovery.cjs && node mobile-search-recovery.cjs && node starters.cjs"

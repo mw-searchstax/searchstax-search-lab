@@ -44,6 +44,9 @@ export type DesignSettings = {
   showDescriptions: boolean;
   showThumbnails: boolean;
   showSorting: boolean;
+  sortLabel: string;
+  sortPlacement: 'above' | 'below';
+  startingSort: string;
   showSuggestions: boolean;
   showSmartAnswersSample: boolean;
   samplePromotions: 'off' | 'indexed' | 'external' | 'both';
@@ -86,6 +89,9 @@ export const DEFAULT_DESIGN: Readonly<DesignSettings> = {
   showDescriptions: true,
   showThumbnails: false,
   showSorting: true,
+  sortLabel: 'Sort by',
+  sortPlacement: 'above',
+  startingSort: '',
   showSuggestions: false,
   showSmartAnswersSample: true,
   samplePromotions: 'off',
@@ -189,6 +195,9 @@ export function readDesignParams(params: URLSearchParams, allowFictionalPreview 
     showDescriptions: params.get('lab_descriptions') !== 'off',
     showThumbnails: params.get('lab_thumbnails') === 'on',
     showSorting: params.has('lab_sorting') ? params.get('lab_sorting') === 'on' : !savedDesign && DEFAULT_DESIGN.showSorting,
+    sortLabel: resolveSearchText(params.get('lab_sort_label'), DEFAULT_DESIGN.sortLabel),
+    sortPlacement: params.get('lab_sort_placement') === 'below' ? 'below' : 'above',
+    startingSort: params.get('lab_starting_sort') ?? '',
     showSuggestions: params.get('lab_suggestions') === 'on',
     showSmartAnswersSample: params.get('lab_answer_sample') !== 'off',
     samplePromotions: readSamplePromotions(params.get('lab_promotions')),
@@ -252,6 +261,9 @@ export function writeDesignParams(params: URLSearchParams, design: DesignSetting
     params.set('lab_thumbnails', 'on');
   }
   params.set('lab_sorting', design.showSorting ? 'on' : 'off');
+  if (design.sortLabel !== DEFAULT_DESIGN.sortLabel) params.set('lab_sort_label', design.sortLabel);
+  if (design.sortPlacement !== DEFAULT_DESIGN.sortPlacement) params.set('lab_sort_placement', design.sortPlacement);
+  if (design.startingSort) params.set('lab_starting_sort', design.startingSort);
   if (design.showSuggestions) {
     params.set('lab_suggestions', 'on');
   }

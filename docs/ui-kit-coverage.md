@@ -75,9 +75,9 @@ The ten widget families below follow the [Help Center catalog](https://support.s
 | Option | Build today | Destination, mechanism and proposed default | Prerequisite or review example | JS | React | Vue | Angular |
 |---|---|---|---|---|---|---|---|
 | Sort visibility | Can hide or show the selector. | Features · widget or custom selector. Start visible when options are available. | Current profile’s sort options. | Wired | Wired | Wired | Wired |
-| Sort label | One selector label. | Appearance · template. Start with the current Sort label. | At least one optional sort. | Gap | Gap | Gap | Gap |
-| Sort placement | One position in each layout. | Advanced Options · template. Keep its existing position first. | Sort options with filters present. | Gap | Gap | Gap | Gap |
-| Initial selection | Uses relevance or the profile response. Built-in demo has prepared choices. | Features · app and template. Keep profile default, allow one returned option. | Two sorts with visibly different result order. Reset invalid choice on switching profiles. | Gap | Gap | Gap | Gap |
+| Sort label | Editable text labels the visitor’s dropdown. | Appearance → Sorting · template. Defaults to **Sort by**. | At least one published sort. | Wired | Wired | Wired | Wired |
+| Sort placement | Above or below the results. | Features → Advanced Options · layout. Defaults to **Above results**. | At least one published sort. | Wired | Wired | Wired | Wired |
+| Initial selection | Relevance or a sort returned by the active profile. Visitors can change it. | Features → Filters and sorting · request and selector. **Relevance** keeps the profile’s default order. | If the selected sort is unavailable, use relevance. | Wired | Wired | Wired | Wired |
 | Sorting template | Custom dropdown in ordinary exports. | Handoff · template. Retain option keys and accessible label. | Sorting metadata. | Wired | Wired | Wired | Wired |
 
 ## Pagination
@@ -226,6 +226,10 @@ The JavaScript, React, Vue and Angular downloads each ran the same query locally
 
 SearchLabDemo’s English SearchLabBuild profile publishes **Page address (A–Z)** and **Page address (Z–A)**. With **campus**, relevance returns **North Campus Clinic** first. Sorting the 37 results by ascending URL puts **Central County University Health** first. Descending URL puts **Sleep Health Center** first. The November 25 API check found neither option in the published metadata for Main Profile, SearchLabAfter or SearchLabRanking.
 
+Build reads the active profile’s published sort names and labels from its search response. A saved design can set the initial order. The visitor can then change the order for subsequent searches. Use the same **campus** query in each starter to compare the result URLs.
+
+Local browser QA used a 37-result fixture based on the published sort labels and the three first-result titles above. The preview and all twelve starter configurations (three starting sorts in four frameworks) showed the configured label and placement and returned the expected first page for every order. SearchLabDemo reached its monthly request limit before a full live browser check.
+
 ## Template bindings for the developer handoff
 
 Each row is a distinct replacement point. Keep the kit template by default when building a new native integration. The Build column identifies the current equivalent and the user-facing row above supplies its design defaults and app prerequisites. Custom templates own the accessible controls, result IDs and callbacks inside them. These are package bindings for implementation review. Runtime verification applies only to the behaviors recorded below.
@@ -248,7 +252,7 @@ Each row is a distinct replacement point. Keep the kit template by default when 
 | Pagination | Previous, range, next | mainTemplate | paginationTemplate | pagination | templateOverride |
 | Load more | Load more button and cumulative count | infiniteScrollTemplate | infiniteScrollTemplate | infiniteScroll | infiniteScrollTemplateOverride |
 | Count and corrections | Count today, correction handoff needed | main | searchOverviewTemplate | searchFeedback | templateOverride |
-| Sorting | Fixed dropdown treatment | main | searchSortingTemplate | sorting | templateOverride |
+| Sorting | Labeled dropdown above or below results | main | searchSortingTemplate | sorting | templateOverride |
 | External promotions shell | Banner | mainTemplate | searchExternalPromotionsTemplate | externalPromotions | templateOverride |
 | One external promotion | Fixed treatment | externalPromotion | within promotions template | within externalPromotions | within promotions template |
 | Related Searches shell | Conditional suggestions | main | searchRelatedSearchesTemplate | related | templateOverride |

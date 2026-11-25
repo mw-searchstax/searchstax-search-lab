@@ -21,7 +21,7 @@ For SearchLabDemo, search for **rehabilitation** to see results from the selecte
 
 If you enabled sample thumbnails, the ZIP includes fictional images for two Central County results.
 
-Sorting is on by default and starts in Relevance order. When sorting is enabled, use **Sort by** to put all matching pages in page-address order, even when the results span several pages.
+To try sorting with SearchLabDemo’s SearchLabBuild profile, search for **campus**. The dropdown uses the label, position, and starting sort from your Build design. Choose **Relevance**, **Page address (A–Z)**, or **Page address (Z–A)** to reorder all matching pages.
 
 If search can’t start, choose **Reload search**. If a search fails or takes longer than usual, choose **Retry search** to repeat it with the same query, sort, filters and page. When earlier results are still on screen, the status message tells you.
 
@@ -56,6 +56,6 @@ Always use a Read Only credential for search requests in browser code. For a pri
 
 If you move the search UI into an existing page, keep the `.search-starter` wrapper so the styles in `search.css` still apply. The standalone page uses `.search-starter-page` on the body for the page margin and colors.
 
-For sorting on your app, configure and publish sort options on your Search Profile under **Configurations > Advanced Configurations > Sorting**. Set `showSorting` to `true` in `search.js`. **Sort by** displays the published options after a search. Choosing an option keeps the current filters and returns to the first page. [Facets and sorting setup](https://support.searchstax.com/hc/en-us/articles/38268731934349-Setting-Up-Facets-Filters-and-Sorting)
+For sorting on your app, configure and publish sort options on your Search Profile under **Configurations > Advanced Configurations > Sorting**. With `showSorting` enabled in `search.js`, the dropdown displays the options returned by that profile. If your chosen starting sort is unavailable, the starter uses relevance. Choosing another sort keeps the current filters and returns to the first page. [Facets and sorting setup](https://support.searchstax.com/hc/en-us/articles/38268731934349-Setting-Up-Facets-Filters-and-Sorting)
 
 For live suggestions on your app, enable and publish Auto-Suggest in Site Search. In `search.js`, set `suggesterURL` to the app’s HTTPS Auto-Suggest endpoint ending in `/emsuggest`, and set `showSuggestions` to `true`. The starter uses the same read-only token and language as search. Use the arrow keys and Enter to search for a suggestion, or press Escape to dismiss the list. Leave `suggesterURL` empty to use search without connected suggestions. [Auto-Suggest](https://support.searchstax.com/hc/en-us/articles/40075200119437-Auto-Suggest) · [Auto-Suggest API](https://support.searchstax.com/hc/en-us/articles/40243330090893-Auto-Suggest-API)

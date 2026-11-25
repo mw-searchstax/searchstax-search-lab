@@ -54,6 +54,7 @@ export function setupCustomerPreview(
   const facetHint = get('[data-customer-facet-hint]');
   const sort = get<HTMLSelectElement>('#lab-customer-sort');
   const sortField = get('[data-customer-sort-field]');
+  const sortToolbar = sortField.parentElement;
   const sortHint = get('[data-customer-sort-hint]');
   const promotions = get('[data-customer-promotions]');
   const grid = get('[data-customer-grid]');
@@ -122,8 +123,26 @@ export function setupCustomerPreview(
   let latestPage: BuildPage | null = null;
   let request: AbortController | null = null;
   let activePaginationMode: DesignSettings['paginationMode'] = getDesign().paginationMode;
+  let lastStartingSort = getDesign().startingSort;
+  let lastShowSorting = getDesign().showSorting;
   let tokenDestinations: string[] | null = null;
   const paginationMode = () => getDesign().paginationMode;
+
+  function emitSortOptions(choices: BuildPage['sorts']) {
+    panel.dispatchEvent(new CustomEvent('lab-sort-options', {
+      bubbles: true,
+      detail: { choices: choices.map(choice => ({ value: choice.value, label: choice.label })) },
+    }));
+  }
+
+  function applySortPresentation() {
+    const design = getDesign();
+    const label = sortField.querySelector<HTMLElement>('[data-sort-label]');
+    if (label) label.textContent = design.sortLabel;
+    if (design.sortPlacement === 'below') {
+      if (sortField.previousElementSibling !== grid) grid.after(sortField);
+    } else if (sortField.parentElement !== sortToolbar) sortToolbar?.append(sortField);
+  }
 
   function clearFormToken() {
     token.value = '';
@@ -160,6 +179,7 @@ export function setupCustomerPreview(
 
   function updateVisibility() {
     const design = getDesign();
+    applySortPresentation();
     facets.hidden = !design.filters;
     layout.dataset.filters = design.filters ? 'on' : 'off';
     sortField.hidden = !design.showSorting || !latestPage?.sorts.length;
@@ -186,6 +206,7 @@ export function setupCustomerPreview(
     renderPromotionBanners(promotions, page.externalPromotions, getDesign().promotionHeading, language);
     placePromotionBanners(promotions, layout, getDesign().bannerPlacement);
     sort.replaceChildren(new Option('Relevance', ''), ...page.sorts.map(item => new Option(item.label, item.value)));
+    emitSortOptions(page.sorts);
     sort.value = page.sorts.some(item => item.value === active.sort) ? active.sort : '';
     renderFacets(page, active);
     const append = paginationMode() === 'loadMore' && active.start > 0 && grid.childElementCount > 0;
@@ -240,6 +261,7 @@ export function setupCustomerPreview(
       }
     } else {
       options = search;
+      lastStartingSort = getDesign().startingSort;
       previousResults.hidden = !status.textContent;
       empty.hidden = true;
       panel.setAttribute('data-searching', '');
@@ -247,8 +269,9 @@ export function setupCustomerPreview(
     }
     const timer = window.setTimeout(() => pending.abort(), 12000);
     try {
-      const page = await searchBuildApp(candidate, search, pending.signal);
+      const page = await searchBuildApp(candidate, search, pending.signal, connecting ? [] : latestPage?.sorts);
       if (request !== pending) return;
+      search = { ...search, sort: page.sort, start: page.start };
       if (connecting && candidate.configuration) {
         candidate = { ...candidate, settings: page.settings, language: page.settings?.language ?? page.language ?? '', profile: page.settings?.profile ?? candidate.profile };
       }
@@ -273,7 +296,9 @@ export function setupCustomerPreview(
       renderResults(page, search, contentLanguageTag(candidate.language));
       onResultSettings();
       const rows = getDesign().resultsPerPage;
-      if (connecting && rows !== search.rows) run({ rows });
+      const configuredSort = getDesign().showSorting ? getDesign().startingSort : '';
+      const currentSort = page.sorts.some(item => item.value === configuredSort) ? configuredSort : '';
+      if (connecting && (rows !== search.rows || currentSort !== search.sort)) run({ rows, sort: currentSort });
     } catch (error) {
       if (request !== pending) return;
       const message = pending.signal.aborted ? 'The Search App took too long to respond. Try again.'
@@ -343,6 +368,7 @@ export function setupCustomerPreview(
     promotions.hidden = true;
     facetView.reset();
     sort.replaceChildren();
+    emitSortOptions([]);
     status.textContent = '';
     source.textContent = '';
     formStatus.textContent = '';
@@ -413,7 +439,7 @@ export function setupCustomerPreview(
       relatedURL: relatedURL ?? undefined, discoveryKey: discovery || undefined,
       answerEndpoint: streamingEndpoint ?? undefined, suggestEndpoint: autoSuggestEndpoint ?? undefined,
     },
-      { query, start: 0, rows: getDesign().resultsPerPage, sort: '', filters: new Map(), facetMode: getDesign().facetMode }, true);
+      { query, start: 0, rows: getDesign().resultsPerPage, sort: getDesign().showSorting ? getDesign().startingSort : '', filters: new Map(), facetMode: getDesign().facetMode }, true);
   });
   connect.disabled = false;
   get('[data-customer-disconnect]').addEventListener('click', disconnect);
@@ -470,7 +496,11 @@ export function setupCustomerPreview(
       placePromotionBanners(promotions, layout, design.bannerPlacement);
       updatePromotionLabels(panel, design);
       facetView.refresh();
-      const nextOrder = design.showSorting ? (order ?? options.sort) : '';
+      const startingSortChanged = design.startingSort !== lastStartingSort;
+      const sortingReenabled = !lastShowSorting && design.showSorting;
+      const nextOrder = design.showSorting ? (order ?? (startingSortChanged || sortingReenabled ? design.startingSort : options.sort)) : '';
+      if (startingSortChanged) lastStartingSort = design.startingSort;
+      lastShowSorting = design.showSorting;
       const clearSelection = !design.filters || options.facetMode !== design.facetMode;
       if (design.resultsPerPage !== options.rows || previousMode !== nextMode || (clearSelection && options.filters.size) ||
         options.facetMode !== design.facetMode || nextOrder !== options.sort) {

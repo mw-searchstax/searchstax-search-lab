@@ -1,0 +1,40 @@
+{
+  "source": "The 37-result count, first title for each sort, and published labels are based on the November 25 SearchLabBuild check. All search responses in this fixture are synthetic.",
+  "profile": "SearchLabBuild",
+  "language": "en",
+  "syntheticCount": 34,
+  "baselines": {
+    "relevance": "north-campus-clinic",
+    "urlAsc": "central-county",
+    "urlDesc": "sleep-center"
+  },
+  "sorts": [
+    {
+      "name": "url",
+      "order": "desc",
+      "label": "Page address (Z–A)"
+    },
+    {
+      "name": "url",
+      "order": "asc",
+      "label": "Page address (A–Z)"
+    }
+  ],
+  "results": [
+    {
+      "id": "north-campus-clinic",
+      "url": "https://mw-searchstax.github.io/university-health-search-demo/locations/north-campus-clinic/",
+      "title": "North Campus Clinic | Central County University Health"
+    },
+    {
+      "id": "central-county",
+      "url": "https://mw-searchstax.github.io/university-health-search-demo/",
+      "title": "Central County University Health"
+    },
+    {
+      "id": "sleep-center",
+      "url": "https://mw-searchstax.github.io/university-health-search-demo/research/sleep-health-center/",
+      "title": "Sleep Health Center | Central County University Health"
+    }
+  ]
+}
