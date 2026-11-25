@@ -15,12 +15,11 @@ import { createCustomerSuggestionSource } from './customer-suggestions.js';
 import { sampleSuggestionSource, setupSearchSuggestions } from './suggestions.js';
 import { getAnalyticsSettings, setupResultTracking } from './result-tracking.js';
 import { setupPaginationFocus } from './pagination-focus.js';
-import { applySampleIndexedPromotion, sampleExternalPromotion, samplePromotionMode, samplePromotionQuery } from './promotions.js';
 
 const analytics = getAnalyticsSettings(connection);
 const resultLanguage = contentLanguageTag(connection.language);
 const isDemo = connection.searchURL === demo.searchURL && connection.model === demo.model && resultLanguage === demo.language;
-const initialQuery = connection.initialQuery || (isDemo ? (design.samplePromotions === 'off' ? 'rehabilitation' : samplePromotionQuery) : '');
+const initialQuery = connection.initialQuery || (isDemo ? 'rehabilitation' : '');
 
 function publicLink(value) {
   try {
@@ -40,8 +39,7 @@ function resultCards(results) {
     <div className="searchstax-search-results">
       {results.map((item) => (
         <article className="searchstax-search-result" key={item.uniqueId || item.url}>
-          {item.sampleIndexedPromotion && <span className="sample-indexed-promotion">Sample indexed promotion</span>}
-          {!isDemo && item.promoted && <span className="search-promotion-marker">Promoted</span>}
+          {item.promoted && <span className="search-promotion-marker">{design.promotionBadge}</span>}
           {item.previewThumbnail && item.previewThumbnailAlt !== null && (
             <img className="search-starter__result-thumbnail" src={item.previewThumbnail} alt={item.previewThumbnailAlt} lang={resultLanguage} loading="lazy" referrerPolicy="no-referrer" />
           )}
@@ -117,7 +115,7 @@ function livePromotions(data) {
     <section aria-label="External promotions">
       {links.map(item => (
         <div key={item.id ?? item.url} className="search-promotion-banner">
-          <span className="search-promotion-marker">Promoted</span>
+          <strong className="search-promotion-heading">{design.promotionHeading}</strong>
           <a href={item.url} lang={resultLanguage} referrerPolicy="no-referrer">{item.name || item.url}</a>
           {item.description && <p lang={resultLanguage}>{item.description}</p>}
         </div>
@@ -181,7 +179,6 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
   useEffect(() => setupResultTracking(resultHost.current, api), [api]);
   useEffect(() => setupPaginationFocus(pagination.current, () => api), [api]);
 
-  const modes = isDemo ? samplePromotionMode(summary.query, design.samplePromotions) : 'off';
   return <>
     <form className="search-starter__form" role="search" ref={form}
       onSubmit={(event) => { event.preventDefault(); runSearch(input.current.value); }}>
@@ -192,12 +189,7 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
     <div ref={answerHost} />
     <p role="status">{status}</p>
     {design.showSorting && <SearchstaxSortingWidget searchSortingTemplate={(data, _, selected) => sortControls(data, selected, api)} />}
-    {(modes === 'external' || modes === 'both') &&
-      <section className="sample-external-promotion search-promotion-banner" aria-label="Sample external promotion">
-        <p className="sample-external-promotion__label">Sample external promotion</p>
-        <a href={sampleExternalPromotion.url} referrerPolicy="no-referrer">{sampleExternalPromotion.title}</a>
-      </section>}
-    {!isDemo && <SearchstaxExternalPromotionsWidget searchExternalPromotionsTemplate={livePromotions} />}
+    {design.bannerPlacement === 'above' && <SearchstaxExternalPromotionsWidget searchExternalPromotionsTemplate={livePromotions} />}
     <div className="search-starter__body">
       {design.showFilters &&
         <aside className="search-starter__filters" aria-label="Filter search results">
@@ -214,12 +206,13 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
         </div>
       </div>
     </div>
+    {design.bannerPlacement === 'below' && <SearchstaxExternalPromotionsWidget searchExternalPromotionsTemplate={livePromotions} />}
   </>;
 }
 
 export default function SearchApp() {
   const [api, setApi] = useState(null);
-  const [summary, setSummary] = useState({ query: '' });
+  const [summary, setSummary] = useState({ start: 0, end: 0, total: 0 });
   const [status, setStatus] = useState('Connecting to search…');
   const timer = useRef();
 
@@ -227,11 +220,10 @@ export default function SearchApp() {
     const total = response?.response?.numFound;
     if (typeof total !== 'number') return [];
     window.clearTimeout(timer.current);
-    const query = response.responseHeader?.params?.q ?? '';
     // The requested page can change while the previous response is still on screen.
     const start = response.response.start ?? 0;
     const end = Math.min(total, start + (response.response.docs?.length ?? design.resultsPerPage));
-    setSummary({ query, start, end, total });
+    setSummary({ start, end, total });
     setStatus(total + (total === 1 ? ' result' : ' results'));
     const passages = starterPassages(response, isDemo);
     const results = items.flatMap((item) => {
@@ -248,7 +240,7 @@ export default function SearchApp() {
         ),
       }] : [];
     });
-    return isDemo ? applySampleIndexedPromotion(results, response, samplePromotionMode(query, design.samplePromotions)) : results;
+    return results;
   }
 
   if (!connection.searchURL || !connection.searchAuth) {

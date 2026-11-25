@@ -1,3 +1,4 @@
+import { placePromotionBanners, renderPromotionBanners, updatePromotionLabels } from './promotion-display.js';
 import { setupSearchSuggestions, sampleSuggestionSource } from './sample-suggestions.js';
 import { createCustomerSuggestionSource } from './customer-suggestions.js';
 import { setupRelatedSearches, relatedSource } from './related-searches.js';
@@ -53,8 +54,10 @@ export function setupProfileFeatures(panel, submit) {
   const sampleBanner = createSampleExternalPromotion();
   const bannerLink = sampleBanner.querySelector('a');
   const englishBannerTitle = bannerLink.textContent;
-  panel.querySelector('[data-exp-promotions]').before(sampleBanner);
-  const remoteBanners = panel.querySelector('[data-exp-promotions]');
+  const host = panel.querySelector('[data-exp-promotions]');
+  const remoteBanners = document.createElement('div');
+  host.append(remoteBanners);
+  let heading;
   let app;
   let active;
   let suggestions;
@@ -67,6 +70,7 @@ export function setupProfileFeatures(panel, submit) {
     related.clear();
     setSuggestions(null);
     sampleAnswer.hidden = true;
+    sampleBanner.remove();
     sampleBanner.hidden = true;
     remoteBanners.replaceChildren();
     app = active = undefined;
@@ -78,6 +82,7 @@ export function setupProfileFeatures(panel, submit) {
       if (app !== connection || active !== profile) {
         clear();
         app = connection;
+        if (!app) host.prepend(sampleBanner);
         active = profile;
         const es = active.language.split(/[-_]/)[0] === 'es';
         related.setLabel(es ? 'Búsquedas relacionadas' : 'Related searches');
@@ -85,7 +90,7 @@ export function setupProfileFeatures(panel, submit) {
         sampleAnswer.lang = es ? 'es' : 'en';
         const bannerLabel = es ? 'Promoción externa de ejemplo' : 'Sample external promotion';
         sampleBanner.setAttribute('aria-label', bannerLabel);
-        sampleBanner.querySelector('p').textContent = bannerLabel;
+        sampleBanner.querySelector('p').dataset.defaultLabel = bannerLabel;
         bannerLink.textContent = es ? 'Lee el aviso ficticio de citas de vacunación' : englishBannerTitle;
         suggestions = app
           ? app.suggestEndpoint && createCustomerSuggestionSource({ ...app, ...active }, app.suggestEndpoint)
@@ -95,6 +100,9 @@ export function setupProfileFeatures(panel, submit) {
           : app ? relatedSource(app.relatedURL, app.discoveryKey, active.language)
           : active.language === 'es' ? relatedSpanish : relatedEnglish;
       }
+      heading = design.promotionHeading;
+      placePromotionBanners(host, panel.querySelector('#lab-exp-results'), design.bannerPlacement);
+      updatePromotionLabels(panel, design);
       setSuggestions(app || design.showSuggestions ? suggestions : null);
       void related.show(panel.querySelector('#lab-exp-results'), app && design.relatedPlacement === 'off' ? 'below' : design.relatedPlacement, query, relatedTerms);
       sampleAnswer.hidden = Boolean(app) || !active.smartAnswers || !design.showSmartAnswersSample;
@@ -107,23 +115,7 @@ export function setupProfileFeatures(panel, submit) {
       }
     },
     showExternalPromotions(promotions) {
-      remoteBanners.replaceChildren(...promotions.map(({ title, url, description }) => {
-        const banner = document.createElement('section');
-        banner.className = 'search-promotion-banner';
-        banner.setAttribute('aria-label', 'Promoted link');
-        const link = document.createElement('a');
-        link.href = url;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        link.textContent = title;
-        banner.append(link);
-        if (description) {
-          const text = document.createElement('p');
-          text.textContent = description;
-          banner.append(text);
-        }
-        return banner;
-      }));
+      renderPromotionBanners(remoteBanners, promotions, heading, active?.language, true);
     },
   };
 }

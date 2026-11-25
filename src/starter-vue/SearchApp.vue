@@ -1,5 +1,5 @@
 <script setup>
-import { computed, h, nextTick, onBeforeUnmount, ref, watch } from 'vue';
+import { h, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import {
   SearchstaxExternalPromotionsWidget,
   SearchstaxFacetsWidget,
@@ -17,7 +17,6 @@ import { createCustomerSuggestionSource } from './customer-suggestions.js';
 import { sampleSuggestionSource, setupSearchSuggestions } from './suggestions.js';
 import { getAnalyticsSettings, setupResultTracking } from './result-tracking.js';
 import { setupPaginationFocus } from './pagination-focus.js';
-import { applySampleIndexedPromotion, sampleExternalPromotion, samplePromotionMode, samplePromotionQuery } from './promotions.js';
 
 function Passage({ parts }) {
   return parts.map(part => part.matched ? h('mark', { class: 'search-result-hit' }, part.text) : part.text);
@@ -26,7 +25,7 @@ function Passage({ parts }) {
 const analytics = getAnalyticsSettings(connection);
 const resultLanguage = contentLanguageTag(connection.language);
 const isDemo = connection.searchURL === demo.searchURL && connection.model === demo.model && resultLanguage === demo.language;
-const initialQuery = connection.initialQuery || (isDemo ? (design.samplePromotions === 'off' ? 'rehabilitation' : samplePromotionQuery) : '');
+const initialQuery = connection.initialQuery || (isDemo ? 'rehabilitation' : '');
 const form = ref(null);
 const queryField = ref(null);
 const pagination = ref(null);
@@ -34,8 +33,6 @@ const resultHost = ref(null);
 const answerHost = ref(null);
 let services;
 const status = ref('Connecting to search…');
-const query = ref('');
-const promotionMode = computed(() => isDemo ? samplePromotionMode(query.value, design.samplePromotions) : 'off');
 let api;
 let loadingSubscription;
 let timer;
@@ -55,7 +52,6 @@ function afterSearch(items, response) {
   const total = response?.response?.numFound;
   if (typeof total !== 'number') return [];
   window.clearTimeout(timer);
-  query.value = response.responseHeader?.params?.q ?? '';
   status.value = total + (total === 1 ? ' result' : ' results');
   const passages = starterPassages(response, isDemo);
   const results = items.flatMap(item => {
@@ -72,7 +68,7 @@ function afterSearch(items, response) {
       ),
     }] : [];
   });
-  return isDemo ? applySampleIndexedPromotion(results, response, promotionMode.value) : results;
+  return results;
 }
 
 function facetLabel(value) {
@@ -190,22 +186,19 @@ onBeforeUnmount(() => {
           </label>
         </template>
       </SearchstaxSortingWidget>
-      <section v-if="promotionMode === 'external' || promotionMode === 'both'"
-        class="sample-external-promotion search-promotion-banner" aria-label="Sample external promotion">
-        <p class="sample-external-promotion__label">Sample external promotion</p>
-        <a :href="sampleExternalPromotion.url" referrerpolicy="no-referrer">{{ sampleExternalPromotion.title }}</a>
-      </section>
-      <SearchstaxExternalPromotionsWidget v-if="!isDemo">
-        <template #externalPromotions="{ externalPromotionsData }">
-          <section v-if="livePromotions(externalPromotionsData).length" aria-label="External promotions">
-            <div v-for="entry in livePromotions(externalPromotionsData)" :key="entry.id ?? entry.url" class="search-promotion-banner">
-              <span class="search-promotion-marker">Promoted</span>
-              <a :href="entry.url" :lang="resultLanguage" referrerpolicy="no-referrer">{{ entry.name || entry.url }}</a>
-              <p v-if="entry.description" :lang="resultLanguage">{{ entry.description }}</p>
-            </div>
-          </section>
-        </template>
-      </SearchstaxExternalPromotionsWidget>
+      <Teleport defer to="#starter-promotions-below" :disabled="design.bannerPlacement === 'above'">
+        <SearchstaxExternalPromotionsWidget>
+          <template #externalPromotions="{ externalPromotionsData }">
+            <section v-if="livePromotions(externalPromotionsData).length" aria-label="External promotions">
+              <div v-for="entry in livePromotions(externalPromotionsData)" :key="entry.id ?? entry.url" class="search-promotion-banner">
+                <strong class="search-promotion-heading">{{ design.promotionHeading }}</strong>
+                <a :href="entry.url" :lang="resultLanguage" referrerpolicy="no-referrer">{{ entry.name || entry.url }}</a>
+                <p v-if="entry.description" :lang="resultLanguage">{{ entry.description }}</p>
+              </div>
+            </section>
+          </template>
+        </SearchstaxExternalPromotionsWidget>
+      </Teleport>
       <div class="search-starter__body">
         <aside v-if="design.showFilters" class="search-starter__filters" aria-label="Filter search results">
           <SearchstaxFacetsWidget facetingType="or" :itemsPerPageDesktop="20" :itemsPerPageMobile="20">
@@ -231,8 +224,7 @@ onBeforeUnmount(() => {
             <template #results="{ searchResults }">
               <div class="searchstax-search-results">
                 <article v-for="item in searchResults" :key="item.uniqueId || item.url" class="searchstax-search-result">
-                  <span v-if="item.sampleIndexedPromotion" class="sample-indexed-promotion">Sample indexed promotion</span>
-                  <span v-if="!isDemo && item.promoted" class="search-promotion-marker">Promoted</span>
+                  <span v-if="item.promoted" class="search-promotion-marker">{{ design.promotionBadge }}</span>
                   <img v-if="item.previewThumbnail && item.previewThumbnailAlt !== null" class="search-starter__result-thumbnail" :src="item.previewThumbnail"
                     :alt="item.previewThumbnailAlt" :lang="resultLanguage" loading="lazy" referrerpolicy="no-referrer">
                   <span v-if="item.ribbonParts.length" class="searchstax-search-result-ribbon"><Passage :parts="item.ribbonParts" /></span>
@@ -260,6 +252,7 @@ onBeforeUnmount(() => {
           </div>
         </div>
       </div>
+      <div id="starter-promotions-below"></div>
     </SearchstaxWrapper>
   </main>
 </template>

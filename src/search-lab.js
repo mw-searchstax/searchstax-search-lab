@@ -23,13 +23,8 @@ import { demoThumbnails } from './demo-thumbnails';
 import { demoSortOptions } from './demo-sorting';
 import { sampleSuggestionSource, setupSearchSuggestions } from './sample-suggestions';
 import './sample-suggestions.css';
-import {
-  applySampleIndexedPromotion,
-  createSampleExternalPromotion,
-  samplePromotionMode,
-  samplePromotionQuery,
-  updateSampleExternalPromotion,
-} from './sample-promotions';
+import { samplePromotionQuery } from './sample-promotions';
+import { promotionEntries, renderPromotionBanners, placePromotionBanners, updatePromotionLabels } from './promotion-display';
 import './sample-promotions.css';
 import smartAnswersSampleHTML from './smart-answers-sample.html?raw';
 import './smart-answers-sample.css';
@@ -94,6 +89,8 @@ import { setupPaginationFocus } from './pagination-focus.js';
   var queryLabel = form.querySelector('label[for="lab-query"]');
   var submitButton = form.querySelector('button[type="submit"]');
   var textInputs = {
+    promotionHeading: root.querySelector('#lab-promo-heading'),
+    promotionBadge: root.querySelector('#lab-promo-badge'),
     searchFieldText: root.querySelector('#lab-field-text'),
     searchButtonText: root.querySelector('#lab-button-text'),
     noResultsText: root.querySelector('#lab-no-results-text'),
@@ -124,7 +121,9 @@ import { setupPaginationFocus } from './pagination-focus.js';
   var facetsPanel = root.querySelector('[data-lab-facets-panel]');
   var facets = root.querySelector('#lab-facets');
   var resultsLayout = root.querySelector('[data-lab-results-layout]');
-  var externalPromotion = createSampleExternalPromotion();
+  var externalPromotion = document.createElement('section');
+  externalPromotion.setAttribute('aria-label', 'External promotions');
+  externalPromotion.hidden = true;
   resultsLayout.before(externalPromotion);
   var resultsContent = root.querySelector('[data-lab-results-content]');
   var previousResults = root.querySelector('[data-lab-previous-results]');
@@ -211,6 +210,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
   var relatedToggle = root.querySelector('#lab-related-toggle');
   var relatedPlacement = root.querySelector('#lab-related-placement');
   var topFilterStyle = root.querySelector('#lab-top-filter-style');
+  const promotionStyles = [['#lab-badge-style', 'badgeStyle'], ['#lab-banner-style', 'bannerStyle'], ['#lab-banner-placement', 'bannerPlacement']];
   const hitStyle = root.querySelector('#lab-hit-style');
   const hitText = root.querySelector('#lab-hit-text');
   const hitBackground = root.querySelector('#lab-hit-bg');
@@ -326,7 +326,10 @@ import { setupPaginationFocus } from './pagination-focus.js';
       ? 'Promotions and answers' : 'Promotions';
     thumbnailToggle.closest('.search-lab__field').hidden = !builtIn;
     descriptionToggle.closest('.search-lab__field').hidden = connected || (!fixture && !builtIn);
-    promotionsInput.closest('details').hidden = connected || (!builtIn && !fixture);
+    promotionsInput.closest('details').hidden = !fixture;
+    root.querySelector('[data-promotion-hint]').textContent = fixture ? 'Choose a sample under Features to try both formats.'
+      : !connected && liveProfile === 'SearchLabBuild' ? 'Search for “campus flu clinic” to try these styles.'
+      : 'Search with a published promotion trigger to see these styles.';
     suggestionsToggle.closest('details').hidden = connected || (!builtIn && !fixture);
   }
   experiencePanel.addEventListener('profile-settings', event => {
@@ -538,6 +541,9 @@ import { setupPaginationFocus } from './pagination-focus.js';
     if (!design.showSorting) sortOrder.value = '';
     colorInput.value = design.color;
     backgroundInput.value = design.background;
+    for (const [id, key] of promotionStyles) root.querySelector(id).value = design[key];
+    placePromotionBanners(externalPromotion, resultsLayout, design.bannerPlacement);
+    updatePromotionLabels(demoOutput, design);
     hitStyle.value = design.highlightStyle;
     hitText.value = design.highlightText;
     hitBackground.value = design.highlightBackground;
@@ -616,18 +622,15 @@ import { setupPaginationFocus } from './pagination-focus.js';
     if (workspaceMode === 'examples') {
       return (state.scenario === 'ranking' && state.rankingPreset) || SCENARIOS[state.scenario].query;
     }
-    return design.samplePromotions === 'off' ? designQuery : samplePromotionQuery;
+    return design.previewSource === 'fictional' && design.samplePromotions !== 'off' ? samplePromotionQuery : designQuery;
   }
 
   function isRankingPreset(query) {
     return rankingButtons.some(function (button) { return button.dataset.labRankingQuery === query; });
   }
 
-  function selectedPromotions(query) {
-    return samplePromotionMode(query, workspaceMode === 'design' ? design.samplePromotions : 'off');
-  }
-
   function showSearchProgress() {
+    externalPromotion.hidden = true;
     if (customerPreview.active || demoOutput.hasAttribute('data-searching')) return;
     demoOutput.setAttribute('data-searching', '');
     completed = false;
@@ -701,7 +704,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
     resultsContent.hidden = false;
     hasPreviousResults = true;
     noResultsMessage.hidden = !noMatches;
-    updateSampleExternalPromotion(externalPromotion, expected.promotions);
+
     pagination.hidden = false;
     status.textContent = '';
     facetEmpty.hidden = Boolean(facets.querySelector('input'));
@@ -887,20 +890,19 @@ import { setupPaginationFocus } from './pagination-focus.js';
     }
     var order = selectedOrder();
     var itemsPerPage = selectedPageSize();
-    var promotions = selectedPromotions(cleanQuery);
     var page = previousSearch?.page ?? 1;
     var filtersUnchanged = previousSearch ? JSON.stringify(current.facets) === JSON.stringify(previousSearch.facets)
       : (!clearFilters || !current.facets.length);
     var unchanged = current.query === cleanQuery && current.model === model && current.page === page &&
       current.order === order && current.itemsPerPage === itemsPerPage && filtersUnchanged;
-    if (unchanged && completed && expected.view === workspaceMode && expected.promotions === promotions) {
+    if (unchanged && completed && expected.view === workspaceMode) {
       if (!preserveDraft) queryInput.value = cleanQuery;
       status.textContent = '';
       resultsContent.hidden = false;
       pagination.hidden = false;
       return;
     }
-    expected = { query: cleanQuery, model: model, order: order, itemsPerPage: itemsPerPage, promotions: promotions, view: workspaceMode };
+    expected = { query: cleanQuery, model: model, order: order, itemsPerPage: itemsPerPage, view: workspaceMode };
     clearStaleShareLinks();
     completed = false;
     if (workspaceMode === 'examples') summary.textContent = '';
@@ -923,8 +925,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
   function refreshSearchOptions() {
     if (!experiencePanel.hidden) return;
     var current = search?.dataLayer.searchObject;
-    if (current?.query && (current.order !== selectedOrder() || current.itemsPerPage !== selectedPageSize() ||
-      expected?.promotions !== selectedPromotions(current.query))) {
+    if (current?.query && (current.order !== selectedOrder() || current.itemsPerPage !== selectedPageSize())) {
       runSearch(current.query, false, true);
     }
   }
@@ -939,14 +940,15 @@ import { setupPaginationFocus } from './pagination-focus.js';
       appendResultCard(body, card);
       const link = body.querySelector('a');
       if (link) link.setAttribute('data-searchstax-unique-result-id', items[index]?.uniqueId ?? '');
-      return [{ ...items[index], url: card.url, mappedBody: body.innerHTML,
+      return [{ ...items[index], url: card.url, mappedBody: body.innerHTML, promoted: card.promoted, promotionBadge: design.promotionBadge,
         demoThumbnail: card.thumbnail ? '' : demoThumbnails[card.url]?.source }];
     });
     const total = response.response.numFound;
     const notice = resultMappingNotice(mappingsKnown && !unknownResultFields.has(response), mapped.length, total);
     summary.textContent = total + (total === 1 ? ' result' : ' results') + ' for “' + response.responseHeader.params.q + '”' + (notice ? '. ' + notice : '');
     if (experiencePanel.hidden && !customerPreview.active) syncFeatureControls();
-    return applySampleIndexedPromotion(mapped, response, expected.promotions);
+    renderPromotionBanners(externalPromotion, promotionEntries(response.externalLinks), design.promotionHeading, 'en');
+    return mapped;
   }
 
   function initialize(initialQuery = sampleQuery()) {
@@ -996,7 +998,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
             noMatches = total === 0;
             summary.textContent = total + (total === 1 ? ' result' : ' results') + ' for “' + expected.query + '”';
             window.setTimeout(finishSearch, 0);
-            if (workspaceMode !== 'design') return applySampleIndexedPromotion(safeResults(items || []), response, expected.promotions);
+            if (workspaceMode !== 'design') return safeResults(items || []);
             lastBuiltInPage = { items, response, request: expected };
             return renderBuiltInPage(items, response);
           },
@@ -1012,7 +1014,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
             searchResultsContainerId: 'lab-results-list',
           },
           searchResultTemplate: {
-            template: '<article class="searchstax-search-result {{#mappedBody}}mapped-result-card{{/mappedBody}}">{{#sampleIndexedPromotion}}<span class="sample-indexed-promotion">Sample indexed promotion</span>{{/sampleIndexedPromotion}}{{#demoThumbnail}}<img class="search-lab__result-thumbnail" src="{{demoThumbnail}}" alt="" width="384" height="216" loading="lazy">{{/demoThumbnail}}{{#mappedBody}}{{{mappedBody}}}{{/mappedBody}}{{^mappedBody}}<h4><a class="searchstax-search-result-title" href="{{url}}" data-searchstax-unique-result-id="{{uniqueId}}">{{title}}</a></h4><p class="search-lab__result-description">{{description}}</p>{{/mappedBody}}</article>',
+            template: '<article class="searchstax-search-result {{#mappedBody}}mapped-result-card{{/mappedBody}}">{{#promoted}}<span class="search-promotion-marker">{{promotionBadge}}</span>{{/promoted}}{{#demoThumbnail}}<img class="search-lab__result-thumbnail" src="{{demoThumbnail}}" alt="" width="384" height="216" loading="lazy">{{/demoThumbnail}}{{#mappedBody}}{{{mappedBody}}}{{/mappedBody}}{{^mappedBody}}<h4><a class="searchstax-search-result-title" href="{{url}}" data-searchstax-unique-result-id="{{uniqueId}}">{{title}}</a></h4><p class="search-lab__result-description">{{description}}</p>{{/mappedBody}}</article>',
             searchResultUniqueIdAttribute: 'data-searchstax-unique-result-id',
           },
           noSearchResultTemplate: { template: ' ' },
@@ -1064,6 +1066,10 @@ import { setupPaginationFocus } from './pagination-focus.js';
       updateDesign();
     });
   });
+  for (const [id, key] of promotionStyles) {
+    const select = root.querySelector(id);
+    select.addEventListener('change', () => { design[key] = select.value; updateDesign(); });
+  }
   hitStyle.addEventListener('change', function () {
     design.highlightStyle = readHighlightStyle(hitStyle.value);
     updateDesign();
@@ -1137,6 +1143,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
       clearDesignFeedback();
       updatePreviewText();
       experiencePreview.configure(design);
+      updatePromotionLabels(designSurface, design);
       codeFeedback.textContent = '';
       saveDesignDraft();
     });
@@ -1222,13 +1229,8 @@ import { setupPaginationFocus } from './pagination-focus.js';
     }
     if (design.samplePromotions === 'indexed' || design.samplePromotions === 'both') sortOrder.value = '';
     showDesignPreview();
-    if (experiencePanel.hidden) {
-      runSearch(samplePromotionQuery, true);
-      summary.scrollIntoView({ block: 'center' });
-    } else {
-      experiencePreview.submit(experiencePreview.promotionQuery);
-      experiencePanel.querySelector('[data-exp-promotions]').scrollIntoView({ block: 'center' });
-    }
+    experiencePreview.submit(experiencePreview.promotionQuery);
+    experiencePanel.querySelector('[data-exp-promotions]').scrollIntoView({ block: 'center' });
   });
   phaseButtons.forEach(function (button) {
     button.addEventListener('click', function () {

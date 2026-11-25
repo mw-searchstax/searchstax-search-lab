@@ -281,8 +281,9 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
         const item = document.createElement('li');
         if (card.promoted) {
           const marker = document.createElement('strong');
-          marker.className = 'sample-indexed-promotion';
-          marker.textContent = es ? (app ? 'Promocionado' : 'Promoción indexada de ejemplo') : (app ? 'Promoted' : 'Sample indexed promotion');
+          marker.className = app ? 'search-promotion-marker' : 'sample-indexed-promotion';
+          marker.dataset.defaultLabel = es ? (app ? 'Promocionado' : 'Promoción indexada de ejemplo') : (app ? 'Promoted' : 'Sample indexed promotion');
+          marker.textContent = options.promotionBadge === DEFAULT_DESIGN.promotionBadge ? marker.dataset.defaultLabel : options.promotionBadge;
           item.append(marker);
         }
         appendResultCard(item, card);

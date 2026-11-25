@@ -27,8 +27,6 @@ If search can’t start, choose **Reload search**. If a search fails or takes lo
 
 If you enabled sample search suggestions, type `reh` to try them. Choosing a suggestion runs a search against the fictional demo.
 
-If you enabled sample promotions, the starter opens with `campus flu clinic`. The indexed sample moves the 2026 notice to the first relevance result when that notice is present. The external sample displays a separate link above the results. [Indexed and external promotions](https://support.searchstax.com/hc/en-us/articles/40499202855693-Promotions-Indexed-vs-External)
-
 The starter uses the **Results per page** setting from your design. To change it in the starter, edit `resultsPerPage` in `search.js`.
 
 To change the message visitors see when a search finds no matches, edit `noResultsText` in `search.js`.
@@ -40,7 +38,9 @@ To change the message visitors see when a search finds no matches, edit `noResul
 3. In your Search Profile, go to **Configurations > Basic Configurations > Results Fields**. Map the fields you want to show to **Title**, **URL**, and **Description**. Use full `https://` or `http://` URLs in the field you map to **URL**. If you're showing filters, configure the indexed fields visitors can filter by under **Faceting**. Publish your changes in Site Search. [Results Fields](https://support.searchstax.com/hc/en-us/articles/40837318253197-Results-Fields) · [Faceting](https://support.searchstax.com/hc/en-us/articles/40836775695117-Faceting)
 4. In `index.html`, update the page title, heading, and search field text for your site. Change the sample query in the search input's `value` attribute to a term that matches your content, then reload the page to try it.
 
-Publish indexed or external promotions in the connected Search Profile and search for one of their trigger phrases. External promotions appear above the results. Indexed promotions display a **Promoted** label in the order returned by the app. The sample promotions are available with the included Central County connection. [Promotions](https://support.searchstax.com/hc/en-us/articles/40155433600397-Promotions)
+### Promotions
+
+Search with a published trigger on the selected profile. An elevated result gets the indexed badge from your design. External items use the banner heading, style, and placement from your design. A normal query shows the profile’s ordinary results. To try the fixed samples, choose **Fictional demo** in local Search Lab. [Promotions setup](https://support.searchstax.com/hc/en-us/articles/40155433600397-Promotions)
 
 ### Related Searches and Smart Answers
 

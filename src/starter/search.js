@@ -5,14 +5,8 @@ import { setupStarterServices } from './starter-services.js';
 import { setupPaginationFocus } from './pagination-focus.js';
 import { contentLanguageTag } from './content-language.js';
 import { starterPassages } from './starter-passages.js';
-import { readCustomerEndpoint, webURL } from './web-url.js';
-import {
-  applySampleIndexedPromotion,
-  createSampleExternalPromotion,
-  samplePromotionMode,
-  samplePromotionQuery,
-  updateSampleExternalPromotion,
-} from './promotions.js';
+import { readCustomerEndpoint } from './web-url.js';
+import { promotionEntries, renderPromotionBanners, placePromotionBanners } from './promotion-display.js';
 
 const logo = document.querySelector('.search-starter__logo');
 if (logo) {
@@ -41,15 +35,12 @@ const feedback = document.querySelector('#search-feedback');
 const retry = document.querySelector('#search-retry');
 const reload = document.querySelector('#search-reload');
 const output = document.querySelector('#search-output');
-const externalPromotions = usesDemoProfile ? createSampleExternalPromotion() : document.createElement('section');
-if (!usesDemoProfile) externalPromotions.setAttribute('aria-label', 'External promotions');
+const externalPromotions = document.createElement('section');
+externalPromotions.setAttribute('aria-label', 'External promotions');
 externalPromotions.hidden = true;
-output.before(externalPromotions);
-if (usesDemoProfile && config.samplePromotions !== 'off') {
-  query.value = samplePromotionQuery;
-}
+placePromotionBanners(externalPromotions, output, config.bannerPlacement);
 const noResultsMessage = document.querySelector('#search-no-results');
-let promotionResponse;
+
 
 function showFeedback(message, action) {
   status.textContent = message;
@@ -99,7 +90,6 @@ function enableResultRecovery(search) {
     output.setAttribute('aria-busy', 'true');
     noResultsMessage.hidden = true;
     externalPromotions.hidden = true;
-    promotionResponse = undefined;
     showFeedback(withPreviousResults('Searching…'));
     const timer = window.setTimeout(() => {
       if (active === request) showFeedback(withPreviousResults('Search is taking longer than usual.'), retry);
@@ -142,36 +132,6 @@ if (config.showSuggestions) {
   if (source) setupSearchSuggestions(form, 'starter-search-suggestions')(source);
 }
 
-function renderExternalPromotions(entries) {
-  const banners = [];
-  for (const entry of Array.isArray(entries) ? entries : []) {
-    if (typeof entry?.url !== 'string') continue;
-    const url = webURL(entry.url);
-    if (!url) continue;
-
-    const banner = document.createElement('div');
-    banner.className = 'search-promotion-banner';
-    const label = document.createElement('span');
-    label.className = 'search-promotion-marker';
-    label.textContent = 'Promoted';
-    const link = document.createElement('a');
-    link.href = url;
-    link.referrerPolicy = 'no-referrer';
-    link.textContent = (typeof entry.name === 'string' && entry.name.trim()) || url;
-    if (resultLanguage) link.lang = resultLanguage;
-    banner.append(label, link);
-    if (typeof entry.description === 'string' && entry.description.trim()) {
-      const description = document.createElement('p');
-      description.textContent = entry.description.trim();
-      if (resultLanguage) description.lang = resultLanguage;
-      banner.append(description);
-    }
-    banners.push(banner);
-  }
-  externalPromotions.replaceChildren(...banners);
-  externalPromotions.hidden = banners.length === 0;
-}
-
 async function startSearch() {
   if (!config.searchURL || !config.searchAuth) {
     showFeedback('Set the Select endpoint and read-only token in search.js to start searching.');
@@ -202,24 +162,11 @@ async function startSearch() {
         if (typeof total !== 'number') return [];
         const passages = starterPassages(response, usesDemoProfile);
         const results = items.filter(item => /^https?:\/\//i.test(item.url));
-        if (!usesDemoProfile) {
-          if (response !== promotionResponse) {
-            promotionResponse = response;
-            renderExternalPromotions(response.externalLinks);
-          }
-          return results.map(item => ({ ...item, ...passages(item), indexedPromotion: item.promoted === true, resultLanguage }));
-        }
-        const mode = samplePromotionMode(response.responseHeader?.params?.q, config.samplePromotions);
-        updateSampleExternalPromotion(externalPromotions, mode);
-        return applySampleIndexedPromotion(
-          results.map(item => ({
-            ...item,
-            ...passages(item),
-            demoThumbnail: demoThumbnails[item.url],
-          })),
-          response,
-          mode,
-        );
+        renderPromotionBanners(externalPromotions, promotionEntries(response.externalLinks), config.promotionHeading, resultLanguage);
+        return results.map(item => ({
+          ...item, ...passages(item), resultLanguage, promotionBadge: config.promotionBadge,
+          demoThumbnail: usesDemoProfile ? demoThumbnails[item.url] : '',
+        }));
       },
     },
   });
@@ -262,8 +209,7 @@ async function startSearch() {
       },
       searchResultTemplate: {
         template: `<article class="searchstax-search-result">
-          {{#sampleIndexedPromotion}}<span class="sample-indexed-promotion">Sample indexed promotion</span>{{/sampleIndexedPromotion}}
-          {{#indexedPromotion}}<span class="search-promotion-marker">Promoted</span>{{/indexedPromotion}}
+          {{#promoted}}<span class="search-promotion-marker">{{promotionBadge}}</span>{{/promoted}}
           {{#demoThumbnail}}<img class="search-starter__result-thumbnail" src="{{demoThumbnail}}" alt="" width="384" height="216" loading="lazy">{{/demoThumbnail}}
           {{#hasRibbon}}<span class="searchstax-search-result-ribbon">{{#ribbonParts}}${passageMarkup}{{/ribbonParts}}</span>{{/hasRibbon}}
           <h2{{#resultLanguage}} lang="{{resultLanguage}}"{{/resultLanguage}}><a href="{{url}}" data-result-id="{{uniqueId}}">{{#titleParts}}${passageMarkup}{{/titleParts}}</a></h2>

@@ -1,3 +1,4 @@
+import { promotionEntries } from './promotion-display.js';
 import { webURL } from './web-url.js';
 import type { AppConfiguration, Profile } from './app-configuration.js';
 import { resultCards, type ResultResponse } from './result-card.js';
@@ -87,10 +88,7 @@ async function readPage(connection: CustomerConnection, options: CustomerSearch,
   if (!response || !Number.isSafeInteger(response.numFound) || response.numFound < 0 || !Array.isArray(response.docs)) {
     throw new CustomerSearchError('The endpoint didn’t return search results. Check the Select endpoint and Search Profile.');
   }
-  const externalPromotions = (Array.isArray(payload.externalLinks) ? payload.externalLinks : []).flatMap(item => {
-    const url = webURL(firstText(item?.url));
-    return url ? [{ url, title: firstText(item?.name).trim() || url, description: firstText(item?.description).trim() }] : [];
-  });
+  const externalPromotions = promotionEntries(payload.externalLinks);
 
   const facets = (Array.isArray(payload.metadata?.facets) ? payload.metadata.facets : []).filter(field => field && typeof field.name === 'string' && fieldName.test(field.name)).map(field => {
     const counts = payload.facet_counts?.facet_fields?.[field.name] ?? [];

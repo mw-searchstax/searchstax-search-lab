@@ -46,13 +46,7 @@
         </ng-template>
       </app-searchstax-search-sorting>
     }
-    @if (promotionMode() === 'external' || promotionMode() === 'both') {
-      <section class="sample-external-promotion search-promotion-banner" aria-label="Sample external promotion">
-        <p class="sample-external-promotion__label">Sample external promotion</p>
-        <a [href]="sampleExternalPromotion.url" referrerpolicy="no-referrer">{{ sampleExternalPromotion.title }}</a>
-      </section>
-    }
-    @if (!isDemo) {
+    <ng-template #promotionWidget>
       <app-searchstax-external-promotions [templateOverride]="externalPromotions">
         <ng-template #externalPromotions let-data="externalPromotionsData">
           @if (livePromotions(data?.externalPromotions); as links) {
@@ -60,7 +54,7 @@
               <section aria-label="External promotions">
                 @for (entry of links; track entry.id ?? entry.url) {
                   <div class="search-promotion-banner">
-                    <span class="search-promotion-marker">Promoted</span>
+                    <strong class="search-promotion-heading">{{ design.promotionHeading }}</strong>
                     <a [href]="entry.url" [attr.lang]="resultLanguage" referrerpolicy="no-referrer">{{ entry.name || entry.url }}</a>
                     @if (entry.description) {
                       <p [attr.lang]="resultLanguage">{{ entry.description }}</p>
@@ -72,6 +66,9 @@
           }
         </ng-template>
       </app-searchstax-external-promotions>
+    </ng-template>
+    @if (design.bannerPlacement === 'above') {
+      <ng-container [ngTemplateOutlet]="promotionWidget" />
     }
     <div class="search-starter__body">
       @if (design.showFilters) {
@@ -108,11 +105,8 @@
             <div class="searchstax-search-results">
               @for (item of items ?? []; track item.uniqueId || item.url) {
                 <article class="searchstax-search-result">
-                  @if (item.sampleIndexedPromotion) {
-                    <span class="sample-indexed-promotion">Sample indexed promotion</span>
-                  }
-                  @if (!isDemo && item.promoted) {
-                    <span class="search-promotion-marker">Promoted</span>
+                  @if (item.promoted) {
+                    <span class="search-promotion-marker">{{ design.promotionBadge }}</span>
                   }
                   @if (item.previewThumbnail && item.previewThumbnailAlt !== null) {
                     <img class="search-starter__result-thumbnail" [src]="item.previewThumbnail"
@@ -152,6 +146,9 @@
         </div>
       </div>
     </div>
+    @if (design.bannerPlacement === 'below') {
+      <ng-container [ngTemplateOutlet]="promotionWidget" />
+    }
   </app-searchstax-wrapper>
   }
 </main>

@@ -4,14 +4,22 @@
   border: 1px solid #d7e0da;
   border-inline-start: 3px solid var(--preview-accent, var(--search-accent, #263f58));
   border-radius: 5px;
-  color: #253a34;
-  background: #f3f7f4;
+  color: var(--promotion-banner-ink, #253a34);
+  background: var(--promotion-banner-background, #f3f7f4);
   overflow-wrap: anywhere;
 }
 
 .search-promotion-banner[hidden] { display: none; }
 .search-promotion-banner p { margin: 4px 0 0; }
 .search-promotion-banner .sample-external-promotion__label { margin: 0 0 4px; }
-.search-promotion-banner a { color: #244a39; font-weight: 600; text-decoration: underline; }
+.search-promotion-banner a { color: inherit; font-weight: 600; text-decoration: underline; }
 .sample-external-promotion__label, .sample-indexed-promotion, .search-promotion-marker { font-size: .8125rem; font-weight: 600; }
 .sample-indexed-promotion, .search-promotion-marker { display: block; margin-bottom: 4px; color: #364e40; }
+
+.search-promotion-heading { display: block; margin: 0 0 4px; font-size: 1em; }
+.search-promotion-marker, .sample-indexed-promotion {
+  width: fit-content;
+  padding: var(--promotion-badge-padding, 0);
+  border: var(--promotion-badge-border, 0);
+  border-radius: 1em;
+}

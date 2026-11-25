@@ -22,6 +22,11 @@ export const PAGE_SIZES = [5, 10, 20] as const;
 
 export type DesignSettings = {
   highlightStyle: 'default' | 'bold' | 'italic' | 'color' | 'plain';
+  promotionBadge: string;
+  promotionHeading: string;
+  badgeStyle: 'text' | 'pill';
+  bannerStyle: 'tinted' | 'outline';
+  bannerPlacement: 'above' | 'below';
   highlightText: string;
   highlightBackground: string;
   previewSource: 'app' | 'fictional';
@@ -54,6 +59,11 @@ export type DesignSettings = {
 
 export const DEFAULT_DESIGN: Readonly<DesignSettings> = {
   highlightStyle: 'default',
+  promotionBadge: 'Promoted',
+  promotionHeading: 'Featured link',
+  badgeStyle: 'text',
+  bannerStyle: 'tinted',
+  bannerPlacement: 'above',
   highlightText: '#202020',
   highlightBackground: '#ffec99',
   previewSource: 'app',
@@ -137,6 +147,11 @@ export function readDesignParams(params: URLSearchParams, allowFictionalPreview 
   const background = '#' + (params.get('lab_background') ?? '').toLowerCase();
 
   return {
+    promotionBadge: resolveSearchText(params.get('lab_badge'), DEFAULT_DESIGN.promotionBadge),
+    promotionHeading: resolveSearchText(params.get('lab_promo_heading'), DEFAULT_DESIGN.promotionHeading),
+    badgeStyle: params.get('lab_badge_style') === 'pill' ? 'pill' : 'text',
+    bannerStyle: params.get('lab_banner_style') === 'outline' ? 'outline' : 'tinted',
+    bannerPlacement: params.get('lab_banner_placement') === 'below' ? 'below' : 'above',
     highlightStyle: readHighlightStyle(params.get('lab_highlight')),
     highlightText: readHighlightColor(params.get('lab_hit_text'), DEFAULT_DESIGN.highlightText),
     highlightBackground: readHighlightColor(params.get('lab_hit_bg'), DEFAULT_DESIGN.highlightBackground),
@@ -170,6 +185,11 @@ export function readDesignParams(params: URLSearchParams, allowFictionalPreview 
 }
 
 export function writeDesignParams(params: URLSearchParams, design: DesignSettings): void {
+  if (design.promotionBadge !== DEFAULT_DESIGN.promotionBadge) params.set('lab_badge', design.promotionBadge);
+  if (design.promotionHeading !== DEFAULT_DESIGN.promotionHeading) params.set('lab_promo_heading', design.promotionHeading);
+  if (design.badgeStyle !== DEFAULT_DESIGN.badgeStyle) params.set('lab_badge_style', design.badgeStyle);
+  if (design.bannerStyle !== DEFAULT_DESIGN.bannerStyle) params.set('lab_banner_style', design.bannerStyle);
+  if (design.bannerPlacement !== DEFAULT_DESIGN.bannerPlacement) params.set('lab_banner_placement', design.bannerPlacement);
   if (design.highlightStyle !== 'default') params.set('lab_highlight', design.highlightStyle);
   else params.delete('lab_highlight');
   for (const [key, value, fallback] of [
@@ -258,6 +278,10 @@ export function designVariables(design: DesignSettings) {
   const topStyle = design.filterPlacement === 'top' ? design.topFilterStyle : 'list';
   const darkBackground = contrastText(design.background) === '#ffffff';
   return {
+    '--promotion-badge-padding': design.badgeStyle === 'pill' ? '2px 10px' : '0',
+    '--promotion-badge-border': design.badgeStyle === 'pill' ? '1px solid currentColor' : '0',
+    '--promotion-banner-background': design.bannerStyle === 'outline' ? 'transparent' : '#f3f7f4',
+    '--promotion-banner-ink': design.bannerStyle === 'outline' ? 'inherit' : '#253a34',
     '--search-hit-weight': design.highlightStyle === 'bold' ? 'bold' : 'inherit',
     '--search-hit-style': design.highlightStyle === 'italic' ? 'italic' : 'inherit',
     '--search-hit-ink': design.highlightStyle === 'color'

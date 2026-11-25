@@ -14,7 +14,6 @@ npm run dev
 Open the localhost URL printed in the terminal. You’ll need an internet connection for the demo search. Run `npm run build` to create the deployable files in `dist/`.
 
 - Search for `rehabilitation` to try filters or view the optional sample thumbnails.
-- Search for `campus flu clinic` to try pagination, sorting, or the Promotion formats selected in your design.
 - On SearchLabDemo, type `reh` to try suggestions if you enabled them in your design.
 
 ## Connect Your Search App
@@ -24,6 +23,10 @@ Use `src/config.js` to connect your app. Keep the `demo` object and set `connect
 1. In Site Search, go to **App Settings > All APIs > Search & Indexing** for your Select endpoint and token.
 2. Map Title, URL, and Description in your Search Profile’s **Results Fields**. Map Thumbnail if you’re displaying images. Configure and publish any facets, sort options, and Promotions you want to use. [Results Fields](https://support.searchstax.com/hc/en-us/articles/40837318253197-Results-Fields)
 3. For live suggestions, publish Auto-Suggest, set `suggesterURL` to its endpoint, and enable `showSuggestions` in `design`. [Auto-Suggest API](https://support.searchstax.com/hc/en-us/articles/40243330090893-Auto-Suggest-API)
+
+### Promotions
+
+Search with a published trigger on the selected profile. An elevated result gets the indexed badge from your design. External items use the banner heading, style, and placement from your design. A normal query shows the profile’s ordinary results. To try the fixed samples, choose **Fictional demo** in local Search Lab. [Promotions setup](https://support.searchstax.com/hc/en-us/articles/40155433600397-Promotions)
 
 ### Related Searches and Smart Answers
 

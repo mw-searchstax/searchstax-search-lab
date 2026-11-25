@@ -1,3 +1,4 @@
+import { placePromotionBanners, renderPromotionBanners, updatePromotionLabels } from './promotion-display.js';
 import { createSearchRecovery } from './search-recovery';
 import { readAppConfiguration, featureStatus, profileStatus, type Profile, type AppConfiguration } from './app-configuration.js';
 import { resultMappingNotice, appendResultCard } from './result-card.js';
@@ -207,34 +208,14 @@ export function setupCustomerPreview(
   function promotionLabel() {
     const label = document.createElement('span');
     label.className = 'search-promotion-marker';
-    label.textContent = 'Promoted';
+    label.textContent = getDesign().promotionBadge;
     return label;
-  }
-
-  function renderExternalPromotions(entries: BuildPage['externalPromotions'], language?: string) {
-    promotions.replaceChildren(...entries.map(entry => {
-      const banner = document.createElement('div');
-      banner.className = 'search-promotion-banner';
-      const link = document.createElement('a');
-      link.href = entry.url;
-      link.textContent = entry.title;
-      if (language) link.lang = language;
-      link.referrerPolicy = 'no-referrer';
-      banner.append(promotionLabel(), link);
-      if (entry.description) {
-        const description = document.createElement('p');
-        description.textContent = entry.description;
-        if (language) description.lang = language;
-        banner.append(description);
-      }
-      return banner;
-    }));
-    promotions.hidden = !entries.length;
   }
 
   function renderResults(page: BuildPage, active: CustomerSearch, language?: string) {
     status.textContent = page.total + (page.total === 1 ? ' result' : ' results') + ' for “' + active.query + '”';
-    renderExternalPromotions(page.externalPromotions, language);
+    renderPromotionBanners(promotions, page.externalPromotions, getDesign().promotionHeading, language);
+    placePromotionBanners(promotions, layout, getDesign().bannerPlacement);
     sort.replaceChildren(new Option('Relevance', ''), ...page.sorts.map(item => new Option(item.label, item.value)));
     sort.value = page.sorts.some(item => item.value === active.sort) ? active.sort : '';
     renderFacets(page, active);
@@ -379,7 +360,8 @@ export function setupCustomerPreview(
     searchFeedback.textContent = '';
     grid.hidden = true;
     grid.replaceChildren();
-    renderExternalPromotions([]);
+    promotions.replaceChildren();
+    promotions.hidden = true;
     facetFields.replaceChildren();
     sort.replaceChildren();
     status.textContent = '';
@@ -505,6 +487,8 @@ export function setupCustomerPreview(
       if (!connection || !options) return;
       updateVisibility();
       const design = getDesign();
+      placePromotionBanners(promotions, layout, design.bannerPlacement);
+      updatePromotionLabels(panel, design);
       const showChoices = design.filterPlacement === 'top';
       if (latestPage && facetFields.dataset.showChoices !== String(showChoices)) renderFacets(latestPage, options);
       const nextOrder = design.showSorting ? (order ?? options.sort) : '';

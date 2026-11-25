@@ -9,7 +9,8 @@ export function starterPassages(response, demo) {
   const byId = new Map();
   if (key) documents.forEach((doc, i) => byId.set(String(doc[key]), cards[i]));
   return item => {
-    const values = byId.get(String(item.uniqueId))?.values ?? [];
+    const card = byId.get(String(item.uniqueId));
+    const values = card?.values ?? [];
     function parts(role, fallback = '') {
       const field = values.find(value => value.role === role);
       if (field) return passageParts(field.value, field.highlighted);
@@ -19,6 +20,7 @@ export function starterPassages(response, demo) {
     }
     const ribbonParts = parts('ribbon', item.ribbon).filter(part => part.text);
     return {
+      promoted: card?.promoted ?? item.promoted === true,
       titleParts: parts('title', item.title || item.url),
       descriptionParts: parts('description', item.description).filter(part => part.text),
       hasRibbon: ribbonParts.length > 0,

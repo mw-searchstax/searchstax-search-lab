@@ -107,10 +107,10 @@ The ten widget families below follow the [Help Center catalog](https://support.s
 
 | Option | Build today | Destination, mechanism and proposed default | Prerequisite or review example | JS | React | Vue | Angular |
 |---|---|---|---|---|---|---|---|
-| External promotions template | Connected responses can show an external promotion. | Appearance · template. Choose heading and card treatment, start with current treatment. | Published external trigger with safe title and URL. | Partial | Partial | Partial | Partial |
-| External item placement | Fixed banner position. | Advanced Options · template. Offer above results or within the layout. | Published trigger and an ordinary search with no promotion. | Gap | Gap | Gap | Gap |
-| Indexed promotion | Returned elevation or a fictional sample badge. | Features · app and template. Follow returned promotion status. | Published indexed trigger and identifiable elevated result. | Partial | Partial | Partial | Partial |
-| Indexed badge text and styling | One treatment per rendering path. | Appearance · template and CSS. Start with “Promoted” for actual elevated content. | Compare elevated and ordinary results on the same page. | Gap | Gap | Gap | Gap |
+| External promotions template | Shows the links and descriptions returned for the query. | Appearance · template and CSS. Edit the “Featured link” heading and choose a tinted card (default) or outline. | Published external item with an HTTP or HTTPS destination. | Wired | Wired | Wired | Wired |
+| External item placement | Places returned banners above or below results. | Advanced Options · layout. Above results by default. | Compare the trigger with a query that returns no banner. | Wired | Wired | Wired | Wired |
+| Indexed promotion | Keeps the response order and labels results marked as elevated. | App and result template. The selected profile supplies the promotion. | Published indexed trigger and an identifiable elevated result. | Wired | Wired | Wired | Wired |
+| Indexed badge text and styling | Labels each elevated result. | Appearance · template and CSS. Edit “Promoted” and choose text (default) or an outlined pill. | Compare the elevated result with the next result. | Wired | Wired | Wired | Wired |
 
 ## Related Searches
 
@@ -202,7 +202,11 @@ The kits document three styling paths. Import the distributed theme, override se
 
 The last two rows refer to the profile-navigation exports. For ordinary exports, document-level card rendering still expects a usable result URL. The preview and profile-tab renderer can also show text-only results. Test this case before claiming full parity for the result-item template. Thumbnail treatments also differ between the ordinary starters and the profile-tab renderer.
 
-All four ordinary exports carry the selected app’s language-scoped Related Searches setting and profile-scoped Smart Answers setting. The fictional demo supplies the sample terms and answer. Sample promotions in the ordinary built-in demo remain a separate coverage gap.
+All four ordinary exports carry the selected app’s language-scoped Related Searches setting and profile-scoped Smart Answers setting. The explicit fictional demo supplies sample related terms, answers and promotions.
+
+The English SearchLabBuild profile has one exact-match rule for **campus flu clinic**. It elevates the 2026 flu clinic notice and returns an external link to flu shot appointment information. **Rehabilitation** is a control query. The campus query returned neither promotion on Main Profile, SearchLabAfter or SearchLabRanking in the November 25, 2026 check.
+
+On November 25, the ordinary and tabbed Build previews displayed both published items. The JavaScript, React, Vue and Angular downloads each showed the notice first with a custom outlined badge and the appointment link below results with a custom heading and outline. The control query cleared both. All four fictional downloads displayed the sample promotions without calling the live search endpoint. The share link restored all five design choices and Download CSS carried the selected treatments.
 
 Local download verification on November 24, 2026 covered JavaScript, React, Vue and Angular. Each ran **rehabilitation** against the live English SearchLabBuild profile, showed highlighted results and made zero Discovery or Answer requests. In an isolated connected-app fixture, each displayed returned terms and a streamed answer. Choosing a returned term submitted it to the same profile and language. Independent settings produced suggestions alone or an answer alone. Unknown settings, missing credentials or service endpoints, a different app, a different language, and absent entitlements suppressed the corresponding requests. The explicit fictional download in each framework displayed the fixed suggestions and answer for the same query.
 

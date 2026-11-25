@@ -24,6 +24,7 @@ import type { Entitlements, Profile } from './app-configuration';
 import starterAnswersJS from './starter-answers.js?raw';
 import thumbnailAltJS from './thumbnail-alt.js?raw';
 import promotionsCSS from './sample-promotions.css?raw';
+import promotionDisplay from './promotion-display.ts?starter-js';
 import promotionsJS from './sample-promotions.js?raw';
 import smartAnswersSampleHTML from './smart-answers-sample.html?raw';
 import smartAnswersSampleCSS from './smart-answers-sample.css?raw';
@@ -214,7 +215,9 @@ function starterFeatures(design: DesignSettings) {
     showFilters: design.filters,
     showSorting: design.showSorting,
     showSuggestions: design.showSuggestions,
-    samplePromotions: design.samplePromotions,
+    promotionBadge: design.promotionBadge,
+    promotionHeading: design.promotionHeading,
+    bannerPlacement: design.bannerPlacement,
     resultsPerPage: design.resultsPerPage,
     noResultsText: design.noResultsText,
   };
@@ -248,6 +251,7 @@ function createProfileStarter(framework: Framework, design: DesignSettings, expe
     'src/customer-suggestions.js': customerSuggestions,
     'src/customer-answers.js': customerAnswersJS,
     'src/sample-suggestions.js': suggestionsJS,
+    'src/promotion-display.js': promotionDisplay,
     'src/sample-promotions.js': promotionsJS,
     'src/related-searches.js': relatedJS,
     'src/customer-search.js': searchRuntime,
@@ -382,7 +386,7 @@ export function createStarterZip(
     'result-tracking.js': strToU8(resultTrackingJS),
     'related-searches.js': strToU8(relatedJS),
     'pagination-focus.js': strToU8(paginationFocusJS),
-    'promotions.js': strToU8(promotionsJS),
+    'promotion-display.js': strToU8(promotionDisplay),
     'README.md': strToU8(readme),
     ...thumbnailFiles,
   });
@@ -436,7 +440,6 @@ export const design = ${JSON.stringify(settings, null, 2)};
     ...ordinaryServiceFiles(selected, 'src/'),
     'src/thumbnail-alt.js': strToU8(thumbnailAltJS),
     'src/customer-suggestions.js': strToU8(customerSuggestions),
-    'src/promotions.js': strToU8(promotionsJS),
     ...Object.fromEntries(Object.entries(files).map(([path, bytes]) => ['public/' + path, bytes])),
   };
 }

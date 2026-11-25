@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, computed, signal } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, signal } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { SearchstudioUxAngularModule } from '@searchstax-inc/searchstudio-ux-angular';
 import type { IExternalPromotion, ISearchstaxParsedResult, ISearchstaxSearchResponse, ISearchstaxSearchSortingData, Searchstax } from '@searchstax-inc/searchstudio-ux-js';
@@ -11,7 +11,6 @@ import { createCustomerSuggestionSource } from './customer-suggestions.js';
 import { sampleSuggestionSource, setupSearchSuggestions } from './suggestions.js';
 import { getAnalyticsSettings, setupResultTracking } from './result-tracking.js';
 import { setupPaginationFocus } from './pagination-focus.js';
-import { applySampleIndexedPromotion, sampleExternalPromotion, samplePromotionMode, samplePromotionQuery } from './promotions.js';
 
 const facetLabels: Record<string, string> = demo.facetLabels;
 const thumbnailPaths: Record<string, string> = demo.thumbnailPaths;
@@ -41,14 +40,11 @@ export class SearchApp implements AfterViewInit, OnDestroy {
   readonly connection = connection;
   readonly analytics = getAnalyticsSettings(connection);
   readonly design = design;
-  readonly sampleExternalPromotion = sampleExternalPromotion;
   readonly resultLanguage = contentLanguageTag(connection.language);
   readonly isDemo = connection.searchURL === demo.searchURL && connection.model === demo.model && this.resultLanguage === demo.language;
   readonly status = signal('Connecting to search…');
-  private readonly query = signal('');
-  readonly promotionMode = computed(() => this.isDemo ? samplePromotionMode(this.query(), design.samplePromotions) : 'off');
   private readonly initialQuery = connection.initialQuery ||
-    (this.isDemo ? (design.samplePromotions === 'off' ? 'rehabilitation' : samplePromotionQuery) : '');
+    (this.isDemo ? 'rehabilitation' : '');
   private api?: Searchstax;
   private loadingSubscription?: string;
   private timer?: number;
@@ -128,7 +124,6 @@ export class SearchApp implements AfterViewInit, OnDestroy {
     const total = response?.response?.numFound;
     if (typeof total !== 'number') return [];
     window.clearTimeout(this.timer);
-    this.query.set(response?.responseHeader?.params?.q ?? '');
     this.status.set(total + (total === 1 ? ' result' : ' results'));
     const passages = starterPassages(response, this.isDemo);
     const results = items.flatMap(item => {
@@ -145,7 +140,7 @@ export class SearchApp implements AfterViewInit, OnDestroy {
         ),
       }] : [];
     });
-    return this.isDemo ? applySampleIndexedPromotion(results, response, this.promotionMode()) : results;
+    return results;
   };
 
   facetLabel(value: string) {
