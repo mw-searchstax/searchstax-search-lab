@@ -105,7 +105,7 @@ async function runFreeSearchAndRoutes(page) {
   let freeRetryRequests = 0;
   await page.route(endpoint + '**', route => {
     freeRetryRequests += 1;
-    return freeRetryRequests === 1 ? route.abort() : route.continue();
+    return freeRetryRequests === 1 ? route.abort() : route.fallback();
   });
   await input.fill('orthopedics');
   await input.press('Enter');
@@ -171,7 +171,7 @@ async function runRetry(page) {
   let requests = 0;
   await page.route(endpoint + '**', route => {
     requests += 1;
-    return requests === 1 ? route.abort() : route.continue();
+    return requests === 1 ? route.abort() : route.fallback();
   });
   await page.goto(baseURL + '#lab-improve', { waitUntil: 'domcontentloaded' });
   await choose(page, 'Search Fields · Match text');

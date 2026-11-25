@@ -229,7 +229,7 @@ async function demoSearch(page) {
   await page.route('**/emselect**', route => {
     const params = new URL(route.request().url()).searchParams;
     attempts.push({ q: params.get('q'), start: params.get('start'), http: block ? 503 : 'live' });
-    return block ? route.fulfill({ status: 503, body: 'Service unavailable' }) : route.continue();
+    return block ? route.fulfill({ status: 503, body: 'Service unavailable' }) : route.fallback();
   });
   await center(input);
   // Make this a new query even when promotions are enabled by default.
@@ -291,7 +291,7 @@ async function optionalServices(page) {
 }
 async function comparisons(page) {
   let block = true;
-  await page.route('**/emselect**', r => block ? r.fulfill({ status: 503, body: 'Service unavailable' }) : r.continue());
+  await page.route('**/emselect**', r => block ? r.fulfill({ status: 503, body: 'Service unavailable' }) : r.fallback());
   await page.goto(baseURL + '#lab-data-filters');
   const rule = page.getByLabel('Exclude News', { exact: true });
   // Activate a rule near the lower edge as well as testing the ordinary centered controls.

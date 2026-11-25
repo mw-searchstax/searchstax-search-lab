@@ -16,7 +16,7 @@ async function runCase(browser, lesson, scenario, steps, check) {
       if (step === 'timeout') return; // The lesson's real timeout cancels this pending request.
       if (step === '503') return route.fulfill({ status: 503, body: 'Service unavailable' });
       if (step === 'slow') await new Promise(resolve => setTimeout(resolve, 3000));
-      return route.continue();
+      return route.fallback();
     });
     await page.goto(baseURL);
     await page.getByRole('link', { name: 'Start improving' }).click();

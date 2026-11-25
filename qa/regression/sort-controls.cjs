@@ -1,7 +1,7 @@
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
-const { chromium, assert, baseURL } = require('./runtime.cjs');
+const { chromium, assert, baseURL, liveQA } = require('./runtime.cjs');
 const fixture = require('./fixtures/searchlabbuild-sorts.json');
 
 const frameworks = ['javascript', 'react', 'vue', 'angular'];
@@ -9,39 +9,48 @@ const choices = [
   { value: '', label: 'Relevance' },
   ...fixture.sorts.map(sort => ({ value: sort.name + ' ' + sort.order, label: sort.label })),
 ];
-const demoSite = 'https://mw-searchstax.github.io/university-health-search-demo/';
-const records = [...fixture.results, ...Array.from({ length: fixture.syntheticCount }, (_, i) => {
-  const id = 'fixture-' + String(i + 1).padStart(2, '0');
-  return { id, url: demoSite + 'fixture-pages/' + id + '/', title: id };
-})];
-
-function orderedRecords(sort) {
-  if (!sort) return records;
-  const ascending = records.toSorted((a, b) => a.url.localeCompare(b.url));
-  if (sort === 'url asc') return ascending;
-  assert.equal(sort, 'url desc', 'Only published sorts can be sent');
-  return ascending.reverse();
+const { campus: records } = require('./demo-fixture.cjs');
+function expectedURLs(sort) {
+  const urls = records.map(doc => doc.url);
+  if (!sort) return urls;
+  urls.sort();
+  return sort === 'url asc' ? urls : urls.reverse();
 }
+const livePages = new WeakMap();
 
-async function useSearchFixture(page) {
-  await page.route(url => url.pathname.endsWith('/emselect'), async route => {
-    const params = Object.fromEntries(new URL(route.request().url()).searchParams);
-    const start = Number(params.start || 0);
-    const rows = Number(params.rows || 10);
-    const docs = orderedRecords(params.sort);
-    await route.fulfill({ json: {
-      responseHeader: { params: { ...params, uniqueId: 'id' } },
-      response: { numFound: docs.length, start, docs: docs.slice(start, start + rows) },
-      metadata: { sorts: fixture.sorts, facets: [], results: [
-        { name: 'title', result_card: 'title' }, { name: 'url', result_card: 'url' },
-      ] },
-      facet_counts: { facet_fields: {} },
-    } });
+function observeCampus(page) {
+  const batches = new Map();
+  livePages.set(page, batches);
+  page.on('response', response => {
+    const url = new URL(response.url());
+    if (url.pathname.endsWith('/emselect') && url.searchParams.get('model') === fixture.profile &&
+        url.searchParams.get('q') === 'campus' && !Number(url.searchParams.get('start'))) {
+      batches.set(url.searchParams.get('sort') || '', response);
+    }
   });
 }
 
 async function waitForOrder(page, sort) {
-  const urls = orderedRecords(sort).slice(0, 10).map(doc => doc.url);
+  let urls;
+  if (liveQA) {
+    // Start with the first page of the actual response; middle results can change as the index evolves.
+    const responses = livePages.get(page);
+    const response = responses.get(sort) || await page.waitForResponse(res => {
+      const u = new URL(res.url());
+      return u.pathname.endsWith('/emselect') && u.searchParams.get('q') === 'campus' &&
+        u.searchParams.get('model') === fixture.profile && (u.searchParams.get('sort') || '') === sort;
+    });
+    assert.ok(response.ok(), 'Live campus query returned HTTP ' + response.status());
+    const body = await response.json();
+    assert.equal(body.response.numFound, 37);
+    const urlField = body.metadata.results.find(mapping => mapping.result_card === 'url').name;
+    urls = body.response.docs.map(doc => Array.isArray(doc[urlField]) ? doc[urlField][0] : doc[urlField]);
+    assert.equal(urls[0], expectedURLs(sort)[0]);
+    if (sort) {
+      const expected = urls.toSorted();
+      assert.deepEqual(urls, sort === 'url desc' ? expected.reverse() : expected);
+    }
+  } else urls = expectedURLs(sort).slice(0, 10);
   await page.waitForFunction(expected => {
     const links = [...document.querySelectorAll('.searchstax-search-result a')]
       .filter(link => link.getClientRects().length);
@@ -86,7 +95,7 @@ async function searchCampus(page, input) {
 async function checkBuild(browser, start, artifactDir) {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
   try {
-    await useSearchFixture(page);
+    observeCampus(page);
     await page.goto(baseURL);
     await page.getByRole('link', { name: 'Start designing' }).click();
     await page.getByRole('tab', { name: 'Appearance', exact: true }).click();
@@ -116,20 +125,32 @@ async function checkBuild(browser, start, artifactDir) {
   try {
     if (process.env.QA_STARTER_URL) {
       const page = await browser.newPage();
-      await useSearchFixture(page);
+      observeCampus(page);
       await page.goto(process.env.QA_STARTER_URL, { waitUntil: 'domcontentloaded' });
       const start = process.env.QA_SORT_START || '';
-      await waitForOrder(page, start);
+      const menu = page.getByRole('combobox', { name: process.env.QA_SORT_LABEL || 'Sort by', exact: true });
+      await menu.waitFor();
+      await page.waitForFunction(({ name, start }) => Array.from(document.querySelectorAll('select')).some(
+        select => select.labels?.[0]?.textContent.includes(name) && select.value === start),
+        { name: process.env.QA_SORT_LABEL || 'Sort by', start });
       const input = page.locator('input[type=search]:visible').first();
       // A starter can already open on campus if it was downloaded after this search.
       if (await input.inputValue() !== 'campus') await searchCampus(page, input);
       await checkMenu(page, process.env.QA_SORT_LABEL || 'Sort by', process.env.QA_SORT_PLACEMENT || 'above', start);
       console.log('Starter passed all three campus orders with starting sort ' + (start || 'relevance'));
+    } else if (liveQA) {
+      const page = await browser.newPage();
+      observeCampus(page);
+      await page.goto(baseURL + '#lab-design');
+      await searchCampus(page, page.locator('#lab-query'));
+      await checkMenu(page, 'Sort by', 'above', '');
+      console.log('Verified live campus results in all three sort orders.');
     } else {
       const dir = process.env.QA_ARTIFACT_DIR || fs.mkdtempSync(path.join(os.tmpdir(), 'search-lab-sort-controls-'));
       assert.equal(records.length, 37);
-      assert.deepEqual(['', 'url asc', 'url desc'].map(sort => orderedRecords(sort)[0].id),
-        [fixture.baselines.relevance, fixture.baselines.urlAsc, fixture.baselines.urlDesc]);
+      assert.deepEqual(['', 'url asc', 'url desc'].map(sort => expectedURLs(sort)[0]),
+        [fixture.baselines.relevance, fixture.baselines.urlAsc, fixture.baselines.urlDesc]
+          .map(id => fixture.results.find(doc => doc.id === id).url));
       for (const { value } of choices) await checkBuild(browser, value, dir);
       console.log('Local fixture checks passed. Twelve ZIPs saved in ' + dir);
     }

@@ -61,9 +61,8 @@ async function check(browser, activation, url) {
       );
     }, { rangeSelector, linkSelector });
     await page.route(url => filteredPage(url, 5), async route => {
-      const response = await route.fetch();
       await held;
-      await route.fulfill({ response });
+      await route.fallback();
     });
     await Promise.all([
       page.waitForRequest(r => filteredPage(r.url(), 5)),

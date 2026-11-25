@@ -112,12 +112,11 @@ async function delayed(page, retryIt, kit) {
   const held = new Promise(resolve => { release = resolve; });
   let first = true;
   await page.route(match, async route => {
-    if (!first) return route.continue();
+    if (!first) return route.fallback();
     first = false;
-    const response = await route.fetch();
     await held;
     // Retry can cancel the original Select before the held response is released.
-    if (!route.request().failure()) await route.fulfill({ response }).catch(error => {
+    if (!route.request().failure()) await route.fallback().catch(error => {
       if (!route.request().failure()) throw error;
     });
   });

@@ -20,7 +20,7 @@ async function run() {
     page.setDefaultTimeout(8000);
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
-    await page.route('**/*', route => new URL(route.request().url()).origin === new URL(baseURL).origin ? route.continue() : route.abort());
+    await page.route('**/*', route => new URL(route.request().url()).origin === new URL(baseURL).origin ? route.fallback() : route.abort());
     const origin = 'https://review.searchstax.com';
     const query = 'qa-private-query';
     const selectToken = 'qa-select-sentinel';

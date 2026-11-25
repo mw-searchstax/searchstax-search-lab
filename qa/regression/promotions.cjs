@@ -1,6 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
-const { chromium, assert, baseURL, localQA } = require('./runtime.cjs');
+const { chromium, assert, liveQA, baseURL, localQA } = require('./runtime.cjs');
 
 const query = 'campus flu clinic';
 const notice = 'https://mw-searchstax.github.io/university-health-search-demo/news/flu-clinic-update-2026/';
@@ -54,7 +54,7 @@ async function checkDownloadedStarter(page, url, fictional) {
   await banner.waitFor({ state: 'hidden' });
   assert.equal(requests === 0, fictional);
   assert.deepEqual(errors, []);
-  console.log('Passed downloaded starter with ' + (fictional ? 'fictional' : 'live') + ' promotions.');
+  console.log('Passed downloaded starter with ' + (fictional ? 'fictional' : liveQA ? 'live' : 'fixture') + ' promotions.');
 }
 
 (async () => {
@@ -68,8 +68,7 @@ async function checkDownloadedStarter(page, url, fictional) {
     }
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
-    const live = process.env.QA_LIVE_PROMOTIONS === '1';
-    if (!live) await page.route(url => url.pathname.endsWith('/emselect'), route => {
+    if (!liveQA) await page.route(url => url.pathname.endsWith('/emselect'), route => {
       const params = Object.fromEntries(new URL(route.request().url()).searchParams);
       const active = params.q === query && params.model === 'SearchLabBuild';
       return route.fulfill({ json: {

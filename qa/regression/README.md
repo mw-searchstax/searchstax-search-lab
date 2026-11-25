@@ -1,6 +1,6 @@
 # Search Lab regression checks
 
-Run these from this directory with the repository’s pinned Node.js version, npm, and Google Chrome. The default target is the public Search Lab pilot. The tests use fresh browser contexts and synthetic values for the app connection.
+Run these from this directory with the repository’s pinned Node.js version, npm, and Google Chrome. Start the local preview on port 4173 before running the suite. The QA browser uses synthetic search responses for Build and downloaded starters. The project README covers interactive fixture QA and opt-in, budgeted release checks. [QA commands](../../README.md#test-a-clean-build)
 
 ```sh
 npm ci --ignore-scripts
@@ -31,7 +31,7 @@ QA_BROWSER=webkit node improve.cjs
 SEARCH_LAB_BASE_URL=http://127.0.0.1:8080/ npm test
 ```
 
-Serve the app at the supplied base URL. Use the application root with a trailing slash. The ordinary demo makes live read-only searches on the fictional university dataset, so its results and counts can change after a crawl. A count failure calls for checking the fixture or index against this release. The connected-app scenario in `design.cjs` intercepts its test endpoint locally.
+Serve the app at the supplied base URL. Use the application root with a trailing slash. The default QA browser serves a deterministic demo dataset. A count failure calls for checking the fixture or index against this release. The connected-app scenario in `design.cjs` intercepts its test endpoint locally.
 
 `entry.cjs` and `improve.cjs` accept `QA_WIDTH` and `QA_BROWSER`. The design check uses both desktop and phone sizes in one run. The starter download check uses Chrome. To retain extracted artifacts in a chosen directory, supply an empty `QA_ARTIFACT_DIR` or let the script create its temporary directory.
 

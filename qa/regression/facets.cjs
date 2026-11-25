@@ -1,8 +1,8 @@
 const fs = require('node:fs');
 const path = require('node:path');
-const { chromium, assert, baseURL } = require('./runtime.cjs');
+const { chromium, assert, liveQA, baseURL } = require('./runtime.cjs');
 
-// This acceptance check intentionally uses the published SearchLabBuild profile.
+// The QA runtime supplies the demo fixture unless the release runner authorizes live traffic.
 (async () => {
   const browser = await chromium.launch({ channel: 'chrome' });
   try {

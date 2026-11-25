@@ -1,8 +1,8 @@
 const fs = require('node:fs');
 const path = require('node:path');
-const { chromium, assert, baseURL } = require('./runtime.cjs');
+const { chromium, assert, liveQA, baseURL } = require('./runtime.cjs');
 
-// QA_STARTER_URL checks a locally served download against its published profile.
+// QA_STARTER_URL checks the same workflow in a locally served download.
 (async () => {
   const browser = await chromium.launch({ channel: 'chrome' });
   try {
@@ -98,6 +98,6 @@ const { chromium, assert, baseURL } = require('./runtime.cjs');
       }
     }
     assert.deepEqual(errors, []);
-    console.log('Passed live campus 10 → 20 → 30 → 37 distinct results, final focus, Location 8, clear to 10 of 37.');
+    console.log((liveQA ? 'Live' : 'Fixture') + ' campus 10 → 20 → 30 → 37 distinct results, final focus, Location 8, clear to 10 of 37.');
   } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

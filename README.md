@@ -13,9 +13,9 @@ npm ci
 npm run dev
 ```
 
-Open the local URL printed by Vite. Searches connect automatically to the isolated demo app using the Search Endpoint, read-only Search API credential, and prepared profile names configured in `index.html`.
+For local QA, install the QA dependencies once with `npm --prefix qa/regression ci --ignore-scripts`. Leave Vite running and open Build in a fixture-backed browser with `SEARCH_LAB_BASE_URL=http://127.0.0.1:5173/ npm run qa:preview`. Use the port Vite printed if it differs.
 
-The page loads the SearchStax JavaScript UI Kit from its CDN and sends search requests directly to the configured SearchStax endpoint. Use the isolated demo app and public fictional content only. Don't use a read/write or administrative credential.
+The page loads the SearchStax JavaScript UI Kit from its CDN. Opening the Vite URL in an ordinary browser connects directly to the Search Endpoint configured in `index.html`. For release verification, use the budgeted command under **Test a clean build**.
 
 ## Reproduce the published pilot
 
@@ -34,7 +34,7 @@ The build type-checks the TypeScript and writes the static site to `dist/`. Veri
 
 ## Test a clean build
 
-Install Google Chrome and the locked QA dependencies. The ordinary demo and its UI Kit need network access. The connection tests use synthetic data and run with SearchStax Analytics off.
+Install Google Chrome and the locked QA dependencies. The QA browser supplies synthetic SearchLabDemo responses for Build and for each downloaded starter. The UI Kit and package installation may still use the network.
 
 ```sh
 npm --prefix qa/regression ci --ignore-scripts
@@ -46,6 +46,12 @@ Leave the preview running. In a second terminal at the repository root, point th
 ```sh
 SEARCH_LAB_BASE_URL=http://127.0.0.1:4173/ npm test
 ```
+
+For interactive QA, run `npm run qa:preview` with the preview server running. To try a served starter in the same fixture browser, set `QA_STARTER_URL` to its loopback URL. A regular browser opened directly on a served demo can still use its configured Search App.
+
+Run `npm run qa:sorting` to exercise all three starting sorts in Build, download the twelve ZIPs, and run the JavaScript, React, Vue, and Angular starters locally. The runner prints the temporary artifact directory. Repeated fixture runs use zero sandbox searches.
+
+For an approved live release check, run `npm run qa:release -- --budget N sort-controls`, replacing `N` with the maximum number of live requests for that run. You can list additional checks after the budget. All listed checks share it. Requests reserve a slot before leaving the browser, including failed requests. A quota response stops further dispatch. The runner prints the total used. Release checks target the pilot unless you set `SEARCH_LAB_BASE_URL` or a supported `QA_STARTER_URL`.
 
 The default suite checks both onboarding paths, mobile recovery, appearance, and downloads across four starter formats. The QA guide also covers WebKit and tests that run inside a downloaded starter, including JavaScript search recovery and slow React paging. [Regression guide](qa/regression/README.md)
 
@@ -61,7 +67,7 @@ To try the published **Content type** facet on SearchLabBuild, search for **camp
 
 To try promotions, search for **campus flu clinic** on SearchLabBuild. The 2026 notice appears first with a badge, and a banner links to flu shot appointment information. Open **Appearance → Promotion appearance** to change the badge and banner. Under **Features → Advanced Options**, choose whether the banner appears above or below the results. Search for **rehabilitation** to see the same layout without either promotion. A connected app uses its own published triggers. The localhost fictional demo has separate sample promotions.
 
-To repeat the promotion download checks, run `qa/regression/promotions.cjs` with `SEARCH_LAB_BASE_URL` set to local Build, `QA_LIVE_PROMOTIONS=1` and `QA_ARTIFACT_DIR` set to a temporary directory. It saves the four app downloads under `promotions/single` and the four fictional downloads under `promotions/fictionalSingle`. Serve each extracted starter using its README, then run the same check with `QA_STARTER_URL` set to that starter’s local URL. Set `QA_FICTIONAL_STARTER=1` for the fictional downloads.
+To repeat the promotion download checks, run `qa/regression/promotions.cjs` with `SEARCH_LAB_BASE_URL` set to local Build and `QA_ARTIFACT_DIR` set to a temporary directory. It saves the four app downloads under `promotions/single` and the four fictional downloads under `promotions/fictionalSingle`. Serve each extracted starter using its README, then run the same check with `QA_STARTER_URL` set to that starter’s local URL. Set `QA_FICTIONAL_STARTER=1` for the fictional downloads.
 
 With a snapshot loaded, enable **Features → Advanced Options → Show profile tabs** and select the profiles to include. Each tab submits the selected language and profile as `language` and `model`. Without a snapshot, you can preview the default profile or name one in the connection form. The runtime Search API documents profile selection and per-query metadata. It doesn’t document catalog discovery or entitlement lookup. [Search API](https://support.searchstax.com/hc/en-us/articles/40243554096141-Search-API) · [Search Profiles](https://support.searchstax.com/hc/en-us/articles/40151687838989-Search-Profiles)
 
