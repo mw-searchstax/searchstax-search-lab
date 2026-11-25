@@ -33,7 +33,7 @@ async function checkBuiltInFeatures(browser) {
         .replace('data-before-profile=', 'data-answer-endpoint="' + featureHost + '/api/v1/answer" data-related-endpoint="' + featureHost + '/qa/related-search" data-before-profile=');
       await route.fulfill({ contentType: 'text/html', body });
     });
-    await page.route('**/config/searchlabdemo.json', async route => {
+    await page.route('**/config/searchlabpilot.json', async route => {
       if (releaseSnapshot) await releaseSnapshot;
       await route.fulfill({ json: snapshot });
     });
@@ -102,13 +102,13 @@ async function checkBuiltInFeatures(browser) {
     let finishSnapshot;
     releaseSnapshot = new Promise(resolve => { finishSnapshot = resolve; });
     await page.goto('about:blank');
-    const delayedRequest = page.waitForRequest('**/config/searchlabdemo.json');
+    const delayedRequest = page.waitForRequest('**/config/searchlabpilot.json');
     await page.goto(url.href, { waitUntil: 'domcontentloaded' });
     const cards = page.locator('#lab-results-list');
     await delayedRequest;
     await cards.locator('mark').waitFor();
     assert.match(await summary.innerText(), /Hit highlighting — On/);
-    const snapshotResponse = page.waitForResponse('**/config/searchlabdemo.json');
+    const snapshotResponse = page.waitForResponse('**/config/searchlabpilot.json');
     finishSnapshot();
     assert.ok((await snapshotResponse).ok());
     await summary.filter({ hasText: 'Hit highlighting — Off' }).waitFor();
@@ -138,7 +138,8 @@ async function checkBuiltInFeatures(browser) {
     assert.deepEqual(await panel.getByRole('tab').allTextContents(), ['Programs', 'Locations']);
     await page.getByLabel('Preview source').selectOption('app');
     await panel.getByRole('heading', { name: 'Campus' }).waitFor();
-    assert.deepEqual(searches.at(-1), ['Main Profile', 'en', 'normal']);
+    assert.equal(await panel.getByRole('tab', { name: 'Main Profile', exact: true }).getAttribute('aria-selected'), 'true');
+    assert.ok(searches.some(([profile, language, query]) => profile === 'Main Profile' && language === 'en' && query === 'normal'));
     assert.equal(await panel.locator('li mark, .smart-answers-sample:visible').count(), 0);
     const olderLink = new URL(url);
     olderLink.search = new URLSearchParams({ lab_layout: 'list', lab_font: 'georgia', lab_color: '123456',

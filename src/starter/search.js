@@ -11,6 +11,10 @@ import { promotionEntries, renderPromotionBanners, placePromotionBanners } from 
 import { createResultPages } from './result-pages.js';
 import { formatResultSummary } from './result-summary.js';
 import { decodedSort, encodedSort, createSortController, readResponseSortOptions, readSortOptions } from './sorting.js';
+import { installRecordedSearch } from './recorded-search.js';
+import recordings from './recorded-searches.js';
+
+installRecordedSearch(recordings);
 
 const logo = document.querySelector('.search-starter__logo');
 if (logo) {
@@ -29,8 +33,7 @@ const demoThumbnails = %%DEMO_THUMBNAILS%%;
 const language = config.language;
 const resultLanguage = contentLanguageTag(language);
 const loadMoreText = String(config.loadMoreText || 'Load more').replace(/[&<>"'{}]/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '{': '&#123;', '}': '&#125;' }[character]));
-const usesDemoProfile = config.searchURL === demoFacets.searchURL &&
-  config.model === demoFacets.model && resultLanguage === 'en';
+const usesDemoProfile = config.source === 'demo' && config.model === demoFacets.model && resultLanguage === 'en';
 
 const form = document.querySelector('.search-starter__form');
 const submit = form.querySelector('button');

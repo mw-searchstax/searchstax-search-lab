@@ -134,7 +134,7 @@ async function repeatFailure({ page, choose, retry, original, diagnostics, expec
 }
 
 async function slowSuccess({ sidebar, action, diagnostics, original, result }) {
-  await sidebar.getByText('Searching Central County…', { exact: true }).waitFor();
+  await sidebar.getByText('Loading the recorded example…', { exact: true }).waitFor();
   assert.equal(await action.isEnabled(), false);
   await diagnostics.waitFor(original);
   await action.click();

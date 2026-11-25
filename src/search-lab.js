@@ -48,6 +48,7 @@ import { setupRelevanceComparison } from './relevance-comparison';
 import { createResultPages } from './result-pages.js';
 import { formatResultSummary, placeResultSummary } from './result-summary';
 import { setupPaginationFocus } from './pagination-focus.js';
+import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearchEndpoint, recordedSearchMode, useLiveRecordedSearches } from './recorded-searches';
 
 (function () {
   'use strict';
@@ -210,6 +211,9 @@ import { setupPaginationFocus } from './pagination-focus.js';
   var demoConnection = {
     endpoint: config.searchURL, token: config.searchAuth, profile: config.before, language: 'en',
   };
+  // Opening examples use recordings. Visitor search actions can opt into
+  // the hosted connection and reuse a completed response for the same request.
+  installRecordedSearchTransport(() => config.searchURL);
   const builtInApp = {
     ...demoConnection,
     profile: config.build,
@@ -280,7 +284,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
   }
   async function loadBuiltInConfiguration() {
     try {
-      const response = await fetch('./config/searchlabdemo.json', { cache: 'no-cache', credentials: 'omit', signal: AbortSignal.timeout(12000) });
+      const response = await fetch(root.dataset.searchConfig || './config/searchlabpilot.json', { cache: 'no-cache', credentials: 'omit', signal: AbortSignal.timeout(12000) });
       if (!response.ok) throw Error('The built-in app configuration is unavailable.');
       const configuration = readAppConfiguration(await response.text(), builtInApp.endpoint);
       builtInApp.configuration = configuration;
@@ -346,7 +350,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
       : 'Highlighting settings are unknown for this profile. A search response can supply them.';
     const liveProfile = builtIn ? builtInApp.profile : profile?.profile;
     sourceLabel.textContent = !connected && !fixture && root.dataset.labView === 'design'
-      ? [root.dataset.searchAppName || 'Live app', liveProfile].filter(Boolean).join(' · ') : 'Fictional demo';
+      ? [(recordedSearchMode() === 'recorded' ? 'Recorded example' : root.dataset.searchAppName || 'Live app'), liveProfile].filter(Boolean).join(' · ') : 'Fictional demo';
     const configured = featureStatus(entitlements?.relatedSearches, profile?.relatedSearches) === 'On';
     const relatedSection = relatedToggle.closest('details');
     relatedSection.hidden = !configured;
@@ -412,7 +416,9 @@ import { setupPaginationFocus } from './pagination-focus.js';
       choiceLanguage = source ? source.language : demoProfiles[0].language;
       experiencePreview.close();
       experiencePanel.hidden = true;
-      experiencePreview.setSource(source, catalog, submitted, source?.settings);
+      // Opening a shared tabbed design uses the same recording as single-profile Build.
+      const preview = source === builtInApp ? { ...source, endpoint: recordedSearchEndpoint } : source;
+      experiencePreview.setSource(preview, catalog, submitted, source?.settings);
       refreshTabChoices();
     }
     const hasCatalog = catalog.length > 0;
@@ -778,7 +784,9 @@ import { setupPaginationFocus } from './pagination-focus.js';
     if (search && !message) {
       status.textContent = '';
       previousResults.hidden = !hasPreviousResults;
-      demoRecovery.error('The demo search didn’t finish. Try again.');
+      demoRecovery.error(workspaceMode === 'design'
+        ? 'The demo search didn’t finish. Retry the search or choose the recorded rehabilitation example.'
+        : 'The demo search didn’t finish. Try again.');
     } else {
       status.dataset.tone = 'error';
       status.textContent = message || 'The live demo is unavailable right now. Please try again later.';
@@ -877,16 +885,11 @@ import { setupPaginationFocus } from './pagination-focus.js';
         customer: Boolean(customer),
         language: app.language,
         featureSettings: {
-          ...(customer ? { endpointHash: experience ? undefined : await endpointFingerprint(app.endpoint) } : { endpoint: app.endpoint }),
+          endpointHash: customer && !experience ? await endpointFingerprint(app.endpoint) : undefined,
           entitlements: app.configuration?.entitlements ?? {},
           relatedSearchesByLanguage: settings ? { [settings.language]: settings.relatedSearches } : {},
           profiles: settings ? [{ language: settings.language, profile: settings.profile, smartAnswers: settings.smartAnswers }] : [],
         },
-        questionURL: customer ? '' : app.answerEndpoint || '',
-        relatedURL: customer ? '' : builtInApp.relatedURL || '',
-        discoveryKey: customer ? '' : builtInApp.discoveryKey || '',
-        searchURL: config.searchURL,
-        searchAuth: config.searchAuth,
         model: app.profile,
         demoModel: config.build,
         experience,
@@ -981,6 +984,10 @@ import { setupPaginationFocus } from './pagination-focus.js';
       : (compareRanking ? config.rankingAfter : config.after);
     if (!model || (compareRanking && (model === config.before || model === config.after))) {
       showUnavailable('The Ranking example hasn’t been configured yet.');
+      return;
+    }
+    if (recordedSearchMode() === 'live' && !recordedSearchCanGoLive(config.searchURL, config.searchAuth)) {
+      showUnavailable('Live visitor searches are disabled in this local preview. Open the hosted pilot or opt into fixture QA.');
       return;
     }
     singleProfileQuery = query.trim();
@@ -1091,7 +1098,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
       search.initialize({
         language: 'en',
         model: workspaceMode === 'design' ? config.build : config.before,
-        searchURL: config.searchURL,
+        searchURL: recordedSearchEndpoint,
         searchAuth: config.searchAuth,
         authType: 'token',
         suggesterURL: '',
@@ -1403,6 +1410,31 @@ import { setupPaginationFocus } from './pagination-focus.js';
       runSearch(queryInput.value, true);
     });
   });
+  function visitorSearchIntent() {
+    if (customerPreview.active || design.previewSource === 'fictional') return;
+    useLiveRecordedSearches(recordedSearchCanGoLive(config.searchURL, config.searchAuth));
+    const profile = experiencePanel.hidden ? builtInApp.profile : selectedSettings?.profile?.profile;
+    const label = recordedSearchMode() === 'recorded' ? 'Recorded example' : root.dataset.searchAppName;
+    sourceLabel.textContent = [label, profile].filter(Boolean).join(' · ');
+  }
+  // Only controls in the visitor's preview can start a live search.
+  // Restoring a shared design or expanding an editor section keeps the recording.
+  experiencePanel.addEventListener('submit', visitorSearchIntent, true);
+  experiencePanel.addEventListener('change', event => {
+    if (event.target.closest('[data-exp-sort], [data-exp-facets], [data-exp-language]')) visitorSearchIntent();
+  }, true);
+  experiencePanel.addEventListener('click', event => {
+    if (event.target.closest('[role="tab"], [data-exp-pages] button')) visitorSearchIntent();
+  }, true);
+  experiencePanel.addEventListener('keydown', event => {
+    if (event.target.closest('[role="tab"]') && ['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) visitorSearchIntent();
+  }, true);
+  demoOutput.addEventListener('change', event => {
+    if (event.target.closest('#lab-facets, #lab-sort-order')) visitorSearchIntent();
+  }, true);
+  demoOutput.addEventListener('click', event => {
+    if (event.target.closest('#lab-pagination button, #lab-pagination a')) visitorSearchIntent();
+  }, true);
   form.addEventListener('submit', function (event) {
     event.preventDefault();
     if (customerPreview.active) {
@@ -1411,12 +1443,25 @@ import { setupPaginationFocus } from './pagination-focus.js';
       customerPreview.search(queryInput.value);
       return;
     }
+    // A visitor-entered query is an intentional live search. Opening examples
+    // and lesson controls continue to use their saved responses.
+    visitorSearchIntent();
+    if (workspaceMode === 'design' && recordedSearchMode() === 'recorded' &&
+      queryInput.value.trim() && queryInput.value.trim().toLowerCase() !== 'rehabilitation') {
+      showUnavailable('This preview includes the recorded search for “rehabilitation”. Choose rehabilitation to return to it.');
+      return;
+    }
     runSearch(queryInput.value, true);
     if (!queryInput.value.trim()) queryInput.focus();
   });
-  sampleButton.addEventListener('click', function () { runSearch(sampleQuery(), true); });
+  sampleButton.addEventListener('click', function () {
+    useLiveRecordedSearches(false);
+    runSearch(sampleQuery(), true);
+    syncFeatureControls();
+  });
   tryNoResults.addEventListener('click', function () {
     showDesignPreview();
+    visitorSearchIntent();
     if (experiencePanel.hidden) {
       queryInput.focus();
       runSearch('qzxvzz', true);
@@ -1426,7 +1471,10 @@ import { setupPaginationFocus } from './pagination-focus.js';
     }
   });
   rankingButtons.forEach(function (button) {
-    button.addEventListener('click', function () { runSearch(button.dataset.labRankingQuery, true); });
+    button.addEventListener('click', function () {
+      useLiveRecordedSearches(false);
+      runSearch(button.dataset.labRankingQuery, true);
+    });
   });
   const handoffButtons = [...root.querySelectorAll('.search-lab__handoff-actions button')];
   function setHandoffPanel(selected) {
@@ -1525,6 +1573,9 @@ import { setupPaginationFocus } from './pagination-focus.js';
     ['#lab-compare-ranking', { scenario: 'ranking', back: '#lab-ranking-guide', label: 'Back to the Ranking Walkthrough' }],
   ]);
   const showDesignPreview = setupLabNavigation(root, function (view, hash) {
+    // A live query is scoped to the current Build action. Leaving Build must
+    // restore recorded mode so fixed Improve lessons cannot inherit it.
+    if (view !== 'design') useLiveRecordedSearches(false);
     updateExperienceMode();
     showImprovePreview(view, hash);
     showDataFilters(view === 'data-filters');

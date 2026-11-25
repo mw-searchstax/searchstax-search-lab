@@ -1,6 +1,7 @@
-import { readCustomerEndpoint, searchCustomerApp, type CustomerConnection, type CustomerPage } from './customer-search';
+import { searchCustomerApp, type CustomerConnection, type CustomerPage } from './customer-search';
 import { demoResultText, demoResultTitle } from './demo-content.js';
 import { setupVisitorSearch } from './improve-visitor-search';
+import { recordedConnection } from './recorded-searches';
 import { lessonStartEvent } from './lesson-progress';
 import { improveScenarioForHash, type ImproveScenario } from './navigation';
 
@@ -310,6 +311,10 @@ function setupLiveLesson(section: HTMLElement, template: HTMLTemplateElement, le
     preview, list, count, phase, status, retry, toggle, next,
     baselineNote, setOwnSiteOpen, setTakeaway, resetWrapUp,
   } = mountPreview(section, template, search.query, 'lab-' + lesson + '-results', demo, afterProfile);
+  preview.setAttribute('aria-label', 'Recorded search preview');
+  preview.querySelector<HTMLElement>('.search-lab__preview-footnote')!.textContent =
+    'Recorded response from Search Lab’s demo profile for the fictional Central County website.';
+  preview.querySelector<HTMLElement>('[data-preview-label]')!.textContent = 'Recorded example';
   const lessonResults = preview.querySelector<HTMLElement>('[data-lesson-results]')!;
   const visitorQuery = preview.querySelector<HTMLInputElement>('[data-improve-query]')!;
   toggle.after(status, retry);
@@ -319,7 +324,9 @@ function setupLiveLesson(section: HTMLElement, template: HTMLTemplateElement, le
   const promotionSummary = promotion?.querySelector('summary');
   if (promotion) preview.querySelector('[data-improve-preview-followup]')!.append(promotion);
 
-  const endpoint = readCustomerEndpoint(demo.endpoint);
+  // The preset is a saved lesson, not a visitor action. Keep it offline and
+  // deterministic; the visitor search mounted below still uses the real app.
+  const recordedDemo = recordedConnection(demo);
   const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const rows = new Map<string, ReturnType<typeof resultRow>>();
   const animations = new Set<Animation>();
@@ -466,19 +473,18 @@ function setupLiveLesson(section: HTMLElement, template: HTMLTemplateElement, le
     retry.setAttribute('aria-disabled', 'true');
     list.setAttribute('aria-busy', 'true');
     if (shown !== undefined) setResultPhase(phase, 'Updating…');
-    notify(shown === undefined ? 'Searching Central County…' : 'Rerunning the same search…',
+    notify(shown === undefined ? 'Loading the recorded example…' : 'Rerunning the same search…',
       shown === undefined ? 'visible' : 'spoken');
 
     try {
-      if (!endpoint || !demo.profile || !demo.token || !afterProfile || afterProfile === demo.profile) throw new Error('Demo profiles unavailable');
-      const connection = { ...demo, endpoint };
+      if (!afterProfile || afterProfile === demo.profile) throw new Error('Demo profiles unavailable');
       const signal = AbortSignal.any([controller.signal, AbortSignal.timeout(12000)]);
       if (applied && !baseline) {
-        const beforePage = await searchCustomerApp(connection, search, signal);
+        const beforePage = await searchCustomerApp(recordedDemo, search, signal);
         if (pending !== controller) return;
         baseline = beforePage;
       }
-      const page = await searchCustomerApp({ ...connection, profile: applied ? afterProfile : demo.profile }, search, signal);
+      const page = await searchCustomerApp({ ...recordedDemo, profile: applied ? afterProfile : demo.profile }, search, signal);
       if (pending !== controller) return;
       if (!applied) baseline = page;
       toggle.disabled = false;

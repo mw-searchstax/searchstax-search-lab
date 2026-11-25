@@ -13,7 +13,7 @@ function loadFflate() {
 
 const { unzipSync, strFromU8 } = loadFflate();
 const frameworks = ['javascript', 'react', 'vue', 'angular'];
-const demoConfiguration = require('../../public/config/searchlabdemo.json');
+const demoConfiguration = require('../../public/config/searchlabpilot.json');
 const modes = {
   single: { lab_profile_tabs: 'off', lab_languages: 'off', lab_page_size: '5' },
   liveTabs: { lab_profile_tabs: 'on', lab_languages: 'off', lab_page_size: '5' },
@@ -73,13 +73,17 @@ function checkArchive(mode, framework, files) {
       assert.equal(settings.profiles.length, 4);
       assert.deepEqual([...new Set(settings.profiles.map(item => item.language))].sort(), ['en', 'es']);
     }
-    assert.ok(config.includes("export const connection = { endpoint: '', token: '' }"));
+    const connection = JSON.parse(config.match(/export const connection = (.+);/)[1]);
+    assert.deepEqual(connection, mode === 'liveTabs'
+      ? { endpoint: './__search-lab-recorded-search', token: 'recorded-search' }
+      : { endpoint: '', token: '' });
   } else {
     const source = framework === 'javascript' ? textFile(files, 'search.js') : textFile(files, 'src/config.js');
     const prefix = framework === 'javascript' ? '' : 'src/';
     const serviceSettings = JSON.parse(textFile(files, prefix + 'feature-settings.js').match(/= ([\s\S]+);/)[1]);
     const selected = demoConfiguration.profiles.find(item => item.profile === 'SearchLabBuild' && item.language === 'en');
-    assert.deepEqual(serviceSettings.entitlements, demoConfiguration.entitlements);
+    const knownEntitlements = Object.entries(demoConfiguration.entitlements).filter(([, value]) => value !== null);
+    assert.deepEqual(serviceSettings.entitlements, Object.fromEntries(knownEntitlements));
     assert.deepEqual(serviceSettings.relatedSearchesByLanguage, { en: demoConfiguration.relatedSearchesByLanguage.en });
     assert.deepEqual(serviceSettings.profiles, [{ language: selected.language, profile: selected.profile, smartAnswers: selected.smartAnswers }]);
     assert.doesNotMatch(textFile(files, prefix + 'related-searches.js'), /physical therapy/);

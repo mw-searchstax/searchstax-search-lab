@@ -1,5 +1,6 @@
 import { demoResultTitle } from './demo-content.js';
 import { readCustomerEndpoint, searchCustomerApp, type CustomerConnection, type CustomerPage, type CustomerSearch } from './customer-search';
+import { recordedConnection, recordedSearchEndpoint } from './recorded-searches';
 
 const contentType = 'demo_content_type_s';
 const search: CustomerSearch = { query: 'campus flu clinic', start: 0, rows: 5, sort: '', filters: new Map() };
@@ -34,8 +35,9 @@ function renderPage(count: HTMLElement, list: HTMLOListElement, page: CustomerPa
 
 export function setupDataFilters(root: HTMLElement, demo: CustomerConnection) {
   const section = root.querySelector<HTMLElement>('[data-lab-screen="data-filters"]')!;
-  section.querySelector('[data-lab-filter-profile]')!.textContent = demo.profile;
-  return setupComparison(section, demo, 'lab-data-filter-rule', rules, {
+  const recordedDemo = recordedConnection({ ...demo, profile: 'Main Profile' });
+  section.querySelector('[data-lab-filter-profile]')!.textContent = recordedDemo.profile;
+  return setupComparison(section, recordedDemo, 'lab-data-filter-rule', rules, {
     describe: (before, after, choice) => `${before.total} results before the rule. ${after.total} with ${choice.label}.`,
     renderBaseline(before) {
       renderPage(section.querySelector('[data-lab-filter-before-count]')!, section.querySelector('[data-lab-filter-before-list]')!, before);
@@ -60,7 +62,7 @@ function setupComparison(
   const results = section.querySelector<HTMLElement>('[data-lab-filter-results]')!;
   const retry = section.querySelector<HTMLButtonElement>('[data-lab-filter-retry]')!;
   const optionSelector = `input[name="${group}"]`;
-  const endpoint = readCustomerEndpoint(demo.endpoint);
+  const endpoint = demo.endpoint === recordedSearchEndpoint ? demo.endpoint : readCustomerEndpoint(demo.endpoint);
   let pending: AbortController | undefined;
 
   function cancel() {

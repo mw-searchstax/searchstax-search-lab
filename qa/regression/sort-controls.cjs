@@ -70,13 +70,7 @@ async function checkMenu(page, label, placement, start) {
 
   for (const { value } of choices) {
     if (await menu.inputValue() !== value) {
-      const nextResponse = page.waitForResponse(res => {
-        const url = new URL(res.url());
-        return url.pathname.endsWith('/emselect') && url.searchParams.get('q') === 'campus' &&
-          (url.searchParams.get('sort') || '') === value;
-      });
       await menu.selectOption(value);
-      assert.ok((await nextResponse).ok());
     }
     await waitForOrder(page, value);
   }

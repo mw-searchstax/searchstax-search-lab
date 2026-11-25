@@ -4,6 +4,7 @@ const http = require('node:http');
 const os = require('node:os');
 const path = require('node:path');
 const { unzipSync } = require('fflate');
+const { endpoint: fixtureEndpoint } = require('../../public/config/searchlabpilot.json');
 
 const kits = { javascript: '.', react: 'dist', vue: 'dist', angular: 'dist/starter/browser' };
 const mime = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml' };
@@ -55,6 +56,16 @@ module.exports = async function checkDownloads(name, check, variants) {
       const base = path.join(dir, variant, kit);
       const work = path.join(base, 'app');
       await unpack(path.join(base, 'starter.zip'), work);
+      // These matrices exercise full campus paging and sorting with the larger
+      // synthetic fixture. Configure only the unpacked test copy. The browser
+      // fence fulfills its requests locally, and this token cannot authorize a search.
+      const configFile = path.join(work, kit === 'javascript' ? 'search.js' : 'src/config.js');
+      const config = await fs.readFile(configFile, 'utf8');
+      const configured = config
+        .replace(/"searchURL":\s*"[^"]*"/g, '"searchURL": "' + fixtureEndpoint + '"')
+        .replace(/"searchAuth":\s*"[^"]*"/, '"searchAuth": "fixture-only"');
+      if (!configured.includes('"searchAuth": "fixture-only"')) throw Error('Missing ordinary starter connection');
+      await fs.writeFile(configFile, configured);
       if (kit !== 'javascript') {
         const lock = await fs.readFile(path.join(work, 'package-lock.json'), 'utf8');
         if (!installs.has(lock)) {

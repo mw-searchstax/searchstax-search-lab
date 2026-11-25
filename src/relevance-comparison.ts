@@ -1,6 +1,7 @@
 import { createSearchRecovery } from './search-recovery';
 import { demoResultTitle } from './demo-content.js';
-import { readCustomerEndpoint, searchCustomerApp, type CustomerConnection, type CustomerPage } from './customer-search';
+import { searchCustomerApp, type CustomerConnection, type CustomerPage } from './customer-search';
+import { recordedConnection } from './recorded-searches';
 
 type Scenario = 'fields' | 'ranking';
 type Result = CustomerPage['results'][number];
@@ -38,7 +39,7 @@ export function setupRelevanceComparison(root: HTMLElement, demo: CustomerConnec
   let retryComparison: (() => void) | undefined;
   const recovery = createSearchRecovery(defaultControl, () => retryComparison?.());
   const table = root.querySelector<HTMLTableElement>('[data-lab-comparison-table]')!;
-  const endpoint = readCustomerEndpoint(demo.endpoint);
+  const recordedDemo = recordedConnection(demo);
   let current: { query: string; scenario: Scenario; afterProfile: string; controller: AbortController } | undefined;
 
   function clear() {
@@ -61,10 +62,10 @@ export function setupRelevanceComparison(root: HTMLElement, demo: CustomerConnec
     const search = { query, start: 0, rows: limit, sort: '', filters: new Map<string, string>() };
 
     try {
-      if (!endpoint || !demo.token || !demo.profile || !afterProfile || afterProfile === demo.profile) {
+      if (!afterProfile || afterProfile === demo.profile) {
         throw new Error('The comparison profiles are unavailable.');
       }
-      const connection = { ...demo, endpoint };
+      const connection = recordedDemo;
       const [beforePage, afterPage] = await Promise.all([
         searchCustomerApp(connection, search, signal),
         searchCustomerApp({ ...connection, profile: afterProfile }, search, signal),

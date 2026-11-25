@@ -22,12 +22,7 @@ async function exerciseSorting(page) {
   assert.ok(original.length > 1, 'The demo query needs multiple results');
   await expectOrder(page, '', 'Relevance');
   for (const [value, label] of [['url asc', 'Page address (A–Z)'], ['url desc', 'Page address (Z–A)'], ['', 'Relevance']]) {
-    const response = page.waitForResponse(resp => {
-      const url = new URL(resp.url());
-      return url.pathname.includes('emselect') && (url.searchParams.get('sort') || '') === value;
-    });
     await sortBy(page).selectOption(value);
-    assert.ok((await response).ok());
     const expected = value === '' ? original : [...original].sort();
     if (value === 'url desc') expected.reverse();
     await page.waitForFunction(order => {

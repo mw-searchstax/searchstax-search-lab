@@ -1,6 +1,6 @@
 # SearchStax Vue Starter
 
-This starter uses the SearchStax Vue UI Kit and your Search Lab design. A SearchLabDemo download is ready to search. For a connected-app download, add your endpoint and read-only token under **Connect Your Search App** before you run it.
+This starter uses the SearchStax Vue UI Kit and your Search Lab design. The built-in example uses eight recorded results for **rehabilitation**. You can open results, filter and sort them locally. For a connected-app download, add your endpoint and read-only token under **Connect Your Search App** before you run it.
 
 ## Run the Demo
 
@@ -11,10 +11,10 @@ npm ci
 npm run dev
 ```
 
-Open the localhost URL printed in the terminal. The demo search requires an internet connection. Run `npm run build` to create the deployable files in `dist/`.
+Open the localhost URL printed in the terminal. The sample results are included in the starter. Run `npm run build` to create the deployable files in `dist/`.
 
 - Search for `rehabilitation` to try filters or view the optional sample thumbnails.
-- On SearchLabDemo, type `reh` to try suggestions if you enabled them in your design.
+- In the built-in example, type `reh` to try suggestions if you enabled them in your design.
 
 ## Connect Your Search App
 

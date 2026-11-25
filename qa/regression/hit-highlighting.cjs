@@ -11,7 +11,7 @@ const { chromium, assert, baseURL } = require('./runtime.cjs');
     const passage = 'A later rehabilitation passage and therapy.';
     const original = 'The original first paragraph.';
     const settings = { language: 'en', profile };
-    await page.route('**/config/searchlabdemo.json', async route => {
+    await page.route('**/config/searchlabpilot.json', async route => {
       const source = await (await route.fetch()).json();
       await route.fulfill({ json: { endpoint: source.endpoint, profiles: [settings] } });
     });

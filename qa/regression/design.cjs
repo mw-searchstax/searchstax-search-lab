@@ -78,7 +78,7 @@ async function hostedDesign(browser) {
     await page.reload();
     await checkApp();
     assert.equal(await page.locator('#lab-page-size').inputValue(), '5');
-    console.log('Hosted Build kept SearchLabDemo for a legacy fictional link and a saved draft.');
+    console.log('Hosted Build kept SearchLabPilot for a legacy fictional link and a saved draft.');
   } finally { await page.close(); }
 }
 

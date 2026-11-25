@@ -62,7 +62,7 @@ async function run() {
       if (kind === 'answer') return route.fulfill({ contentType: 'text/event-stream', body: 'data: Answer ' + lang + '/' + profile + ' ' + term + '\n\ndata: CLOSE\n\n' });
       return route.abort();
     });
-    // Connect while SearchLabDemo is still waiting for its first response.
+    // Connect while SearchLabPilot is still waiting for its first response.
     await page.route(url => url.origin !== origin && url.pathname.endsWith('/emselect'), () => {});
     await page.goto(baseURL);
     await page.getByRole('link', { name: 'Start designing' }).click();

@@ -21,6 +21,10 @@ import { setupPaginationFocus } from './pagination-focus.js';
 import { createResultPages } from './result-pages.js';
 import { formatResultSummary } from './result-summary.js';
 import { decodedSort, encodedSort, createSortController, readResponseSortOptions, readSortOptions } from './sorting.js';
+import { installRecordedSearch } from './recorded-search.js';
+import recordings from './recorded-searches.js';
+
+installRecordedSearch(recordings);
 
 function Passage({ parts }) {
   return parts.map(part => part.matched ? h('mark', { class: 'search-result-hit' }, part.text) : part.text);
@@ -28,7 +32,7 @@ function Passage({ parts }) {
 
 const analytics = getAnalyticsSettings(connection);
 const resultLanguage = contentLanguageTag(connection.language);
-const isDemo = connection.searchURL === demo.searchURL && connection.model === demo.model && resultLanguage === demo.language;
+const isDemo = connection.source === 'demo' && connection.searchURL === demo.searchURL && connection.model === demo.model && resultLanguage === demo.language;
 const initialQuery = connection.initialQuery || (isDemo ? 'rehabilitation' : '');
 const resultPages = createResultPages();
 const form = ref(null);

@@ -1,6 +1,6 @@
 # SearchStax JavaScript Starter
 
-This starter uses the SearchStax JavaScript UI Kit and your Search Lab design. A SearchLabDemo download is ready to search. For a connected-app download, add your endpoint and read-only token under **Connect Your Search App** before you run it.
+This starter uses the SearchStax JavaScript UI Kit and your Search Lab design. The built-in example uses eight recorded results for **rehabilitation**. You can open results, filter and sort them locally. For a connected-app download, add your endpoint and read-only token under **Connect Your Search App** before you run it.
 
 ## Run the Demo
 
@@ -11,21 +11,21 @@ This starter uses the SearchStax JavaScript UI Kit and your Search Lab design. A
    python3 -m http.server 4175 --bind 127.0.0.1
    ```
 
-3. Open [http://127.0.0.1:4175/](http://127.0.0.1:4175/) in your browser. You'll need an internet connection to load the UI Kit and search the demo.
+3. Open [http://127.0.0.1:4175/](http://127.0.0.1:4175/) in your browser. The starter loads the UI Kit from its CDN and reads the sample results locally.
 
 Press Ctrl+C in the terminal when you're done.
 
 ## Try your design
 
-For SearchLabDemo, search for **rehabilitation** to see results from the selected profile.
+Search for **rehabilitation**. The recorded results open with Simon Kelver when you use the default relevance order.
 
 If you enabled sample thumbnails, the ZIP includes fictional images for two Central County results.
 
-To try sorting with SearchLabDemo’s SearchLabBuild profile, search for **campus**. The dropdown uses the label, position, and starting sort from your Build design. Choose **Relevance**, **Page address (A–Z)**, or **Page address (Z–A)** to reorder all matching pages.
+To try sorting, keep **rehabilitation** in the search box. The dropdown uses the label, position, and starting sort from your Build design. Choose **Relevance**, **Page address (A–Z)**, or **Page address (Z–A)** to reorder all matching pages.
 
 If search can’t start, choose **Reload search**. If a search fails or takes longer than usual, choose **Retry search** to repeat it with the same query, sort, filters and page. When earlier results are still on screen, the status message tells you.
 
-If you enabled sample search suggestions, type `reh` to try them. Choosing a suggestion runs a search against the fictional demo.
+If you enabled sample search suggestions, type `reh` to try them. Choose **rehabilitation** for the recorded result set.
 
 The starter uses the **Results per page** setting from your design. To change it in the starter, edit `resultsPerPage` in `search.js`.
 

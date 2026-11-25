@@ -33,6 +33,9 @@ import promotionsJS from './sample-promotions.js?raw';
 import smartAnswersSampleHTML from './smart-answers-sample.html?raw';
 import smartAnswersSampleCSS from './smart-answers-sample.css?raw';
 import customerSuggestions from './customer-suggestions.js?raw';
+import recordedSearchJS from './recorded-search.js?raw';
+import recordedResponseJS from './recorded-response.js?raw';
+import recordedSearchesJSON from './recorded-searches.json?raw';
 import reactHTML from './starter-react/index.html?raw';
 import reactPackage from './starter-react/package.json?raw';
 import reactLock from './starter-react/package-lock.json?raw';
@@ -80,17 +83,11 @@ type StarterConnection = {
   demoModel: string;
   language: string;
   featureSettings: {
-    endpoint?: string;
     endpointHash?: string;
     entitlements: Entitlements;
     relatedSearchesByLanguage: Record<string, boolean | undefined>;
     profiles: Partial<Profile>[];
   };
-  questionURL: string;
-  relatedURL: string;
-  discoveryKey: string;
-  searchURL: string;
-  searchAuth: string;
   model: string;
   kitURL: string;
 };
@@ -252,7 +249,26 @@ function collectThumbnails(enabled: boolean) {
 
 type Framework = 'javascript' | 'react' | 'vue' | 'angular';
 
-function createProfileStarter(framework: Framework, design: DesignSettings, experience: ExperienceHandoff) {
+function recordedInitialQuery(experience: ExperienceHandoff): string {
+  try {
+    const catalog = JSON.parse(recordedSearchesJSON) as Record<string, Record<string, unknown>>;
+    const entries = catalog[experience.selected.profile] ?? {};
+    const preferred = experience.initialQuery.trim().toLowerCase();
+    if (preferred && entries[preferred]) return preferred;
+    if (entries.rehabilitation) return 'rehabilitation';
+    return Object.keys(entries)[0] || 'rehabilitation';
+  } catch {
+    return 'rehabilitation';
+  }
+}
+
+function createProfileStarter(framework: Framework, design: DesignSettings, experience: ExperienceHandoff, recordedDemo = false) {
+  const profileExperience = recordedDemo
+    ? { ...experience, initialQuery: recordedInitialQuery(experience) }
+    : experience;
+  const profileConnection = recordedDemo
+    ? { endpoint: './__search-lab-recorded-search', token: 'recorded-search' }
+    : { endpoint: '', token: '' };
   const entries: Record<string, string> = {
     'search.css': renderStarterCSS(design),
     'src/facet-limits.js': facetLimits,
@@ -274,13 +290,16 @@ function createProfileStarter(framework: Framework, design: DesignSettings, expe
     'src/customer-search.js': searchRuntime,
     'src/content-language.js': contentLanguageJS,
     'src/web-url.js': webURLJS,
-    'src/config.js': `export const settings = ${JSON.stringify({ ...experience, navigation: design, logoURL: design.logoURL,
-      thumbnails: experience.source === 'demo' ? Object.fromEntries(Object.entries(demoThumbnails).map(([url, image]) => [url, image.source])) : {} }, null, 2)};
+    'src/config.js': `export const settings = ${JSON.stringify({ ...profileExperience, navigation: design, logoURL: design.logoURL,
+      thumbnails: profileExperience.source === 'demo' ? Object.fromEntries(Object.entries(demoThumbnails).map(([url, image]) => [url, image.source])) : {} }, null, 2)};
 
 // Use your app’s HTTPS Select endpoint and a browser-safe read-only token.
-export const connection = { endpoint: '', token: '' };
+export const connection = ${JSON.stringify(profileConnection)};
 `,
     'src/mount.js': profileMount.replace('%%EXPERIENCE_HTML%%', () => JSON.stringify(profileControls.replace('<!-- smart-answer-sample -->', () => smartAnswersSampleHTML))),
+    'src/recorded-search.js': recordedSearchJS,
+    'src/recorded-response.js': recordedResponseJS,
+    'src/recorded-searches.js': `export default ${recordedDemo ? (recordedSearchesJSON.trim() || '{}') : '{}'};\n`,
   };
   switch (framework) {
     case 'javascript':
@@ -311,7 +330,7 @@ ${run}
 
 ## Try the design
 
-${experience.source === 'demo' ? 'Search for **campus** in the sample directory and open a result. The preview settings determine whether visitors can switch profiles, choose English or Spanish, and filter results.' : 'Your selected languages, profiles, feature settings, and starting tab are in **src/config.js**. Add the connection settings below and enter a search term from your site.'}
+${recordedDemo ? `Search for **${profileExperience.initialQuery}** in the saved **${profileExperience.selected.profile}** example and open a result. The preview settings determine which profile opens first and whether visitors can switch profiles or languages.` : experience.source === 'demo' ? 'Search for **campus** in the sample directory and open a result. The preview settings determine whether visitors can switch profiles, choose English or Spanish, and filter results.' : 'Your selected languages, profiles, feature settings, and starting tab are in **src/config.js**. Add the connection settings below and enter a search term from your site.'}
 
 When both controls are enabled, the language picker controls which profiles appear. Switching profiles keeps the submitted query and returns to the first page. Use the arrow keys to move between tabs.
 
@@ -328,14 +347,19 @@ Live results use the Search API. Tracking is off in this starter.
 }
 
 function ordinaryConnection(connection: StarterConnection) {
+  const source = connection.customer ? 'app' : 'demo';
   return {
-    searchURL: connection.customer ? '' : connection.searchURL,
-    searchAuth: connection.customer ? '' : connection.searchAuth,
+    // Demo downloads use recorded responses and never spend Search App
+    // requests. Connected downloads start blank so the developer supplies
+    // their own endpoint and browser-safe token.
+    source,
+    searchURL: connection.customer ? '' : './__search-lab-recorded-search',
+    searchAuth: connection.customer ? '' : 'recorded-search',
     model: connection.model,
     language: connection.language,
-    questionURL: connection.questionURL,
-    relatedURL: connection.relatedURL,
-    discoveryKey: connection.discoveryKey,
+    questionURL: '',
+    relatedURL: '',
+    discoveryKey: '',
     suggesterURL: '',
     analyticsBaseUrl: '',
     trackApiKey: '',
@@ -357,7 +381,7 @@ export function createStarterZip(
   connection: StarterConnection,
   demoFacetLabels: Record<string, string>,
 ): Blob {
-  if (connection.experience) return createProfileStarter('javascript', design, connection.experience);
+  if (connection.experience) return createProfileStarter('javascript', design, connection.experience, !connection.customer && connection.experience.source === 'app');
   const config = JSON.stringify({
     ...ordinaryConnection(connection),
     ...starterFeatures(design),
@@ -380,7 +404,7 @@ export function createStarterZip(
       return escapeHTML(htmlValues[key]);
     },
   );
-  const demoFacets = JSON.stringify({ searchURL: connection.searchURL, model: connection.demoModel, labels: demoFacetLabels }, null, 2);
+  const demoFacets = JSON.stringify({ searchURL: './__search-lab-recorded-search', model: connection.demoModel, labels: demoFacetLabels }, null, 2);
   const { paths: thumbnailPaths, files: thumbnailFiles } = collectThumbnails(design.showThumbnails);
   const javascript = jsTemplate
     .replace('%%STARTER_CONFIG%%', () => config)
@@ -392,6 +416,9 @@ export function createStarterZip(
     'search.css': strToU8(renderStarterCSS(design)),
     'facet-limits.js': strToU8(facetLimits),
     'search.js': strToU8(javascript),
+    'recorded-search.js': strToU8(recordedSearchJS),
+    'recorded-response.js': strToU8(recordedResponseJS),
+    'recorded-searches.js': strToU8(`export default ${recordedSearchesJSON.trim() || '{}'};\n`),
     'sorting.js': strToU8(starterSorting),
     'demo-content.js': strToU8(demoContentJS),
     'content-language.js': strToU8(contentLanguageJS),
@@ -421,7 +448,7 @@ function frameworkStarterFiles(
 ) {
   const { paths, files } = collectThumbnails(design.showThumbnails);
   const demo = {
-    searchURL: selected.searchURL, model: selected.demoModel,
+    searchURL: './__search-lab-recorded-search', model: selected.demoModel,
     language: 'en',
     facetLabels,
     thumbnailPaths: Object.fromEntries(Object.entries(paths).map(([url, path]) => [url, '/' + path])),
@@ -446,6 +473,9 @@ export const design = ${JSON.stringify(settings, null, 2)};
   return {
     'search.css': strToU8(renderStarterCSS(design)),
     'src/config.js': strToU8(config),
+    'src/recorded-search.js': strToU8(recordedSearchJS),
+    'src/recorded-response.js': strToU8(recordedResponseJS),
+    'src/recorded-searches.js': strToU8(`export default ${recordedSearchesJSON.trim() || '{}'};\n`),
     'src/sorting.js': strToU8(starterSorting),
     'src/demo-content.js': strToU8(demoContentJS),
     'src/suggestions.js': strToU8(suggestionsJS),
@@ -472,7 +502,7 @@ export function createReactStarterZip(
   connection: StarterConnection,
   facetLabels: Record<string, string>,
 ): Blob {
-  if (connection.experience) return createProfileStarter('react', design, connection.experience);
+  if (connection.experience) return createProfileStarter('react', design, connection.experience, !connection.customer && connection.experience.source === 'app');
   const archive = zipSync({
     'index.html': strToU8(reactHTML),
     'package.json': strToU8(reactPackage),
@@ -490,7 +520,7 @@ export function createVueStarterZip(
   connection: StarterConnection,
   facetLabels: Record<string, string>,
 ): Blob {
-  if (connection.experience) return createProfileStarter('vue', design, connection.experience);
+  if (connection.experience) return createProfileStarter('vue', design, connection.experience, !connection.customer && connection.experience.source === 'app');
   const archive = zipSync({
     'index.html': strToU8(vueHTML),
     'package.json': strToU8(vuePackage),
@@ -509,7 +539,7 @@ export function createAngularStarterZip(
   connection: StarterConnection,
   facetLabels: Record<string, string>,
 ): Blob {
-  if (connection.experience) return createProfileStarter('angular', design, connection.experience);
+  if (connection.experience) return createProfileStarter('angular', design, connection.experience, !connection.customer && connection.experience.source === 'app');
   const archive = zipSync({
     'package.json': strToU8(angularPackage),
     'package-lock.json': strToU8(angularLock),

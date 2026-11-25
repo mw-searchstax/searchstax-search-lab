@@ -1,6 +1,16 @@
 # Search Lab UI Kit coverage
 
-**Design review for Thomas, Sabrina, and Kaunaj · November 24, 2026**
+**Design review for Thomas, Sabrina, and Kaunaj · November 25, 2026**
+
+### First pilot decision for Thomas, Sabrina, and Kaunaj
+
+Restore reliable access and verify the request budget first. For the next feature, ship result cards. Start with the mapped thumbnail's size and placement, the content-type ribbon, and metadata labels and order. Review one image-bearing card and one with a missing field on mobile and desktop. The saved design, share link and running downloads should reproduce the same card and preserve the returned link and highlighted passage.
+
+| Later decision | Evidence to bring back to review |
+|---|---|
+| Grouped results | A profile with a groupable field, a tested JavaScript kit upgrade and a demonstration of counts and paging across groups in ordinary and tabbed exports. |
+| Smart Answers feedback and conversation | An enabled profile with a real answer, an agreed feedback destination and a working follow-up conversation. Decide whether the pilot needs either interaction before adding controls. |
+| Location search | Indexed coordinates, a geocoder and a location-enabled profile. Show manual entry, denied location permission and a radius that changes the results. |
 
 Start in Build with **rehabilitation**. Under **Appearance → Hit highlighting**, switch from Italic to Plain text and compare the passage. Then enable profile tabs in Advanced Options and switch from SearchLabBuild to Main Profile. The wording can change when the app stops returning the matched passage. Changing its visual style should preserve every word.
 

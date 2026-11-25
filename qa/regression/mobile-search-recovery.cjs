@@ -179,15 +179,18 @@ async function visitor(page) {
   await observe('Own query in Improve', output.getByRole('status'), retry, { http: null, elapsedMs: Date.now() - start });
   server.fail(200); await retry.press('Enter');
   await output.getByText('Fixture result 1', { exact: true }).waitFor();
-  for (const [direction, offset] of [['next', 5], ['prev', 0]]) {
-    const action = output.locator('[data-visitor-' + direction + ']');
-    await center(action); await action.focus(); server.fail(503); await action.click(); await retry.waitFor();
-    await observe('Improve ' + direction + ' page', output.getByRole('status'), retry, server.requests.at(-1));
-    server.fail(200); await retry.press('Enter');
-    await output.getByText('Fixture result ' + (offset + 1), { exact: true }).waitFor();
-    assert.equal(server.requests.at(-1).start, offset);
-    assert.equal(await page.evaluate(() => document.activeElement === document.body), false);
-  }
+  const next = output.locator('[data-visitor-next]');
+  await center(next); await next.focus(); server.fail(503); await next.click(); await retry.waitFor();
+  await observe('Improve next page', output.getByRole('status'), retry, server.requests.at(-1));
+  server.fail(200); await retry.press('Enter');
+  await output.getByText('Fixture result 6', { exact: true }).waitFor();
+  assert.equal(server.requests.at(-1).start, 5);
+  const calls = server.requests.length;
+  server.fail(503);
+  await output.locator('[data-visitor-prev]').click();
+  await output.getByText('Fixture result 1', { exact: true }).waitFor();
+  assert.equal(server.requests.length, calls, 'returning to a successful page works during an outage');
+  assert.equal(await page.evaluate(() => document.activeElement === document.body), false);
   await page.getByRole('button', { name: 'Return to lesson search' }).click();
   assert.equal(await retry.count(), 0);
 }
@@ -207,13 +210,13 @@ async function returnToPreset(page) {
     await panel.locator('[data-visitor-results] li').first().waitFor();
     const back = panel.locator('[data-visitor-return]');
     await center(back);
+    const calls = server.requests.length;
     server.fail(503);
     await back.click();
-    const retry = panel.locator('[data-lesson-results] [data-improve-retry]');
-    await observe(lesson + ' return to lesson search', panel.locator('[data-improve-status]'), retry, 503);
+    await panel.locator('[data-lesson-results]:visible [data-improve-results] li').first().waitFor();
+    assert.equal(await panel.locator('[data-improve-retry]:visible').count(), 0);
+    assert.equal(server.requests.length, calls, 'returning to the saved lesson works during an outage');
     server.fail(200);
-    await retry.press('Enter'); await retry.waitFor({ state: 'hidden' });
-    assert.equal(server.requests.at(-1).q, await input.inputValue());
     assert.ok(await input.evaluate(el => el === document.activeElement));
   }
 }

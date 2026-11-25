@@ -107,7 +107,8 @@ async function runFreeSearchAndRoutes(page) {
     freeRetryRequests += 1;
     return freeRetryRequests === 1 ? route.abort() : route.fallback();
   });
-  await input.fill('orthopedics');
+  // A previously successful query is cached. Use a fresh fixture query to exercise Retry.
+  await input.fill('rehabilitation');
   await input.press('Enter');
   const visitorRetry = page.locator('[data-visitor-output]:visible [data-visitor-retry]');
   await visitorRetry.waitFor();
@@ -168,6 +169,7 @@ async function runFreeSearchAndRoutes(page) {
 async function runRetry(page) {
   const endpoint = await page.locator('[data-search-url]').getAttribute('data-search-url');
   assert.ok(endpoint, 'demo endpoint is present');
+  await page.goto('about:blank'); // Start with an empty search cache for the injected failure.
   let requests = 0;
   await page.route(endpoint + '**', route => {
     requests += 1;

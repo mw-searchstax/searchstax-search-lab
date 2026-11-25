@@ -15,6 +15,10 @@ import { setupPaginationFocus } from './pagination-focus.js';
 import { createResultPages } from './result-pages.js';
 import { formatResultSummary } from './result-summary.js';
 import { decodedSort, encodedSort, createSortController, readResponseSortOptions, readSortOptions } from './sorting.js';
+import { installRecordedSearch } from './recorded-search.js';
+import recordings from './recorded-searches.js';
+
+installRecordedSearch(recordings);
 
 const facetLabels: Record<string, string> = demo.facetLabels;
 const thumbnailPaths: Record<string, string> = demo.thumbnailPaths;
@@ -50,7 +54,7 @@ export class SearchApp implements AfterViewInit, OnDestroy {
   readonly analytics = getAnalyticsSettings(connection);
   readonly design = design;
   readonly resultLanguage = contentLanguageTag(connection.language);
-  readonly isDemo = connection.searchURL === demo.searchURL && connection.model === demo.model && this.resultLanguage === demo.language;
+  readonly isDemo = connection.source === 'demo' && connection.searchURL === demo.searchURL && connection.model === demo.model && this.resultLanguage === demo.language;
   readonly status = signal('Connecting to search…');
   readonly loadedResults = signal(0);
   readonly pageStart = signal(1);

@@ -69,11 +69,11 @@ export function setupVisitorSearch(
     setStatus(page.total === 0
       ? `No results for “${search.query}”.`
       : `${search.start + 1}–${Math.min(search.start + page.resultCount, page.total)} of ${page.total} results for “${search.query}”.`);
+    const focused = document.activeElement;
     previous.hidden = search.start === 0;
     next.hidden = search.start + search.rows >= page.total;
     previous.disabled = search.start === 0;
     next.disabled = search.start + search.rows >= page.total;
-    const focused = document.activeElement;
     if (focused === retry || (focused instanceof HTMLElement && pages.contains(focused) && focused.hidden)) {
       status.focus({ preventScroll: true });
     }

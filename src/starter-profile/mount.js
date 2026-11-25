@@ -2,6 +2,10 @@ import { setupExperiencePreview } from './profile-experiences.js';
 import { readAnswerEndpoint } from './customer-answers.js';
 import { readCustomerEndpoint } from './web-url.js';
 import { settings, connection } from './config.js';
+import { installRecordedSearch } from './recorded-search.js';
+import recordings from './recorded-searches.js';
+
+installRecordedSearch(recordings);
 
 export function mountProfileSearch(host) {
   const main = document.createElement('main');
@@ -27,8 +31,9 @@ export function mountProfileSearch(host) {
   const search = setupExperiencePreview(panel, settings.thumbnails);
   panel.hidden = true;
   search.configure(settings.navigation);
+  const recorded = connection.endpoint === './__search-lab-recorded-search' && connection.token === 'recorded-search';
   const app = live ? {
-    endpoint: readCustomerEndpoint(connection.endpoint) || '',
+    endpoint: recorded ? new URL(connection.endpoint, document.baseURI).href : readCustomerEndpoint(connection.endpoint) || '',
     token: connection.token.trim(),
     configuration: { entitlements: settings.entitlements ?? {}, profiles: settings.profiles },
     answerEndpoint: readAnswerEndpoint(connection.answerEndpoint || ''),

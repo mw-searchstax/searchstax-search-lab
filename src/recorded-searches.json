@@ -1,0 +1,2135 @@
+{
+  "Main Profile": {
+    "campus flu clinic": {
+      "responseHeader": {
+        "status": 0,
+        "params": {
+          "q": "campus flu clinic",
+          "model": "Main Profile",
+          "language": "en",
+          "rows": "110",
+          "start": "0",
+          "hl": "false",
+          "uniqueId": "id",
+          "facet": "true",
+          "facet.field": "demo_content_type_s"
+        }
+      },
+      "response": {
+        "numFound": 44,
+        "start": 0,
+        "docs": [
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/news/flu-clinic-update-2024/",
+            "title": [
+              "Flu Clinic Updates — 2024 Archive | Central County University Health"
+            ],
+            "description": [
+              "Sample headings and labels from the 2024 flu clinic updates pack."
+            ],
+            "demo_content_type_s": "news",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/news/flu-clinic-update-2024",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/news/flu-clinic-update-2025/",
+            "title": [
+              "Flu Clinic Updates — 2025 Archive | Central County University Health"
+            ],
+            "description": [
+              "The 2025 sample flu clinic updates pack adds revised headings and a large-print edition."
+            ],
+            "demo_content_type_s": "news",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/news/flu-clinic-update-2025",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/news/flu-clinic-update-2026/",
+            "title": [
+              "Flu Clinic Updates — 2026 Notice | Central County University Health"
+            ],
+            "description": [
+              "A fictional 2026 notice brings the sample flu clinic updates pack and its historical editions into one reference set."
+            ],
+            "demo_content_type_s": "news",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/news/flu-clinic-update-2026",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/locations/north-campus-clinic/",
+            "title": [
+              "North Campus Clinic | Central County University Health"
+            ],
+            "description": [
+              "A fictional northern teaching annex stores Primary Care and Neurology classroom materials."
+            ],
+            "demo_content_type_s": "location",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/locations/north-campus-clinic",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/locations/south-campus-clinic/",
+            "title": [
+              "South Campus Clinic | Central County University Health"
+            ],
+            "description": [
+              "The South Campus Clinic building houses seminar rooms and teaching displays for Dermatology, Endocrinology, and Women’s Health."
+            ],
+            "demo_content_type_s": "location",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/locations/south-campus-clinic",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/resources/flu-shot-appointments/",
+            "title": [
+              "Flu Shots: Appointment Information | Central County University Health"
+            ],
+            "description": [
+              "An annotated fictional notice shows how flu shots appointment information can be organized without offering appointments."
+            ],
+            "demo_content_type_s": "resource",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/resources/flu-shot-appointments",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/services/general-health-services/",
+            "title": [
+              "General Health Services | Central County University Health"
+            ],
+            "description": [
+              "A fictional health-information directory groups primary-care reference material, campus health notices and appointment-information examples."
+            ],
+            "demo_content_type_s": "service",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/services/general-health-services",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/locations/",
+            "title": [
+              "Central County Locations | Central County University Health"
+            ],
+            "description": [
+              "Compare the university’s main building, specialty teaching centers, academic annexes and public-service pavilion."
+            ],
+            "demo_content_type_s": "hub",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/locations",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/services/womens-health/",
+            "title": [
+              "Women’s Health | Central County University Health"
+            ],
+            "description": [
+              "Use the South Campus seminar collection to match a reading to its anatomical illustration."
+            ],
+            "demo_content_type_s": "service",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/services/womens-health",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/services/endocrinology/",
+            "title": [
+              "Endocrinology | Central County University Health"
+            ],
+            "description": [
+              "Use the South Campus collection to match gland models with their names and classroom diagrams."
+            ],
+            "demo_content_type_s": "service",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/services/endocrinology",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/services/dermatology/",
+            "title": [
+              "Dermatology | Central County University Health"
+            ],
+            "description": [
+              "The skin illustration collection at South Campus Clinic pairs each drawing with the caption used in class."
+            ],
+            "demo_content_type_s": "service",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/services/dermatology",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/locations/childrens-clinic/",
+            "title": [
+              "Children’s Clinic | Central County University Health"
+            ],
+            "description": [
+              "The fictional Children’s Clinic teaching area combines picture books and labeled models."
+            ],
+            "demo_content_type_s": "location",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/locations/childrens-clinic",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/tessa-rowan/",
+            "title": [
+              "Tessa Rowan | Central County University Health"
+            ],
+            "description": [
+              "Pediatrics teaching materials include age-labelled models and a campus-themed picture-book shelf."
+            ],
+            "demo_content_type_s": "provider",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/tessa-rowan",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/services/pediatrics/",
+            "title": [
+              "Pediatrics | Central County University Health"
+            ],
+            "description": [
+              "The Children’s Clinic teaching collection puts age-labeled models beside a picture-book shelf."
+            ],
+            "demo_content_type_s": "service",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/services/pediatrics",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/",
+            "title": [
+              "Central County University Health"
+            ],
+            "description": [
+              "Find a department, course, or campus building."
+            ],
+            "demo_content_type_s": "hub",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/",
+            "title": [
+              "Care at Central County University Health | Central County University Health"
+            ],
+            "description": [
+              "Explore clinical departments, a faculty profile, a campus center and a plain-language terminology resource."
+            ],
+            "demo_content_type_s": "hub",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/mara-ellison/",
+            "title": [
+              "Mara Ellison | Central County University Health"
+            ],
+            "description": [
+              "A faculty member who develops equipment demonstrations and illustrated case materials at the university's campus center."
+            ],
+            "demo_content_type_s": "provider",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/mara-ellison",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/locations/sleep-center/",
+            "title": [
+              "Central County Sleep Center | Central County University Health"
+            ],
+            "description": [
+              "A campus building with demonstration bedrooms, an observation room and space for the Pulmonary and Sleep Services unit."
+            ],
+            "demo_content_type_s": "location",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/locations/sleep-center",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/about/",
+            "title": [
+              "About Central County | Central County University Health"
+            ],
+            "description": [
+              "A fictional public university brings academic departments, teaching spaces and community reading programs into one campus setting."
+            ],
+            "demo_content_type_s": "hub",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/about",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/education/",
+            "title": [
+              "Education at Central County | Central County University Health"
+            ],
+            "description": [
+              "Explore degree subjects, advanced academic programs and short-format learning through their classroom materials and campus connections."
+            ],
+            "demo_content_type_s": "hub",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/education",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/community/transit-access/",
+            "title": [
+              "Transit Access | Central County University Health"
+            ],
+            "description": [
+              "A fictional campus-map guide explains pedestrian, covered-link and transit symbols without real routes or schedules."
+            ],
+            "demo_content_type_s": "community",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/community/transit-access",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/education/nursing-community-practice/",
+            "title": [
+              "Nursing Community Practice | Central County University Health"
+            ],
+            "description": [
+              "A fictional community-practice course uses campus maps and public-information leaflets as materials for nursing courses."
+            ],
+            "demo_content_type_s": "program",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/education/nursing-community-practice",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/community/school-health-education/",
+            "title": [
+              "School Health Education | Central County University Health"
+            ],
+            "description": [
+              "A fictional reading-kit catalogue describes classroom topic cards and teacher notes without giving health advice."
+            ],
+            "demo_content_type_s": "community",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/community/school-health-education",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/community/",
+            "title": [
+              "Community at Central County | Central County University Health"
+            ],
+            "description": [
+              "Explore enduring programs for reading health information, understanding campus maps and connecting university teaching with public-service subjects."
+            ],
+            "demo_content_type_s": "hub",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/community",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/resources/sleep-visit-overview/",
+            "title": [
+              "Sleep Visit Overview | Central County University Health"
+            ],
+            "description": [
+              "A floor-plan key and document index introduce the fictional Sleep Center’s orientation packet."
+            ],
+            "demo_content_type_s": "resource",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/resources/sleep-visit-overview",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/miles-tavish/",
+            "title": [
+              "Miles Tavish | Central County University Health"
+            ],
+            "description": [
+              "Neurology exercises use invented case cards to practice separating observations from assumptions."
+            ],
+            "demo_content_type_s": "provider",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/miles-tavish",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/nolan-vey/",
+            "title": [
+              "Nolan Vey | Central County University Health"
+            ],
+            "description": [
+              "Endocrinology classes use labeled gland models and terminology cards."
+            ],
+            "demo_content_type_s": "provider",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/nolan-vey",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/soren-hale/",
+            "title": [
+              "Soren Hale | Central County University Health"
+            ],
+            "description": [
+              "A Women’s Health catalogue links classroom reading with an anatomical illustration register."
+            ],
+            "demo_content_type_s": "provider",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/soren-hale",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/niko-maren/",
+            "title": [
+              "Niko Maren | Central County University Health"
+            ],
+            "description": [
+              "Primary Care seminars use fictional case cards to distinguish recorded observations from assumptions."
+            ],
+            "demo_content_type_s": "provider",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/niko-maren",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/services/gastroenterology/",
+            "title": [
+              "Gastroenterology | Central County University Health"
+            ],
+            "description": [
+              "The digestive anatomy stations are arranged by topic in the hospital’s teaching wing."
+            ],
+            "demo_content_type_s": "service",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/services/gastroenterology",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/education/admissions-overview/",
+            "title": [
+              "Admissions Overview | Central County University Health"
+            ],
+            "description": [
+              "An invented academic prospectus explains document labels and common sections without deadlines or application steps."
+            ],
+            "demo_content_type_s": "program",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/education/admissions-overview",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/pdfs/sleep-visit-overview.pdf",
+            "title": [
+              "Sleep Center Demonstration Rooms"
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/pdfs/sleep-visit-overview.pdf",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/locations/university-hospital/",
+            "title": [
+              "Central County University Hospital | Central County University Health"
+            ],
+            "description": [
+              "Explore the departments in the hospital’s teaching wing and the anatomy reading room beside the hospital."
+            ],
+            "demo_content_type_s": "location",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/locations/university-hospital",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/education/master-of-business-administration/",
+            "title": [
+              "Master of Business Administration | Central County University Health"
+            ],
+            "description": [
+              "A fictional Master of Business Administration curriculum pairs organizational case studies with budgeting and operations exercises."
+            ],
+            "demo_content_type_s": "program",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/education/master-of-business-administration",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/resources/cardiology-visit-overview/",
+            "title": [
+              "Visiting the Heart Center | Central County University Health"
+            ],
+            "description": [
+              "A room index and model labels introduce the fictional Cardiology gallery at the Heart Center."
+            ],
+            "demo_content_type_s": "resource",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/resources/cardiology-visit-overview",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/services/rehabilitation/",
+            "title": [
+              "Rehabilitation | Central County University Health"
+            ],
+            "description": [
+              "Rehabilitation links mock room plans, adaptable furniture, and accessibility design materials."
+            ],
+            "demo_content_type_s": "service",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/services/rehabilitation",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/locations/community-health-pavilion/",
+            "title": [
+              "Community Health Pavilion | Central County University Health"
+            ],
+            "description": [
+              "Leaflet racks and a map table define the fictional pavilion’s community teaching collection."
+            ],
+            "demo_content_type_s": "location",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/locations/community-health-pavilion",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/locations/heart-center/",
+            "title": [
+              "Central County Heart Center | Central County University Health"
+            ],
+            "description": [
+              "The Heart Center pairs a model gallery with a classroom used by fictional Cardiology teaching."
+            ],
+            "demo_content_type_s": "location",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/locations/heart-center",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/locations/teaching-health-center/",
+            "title": [
+              "Teaching Health Center | Central County University Health"
+            ],
+            "description": [
+              "A shared simulation setting stores fictional case cards, blank charts, and seminar materials."
+            ],
+            "demo_content_type_s": "location",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/locations/teaching-health-center",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/iris-bellan/",
+            "title": [
+              "Iris Bellan | Central County University Health"
+            ],
+            "description": [
+              "Dermatology diagrams are catalogued with captions and fictional collection records."
+            ],
+            "demo_content_type_s": "provider",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/iris-bellan",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/resources/accessibility-and-language-support/",
+            "title": [
+              "Accessibility and Language Support | Central County University Health"
+            ],
+            "description": [
+              "Large-print samples, glossary layouts, and fictional wayfinding symbols are grouped as design references."
+            ],
+            "demo_content_type_s": "resource",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/resources/accessibility-and-language-support",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/dorian-weller/",
+            "title": [
+              "Dorian Weller | Central County University Health"
+            ],
+            "description": [
+              "Pulmonary and Sleep Services teaching materials include demonstration-room plans and fictional charts."
+            ],
+            "demo_content_type_s": "provider",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/dorian-weller",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/news/community-screening-archive-2024/",
+            "title": [
+              "Community Screening Archive 2024 — Historical Notice | Central County University Health"
+            ],
+            "description": [
+              "A 2024 university library room change brought community screening reference materials into a shared reading space."
+            ],
+            "demo_content_type_s": "news",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/news/community-screening-archive-2024",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/research/sleep-health-center/",
+            "title": [
+              "Sleep Health Center | Central County University Health"
+            ],
+            "description": [
+              "A research group catalogue organizes sleep-related literature and synthetic recordings separately from the Sleep Center building."
+            ],
+            "demo_content_type_s": "research",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/research/sleep-health-center",
+            "[elevated]": false
+          }
+        ]
+      },
+      "metadata": {
+        "results": [
+          {
+            "name": "url",
+            "title": "",
+            "result_card": "url"
+          },
+          {
+            "name": "title",
+            "title": "",
+            "result_card": "title"
+          },
+          {
+            "name": "description",
+            "title": "",
+            "result_card": "description"
+          },
+          {
+            "name": "demo_content_type_s",
+            "title": "",
+            "result_card": "ribbon"
+          }
+        ],
+        "facets": [
+          {
+            "name": "demo_content_type_s",
+            "label": "Content type"
+          }
+        ]
+      },
+      "facet_counts": {
+        "facet_fields": {
+          "demo_content_type_s": [
+            "location",
+            8,
+            "provider",
+            8,
+            "service",
+            7,
+            "hub",
+            6,
+            "news",
+            4,
+            "resource",
+            4,
+            "program",
+            3,
+            "community",
+            2,
+            "research",
+            1
+          ]
+        }
+      }
+    },
+    "rehabilitation": {
+      "responseHeader": {
+        "status": 0,
+        "params": {
+          "q": "rehabilitation",
+          "model": "Main Profile",
+          "language": "en",
+          "rows": "110",
+          "start": "0",
+          "hl": "false",
+          "uniqueId": "id",
+          "facet": "true",
+          "facet.field": "demo_content_type_s"
+        }
+      },
+      "response": {
+        "numFound": 8,
+        "start": 0,
+        "docs": [
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/simon-kelver/",
+            "title": [
+              "Simon Kelver | Central County University Health"
+            ],
+            "description": [
+              "At the Rehabilitation Center, Simon Kelver pairs adjustable furniture with annotated drawings for rehabilitation classes."
+            ],
+            "demo_content_type_s": "provider",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/simon-kelver",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/services/rehabilitation/",
+            "title": [
+              "Rehabilitation | Central County University Health"
+            ],
+            "description": [
+              "Rehabilitation links mock room plans, adaptable furniture, and accessibility design materials."
+            ],
+            "demo_content_type_s": "service",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/services/rehabilitation",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/mina-corven/",
+            "title": [
+              "Mina Corven | Central County University Health"
+            ],
+            "description": [
+              "Rehabilitation design seminars use mock apartment plans and annotated room layouts."
+            ],
+            "demo_content_type_s": "provider",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/mina-corven",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/locations/rehabilitation-center/",
+            "title": [
+              "Rehabilitation Center | Central County University Health"
+            ],
+            "description": [
+              "A mock apartment and furniture display anchor the fictional center’s accessibility design materials."
+            ],
+            "demo_content_type_s": "location",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/locations/rehabilitation-center",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/adrian-pell/",
+            "title": [
+              "Adrian Pell | Central County University Health"
+            ],
+            "description": [
+              "In Orthopedics, students match joint models to sketches. The room plans used in Rehabilitation are in a separate collection."
+            ],
+            "demo_content_type_s": "provider",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/adrian-pell",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/services/orthopedics/",
+            "title": [
+              "Orthopedics | Central County University Health"
+            ],
+            "description": [
+              "In the hospital teaching wing, students can pair a joint model with its drawing and classroom sketchbook."
+            ],
+            "demo_content_type_s": "service",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/services/orthopedics",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/resources/accessibility-and-language-support/",
+            "title": [
+              "Accessibility and Language Support | Central County University Health"
+            ],
+            "description": [
+              "Large-print samples, glossary layouts, and fictional wayfinding symbols are grouped as design references."
+            ],
+            "demo_content_type_s": "resource",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/resources/accessibility-and-language-support",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/locations/",
+            "title": [
+              "Central County Locations | Central County University Health"
+            ],
+            "description": [
+              "Compare the university’s main building, specialty teaching centers, academic annexes and public-service pavilion."
+            ],
+            "demo_content_type_s": "hub",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/locations",
+            "[elevated]": false
+          }
+        ]
+      },
+      "metadata": {
+        "results": [
+          {
+            "name": "url",
+            "title": "",
+            "result_card": "url"
+          },
+          {
+            "name": "title",
+            "title": "",
+            "result_card": "title"
+          },
+          {
+            "name": "description",
+            "title": "",
+            "result_card": "description"
+          },
+          {
+            "name": "demo_content_type_s",
+            "title": "",
+            "result_card": "ribbon"
+          }
+        ],
+        "facets": [
+          {
+            "name": "demo_content_type_s",
+            "label": "Content type"
+          }
+        ]
+      },
+      "facet_counts": {
+        "facet_fields": {
+          "demo_content_type_s": [
+            "provider",
+            3,
+            "service",
+            2,
+            "hub",
+            1,
+            "location",
+            1,
+            "resource",
+            1
+          ]
+        }
+      }
+    },
+    "transit access": {
+      "responseHeader": {
+        "status": 0,
+        "params": {
+          "q": "transit access",
+          "model": "Main Profile",
+          "language": "en",
+          "rows": "110",
+          "start": "0",
+          "hl": "false",
+          "uniqueId": "id",
+          "facet": "true",
+          "facet.field": "demo_content_type_s"
+        }
+      },
+      "response": {
+        "numFound": 5,
+        "start": 0,
+        "docs": [
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/community/transit-access/",
+            "title": [
+              "Transit Access | Central County University Health"
+            ],
+            "description": [
+              "A fictional campus-map guide explains pedestrian, covered-link and transit symbols without real routes or schedules."
+            ],
+            "demo_content_type_s": "community",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/community/transit-access",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/community/",
+            "title": [
+              "Community at Central County | Central County University Health"
+            ],
+            "description": [
+              "Explore enduring programs for reading health information, understanding campus maps and connecting university teaching with public-service subjects."
+            ],
+            "demo_content_type_s": "hub",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/community",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/resources/accessibility-and-language-support/",
+            "title": [
+              "Accessibility and Language Support | Central County University Health"
+            ],
+            "description": [
+              "Large-print samples, glossary layouts, and fictional wayfinding symbols are grouped as design references."
+            ],
+            "demo_content_type_s": "resource",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/resources/accessibility-and-language-support",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/research/population-health-center/",
+            "title": [
+              "Population Health Center | Central County University Health"
+            ],
+            "description": [
+              "An invented research catalogue uses aggregate map exercises to examine public-information access, with no real data or findings."
+            ],
+            "demo_content_type_s": "research",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/research/population-health-center",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/locations/",
+            "title": [
+              "Central County Locations | Central County University Health"
+            ],
+            "description": [
+              "Compare the university’s main building, specialty teaching centers, academic annexes and public-service pavilion."
+            ],
+            "demo_content_type_s": "hub",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/locations",
+            "[elevated]": false
+          }
+        ]
+      },
+      "metadata": {
+        "results": [
+          {
+            "name": "url",
+            "title": "",
+            "result_card": "url"
+          },
+          {
+            "name": "title",
+            "title": "",
+            "result_card": "title"
+          },
+          {
+            "name": "description",
+            "title": "",
+            "result_card": "description"
+          },
+          {
+            "name": "demo_content_type_s",
+            "title": "",
+            "result_card": "ribbon"
+          }
+        ],
+        "facets": [
+          {
+            "name": "demo_content_type_s",
+            "label": "Content type"
+          }
+        ]
+      },
+      "facet_counts": {
+        "facet_fields": {
+          "demo_content_type_s": [
+            "hub",
+            2,
+            "community",
+            1,
+            "research",
+            1,
+            "resource",
+            1
+          ]
+        }
+      }
+    },
+    "travel vaccinations": {
+      "responseHeader": {
+        "status": 0,
+        "params": {
+          "q": "travel vaccinations",
+          "model": "Main Profile",
+          "language": "en",
+          "rows": "110",
+          "start": "0",
+          "hl": "false",
+          "uniqueId": "id",
+          "facet": "true",
+          "facet.field": "demo_content_type_s"
+        }
+      },
+      "response": {
+        "numFound": 1,
+        "start": 0,
+        "docs": [
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/community/transit-access/",
+            "title": [
+              "Transit Access | Central County University Health"
+            ],
+            "description": [
+              "A fictional campus-map guide explains pedestrian, covered-link and transit symbols without real routes or schedules."
+            ],
+            "demo_content_type_s": "community",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/community/transit-access",
+            "[elevated]": false
+          }
+        ]
+      },
+      "metadata": {
+        "results": [
+          {
+            "name": "url",
+            "title": "",
+            "result_card": "url"
+          },
+          {
+            "name": "title",
+            "title": "",
+            "result_card": "title"
+          },
+          {
+            "name": "description",
+            "title": "",
+            "result_card": "description"
+          },
+          {
+            "name": "demo_content_type_s",
+            "title": "",
+            "result_card": "ribbon"
+          }
+        ],
+        "facets": [
+          {
+            "name": "demo_content_type_s",
+            "label": "Content type"
+          }
+        ]
+      },
+      "facet_counts": {
+        "facet_fields": {
+          "demo_content_type_s": [
+            "community",
+            1
+          ]
+        }
+      }
+    }
+  },
+  "SearchLabAfter": {
+    "travel vaccinations": {
+      "responseHeader": {
+        "status": 0,
+        "params": {
+          "q": "travel vaccinations",
+          "model": "SearchLabAfter",
+          "language": "en",
+          "rows": "110",
+          "start": "0",
+          "hl": "false",
+          "uniqueId": "id",
+          "facet": "true",
+          "facet.field": "demo_content_type_s"
+        }
+      },
+      "response": {
+        "numFound": 2,
+        "start": 0,
+        "docs": [
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/community/transit-access/",
+            "title": [
+              "Transit Access | Central County University Health"
+            ],
+            "description": [
+              "A fictional campus-map guide explains pedestrian, covered-link and transit symbols without real routes or schedules."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/community/transit-access",
+            "[elevated]": false,
+            "demo_content_type_s": "community"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/services/international-health/",
+            "title": [
+              "International Health | Central County University Health"
+            ],
+            "description": [
+              "The International Health unit organizes regional public-health references and learning materials for an invented university collection."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/services/international-health",
+            "[elevated]": false,
+            "demo_content_type_s": "service"
+          }
+        ]
+      },
+      "metadata": {
+        "results": [
+          {
+            "name": "url",
+            "title": "",
+            "result_card": "url"
+          },
+          {
+            "name": "title",
+            "title": "",
+            "result_card": "title"
+          },
+          {
+            "name": "description",
+            "title": "",
+            "result_card": "description"
+          }
+        ],
+        "facets": [
+          {
+            "name": "demo_content_type_s",
+            "label": "Content type"
+          }
+        ]
+      },
+      "facet_counts": {
+        "facet_fields": {
+          "demo_content_type_s": [
+            "community",
+            1,
+            "service",
+            1
+          ]
+        }
+      }
+    }
+  },
+  "SearchLabBuild": {
+    "rehabilitation": {
+      "responseHeader": {
+        "status": 0,
+        "params": {
+          "q": "rehabilitation",
+          "model": "SearchLabBuild",
+          "language": "en",
+          "rows": "110",
+          "start": "0",
+          "hl": "true",
+          "uniqueId": "id",
+          "hl.snippets": "3",
+          "facet": "true",
+          "facet.field": "demo_content_type_s"
+        }
+      },
+      "response": {
+        "numFound": 8,
+        "start": 0,
+        "docs": [
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/simon-kelver/",
+            "title": [
+              "Simon Kelver | Central County University Health"
+            ],
+            "description": [
+              "At the Rehabilitation Center, Simon Kelver pairs adjustable furniture with annotated drawings for rehabilitation classes."
+            ],
+            "demo_content_type_s": "provider",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/simon-kelver",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/services/rehabilitation/",
+            "title": [
+              "Rehabilitation | Central County University Health"
+            ],
+            "description": [
+              "Rehabilitation links mock room plans, adaptable furniture, and accessibility design materials."
+            ],
+            "demo_content_type_s": "service",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/services/rehabilitation",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/mina-corven/",
+            "title": [
+              "Mina Corven | Central County University Health"
+            ],
+            "description": [
+              "Rehabilitation design seminars use mock apartment plans and annotated room layouts."
+            ],
+            "demo_content_type_s": "provider",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/mina-corven",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/locations/rehabilitation-center/",
+            "title": [
+              "Rehabilitation Center | Central County University Health"
+            ],
+            "description": [
+              "A mock apartment and furniture display anchor the fictional center’s accessibility design materials."
+            ],
+            "demo_content_type_s": "location",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/locations/rehabilitation-center",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/adrian-pell/",
+            "title": [
+              "Adrian Pell | Central County University Health"
+            ],
+            "description": [
+              "In Orthopedics, students match joint models to sketches. The room plans used in Rehabilitation are in a separate collection."
+            ],
+            "demo_content_type_s": "provider",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/adrian-pell",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/services/orthopedics/",
+            "title": [
+              "Orthopedics | Central County University Health"
+            ],
+            "description": [
+              "In the hospital teaching wing, students can pair a joint model with its drawing and classroom sketchbook."
+            ],
+            "demo_content_type_s": "service",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/services/orthopedics",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/resources/accessibility-and-language-support/",
+            "title": [
+              "Accessibility and Language Support | Central County University Health"
+            ],
+            "description": [
+              "Large-print samples, glossary layouts, and fictional wayfinding symbols are grouped as design references."
+            ],
+            "demo_content_type_s": "resource",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/resources/accessibility-and-language-support",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/locations/",
+            "title": [
+              "Central County Locations | Central County University Health"
+            ],
+            "description": [
+              "Compare the university’s main building, specialty teaching centers, academic annexes and public-service pavilion."
+            ],
+            "demo_content_type_s": "hub",
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/locations",
+            "[elevated]": false
+          }
+        ]
+      },
+      "metadata": {
+        "results": [
+          {
+            "name": "url",
+            "title": "",
+            "result_card": "url"
+          },
+          {
+            "name": "title",
+            "title": "",
+            "result_card": "title"
+          },
+          {
+            "name": "description",
+            "title": "",
+            "result_card": "description"
+          },
+          {
+            "name": "demo_content_type_s",
+            "title": "",
+            "result_card": "ribbon"
+          }
+        ],
+        "facets": [
+          {
+            "name": "demo_content_type_s",
+            "label": "Content type"
+          }
+        ],
+        "sorts": [
+          {
+            "name": "url",
+            "label": "Page address (Z–A)",
+            "order": "desc"
+          },
+          {
+            "name": "url",
+            "label": "Page address (A–Z)",
+            "order": "asc"
+          }
+        ]
+      },
+      "facet_counts": {
+        "facet_fields": {
+          "demo_content_type_s": [
+            "provider",
+            3,
+            "service",
+            2,
+            "hub",
+            1,
+            "location",
+            1,
+            "resource",
+            1
+          ]
+        }
+      },
+      "highlighting": {
+        "https://mw-searchstax.github.io/university-health-search-demo/care/providers/simon-kelver": {
+          "description": [
+            "At the <em>Rehabilitation</em> Center, Simon Kelver pairs adjustable furniture with annotated drawings for <em>rehabilitation</em> classes."
+          ]
+        },
+        "https://mw-searchstax.github.io/university-health-search-demo/care/services/rehabilitation": {
+          "title": [
+            "<em>Rehabilitation</em> | Central County University Health"
+          ],
+          "description": [
+            "<em>Rehabilitation</em> links mock room plans, adaptable furniture, and accessibility design materials."
+          ]
+        },
+        "https://mw-searchstax.github.io/university-health-search-demo/care/providers/mina-corven": {
+          "description": [
+            "<em>Rehabilitation</em> design seminars use mock apartment plans and annotated room layouts."
+          ]
+        },
+        "https://mw-searchstax.github.io/university-health-search-demo/locations/rehabilitation-center": {
+          "title": [
+            "<em>Rehabilitation</em> Center | Central County University Health"
+          ]
+        },
+        "https://mw-searchstax.github.io/university-health-search-demo/care/providers/adrian-pell": {
+          "description": [
+            "The room plans used in <em>Rehabilitation</em> are in a separate collection."
+          ]
+        }
+      }
+    }
+  },
+  "SearchLabRanking": {
+    "campus flu clinic": {
+      "responseHeader": {
+        "status": 0,
+        "params": {
+          "q": "campus flu clinic",
+          "model": "SearchLabRanking",
+          "language": "en",
+          "rows": "110",
+          "start": "0",
+          "hl": "false",
+          "uniqueId": "id",
+          "facet": "true",
+          "facet.field": "demo_content_type_s"
+        }
+      },
+      "response": {
+        "numFound": 44,
+        "start": 0,
+        "docs": [
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/locations/north-campus-clinic/",
+            "title": [
+              "North Campus Clinic | Central County University Health"
+            ],
+            "description": [
+              "A fictional northern teaching annex stores Primary Care and Neurology classroom materials."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/locations/north-campus-clinic",
+            "[elevated]": false,
+            "demo_content_type_s": "location"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/locations/south-campus-clinic/",
+            "title": [
+              "South Campus Clinic | Central County University Health"
+            ],
+            "description": [
+              "The South Campus Clinic building houses seminar rooms and teaching displays for Dermatology, Endocrinology, and Women’s Health."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/locations/south-campus-clinic",
+            "[elevated]": false,
+            "demo_content_type_s": "location"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/news/flu-clinic-update-2024/",
+            "title": [
+              "Flu Clinic Updates — 2024 Archive | Central County University Health"
+            ],
+            "description": [
+              "Sample headings and labels from the 2024 flu clinic updates pack."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/news/flu-clinic-update-2024",
+            "[elevated]": false,
+            "demo_content_type_s": "news"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/news/flu-clinic-update-2025/",
+            "title": [
+              "Flu Clinic Updates — 2025 Archive | Central County University Health"
+            ],
+            "description": [
+              "The 2025 sample flu clinic updates pack adds revised headings and a large-print edition."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/news/flu-clinic-update-2025",
+            "[elevated]": false,
+            "demo_content_type_s": "news"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/news/flu-clinic-update-2026/",
+            "title": [
+              "Flu Clinic Updates — 2026 Notice | Central County University Health"
+            ],
+            "description": [
+              "A fictional 2026 notice brings the sample flu clinic updates pack and its historical editions into one reference set."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/news/flu-clinic-update-2026",
+            "[elevated]": false,
+            "demo_content_type_s": "news"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/resources/flu-shot-appointments/",
+            "title": [
+              "Flu Shots: Appointment Information | Central County University Health"
+            ],
+            "description": [
+              "An annotated fictional notice shows how flu shots appointment information can be organized without offering appointments."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/resources/flu-shot-appointments",
+            "[elevated]": false,
+            "demo_content_type_s": "resource"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/locations/childrens-clinic/",
+            "title": [
+              "Children’s Clinic | Central County University Health"
+            ],
+            "description": [
+              "The fictional Children’s Clinic teaching area combines picture books and labeled models."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/locations/childrens-clinic",
+            "[elevated]": false,
+            "demo_content_type_s": "location"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/services/general-health-services/",
+            "title": [
+              "General Health Services | Central County University Health"
+            ],
+            "description": [
+              "A fictional health-information directory groups primary-care reference material, campus health notices and appointment-information examples."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/services/general-health-services",
+            "[elevated]": false,
+            "demo_content_type_s": "service"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/locations/",
+            "title": [
+              "Central County Locations | Central County University Health"
+            ],
+            "description": [
+              "Compare the university’s main building, specialty teaching centers, academic annexes and public-service pavilion."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/locations",
+            "[elevated]": false,
+            "demo_content_type_s": "hub"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/services/womens-health/",
+            "title": [
+              "Women’s Health | Central County University Health"
+            ],
+            "description": [
+              "Use the South Campus seminar collection to match a reading to its anatomical illustration."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/services/womens-health",
+            "[elevated]": false,
+            "demo_content_type_s": "service"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/services/endocrinology/",
+            "title": [
+              "Endocrinology | Central County University Health"
+            ],
+            "description": [
+              "Use the South Campus collection to match gland models with their names and classroom diagrams."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/services/endocrinology",
+            "[elevated]": false,
+            "demo_content_type_s": "service"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/services/dermatology/",
+            "title": [
+              "Dermatology | Central County University Health"
+            ],
+            "description": [
+              "The skin illustration collection at South Campus Clinic pairs each drawing with the caption used in class."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/services/dermatology",
+            "[elevated]": false,
+            "demo_content_type_s": "service"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/tessa-rowan/",
+            "title": [
+              "Tessa Rowan | Central County University Health"
+            ],
+            "description": [
+              "Pediatrics teaching materials include age-labelled models and a campus-themed picture-book shelf."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/tessa-rowan",
+            "[elevated]": false,
+            "demo_content_type_s": "provider"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/services/pediatrics/",
+            "title": [
+              "Pediatrics | Central County University Health"
+            ],
+            "description": [
+              "The Children’s Clinic teaching collection puts age-labeled models beside a picture-book shelf."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/services/pediatrics",
+            "[elevated]": false,
+            "demo_content_type_s": "service"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/",
+            "title": [
+              "Central County University Health"
+            ],
+            "description": [
+              "Find a department, course, or campus building."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo",
+            "[elevated]": false,
+            "demo_content_type_s": "hub"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/",
+            "title": [
+              "Care at Central County University Health | Central County University Health"
+            ],
+            "description": [
+              "Explore clinical departments, a faculty profile, a campus center and a plain-language terminology resource."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care",
+            "[elevated]": false,
+            "demo_content_type_s": "hub"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/mara-ellison/",
+            "title": [
+              "Mara Ellison | Central County University Health"
+            ],
+            "description": [
+              "A faculty member who develops equipment demonstrations and illustrated case materials at the university's campus center."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/mara-ellison",
+            "[elevated]": false,
+            "demo_content_type_s": "provider"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/locations/sleep-center/",
+            "title": [
+              "Central County Sleep Center | Central County University Health"
+            ],
+            "description": [
+              "A campus building with demonstration bedrooms, an observation room and space for the Pulmonary and Sleep Services unit."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/locations/sleep-center",
+            "[elevated]": false,
+            "demo_content_type_s": "location"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/about/",
+            "title": [
+              "About Central County | Central County University Health"
+            ],
+            "description": [
+              "A fictional public university brings academic departments, teaching spaces and community reading programs into one campus setting."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/about",
+            "[elevated]": false,
+            "demo_content_type_s": "hub"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/education/",
+            "title": [
+              "Education at Central County | Central County University Health"
+            ],
+            "description": [
+              "Explore degree subjects, advanced academic programs and short-format learning through their classroom materials and campus connections."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/education",
+            "[elevated]": false,
+            "demo_content_type_s": "hub"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/community/transit-access/",
+            "title": [
+              "Transit Access | Central County University Health"
+            ],
+            "description": [
+              "A fictional campus-map guide explains pedestrian, covered-link and transit symbols without real routes or schedules."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/community/transit-access",
+            "[elevated]": false,
+            "demo_content_type_s": "community"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/education/nursing-community-practice/",
+            "title": [
+              "Nursing Community Practice | Central County University Health"
+            ],
+            "description": [
+              "A fictional community-practice course uses campus maps and public-information leaflets as materials for nursing courses."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/education/nursing-community-practice",
+            "[elevated]": false,
+            "demo_content_type_s": "program"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/community/school-health-education/",
+            "title": [
+              "School Health Education | Central County University Health"
+            ],
+            "description": [
+              "A fictional reading-kit catalogue describes classroom topic cards and teacher notes without giving health advice."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/community/school-health-education",
+            "[elevated]": false,
+            "demo_content_type_s": "community"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/community/",
+            "title": [
+              "Community at Central County | Central County University Health"
+            ],
+            "description": [
+              "Explore enduring programs for reading health information, understanding campus maps and connecting university teaching with public-service subjects."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/community",
+            "[elevated]": false,
+            "demo_content_type_s": "hub"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/resources/sleep-visit-overview/",
+            "title": [
+              "Sleep Visit Overview | Central County University Health"
+            ],
+            "description": [
+              "A floor-plan key and document index introduce the fictional Sleep Center’s orientation packet."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/resources/sleep-visit-overview",
+            "[elevated]": false,
+            "demo_content_type_s": "resource"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/miles-tavish/",
+            "title": [
+              "Miles Tavish | Central County University Health"
+            ],
+            "description": [
+              "Neurology exercises use invented case cards to practice separating observations from assumptions."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/miles-tavish",
+            "[elevated]": false,
+            "demo_content_type_s": "provider"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/nolan-vey/",
+            "title": [
+              "Nolan Vey | Central County University Health"
+            ],
+            "description": [
+              "Endocrinology classes use labeled gland models and terminology cards."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/nolan-vey",
+            "[elevated]": false,
+            "demo_content_type_s": "provider"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/soren-hale/",
+            "title": [
+              "Soren Hale | Central County University Health"
+            ],
+            "description": [
+              "A Women’s Health catalogue links classroom reading with an anatomical illustration register."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/soren-hale",
+            "[elevated]": false,
+            "demo_content_type_s": "provider"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/niko-maren/",
+            "title": [
+              "Niko Maren | Central County University Health"
+            ],
+            "description": [
+              "Primary Care seminars use fictional case cards to distinguish recorded observations from assumptions."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/niko-maren",
+            "[elevated]": false,
+            "demo_content_type_s": "provider"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/services/gastroenterology/",
+            "title": [
+              "Gastroenterology | Central County University Health"
+            ],
+            "description": [
+              "The digestive anatomy stations are arranged by topic in the hospital’s teaching wing."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/services/gastroenterology",
+            "[elevated]": false,
+            "demo_content_type_s": "service"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/education/admissions-overview/",
+            "title": [
+              "Admissions Overview | Central County University Health"
+            ],
+            "description": [
+              "An invented academic prospectus explains document labels and common sections without deadlines or application steps."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/education/admissions-overview",
+            "[elevated]": false,
+            "demo_content_type_s": "program"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/pdfs/sleep-visit-overview.pdf",
+            "title": [
+              "Sleep Center Demonstration Rooms"
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/pdfs/sleep-visit-overview.pdf",
+            "[elevated]": false
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/locations/university-hospital/",
+            "title": [
+              "Central County University Hospital | Central County University Health"
+            ],
+            "description": [
+              "Explore the departments in the hospital’s teaching wing and the anatomy reading room beside the hospital."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/locations/university-hospital",
+            "[elevated]": false,
+            "demo_content_type_s": "location"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/education/master-of-business-administration/",
+            "title": [
+              "Master of Business Administration | Central County University Health"
+            ],
+            "description": [
+              "A fictional Master of Business Administration curriculum pairs organizational case studies with budgeting and operations exercises."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/education/master-of-business-administration",
+            "[elevated]": false,
+            "demo_content_type_s": "program"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/resources/cardiology-visit-overview/",
+            "title": [
+              "Visiting the Heart Center | Central County University Health"
+            ],
+            "description": [
+              "A room index and model labels introduce the fictional Cardiology gallery at the Heart Center."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/resources/cardiology-visit-overview",
+            "[elevated]": false,
+            "demo_content_type_s": "resource"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/services/rehabilitation/",
+            "title": [
+              "Rehabilitation | Central County University Health"
+            ],
+            "description": [
+              "Rehabilitation links mock room plans, adaptable furniture, and accessibility design materials."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/services/rehabilitation",
+            "[elevated]": false,
+            "demo_content_type_s": "service"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/locations/community-health-pavilion/",
+            "title": [
+              "Community Health Pavilion | Central County University Health"
+            ],
+            "description": [
+              "Leaflet racks and a map table define the fictional pavilion’s community teaching collection."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/locations/community-health-pavilion",
+            "[elevated]": false,
+            "demo_content_type_s": "location"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/locations/heart-center/",
+            "title": [
+              "Central County Heart Center | Central County University Health"
+            ],
+            "description": [
+              "The Heart Center pairs a model gallery with a classroom used by fictional Cardiology teaching."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/locations/heart-center",
+            "[elevated]": false,
+            "demo_content_type_s": "location"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/locations/teaching-health-center/",
+            "title": [
+              "Teaching Health Center | Central County University Health"
+            ],
+            "description": [
+              "A shared simulation setting stores fictional case cards, blank charts, and seminar materials."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/locations/teaching-health-center",
+            "[elevated]": false,
+            "demo_content_type_s": "location"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/iris-bellan/",
+            "title": [
+              "Iris Bellan | Central County University Health"
+            ],
+            "description": [
+              "Dermatology diagrams are catalogued with captions and fictional collection records."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/iris-bellan",
+            "[elevated]": false,
+            "demo_content_type_s": "provider"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/resources/accessibility-and-language-support/",
+            "title": [
+              "Accessibility and Language Support | Central County University Health"
+            ],
+            "description": [
+              "Large-print samples, glossary layouts, and fictional wayfinding symbols are grouped as design references."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/resources/accessibility-and-language-support",
+            "[elevated]": false,
+            "demo_content_type_s": "resource"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/dorian-weller/",
+            "title": [
+              "Dorian Weller | Central County University Health"
+            ],
+            "description": [
+              "Pulmonary and Sleep Services teaching materials include demonstration-room plans and fictional charts."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/dorian-weller",
+            "[elevated]": false,
+            "demo_content_type_s": "provider"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/news/community-screening-archive-2024/",
+            "title": [
+              "Community Screening Archive 2024 — Historical Notice | Central County University Health"
+            ],
+            "description": [
+              "A 2024 university library room change brought community screening reference materials into a shared reading space."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/news/community-screening-archive-2024",
+            "[elevated]": false,
+            "demo_content_type_s": "news"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/research/sleep-health-center/",
+            "title": [
+              "Sleep Health Center | Central County University Health"
+            ],
+            "description": [
+              "A research group catalogue organizes sleep-related literature and synthetic recordings separately from the Sleep Center building."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/research/sleep-health-center",
+            "[elevated]": false,
+            "demo_content_type_s": "research"
+          }
+        ]
+      },
+      "metadata": {
+        "results": [
+          {
+            "name": "url",
+            "title": "",
+            "result_card": "url"
+          },
+          {
+            "name": "title",
+            "title": "",
+            "result_card": "title"
+          },
+          {
+            "name": "description",
+            "title": "",
+            "result_card": "description"
+          }
+        ],
+        "facets": [
+          {
+            "name": "demo_content_type_s",
+            "label": "Content type"
+          }
+        ]
+      },
+      "facet_counts": {
+        "facet_fields": {
+          "demo_content_type_s": [
+            "location",
+            8,
+            "provider",
+            8,
+            "service",
+            7,
+            "hub",
+            6,
+            "news",
+            4,
+            "resource",
+            4,
+            "program",
+            3,
+            "community",
+            2,
+            "research",
+            1
+          ]
+        }
+      }
+    },
+    "rehabilitation": {
+      "responseHeader": {
+        "status": 0,
+        "params": {
+          "q": "rehabilitation",
+          "model": "SearchLabRanking",
+          "language": "en",
+          "rows": "110",
+          "start": "0",
+          "hl": "false",
+          "uniqueId": "id",
+          "facet": "true",
+          "facet.field": "demo_content_type_s"
+        }
+      },
+      "response": {
+        "numFound": 8,
+        "start": 0,
+        "docs": [
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/services/rehabilitation/",
+            "title": [
+              "Rehabilitation | Central County University Health"
+            ],
+            "description": [
+              "Rehabilitation links mock room plans, adaptable furniture, and accessibility design materials."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/services/rehabilitation",
+            "[elevated]": false,
+            "demo_content_type_s": "service"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/locations/rehabilitation-center/",
+            "title": [
+              "Rehabilitation Center | Central County University Health"
+            ],
+            "description": [
+              "A mock apartment and furniture display anchor the fictional center’s accessibility design materials."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/locations/rehabilitation-center",
+            "[elevated]": false,
+            "demo_content_type_s": "location"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/simon-kelver/",
+            "title": [
+              "Simon Kelver | Central County University Health"
+            ],
+            "description": [
+              "At the Rehabilitation Center, Simon Kelver pairs adjustable furniture with annotated drawings for rehabilitation classes."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/simon-kelver",
+            "[elevated]": false,
+            "demo_content_type_s": "provider"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/mina-corven/",
+            "title": [
+              "Mina Corven | Central County University Health"
+            ],
+            "description": [
+              "Rehabilitation design seminars use mock apartment plans and annotated room layouts."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/mina-corven",
+            "[elevated]": false,
+            "demo_content_type_s": "provider"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/adrian-pell/",
+            "title": [
+              "Adrian Pell | Central County University Health"
+            ],
+            "description": [
+              "In Orthopedics, students match joint models to sketches. The room plans used in Rehabilitation are in a separate collection."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/providers/adrian-pell",
+            "[elevated]": false,
+            "demo_content_type_s": "provider"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/services/orthopedics/",
+            "title": [
+              "Orthopedics | Central County University Health"
+            ],
+            "description": [
+              "In the hospital teaching wing, students can pair a joint model with its drawing and classroom sketchbook."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/services/orthopedics",
+            "[elevated]": false,
+            "demo_content_type_s": "service"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/resources/accessibility-and-language-support/",
+            "title": [
+              "Accessibility and Language Support | Central County University Health"
+            ],
+            "description": [
+              "Large-print samples, glossary layouts, and fictional wayfinding symbols are grouped as design references."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/resources/accessibility-and-language-support",
+            "[elevated]": false,
+            "demo_content_type_s": "resource"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/locations/",
+            "title": [
+              "Central County Locations | Central County University Health"
+            ],
+            "description": [
+              "Compare the university’s main building, specialty teaching centers, academic annexes and public-service pavilion."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/locations",
+            "[elevated]": false,
+            "demo_content_type_s": "hub"
+          }
+        ]
+      },
+      "metadata": {
+        "results": [
+          {
+            "name": "url",
+            "title": "",
+            "result_card": "url"
+          },
+          {
+            "name": "title",
+            "title": "",
+            "result_card": "title"
+          },
+          {
+            "name": "description",
+            "title": "",
+            "result_card": "description"
+          }
+        ],
+        "facets": [
+          {
+            "name": "demo_content_type_s",
+            "label": "Content type"
+          }
+        ]
+      },
+      "facet_counts": {
+        "facet_fields": {
+          "demo_content_type_s": [
+            "provider",
+            3,
+            "service",
+            2,
+            "hub",
+            1,
+            "location",
+            1,
+            "resource",
+            1
+          ]
+        }
+      }
+    },
+    "transit access": {
+      "responseHeader": {
+        "status": 0,
+        "params": {
+          "q": "transit access",
+          "model": "SearchLabRanking",
+          "language": "en",
+          "rows": "110",
+          "start": "0",
+          "hl": "false",
+          "uniqueId": "id",
+          "facet": "true",
+          "facet.field": "demo_content_type_s"
+        }
+      },
+      "response": {
+        "numFound": 5,
+        "start": 0,
+        "docs": [
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/community/transit-access/",
+            "title": [
+              "Transit Access | Central County University Health"
+            ],
+            "description": [
+              "A fictional campus-map guide explains pedestrian, covered-link and transit symbols without real routes or schedules."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/community/transit-access",
+            "[elevated]": false,
+            "demo_content_type_s": "community"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/community/",
+            "title": [
+              "Community at Central County | Central County University Health"
+            ],
+            "description": [
+              "Explore enduring programs for reading health information, understanding campus maps and connecting university teaching with public-service subjects."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/community",
+            "[elevated]": false,
+            "demo_content_type_s": "hub"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/care/resources/accessibility-and-language-support/",
+            "title": [
+              "Accessibility and Language Support | Central County University Health"
+            ],
+            "description": [
+              "Large-print samples, glossary layouts, and fictional wayfinding symbols are grouped as design references."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/care/resources/accessibility-and-language-support",
+            "[elevated]": false,
+            "demo_content_type_s": "resource"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/research/population-health-center/",
+            "title": [
+              "Population Health Center | Central County University Health"
+            ],
+            "description": [
+              "An invented research catalogue uses aggregate map exercises to examine public-information access, with no real data or findings."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/research/population-health-center",
+            "[elevated]": false,
+            "demo_content_type_s": "research"
+          },
+          {
+            "url": "https://mw-searchstax.github.io/university-health-search-demo/locations/",
+            "title": [
+              "Central County Locations | Central County University Health"
+            ],
+            "description": [
+              "Compare the university’s main building, specialty teaching centers, academic annexes and public-service pavilion."
+            ],
+            "id": "https://mw-searchstax.github.io/university-health-search-demo/locations",
+            "[elevated]": false,
+            "demo_content_type_s": "hub"
+          }
+        ]
+      },
+      "metadata": {
+        "results": [
+          {
+            "name": "url",
+            "title": "",
+            "result_card": "url"
+          },
+          {
+            "name": "title",
+            "title": "",
+            "result_card": "title"
+          },
+          {
+            "name": "description",
+            "title": "",
+            "result_card": "description"
+          }
+        ],
+        "facets": [
+          {
+            "name": "demo_content_type_s",
+            "label": "Content type"
+          }
+        ]
+      },
+      "facet_counts": {
+        "facet_fields": {
+          "demo_content_type_s": [
+            "hub",
+            2,
+            "community",
+            1,
+            "research",
+            1,
+            "resource",
+            1
+          ]
+        }
+      }
+    }
+  }
+}
