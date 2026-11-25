@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet">
   <script defer id="searchstax-ui-kit" src="https://cdn.jsdelivr.net/npm/@searchstax-inc/searchstudio-ux-js@4.2.34/dist/@searchstax-inc/searchstudio-ux-js.iife.js"></script>
-  <script type="module" crossorigin src="./assets/index-DbVnSDuG.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-DvTz6Lyq.css">
+  <script type="module" crossorigin src="./assets/index-CPAuNE_O.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-Df_aJObs.css">
 </head>
 <body>
 <main
@@ -237,7 +237,7 @@
                     <option value="external">External banner</option>
                     <option value="both">Indexed result and external banner</option>
                   </select>
-                  <p id="lab-sample-promotions-help">Choosing a sample runs <strong>campus flu clinic</strong>. The indexed result moves to the top in Relevance order. The external banner appears above the results.</p>
+                  <p id="lab-sample-promotions-help">Choosing a sample runs <strong>campus flu clinic</strong>. The indexed result moves to the top in Relevance order. Choose the external banner’s position under Advanced Options.</p>
                 </div>
                 <div class="search-lab__field search-lab__field--inline">
                   <label for="lab-smart-answers-sample">Show Smart Answers sample</label>
@@ -247,6 +247,10 @@
               <details class="search-lab__disclosure" id="lab-advanced">
                 <summary>Advanced Options</summary>
                 <p>These controls need custom templates, layout, or search logic in your implementation.</p>
+                <div class="search-lab__field">
+                  <label for="lab-banner-placement">External promotion placement</label>
+                  <select id="lab-banner-placement"><option value="above">Above results</option><option value="below">Below results</option></select>
+                </div>
                 <div class="search-lab__field search-lab__field--inline"><label for="lab-profile-tabs">Show profile tabs</label><input type="checkbox" id="lab-profile-tabs"></div>
                 <fieldset class="search-lab__field" data-profile-choices hidden><legend>Profiles to include as tabs</legend><div></div></fieldset>
                 <p data-profile-catalog-status></p>
@@ -333,8 +337,28 @@
                   <input id="lab-underline" type="checkbox">
                 </div>
               </details>
+              <details class="search-lab__disclosure">
+                <summary><span class="search-lab__disclosure-label">Promotion appearance</span></summary>
+                <p data-promotion-hint>Search with a published promotion trigger to see these styles.</p>
+                <div class="search-lab__field search-lab__text-field">
+                  <label for="lab-promo-badge">Indexed badge text</label>
+                  <input id="lab-promo-badge" type="text" maxlength="80">
+                </div>
+                <div class="search-lab__field">
+                  <label for="lab-badge-style">Indexed badge style</label>
+                  <select id="lab-badge-style"><option value="text">Text</option><option value="pill">Outlined pill</option></select>
+                </div>
+                <div class="search-lab__field search-lab__text-field">
+                  <label for="lab-promo-heading">External banner heading</label>
+                  <input id="lab-promo-heading" type="text" maxlength="80">
+                </div>
+                <div class="search-lab__field">
+                  <label for="lab-banner-style">External banner style</label>
+                  <select id="lab-banner-style"><option value="tinted">Tinted card</option><option value="outline">Outline</option></select>
+                </div>
+              </details>
               <details class="search-lab__disclosure" open data-default-open>
-                <summary><span class="search-lab__hit-label">Hit highlighting</span></summary>
+                <summary><span class="search-lab__disclosure-label">Hit highlighting</span></summary>
                 <div class="search-lab__field">
                   <label for="lab-hit-style">Matched text</label>
                   <select id="lab-hit-style" aria-describedby="lab-hit-hint">
