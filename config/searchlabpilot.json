@@ -1,0 +1,11 @@
+{
+  "endpoint": "https://searchcloud-28-us-east-1.searchstax.com/29847/searchlabpilot-16785/emselect",
+  "entitlements": { "relatedSearches": null, "smartAnswers": null },
+  "relatedSearchesByLanguage": { "en": false },
+  "profiles": [
+    { "language": "en", "profile": "Main Profile", "smartAnswers": false, "highlighting": false },
+    { "language": "en", "profile": "SearchLabBuild", "smartAnswers": false, "highlighting": true },
+    { "language": "en", "profile": "SearchLabAfter", "smartAnswers": false, "highlighting": false },
+    { "language": "en", "profile": "SearchLabRanking", "smartAnswers": false, "highlighting": false }
+  ]
+}
