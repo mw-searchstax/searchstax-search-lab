@@ -23,6 +23,7 @@
 
 :is(.mapped-result-card, .search-starter .searchstax-search-result) .searchstax-search-result-ribbon {
   display: block;
+  text-transform: capitalize;
   width: fit-content;
   max-width: 100%;
   margin-block-end: .5rem;

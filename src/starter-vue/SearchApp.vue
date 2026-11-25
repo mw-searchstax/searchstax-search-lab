@@ -1,4 +1,5 @@
 <script setup>
+import { setupFacetLimits } from "./facet-limits.js";
 import { h, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import {
   SearchstaxExternalPromotionsWidget,
@@ -27,6 +28,8 @@ const resultLanguage = contentLanguageTag(connection.language);
 const isDemo = connection.searchURL === demo.searchURL && connection.model === demo.model && resultLanguage === demo.language;
 const initialQuery = connection.initialQuery || (isDemo ? 'rehabilitation' : '');
 const form = ref(null);
+const filterHost = ref(null);
+let facetLimits;
 const queryField = ref(null);
 const pagination = ref(null);
 const resultHost = ref(null);
@@ -71,8 +74,8 @@ function afterSearch(items, response) {
   return results;
 }
 
-function facetLabel(value) {
-  return isDemo && Object.hasOwn(demo.facetLabels, value) ? demo.facetLabels[value] : value;
+function facetLabel(field, value) {
+  return isDemo && field === 'demo_content_type_s' && Object.hasOwn(demo.facetLabels, value) ? demo.facetLabels[value] : value;
 }
 
 function sortChoices(data) {
@@ -113,6 +116,7 @@ watch(form, async (element) => {
   if (!element || loadingSubscription) return;
   await nextTick();
   if (!form.value) return;
+  if (filterHost.value) facetLimits = setupFacetLimits(filterHost.value, () => design);
   loadingSubscription = api.dataLayer.$loadingChange.subscribe((loading) => {
     if (!loading) return;
     status.value = 'Searching…';
@@ -147,6 +151,7 @@ watch(pagination, (host, _, onCleanup) => {
 }, { flush: 'post' });
 
 onBeforeUnmount(() => {
+  facetLimits?.destroy();
   services?.clear();
   setSuggestionSource?.(null);
   if (loadingSubscription) api.dataLayer.$loadingChange.unsubscribe(loadingSubscription);
@@ -200,17 +205,17 @@ onBeforeUnmount(() => {
         </SearchstaxExternalPromotionsWidget>
       </Teleport>
       <div class="search-starter__body">
-        <aside v-if="design.showFilters" class="search-starter__filters" aria-label="Filter search results">
-          <SearchstaxFacetsWidget facetingType="or" :itemsPerPageDesktop="20" :itemsPerPageMobile="20">
+        <aside ref="filterHost" v-if="design.showFilters" class="search-starter__filters" aria-label="Filter search results">
+          <SearchstaxFacetsWidget :facetingType="design.facetMode" :itemsPerPageDesktop="Number.MAX_SAFE_INTEGER" :itemsPerPageMobile="Number.MAX_SAFE_INTEGER">
             <template #desktopFacets="{ facetsTemplateDataDesktop, onUpdateRefDesktop, isChecked, selectFacet }">
-              <fieldset v-for="facet in facetsTemplateDataDesktop?.facets" :key="facet.name">
+              <fieldset v-for="facet in facetsTemplateDataDesktop?.facets" :key="facet.name" :data-facet="facet.name">
                 <legend>{{ facet.label || facet.name }}</legend>
                 <div class="search-facet-choices">
                   <div v-for="option in facet.values" :key="option.value" :ref="element => onUpdateRefDesktop(element, option)">
                     <label>
                       <input type="checkbox" :checked="Boolean(isChecked(option))" :disabled="option.disabled"
                         @click="selectFacet(option.value + '-desktop', $event, option, true)">
-                      <span>{{ facetLabel(option.value) }}</span><small>{{ option.count }}</small>
+                      <span>{{ facetLabel(facet.name, option.value) }}</span><small>{{ option.count }}</small>
                     </label>
                   </div>
                 </div>

@@ -24,6 +24,8 @@ import type { Entitlements, Profile } from './app-configuration';
 import starterAnswersJS from './starter-answers.js?raw';
 import thumbnailAltJS from './thumbnail-alt.js?raw';
 import promotionsCSS from './sample-promotions.css?raw';
+import publishedFacets from './published-facets.ts?starter-js';
+import facetLimits from './facet-limits.ts?starter-js';
 import promotionDisplay from './promotion-display.ts?starter-js';
 import promotionsJS from './sample-promotions.js?raw';
 import smartAnswersSampleHTML from './smart-answers-sample.html?raw';
@@ -213,6 +215,9 @@ function starterFeatures(design: DesignSettings) {
   return {
     relatedPlacement: design.relatedPlacement,
     showFilters: design.filters,
+    facetMode: design.facetMode,
+    facetDesktop: design.facetDesktop,
+    facetMobile: design.facetMobile,
     showSorting: design.showSorting,
     showSuggestions: design.showSuggestions,
     promotionBadge: design.promotionBadge,
@@ -241,6 +246,8 @@ type Framework = 'javascript' | 'react' | 'vue' | 'angular';
 function createProfileStarter(framework: Framework, design: DesignSettings, experience: ExperienceHandoff) {
   const entries: Record<string, string> = {
     'search.css': renderStarterCSS(design),
+    'src/facet-limits.js': facetLimits,
+    'src/published-facets.js': publishedFacets,
     'src/profile-experiences.js': profileRuntime,
     'src/app-configuration.js': appConfigurationRuntime,
     'src/result-card.js': cardRuntime,
@@ -374,6 +381,7 @@ export function createStarterZip(
     ...ordinaryServiceFiles(connection, ''),
     'index.html': strToU8(html),
     'search.css': strToU8(renderStarterCSS(design)),
+    'facet-limits.js': strToU8(facetLimits),
     'search.js': strToU8(javascript),
     'demo-content.js': strToU8(demoContentJS),
     'content-language.js': strToU8(contentLanguageJS),
@@ -434,6 +442,7 @@ export const design = ${JSON.stringify(settings, null, 2)};
     'src/pagination-focus.js': strToU8(paginationFocusJS),
     'src/content-language.js': strToU8(contentLanguageJS),
     'src/web-url.js': strToU8(webURLJS),
+    'src/facet-limits.js': strToU8(facetLimits),
     'src/result-card.js': strToU8(cardRuntime),
     'src/starter-passages.js': strToU8(starterPassages),
     'src/customer-answers.js': strToU8(customerAnswersJS),

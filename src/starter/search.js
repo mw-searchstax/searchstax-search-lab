@@ -6,6 +6,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
 import { contentLanguageTag } from './content-language.js';
 import { starterPassages } from './starter-passages.js';
 import { readCustomerEndpoint } from './web-url.js';
+import { setupFacetLimits } from './facet-limits.js';
 import { promotionEntries, renderPromotionBanners, placePromotionBanners } from './promotion-display.js';
 
 const logo = document.querySelector('.search-starter__logo');
@@ -224,25 +225,26 @@ async function startSearch() {
   if (config.showFilters) {
     document.querySelector('.search-starter__filters').hidden = false;
     const facets = document.querySelector('#search-facets');
+    setupFacetLimits(facets, () => config);
     facets.addEventListener('change', () => facets.after(feedback), true);
     if (usesDemoProfile) {
       new MutationObserver(() => {
         facets.querySelectorAll('[data-facet-value]').forEach(label => {
           const value = label.dataset.facetValue;
-          const text = Object.hasOwn(demoFacets.labels, value) ? demoFacets.labels[value] : value;
+          const text = label.closest('fieldset')?.dataset.facet === 'demo_content_type_s' && Object.hasOwn(demoFacets.labels, value) ? demoFacets.labels[value] : value;
           if (label.textContent !== text) label.textContent = text;
         });
       }).observe(facets, { childList: true, subtree: true });
     }
     search.addFacetsWidget('search-facets', {
-      facetingType: 'or',
-      itemsPerPageDesktop: 20,
-      itemsPerPageMobile: 20,
+      facetingType: config.facetMode,
+      itemsPerPageDesktop: Number.MAX_SAFE_INTEGER,
+      itemsPerPageMobile: Number.MAX_SAFE_INTEGER,
       templates: {
         mainTemplateDesktop: { template: '<div class="search-facet-groups"></div>', facetsContainerClass: 'search-facet-groups' },
         mainTemplateMobile: { template: ' ' },
         facetItemContainerTemplate: {
-          template: '<fieldset><legend>{{label}}</legend><div class="search-facet-options search-facet-choices"></div></fieldset>',
+          template: '<fieldset data-facet="{{name}}"><legend>{{label}}</legend><div class="search-facet-options search-facet-choices"></div></fieldset>',
           facetListContainerClass: 'search-facet-options',
         },
         facetItemTemplate: {

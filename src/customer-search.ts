@@ -1,3 +1,4 @@
+import type { DesignSettings } from './design.js';
 import { promotionEntries } from './promotion-display.js';
 import { webURL } from './web-url.js';
 import type { AppConfiguration, Profile } from './app-configuration.js';
@@ -17,14 +18,17 @@ export type CustomerConnection = {
   suggestEndpoint?: string;
 };
 
-export type CustomerSearch = {
+export type CustomerSearch<Value = string> = {
   query: string;
   start: number;
   rows: number;
   sort: string;
-  filters: Map<string, string>;
+  filters: Map<string, Value>;
+  facetMode?: DesignSettings['facetMode'];
   excludeFilters?: Map<string, string>;
 };
+
+export type BuildSearch = CustomerSearch<string[]>;
 
 type SearchPayload = ResultResponse & {
   response?: { numFound: number; docs: Record<string, unknown>[] };
@@ -46,7 +50,7 @@ function firstText(value: unknown): string {
   return typeof value === 'string' ? value : '';
 }
 
-async function requestSearch(connection: CustomerConnection, options: CustomerSearch, signal: AbortSignal): Promise<SearchPayload> {
+async function requestSearch(connection: CustomerConnection, options: CustomerSearch<string | string[]>, signal: AbortSignal): Promise<SearchPayload> {
   const url = new URL(connection.endpoint);
   url.search = new URLSearchParams({
     q: options.query,
@@ -58,11 +62,20 @@ async function requestSearch(connection: CustomerConnection, options: CustomerSe
   if (connection.language) url.searchParams.set('language', connection.language);
   if (connection.profile) url.searchParams.set('model', connection.profile);
   if (options.sort) url.searchParams.set('sort', options.sort);
-  for (const [filters, prefix] of [[options.filters, ''], [options.excludeFilters, '-']] as const) {
-    filters?.forEach((value, field) => {
-      if (fieldName.test(field)) url.searchParams.append('fq', prefix + field + ':"' + value.replace(/[\\"]/g, '\\$&') + '"');
-    });
+  const clause = (field: string, value: string) => field + ':"' + value.replace(/[\\"]/g, '\\$&') + '"';
+  const selected: string[] = [];
+  for (const [field, values] of options.filters) {
+    if (!fieldName.test(field)) continue;
+    for (const value of Array.isArray(values) ? values : [values]) selected.push(clause(field, value));
   }
+  if (options.facetMode === 'or' || options.facetMode === 'showUnavailable') {
+    if (selected.length) url.searchParams.append('fq', selected.join(' OR '));
+  } else {
+    for (const filter of selected) url.searchParams.append('fq', filter);
+  }
+  options.excludeFilters?.forEach((value, field) => {
+    if (fieldName.test(field)) url.searchParams.append('fq', '-' + clause(field, value));
+  });
 
   const response = await fetch(url, {
     headers: { Authorization: 'Token ' + connection.token },
@@ -82,7 +95,7 @@ async function requestSearch(connection: CustomerConnection, options: CustomerSe
   return await response.json() as SearchPayload;
 }
 
-async function readPage(connection: CustomerConnection, options: CustomerSearch, signal: AbortSignal) {
+async function readPage(connection: CustomerConnection, options: CustomerSearch<string | string[]>, signal: AbortSignal) {
   const payload = await requestSearch(connection, options, signal);
   const response = payload?.response;
   if (!response || !Number.isSafeInteger(response.numFound) || response.numFound < 0 || !Array.isArray(response.docs)) {
@@ -106,7 +119,7 @@ async function readPage(connection: CustomerConnection, options: CustomerSearch,
   return { payload, response, total: response.numFound, resultCount: response.docs.length, externalPromotions, facets, sorts };
 }
 
-export async function searchBuildApp(connection: CustomerConnection, options: CustomerSearch, signal: AbortSignal) {
+export async function searchBuildApp(connection: CustomerConnection, options: BuildSearch, signal: AbortSignal) {
   const { payload, response, ...page } = await readPage(connection, options, signal);
   const params = payload.responseHeader?.params;
   const profile = connection.profile || params?.model;

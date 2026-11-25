@@ -156,9 +156,9 @@ async function connected(page, profiles) {
     503, { sort: 'title asc' }, 1);
   const filterButton = panel.locator(profiles ? '[data-exp-filter-toggle]' : '[data-customer-facets] button');
   if (await filterButton.isVisible()) await filterButton.click();
-  const facet = panel.locator(profiles ? '[data-exp-facets] input[value=Library]' : 'select[data-customer-facet]');
+  const facet = panel.locator(profiles ? '[data-exp-facets] input[value=Library]' : 'input[data-customer-facet][value=Library]');
   await failure('Filter in ' + (profiles ? 'profile' : 'single') + ' preview', facet,
-    () => profiles ? facet.check() : facet.selectOption('Library'), 503, { filters: ['type:"Library"'] }, 1);
+    () => facet.check(), 503, { filters: ['type:"Library"'] }, 1);
   const next = panel.locator(profiles ? '[data-exp-next]' : '[data-customer-next]');
   await failure('Page two in ' + (profiles ? 'profile' : 'single') + ' preview', next, () => next.click(),
     profiles ? 'timeout' : 503, { start: 10, q: 'another search' }, 11);

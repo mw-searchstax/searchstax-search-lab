@@ -1,3 +1,4 @@
+import { setupFacetLimits } from './facet-limits.js';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   SearchstaxExternalPromotionsWidget,
@@ -56,17 +57,17 @@ function resultCards(results) {
 function facetControls(data, containers, isExpanded, toggle, selectFacet, isChecked) {
   if (!data?.facets?.length) return null;
   return data.facets.map((facet) => (
-    <fieldset key={facet.name}>
+    <fieldset key={facet.name} data-facet={facet.name}>
       <legend>{facet.label || facet.name}</legend>
       <div className="search-facet-choices">
         {facet.values.map((value, index) => {
           const key = index + facet.name;
           containers[key] ??= React.createRef();
-          const label = isDemo && Object.hasOwn(demo.facetLabels, value.value) ? demo.facetLabels[value.value] : value.value;
+          const label = isDemo && facet.name === 'demo_content_type_s' && Object.hasOwn(demo.facetLabels, value.value) ? demo.facetLabels[value.value] : value.value;
           return (
             <div key={value.value} ref={containers[key]}>
               <label className={'desktop-' + key}>
-                <input type="checkbox" checked={Boolean(isChecked(value))} readOnly disabled={value.disabled}
+                <input type="checkbox" className="searchstax-facet-input-checkbox" checked={Boolean(isChecked(value))} readOnly disabled={value.disabled}
                   onClick={(event) => selectFacet(key, event, value, true)} />
                 <span>{label}</span><small>{value.count}</small>
               </label>
@@ -128,6 +129,7 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
   const form = useRef(null);
   const input = useRef(null);
   const pagination = useRef(null);
+  const filterHost = useRef(null);
   const resultHost = useRef(null);
   const answerHost = useRef(null);
   const services = useRef(null);
@@ -147,6 +149,7 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
   }
 
   useEffect(() => {
+    const limits = filterHost.current && setupFacetLimits(filterHost.current, () => design);
     const loading = api.dataLayer.$loadingChange;
     const subscription = loading.subscribe((value) => {
       if (!value) return;
@@ -159,6 +162,7 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
     if (initialQuery) runSearch(initialQuery);
     else setStatus('Enter a search term.');
     return () => {
+      limits?.destroy();
       services.current?.clear();
       loading.unsubscribe(subscription);
       window.clearTimeout(timer.current);
@@ -192,8 +196,8 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
     {design.bannerPlacement === 'above' && <SearchstaxExternalPromotionsWidget searchExternalPromotionsTemplate={livePromotions} />}
     <div className="search-starter__body">
       {design.showFilters &&
-        <aside className="search-starter__filters" aria-label="Filter search results">
-          <SearchstaxFacetsWidget facetingType="or" itemsPerPageDesktop={20} itemsPerPageMobile={20}
+        <aside ref={filterHost} className="search-starter__filters" aria-label="Filter search results">
+          <SearchstaxFacetsWidget facetingType={design.facetMode} itemsPerPageDesktop={Number.MAX_SAFE_INTEGER} itemsPerPageMobile={Number.MAX_SAFE_INTEGER}
             facetsTemplateDesktop={facetControls} facetsTemplateMobile={() => null} />
         </aside>}
       <div ref={resultHost}>

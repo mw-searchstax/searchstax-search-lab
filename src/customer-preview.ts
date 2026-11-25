@@ -1,3 +1,4 @@
+import { setupPublishedFacets } from './published-facets.js';
 import { placePromotionBanners, renderPromotionBanners, updatePromotionLabels } from './promotion-display.js';
 import { createSearchRecovery } from './search-recovery';
 import { readAppConfiguration, featureStatus, profileStatus, type Profile, type AppConfiguration } from './app-configuration.js';
@@ -13,7 +14,7 @@ import {
   searchBuildApp,
   type CustomerConnection,
   type BuildPage,
-  type CustomerSearch,
+  type BuildSearch,
 } from './customer-search';
 
 export function setupCustomerPreview(
@@ -66,7 +67,7 @@ export function setupCustomerPreview(
   let place: HTMLElement = searchForm;
   let trigger: HTMLElement = queryInput;
   let displayedStart = 0;
-  let failedSearch: CustomerSearch | null = null;
+  let failedSearch: BuildSearch | null = null;
   const recovery = createSearchRecovery(queryInput, () => {
     if (failedSearch && connection) void load(connection, failedSearch);
   });
@@ -111,7 +112,7 @@ export function setupCustomerPreview(
   });
   let connection: CustomerConnection | null = null;
   let suggestionSource: ReturnType<typeof createCustomerSuggestionSource> | null = null;
-  let options: CustomerSearch | null = null;
+  let options: BuildSearch | null = null;
   let latestPage: BuildPage | null = null;
   let request: AbortController | null = null;
   let tokenDestinations: string[] | null = null;
@@ -158,51 +159,11 @@ export function setupCustomerPreview(
     if (latestPage?.mappingsKnown && latestPage.total === 0) empty.textContent = design.noResultsText;
   }
 
-  function renderFacets(page: BuildPage, active: CustomerSearch) {
-    const focused = document.activeElement as HTMLInputElement | HTMLSelectElement | null;
-    const design = getDesign();
-    const showChoices = design.filterPlacement === 'top';
-    facetFields.dataset.showChoices = String(showChoices);
-    const fields = page.facets.filter(facet => facet.choices.length || active.filters.has(facet.field));
-    facetHint.hidden = fields.length > 0;
-    facetFields.replaceChildren(...fields.map(facet => {
-      const label = document.createElement('label');
-      label.className = 'search-lab__field search-lab__customer-facet';
-      const select = document.createElement('select');
-      select.dataset.customerFacet = facet.field;
-      select.add(new Option('All', ''));
-      for (const { value, count } of facet.choices) select.add(new Option(value + ' (' + count + ')', value));
-      const selected = active.filters.get(facet.field);
-      if (selected && !facet.choices.some(choice => choice.value === selected)) select.add(new Option(selected, selected));
-      select.value = selected ?? '';
-      if (showChoices) {
-        const group = document.createElement('fieldset');
-        const legend = document.createElement('legend');
-        legend.textContent = facet.label;
-        const choices = document.createElement('div');
-        choices.className = 'search-facet-choices';
-        for (const option of select.options) {
-          const choice = document.createElement('label');
-          const radio = document.createElement('input');
-          radio.type = 'radio';
-          radio.name = 'customer-facet-' + facet.field;
-          radio.dataset.customerFacet = facet.field;
-          radio.value = option.value;
-          radio.checked = option.selected;
-          choice.append(radio, option.text);
-          choices.append(choice);
-        }
-        group.append(legend, choices);
-        return group;
-      }
-      label.append(facet.label, select);
-      return label;
-    }));
-    if (focused?.dataset.customerFacet) {
-      const controls = [...facetFields.querySelectorAll<HTMLInputElement | HTMLSelectElement>('[data-customer-facet]')];
-      controls.find(field => field.dataset.customerFacet === focused.dataset.customerFacet &&
-        (field instanceof HTMLSelectElement || field.value === focused.value))?.focus();
-    }
+  const facetView = setupPublishedFacets(facetFields, getDesign, (filters, label, input) =>
+    run({ filters }, label, input));
+  function renderFacets(page: BuildPage, active: BuildSearch) {
+    facetView.render(page.facets, active.filters);
+    facetHint.hidden = Boolean(facetFields.childElementCount);
   }
 
   function promotionLabel() {
@@ -212,7 +173,7 @@ export function setupCustomerPreview(
     return label;
   }
 
-  function renderResults(page: BuildPage, active: CustomerSearch, language?: string) {
+  function renderResults(page: BuildPage, active: BuildSearch, language?: string) {
     status.textContent = page.total + (page.total === 1 ? ' result' : ' results') + ' for “' + active.query + '”';
     renderPromotionBanners(promotions, page.externalPromotions, getDesign().promotionHeading, language);
     placePromotionBanners(promotions, layout, getDesign().bannerPlacement);
@@ -243,7 +204,7 @@ export function setupCustomerPreview(
     updateVisibility();
   }
 
-  async function load(candidate: CustomerConnection, search: CustomerSearch, connecting = false) {
+  async function load(candidate: CustomerConnection, search: BuildSearch, connecting = false) {
     request?.abort();
     const pending = new AbortController();
     request = pending;
@@ -327,11 +288,11 @@ export function setupCustomerPreview(
     }
   }
 
-  function run(changes: Partial<CustomerSearch>, anchor: HTMLElement = searchForm, control: HTMLElement = queryInput) {
+  function run(changes: Partial<BuildSearch>, anchor: HTMLElement = searchForm, control: HTMLElement = queryInput) {
     if (!connection || !options) return;
     place = anchor;
     trigger = control;
-    void load(connection, { ...options, start: 0, ...changes });
+    void load(connection, { ...options, facetMode: getDesign().facetMode, start: 0, ...changes });
   }
 
   function showAnswers(app: CustomerConnection, term: string) {
@@ -362,7 +323,7 @@ export function setupCustomerPreview(
     grid.replaceChildren();
     promotions.replaceChildren();
     promotions.hidden = true;
-    facetFields.replaceChildren();
+    facetView.reset();
     sort.replaceChildren();
     status.textContent = '';
     source.textContent = '';
@@ -434,19 +395,11 @@ export function setupCustomerPreview(
       relatedURL: relatedURL ?? undefined, discoveryKey: discovery || undefined,
       answerEndpoint: streamingEndpoint ?? undefined, suggestEndpoint: autoSuggestEndpoint ?? undefined,
     },
-      { query, start: 0, rows: getDesign().resultsPerPage, sort: '', filters: new Map() }, true);
+      { query, start: 0, rows: getDesign().resultsPerPage, sort: '', filters: new Map(), facetMode: getDesign().facetMode }, true);
   });
   connect.disabled = false;
   get('[data-customer-disconnect]').addEventListener('click', disconnect);
   sort.addEventListener('change', () => run({ sort: sort.value }, sortField, sort));
-  facetFields.addEventListener('change', event => {
-    const select = event.target;
-    if (!(select instanceof HTMLSelectElement || select instanceof HTMLInputElement) || !select.dataset.customerFacet) return;
-    const filters = new Map(options?.filters);
-    if (select.value) filters.set(select.dataset.customerFacet, select.value);
-    else filters.delete(select.dataset.customerFacet);
-    run({ filters }, select.closest('label')!, select);
-  });
   previous.addEventListener('click', () => {
     if (options && !request) run({ start: Math.max(0, displayedStart - options.rows) }, pager, previous);
   });
@@ -480,6 +433,7 @@ export function setupCustomerPreview(
         queryInput.setCustomValidity('');
         return;
       }
+      facetView.reset();
       run({ query: term, filters: new Map() });
       if (connection) showAnswers(connection, term);
     },
@@ -489,13 +443,14 @@ export function setupCustomerPreview(
       const design = getDesign();
       placePromotionBanners(promotions, layout, design.bannerPlacement);
       updatePromotionLabels(panel, design);
-      const showChoices = design.filterPlacement === 'top';
-      if (latestPage && facetFields.dataset.showChoices !== String(showChoices)) renderFacets(latestPage, options);
+      facetView.refresh();
       const nextOrder = design.showSorting ? (order ?? options.sort) : '';
-      if (design.resultsPerPage !== options.rows || (!design.filters && options.filters.size) || nextOrder !== options.sort) {
+      const clearSelection = !design.filters || options.facetMode !== design.facetMode;
+      if (design.resultsPerPage !== options.rows || (clearSelection && options.filters.size) ||
+        options.facetMode !== design.facetMode || nextOrder !== options.sort) {
         run({
           rows: design.resultsPerPage,
-          filters: design.filters ? options.filters : new Map(),
+          filters: clearSelection ? new Map() : options.filters,
           sort: nextOrder,
         });
       }

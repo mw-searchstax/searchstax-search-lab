@@ -1,3 +1,4 @@
+import { setupPublishedFacets, type FacetSelection } from './published-facets.js';
 import { DEFAULT_DESIGN, type DesignSettings } from './design.js';
 import { setupProfileFeatures, orderDirectoryResults, spanishPromotionQuery } from './profile-features.js';
 import { demoSortOptions } from './demo-sorting.js';
@@ -38,7 +39,7 @@ export const demoProfiles = [
   { language: 'es', profile: 'Ubicaciones', section: 'locations' },
 ].map(item => ({ ...item, relatedSearches: item.section !== 'locations', smartAnswers: item.section === 'programs', highlighting: item.section === 'programs' }));
 
-function searchDirectory(active: Experience, query: string, tabs: boolean, filters: Map<string, string>) {
+function searchDirectory(active: Experience, query: string, tabs: boolean, filters: FacetSelection, mode: DesignSettings['facetMode']) {
   const spanish = active.language === 'es';
   const scope = demoProfiles.find(item => item.language === active.language && item.profile === active.profile);
   const items = directory.filter(doc => !tabs || doc.section === scope?.section || doc.section === 'shared').map(doc => {
@@ -49,9 +50,11 @@ function searchDirectory(active: Experience, query: string, tabs: boolean, filte
   }).filter(doc => query.toLocaleLowerCase().split(/\s+/).every(word => (doc.title + ' ' + doc.description).toLocaleLowerCase().includes(word)));
   const field = tabs ? 'topic' : 'type';
   const valueOf = (doc: typeof items[number]) => tabs ? doc.topic : doc.type;
+  const selected = filters.get(field) ?? [];
+  const entries = items.filter(doc => mode === 'and' ? selected.every(value => value === valueOf(doc))
+    : !selected.length || selected.includes(valueOf(doc)));
   const counts = new Map<string, number>();
-  for (const doc of items) counts.set(valueOf(doc), (counts.get(valueOf(doc)) ?? 0) + 1);
-  const entries = items.filter(doc => !filters.has(field) || valueOf(doc) === filters.get(field));
+  for (const doc of entries) counts.set(valueOf(doc), (counts.get(valueOf(doc)) ?? 0) + 1);
   return { entries, total: entries.length, facets: [{ field, label: tabs ? (scope?.section === 'locations' ? 'Campus' : (spanish ? 'Área de estudio' : 'Field of study')) : (spanish ? 'Tipo de contenido' : 'Content type'),
     choices: [...counts].map(([value, count]) => ({ value, count })) }] };
 }
@@ -135,7 +138,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
   let lastControl: HTMLElement = input;
   const recovery = createSearchRecovery(input, () => { void search(lastAnchor, lastControl); });
   let options: DesignSettings = { ...DEFAULT_DESIGN };
-  const filters = new Map<string, string>();
+  let filters: FacetSelection = new Map();
   const facets = field('[data-exp-facets]');
   const filterPanel = field('[data-exp-filter-panel]');
   const filterButton = field<HTMLButtonElement>('[data-exp-filter-toggle]');
@@ -160,7 +163,8 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
     empty.hidden = !noMatches && !mappingNotice;
     previous.textContent = es ? 'Página anterior' : 'Previous page';
     next.textContent = es ? 'Página siguiente' : 'Next page';
-    filterButton.textContent = (es ? 'Filtros' : 'Filters') + (filters.size ? ' (' + filters.size + ')' : '');
+    const selectedCount = Array.from(filters.values()).reduce((count, values) => count + values.length, 0);
+    filterButton.textContent = (es ? 'Filtros' : 'Filters') + (selectedCount ? ' (' + selectedCount + ')' : '');
     field('[data-exp-sort] span').textContent = es ? 'Ordenar por' : 'Sort by';
     field('[data-exp-sort]').hidden = !options.showSorting || !sorts.length;
     field('[data-exp-sort-hint]').hidden = !app || !active.profile || !options.showSorting || Boolean(sorts.length);
@@ -173,37 +177,14 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
   });
   order.addEventListener('change', () => { start = 0; void search(field('[data-exp-sort]'), order); });
 
+  const facetView = setupPublishedFacets(facets, () => options, (next, label, input) => {
+    filters = next;
+    start = 0;
+    void search(label, input);
+  });
   function showFacets(fields: BuildPage['facets']) {
-    const focused = document.activeElement as HTMLInputElement | null;
-    const hadFocus = facets.contains(focused);
-    facets.replaceChildren();
-    for (const { field: name, label, choices } of fields) {
-      if (!options.filters || !choices.length && !filters.has(name)) continue;
-      const group = document.createElement('fieldset');
-      const legend = document.createElement('legend');
-      legend.textContent = label;
-      group.append(legend);
-      const all = active.language === 'es' && !app ? 'Todas las opciones' : 'All';
-      const values = [{ value: '', count: 0 }, ...choices];
-      const selected = filters.get(name) || '';
-      if (!values.some(choice => choice.value === selected)) values.push({ value: selected, count: 0 });
-      for (const choice of values) {
-        const text = document.createElement('label');
-        const radio = document.createElement('input');
-        radio.type = 'radio'; radio.name = 'exp-' + name; radio.value = choice.value;
-        radio.checked = selected === choice.value;
-        radio.addEventListener('change', () => {
-          if (choice.value) filters.set(name, choice.value);
-          else filters.delete(name);
-          start = 0; void search(text, radio);
-        });
-        text.append(radio, choice.value ? choice.value + ' (' + choice.count + ')' : all);
-        group.append(text);
-      }
-      facets.append(group);
-    }
+    facetView.render(options.filters ? fields : [], filters);
     filterPanel.hidden = !facets.childElementCount;
-    if (hadFocus) [...facets.querySelectorAll('input')].find(r => r.name === focused?.name && r.checked)?.focus();
   }
   let pending: AbortController | undefined;
 
@@ -249,7 +230,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       const rows = options.resultsPerPage;
       let total: number;
       if (app) {
-        const page = await searchBuildApp({ ...app, ...active, settings: active }, { query, start, rows, sort: options.showSorting ? order.value : '', filters: new Map(filters) }, AbortSignal.any([request.signal, AbortSignal.timeout(12000)]));
+        const page = await searchBuildApp({ ...app, ...active, settings: active }, { query, start, rows, sort: options.showSorting ? order.value : '', filters: new Map(filters), facetMode: options.facetMode }, AbortSignal.any([request.signal, AbortSignal.timeout(12000)]));
         if (pending !== request) return;
         mappingNotice = resultMappingNotice(page.mappingsKnown, page.cards.length, page.total);
         highlighting = page.highlighting;
@@ -259,7 +240,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
         cards = page.cards;
         total = page.total;
       } else {
-        const samplePage = searchDirectory(active, query, options.profileTabs, filters);
+        const samplePage = searchDirectory(active, query, options.profileTabs, filters, options.facetMode);
         const matches = orderDirectoryResults(samplePage.entries, options.showSorting ? order.value : '', query, options.samplePromotions);
         cards = directoryCards(matches.slice(start, start + rows), active, query, thumbnails);
         total = samplePage.total;
@@ -328,7 +309,8 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
     filterButton.setAttribute('aria-expanded', 'false');
     sorts = [];
     filters.clear();
-    showFacets([]);
+    facetView.reset();
+    filterPanel.hidden = true;
     start = 0;
     const choices = catalog.filter(choice => choice.profile && choice.language === active.language);
     tabs.replaceChildren(...choices.map(choice => {
@@ -388,6 +370,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
     query = term.trim();
     input.value = term;
     filters.clear();
+    facetView.reset();
     start = 0;
     void search();
   }
@@ -424,13 +407,14 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       panel.dataset.thumbnails = String(design.showThumbnails);
       panel.dataset.dividers = String(design.listDividers);
       panel.dataset.underline = String(design.underlineTitles);
+      facetView.refresh();
       if (panel.hidden) return;
       if (previous.profileTabs !== design.profileTabs || previous.languagePicker !== design.languagePicker) {
         render();
-      } else if (previous.filters !== design.filters || previous.resultsPerPage !== design.resultsPerPage ||
+      } else if (previous.facetMode !== design.facetMode || previous.filters !== design.filters || previous.resultsPerPage !== design.resultsPerPage ||
                  previous.showSorting !== design.showSorting || previous.samplePromotions !== design.samplePromotions) {
         start = 0;
-        if (!design.filters) filters.clear();
+        if (!design.filters || previous.facetMode !== design.facetMode) filters.clear();
         if (!design.showSorting || previous.samplePromotions !== design.samplePromotions) order.value = '';
         void search();
       } else updatePresentation();

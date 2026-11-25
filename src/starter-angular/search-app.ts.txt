@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, signal } from '@angular/core';
+import { setupFacetLimits } from './facet-limits.js';
 import { NgTemplateOutlet } from '@angular/common';
 import { SearchstudioUxAngularModule } from '@searchstax-inc/searchstudio-ux-angular';
 import type { IExternalPromotion, ISearchstaxParsedResult, ISearchstaxSearchResponse, ISearchstaxSearchSortingData, Searchstax } from '@searchstax-inc/searchstudio-ux-js';
@@ -34,6 +35,10 @@ function publicLink(value: unknown) {
 export class SearchApp implements AfterViewInit, OnDestroy {
   @ViewChild('searchForm') private form!: ElementRef<HTMLFormElement>;
   @ViewChild('searchField') private input!: ElementRef<HTMLInputElement>;
+  @ViewChild('filterHost') private filterHost?: ElementRef<HTMLElement>;
+  readonly facetMode = design.facetMode === 'and' || design.facetMode === 'showUnavailable' ? design.facetMode : 'or';
+  readonly allFacetValues = Number.MAX_SAFE_INTEGER;
+  private facetLimits?: ReturnType<typeof setupFacetLimits>;
   @ViewChild('resultHost') private resultHost!: ElementRef<HTMLDivElement>;
   @ViewChild('pagination') private pagination!: ElementRef<HTMLDivElement>;
   @ViewChild('answerHost') private answerHost!: ElementRef<HTMLDivElement>;
@@ -60,11 +65,13 @@ export class SearchApp implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     if (!connection.searchURL || !connection.searchAuth) return;
+    if (this.filterHost) this.facetLimits = setupFacetLimits(this.filterHost.nativeElement, () => design);
     this.stopPaginationFocus = setupPaginationFocus(this.pagination.nativeElement, () => this.api);
     queueMicrotask(() => this.start());
   }
 
   ngOnDestroy() {
+    this.facetLimits?.destroy();
     this.services?.clear();
     this.stopResultTracking?.();
     this.stopPaginationFocus?.();
@@ -143,8 +150,8 @@ export class SearchApp implements AfterViewInit, OnDestroy {
     return results;
   };
 
-  facetLabel(value: string) {
-    return this.isDemo && Object.hasOwn(facetLabels, value) ? facetLabels[value] : value;
+  facetLabel(field: string, value: string) {
+    return this.isDemo && field === 'demo_content_type_s' && Object.hasOwn(facetLabels, value) ? facetLabels[value] : value;
   }
 
   sortChoices(data: ISearchstaxSearchSortingData | null) {

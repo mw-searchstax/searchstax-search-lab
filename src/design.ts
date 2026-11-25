@@ -21,6 +21,9 @@ const CORNER_RADII = { standard: '5px', square: '0px', rounded: '14px' };
 export const PAGE_SIZES = [5, 10, 20] as const;
 
 export type DesignSettings = {
+  facetMode: 'or' | 'and' | 'showUnavailable';
+  facetDesktop: number;
+  facetMobile: number;
   highlightStyle: 'default' | 'bold' | 'italic' | 'color' | 'plain';
   promotionBadge: string;
   promotionHeading: string;
@@ -58,6 +61,9 @@ export type DesignSettings = {
 };
 
 export const DEFAULT_DESIGN: Readonly<DesignSettings> = {
+  facetMode: 'or',
+  facetDesktop: 20,
+  facetMobile: 20,
   highlightStyle: 'default',
   promotionBadge: 'Promoted',
   promotionHeading: 'Featured link',
@@ -100,6 +106,15 @@ export function isLayout(value: string | null): value is DesignSettings['layout'
 
 export function isResultSpacing(value: string | null): value is DesignSettings['resultSpacing'] {
   return value !== null && Object.hasOwn(RESULT_GAPS, value);
+}
+
+export function readFacetLimit(value: string | null): number {
+  const n = Number(value);
+  return [3, 5, 10, 20].includes(n) ? n : 20;
+}
+
+export function readFacetMode(value: string | null): DesignSettings['facetMode'] {
+  return value === 'and' || value === 'showUnavailable' ? value : 'or';
 }
 
 export function readPageSize(value: string | null): DesignSettings['resultsPerPage'] {
@@ -147,6 +162,9 @@ export function readDesignParams(params: URLSearchParams, allowFictionalPreview 
   const background = '#' + (params.get('lab_background') ?? '').toLowerCase();
 
   return {
+    facetMode: readFacetMode(params.get('lab_facet_mode')),
+    facetDesktop: readFacetLimit(params.get('lab_facet_desktop')),
+    facetMobile: readFacetLimit(params.get('lab_facet_mobile')),
     promotionBadge: resolveSearchText(params.get('lab_badge'), DEFAULT_DESIGN.promotionBadge),
     promotionHeading: resolveSearchText(params.get('lab_promo_heading'), DEFAULT_DESIGN.promotionHeading),
     badgeStyle: params.get('lab_badge_style') === 'pill' ? 'pill' : 'text',
@@ -185,6 +203,9 @@ export function readDesignParams(params: URLSearchParams, allowFictionalPreview 
 }
 
 export function writeDesignParams(params: URLSearchParams, design: DesignSettings): void {
+  if (design.facetMode !== DEFAULT_DESIGN.facetMode) params.set('lab_facet_mode', design.facetMode);
+  if (design.facetDesktop !== DEFAULT_DESIGN.facetDesktop) params.set('lab_facet_desktop', String(design.facetDesktop));
+  if (design.facetMobile !== DEFAULT_DESIGN.facetMobile) params.set('lab_facet_mobile', String(design.facetMobile));
   if (design.promotionBadge !== DEFAULT_DESIGN.promotionBadge) params.set('lab_badge', design.promotionBadge);
   if (design.promotionHeading !== DEFAULT_DESIGN.promotionHeading) params.set('lab_promo_heading', design.promotionHeading);
   if (design.badgeStyle !== DEFAULT_DESIGN.badgeStyle) params.set('lab_badge_style', design.badgeStyle);

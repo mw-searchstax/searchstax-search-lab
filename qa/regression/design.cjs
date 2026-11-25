@@ -27,7 +27,7 @@ async function spanishDesign(browser) {
   const input = preview.getByRole('searchbox');
   await input.fill('clínica');
   await input.press('Enter');
-  const facet = preview.locator('[data-exp-facets] input').nth(1);
+  const facet = preview.locator('[data-exp-facets] input').first();
   await facet.check();
   const results = preview.locator('li a');
   await results.waitFor();

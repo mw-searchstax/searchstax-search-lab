@@ -25,7 +25,7 @@ The ten widget families below follow the [Help Center catalog](https://support.s
 | Result item template | Mapped URL, title, description, date, paths, distance, ribbon, thumbnail and unmapped values. | Handoff · template. Use the profile’s ordered Results Fields and returned values. | Switch between two profiles with different field names. Search Fields control ranking. | Partial | Partial | Partial | Partial |
 | Thumbnail sizing | Mapped images or optional demo thumbnail treatment. | Appearance · CSS. Keep intrinsic aspect ratio, start with current size. | Mapped image URL and a policy for alternative text. | Gap | Gap | Gap | Gap |
 | Thumbnail placement | Fixed card position. | Advanced Options · template. Keep current placement, offer leading or above the text. | Mapped image and a narrow card. | Gap | Gap | Gap | Gap |
-| Ribbon appearance | Mapped badge uses one style. | Appearance · CSS. Use its mapped value, offer color and shape. | SearchLabBuild maps content type to Ribbon. | Gap | Gap | Gap | Gap |
+| Ribbon appearance | Mapped badges use title case and preserve the indexed value. | Appearance · CSS. Use its mapped value, offer color and shape. | SearchLabBuild maps content type to Ribbon. | Gap | Gap | Gap | Gap |
 | Metadata labels | Labels come from Results Fields. | Appearance · template. Profile labels initially, then optional overrides keyed by field. | A returned field with a label. | Gap | Gap | Gap | Gap |
 | Metadata order | Mapped roles and unmapped fields have an established order. | Advanced Options · template. Start with published order, reorder within a region. | Two returned metadata fields, reset on profile change. | Gap | Gap | Gap | Gap |
 | `linkTarget` | Preview and handoff paths have fixed link behavior. | Features · native after upgrade, or template for custom links. Start with same tab, offer new tab. | Mapped HTTP(S) URL. Verify keyboard activation and result-click tracking. | Upgrade | Gap | Gap | Gap |
@@ -60,10 +60,10 @@ The ten widget families below follow the [Help Center catalog](https://support.s
 | Facet visibility | Can show or hide filters. | Features · widget mount. Start visible when facets exist. | Returned facet values. | Wired | Wired | Wired | Wired |
 | Desktop and mobile placement | Desktop sidebar or top, mobile filter control. | Advanced Options · template and CSS. Sidebar first, responsive mobile panel. | Mobile and desktop widths, focus on close. | Wired | Wired | Wired | Wired |
 | `specificFacets` | Shows available fields without a designer selection. | Features · native. All returned facets in source order, then select and reorder. | Two configured facet fields in the current response. | Gap | Gap | Gap | Gap |
-| `facetingType` | Ordinary starters use OR. Custom tabs use their own filters. | Features · native. Select `and`, `or` or `showUnavailable`. Exercise each with two values. | Differing matching sets, including a zero-count value. | Fixed | Fixed | Fixed | Fixed |
+| `facetingType` | Build and downloads offer OR, AND and Show unavailable. | Features · native in ordinary starters, request logic in connected and tabbed previews. Default OR. | Location and Providers on SearchLabBuild. | Wired | Wired | Wired | Wired |
 | Facet tabs | There’s a horizontal filter layout and separate custom Search Profile tabs. | Advanced Options · native tabs faceting mode. Start off. | Multiple facets in one profile. Changing facet tabs must retain that profile. | Gap | Gap | Gap | Gap |
-| `itemsPerPageDesktop` | Ordinary exports have a fixed facet value limit. | Features · native. Initially 20, allow a smaller desktop expansion step. | Long list of values on desktop. | Fixed | Fixed | Fixed | Fixed |
-| `itemsPerPageMobile` | Fixed limit and a custom mobile presentation. | Features · native. Initially 20, customize independently. | Long list and working Show more on mobile. | Fixed | Fixed | Fixed | Fixed |
+| `itemsPerPageDesktop` | Choose 3, 5, 10 or 20 visible values before Show more. | Features · responsive facet template. Default 20. | Nine published content types for campus. | Wired | Wired | Wired | Wired |
+| `itemsPerPageMobile` | Independent mobile value limit. | Features · responsive facet template. Default 20. Keep selected values visible when collapsed. | Nine content types on a narrow viewport. | Wired | Wired | Wired | Wired |
 | `beforeFacetsRender` | Rendering uses response labels or demo labels. | Handoff · native hook. Preserve order unless the design requests a change. | Facet counts and disabled values survive the callback. | Setup | Setup | Setup | Setup |
 | Desktop facets template | Custom desktop grouping and choices. | Handoff · template. Follow the saved appearance and placement. | Two facet groups. | Wired | Wired | Wired | Wired |
 | Mobile facets template | Custom responsive controls. Ordinary framework exports reuse desktop UI on small screens. | Handoff · template. Maintain labels, open/close focus and selected filters. | Narrow viewport and a selected filter. | Fixed | Fixed | Fixed | Fixed |
@@ -210,6 +210,10 @@ On November 25, the ordinary and tabbed Build previews displayed both published 
 
 Local download verification on November 24, 2026 covered JavaScript, React, Vue and Angular. Each ran **rehabilitation** against the live English SearchLabBuild profile, showed highlighted results and made zero Discovery or Answer requests. In an isolated connected-app fixture, each displayed returned terms and a streamed answer. Choosing a returned term submitted it to the same profile and language. Independent settings produced suggestions alone or an answer alone. Unknown settings, missing credentials or service endpoints, a different app, a different language, and absent entitlements suppressed the corresponding requests. The explicit fictional download in each framework displayed the fixed suggestions and answer for the same query.
 
+### Published facets
+
+On November 25, 2026, the local ordinary and tabbed previews and the JavaScript, React, Vue and Angular downloads used SearchLabBuild’s published Content type facet. Searching **campus** returned 37 results. Selecting **Location** returned eight cards with the **Location** ribbon. Clearing it restored 37. In OR mode, adding **Providers** returned 16. AND mode narrowed the choices to Location, and Show unavailable kept the other choices visible and disabled. All four downloads honored independent limits of three desktop values and five mobile values. Facet selection, ordering and facet tabs across multiple fields remain open for a later example with a second populated facet.
+
 ## Template bindings for the developer handoff
 
 Each row is a distinct replacement point. Keep the kit template by default when building a new native integration. The Build column identifies the current equivalent and the user-facing row above supplies its design defaults and app prerequisites. Custom templates own the accessible controls, result IDs and callbacks inside them. These are package bindings for implementation review. Runtime verification applies only to the behaviors recorded below.
@@ -223,7 +227,7 @@ Each row is a distinct replacement point. Keep the kit template by default when 
 | No matches | Editable empty-state text | noSearchResultTemplate | noResultTemplate | noResult | noResultsTemplate |
 | Desktop facet shell | Sidebar or top filters | mainTemplateDesktop | facetsTemplateDesktop | desktopFacets | templateOverrideDesktop |
 | Mobile facet shell | Mobile filter panel | mainTemplateMobile | facetsTemplateMobile | mobileFacets | templateOverrideMobile |
-| More facet values | No expansion-step control | showMoreButtonContainerTemplate | within facet templates | within facet slots | within facet templates |
+| More facet values | Show more and Show less with separate desktop and mobile limits | showMoreButtonContainerTemplate | within facet templates | within facet slots | within facet templates |
 | One facet group | Field label and choices | facetItemContainerTemplate | within facet templates | within facet slots | within facet templates |
 | One facet value | Option, selection and count | facetItemTemplate | within facet templates | within facet slots | within facet templates |
 | Clear all filters | No shared clear-all design option | clearFacetsTemplate | within facet templates | within facet slots | within facet templates |

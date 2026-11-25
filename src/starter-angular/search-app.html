@@ -72,22 +72,22 @@
     }
     <div class="search-starter__body">
       @if (design.showFilters) {
-        <aside class="search-starter__filters" aria-label="Filter search results">
+        <aside #filterHost class="search-starter__filters" aria-label="Filter search results">
           <app-searchstax-search-facets
-            facetingType="or" [itemsPerPageDesktop]="20" [itemsPerPageMobile]="20"
+            [facetingType]="facetMode" [itemsPerPageDesktop]="allFacetValues" [itemsPerPageMobile]="allFacetValues"
             [templateOverrideDesktop]="facetControls" [templateOverrideMobile]="emptyMobileFacets"
           >
             <ng-template #facetControls let-data="facetsTemplateDataDesktop" let-context="context"
               let-facetValues="facetValues" let-isChecked="isChecked" let-selectFacet="selectFacet">
               @for (facet of data?.facets ?? []; track facet.name) {
-                <fieldset>
+                <fieldset [attr.data-facet]="facet.name">
                   <legend>{{ facet.label || facet.name }}</legend>
                   <div class="search-facet-choices">
                     @for (option of facetValues(facet); track option.value) {
                       <label #facetRow>
                         <input type="checkbox" class="searchstax-facet-input-checkbox" [checked]="!!isChecked(option, context)"
                           [disabled]="option.disabled" (click)="selectFacet(facetRow, $event, option, true, context)">
-                        <span>{{ facetLabel(option.value) }}</span><small>{{ option.count }}</small>
+                        <span>{{ facetLabel(facet.name, option.value) }}</span><small>{{ option.count }}</small>
                       </label>
                     }
                   </div>

@@ -4,6 +4,8 @@ import {
   designVariables,
   contrastRatio,
   readHighlightStyle,
+  readFacetLimit,
+  readFacetMode,
   isHexColor,
   isFont,
   isLayout,
@@ -24,6 +26,7 @@ import { demoSortOptions } from './demo-sorting';
 import { sampleSuggestionSource, setupSearchSuggestions } from './sample-suggestions';
 import './sample-suggestions.css';
 import { samplePromotionQuery } from './sample-promotions';
+import { setupFacetLimits } from './facet-limits';
 import { promotionEntries, renderPromotionBanners, placePromotionBanners, updatePromotionLabels } from './promotion-display';
 import './sample-promotions.css';
 import smartAnswersSampleHTML from './smart-answers-sample.html?raw';
@@ -80,7 +83,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
     },
   };
   var FACET_LABELS = {
-    community: 'Community', hub: 'Overview pages', location: 'Locations', news: 'News',
+    community: 'Community', hub: 'Overview pages', location: 'Location', news: 'News',
     program: 'Education programs', provider: 'Providers', research: 'Research',
     resource: 'Resources', service: 'Services',
   };
@@ -195,6 +198,11 @@ import { setupPaginationFocus } from './pagination-focus.js';
   var showDataFilters = setupDataFilters(root, demoConnection);
   var relevanceComparison = setupRelevanceComparison(root, demoConnection);
   var design = { ...DEFAULT_DESIGN };
+  const facetOptions = root.querySelector('[data-lab-facet-options]');
+  const facetMode = root.querySelector('#lab-facet-mode');
+  const facetDesktop = root.querySelector('#lab-facet-desktop');
+  const facetMobile = root.querySelector('#lab-facet-mobile');
+  const facetLimits = setupFacetLimits(facets, () => design);
   var designBeforeReset = null;
   var draftKey = 'search-lab:design:' + window.location.pathname + window.location.search;
   var state = { scenario: 'fields', phase: 'before', rankingPreset: '' };
@@ -529,6 +537,21 @@ import { setupPaginationFocus } from './pagination-focus.js';
     resultsLayout.setAttribute('data-filters', design.filters ? 'on' : 'off');
     facetsPanel.hidden = !design.filters;
     filterToggle.checked = design.filters;
+    facetOptions.hidden = !design.filters;
+    facetMode.value = design.facetMode;
+    facetDesktop.value = String(design.facetDesktop);
+    facetMobile.value = String(design.facetMobile);
+    facetLimits.refresh();
+    const widget = search?.searchFacetsWidget?.[0];
+    if (widget && widget.config.facetingType !== design.facetMode) {
+      widget.config.facetingType = design.facetMode;
+      facetLimits.reset();
+      const current = search.dataLayer.searchObject;
+      if (current.query && experiencePanel.hidden && !customerPreview.active) {
+        if (current.facets.length) runSearch(current.query, true, true);
+        else search.search(current);
+      }
+    }
     descriptionToggle.checked = design.showDescriptions;
     thumbnailToggle.checked = design.showThumbnails;
     sortingToggle.checked = design.showSorting;
@@ -713,7 +736,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
   function labelFacets() {
     facets.querySelectorAll('[data-lab-type]').forEach(function (label) {
       var value = label.getAttribute('data-lab-type');
-      var text = FACET_LABELS[value] || value;
+      var text = label.closest('fieldset')?.dataset.facet === 'demo_content_type_s' ? FACET_LABELS[value] || value : value;
       if (label.textContent !== text) label.textContent = text;
     });
     facetEmpty.hidden = Boolean(facets.querySelector('input'));
@@ -888,6 +911,7 @@ import { setupPaginationFocus } from './pagination-focus.js';
       var afterProfile = state.scenario === 'ranking' ? config.rankingAfter : config.after;
       void relevanceComparison.compare(cleanQuery, state.scenario, afterProfile);
     }
+    if (current.query !== cleanQuery || current.model !== model) facetLimits.reset();
     var order = selectedOrder();
     var itemsPerPage = selectedPageSize();
     var page = previousSearch?.page ?? 1;
@@ -1021,15 +1045,14 @@ import { setupPaginationFocus } from './pagination-focus.js';
         },
       });
       search.addFacetsWidget('lab-facets', {
-        facetingType: 'or',
-        specificFacets: ['demo_content_type_s'],
-        itemsPerPageDesktop: 20,
-        itemsPerPageMobile: 20,
+        facetingType: design.facetMode,
+        itemsPerPageDesktop: Number.MAX_SAFE_INTEGER,
+        itemsPerPageMobile: Number.MAX_SAFE_INTEGER,
         templates: {
           mainTemplateDesktop: { template: '<div class="lab-facet-groups"></div>', facetsContainerClass: 'lab-facet-groups' },
           mainTemplateMobile: { template: ' ' },
           facetItemContainerTemplate: {
-            template: '<fieldset><legend>Content type</legend><div class="lab-facet-options search-facet-choices"></div></fieldset>',
+            template: '<fieldset data-facet="{{name}}"><legend>{{label}}</legend><div class="lab-facet-options search-facet-choices"></div></fieldset>',
             facetListContainerClass: 'lab-facet-options',
           },
           facetItemTemplate: {
@@ -1065,6 +1088,13 @@ import { setupPaginationFocus } from './pagination-focus.js';
       if (isLayout(input.value)) design.layout = input.value;
       updateDesign();
     });
+  });
+  facetOptions.addEventListener('change', () => {
+    design.facetMode = readFacetMode(facetMode.value);
+    design.facetDesktop = readFacetLimit(facetDesktop.value);
+    design.facetMobile = readFacetLimit(facetMobile.value);
+    facetLimits.reset();
+    updateDesign();
   });
   for (const [id, key] of promotionStyles) {
     const select = root.querySelector(id);

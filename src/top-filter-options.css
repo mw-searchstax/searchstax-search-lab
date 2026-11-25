@@ -14,3 +14,6 @@
   cursor: pointer;
 }
 .search-facet-choices label:has(input:focus-visible) { outline: 2px solid currentColor; outline-offset: 2px; }
+
+.search-facet-choices > [hidden], button[data-facet-more][hidden] { display: none !important; }
+button[data-facet-more] { margin-block: .25rem; min-height: 36px; font: inherit; cursor: pointer; }

@@ -82,7 +82,8 @@ async function run() {
     const single = page.locator('[data-customer-grid]');
     async function checkMappedFields(container) {
       const ribbon = container.locator('.searchstax-search-result-ribbon');
-      assert.equal(await ribbon.innerText(), 'Community program');
+      assert.equal(await ribbon.innerText(), 'Community Program');
+      assert.equal(await ribbon.textContent(), 'Community program');
       assert.ok(await ribbon.evaluate(el => getComputedStyle(el).backgroundColor !== 'rgba(0, 0, 0, 0)'));
       assert.equal(await container.locator('time').getAttribute('datetime'), '2026-09-15');
       assert.equal(await container.locator('.mapped-result-paths').innerText(), 'Education / Programs');
