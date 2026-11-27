@@ -27,6 +27,8 @@ import { sampleSuggestionSource, setupSearchSuggestions } from './sample-suggest
 import './sample-suggestions.css';
 import { samplePromotionQuery } from './sample-promotions';
 import { setupFacetLimits } from './facet-limits';
+import { setupFacetEditor } from './facet-editor';
+import { facetGroupScope, selectedFacetGroups } from './facet-groups';
 import { promotionEntries, renderPromotionBanners, placePromotionBanners, updatePromotionLabels } from './promotion-display';
 import './sample-promotions.css';
 import smartAnswersSampleHTML from './smart-answers-sample.html?raw';
@@ -233,6 +235,8 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
   const facetDesktop = root.querySelector('#lab-facet-desktop');
   const facetMobile = root.querySelector('#lab-facet-mobile');
   const facetLimits = setupFacetLimits(facets, () => design);
+  const builtInFacetScope = facetGroupScope(builtInApp.profile, builtInApp.language);
+  let builtInFacetGroups = [];
   var designBeforeReset = null;
   var draftKey = 'search-lab:design:' + window.location.pathname + window.location.search;
   var state = { scenario: 'fields', phase: 'before', rankingPreset: '' };
@@ -520,7 +524,10 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
         else initialize();
       }
     }
-  }, syncFeatureControls);
+  }, () => {
+    syncFeatureControls();
+    refreshFacetEditor();
+  });
 
   // The credential is for the public, read-only demo search only. Remove it
   // from the DOM and only include it in the runnable demo starter.
@@ -613,14 +620,18 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     facetDesktop.value = String(design.facetDesktop);
     facetMobile.value = String(design.facetMobile);
     facetLimits.refresh();
+    labelFacets();
     const widget = search?.searchFacetsWidget?.[0];
-    if (widget && widget.config.facetingType !== design.facetMode) {
+    if (widget) {
+      const modeChanged = widget.config.facetingType !== design.facetMode;
+      if (modeChanged) facetLimits.reset();
       widget.config.facetingType = design.facetMode;
-      facetLimits.reset();
       const current = search.dataLayer.searchObject;
       if (current.query && experiencePanel.hidden && !customerPreview.active) {
-        if (current.facets.length) runSearch(current.query, true, true);
-        else search.search(current);
+        const visible = modeChanged ? [] : visibleBuiltInFilters(current.facets);
+        if (visible.length !== current.facets.length) {
+          runSearch(current.query, false, true, { ...current, page: 1, facets: visible });
+        } else if (modeChanged) search.search(current);
       }
     }
     descriptionToggle.checked = design.showDescriptions;
@@ -668,6 +679,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     root.querySelector('input[name="lab-layout"][value="' + design.layout + '"]').checked = true;
     codeFeedback.textContent = '';
     if (experiencePanel.hidden) customerPreview.updateDesign(connectedOrder);
+    refreshFacetEditor();
     refreshCardEditor();
     saveDesignDraft();
   }
@@ -810,16 +822,40 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
 
     pagination.hidden = false;
     status.textContent = '';
-    facetEmpty.hidden = Boolean(facets.querySelector('input'));
+    labelFacets();
+  }
+
+  function builtInFacetSelection() {
+    if (workspaceMode === 'design') return selectedFacetGroups(design.facetGroups, builtInApp.profile, builtInApp.language);
+  }
+
+  function visibleBuiltInFilters(filters) {
+    const selection = builtInFacetSelection();
+    return selection ? filters.filter(filter => selection.includes(filter.name)) : filters;
   }
 
   function labelFacets() {
+    const selection = builtInFacetSelection();
+    const container = facets.querySelector('.lab-facet-groups');
+    if (container && workspaceMode === 'design') {
+      // Keep the native widget's value controls and move only their group containers.
+      // A later widget render puts them back in profile order and this observer reapplies the design.
+      const ranks = new Map((selection ?? builtInFacetGroups.map(group => group.field)).map((field, index) => [field, index]));
+      const children = [...container.children];
+      const groups = children.map(node => {
+        const name = node.querySelector('fieldset')?.dataset.facet;
+        if (name) node.hidden = Boolean(selection && !ranks.has(name));
+        return { node, rank: ranks.get(name) ?? Infinity };
+      });
+      groups.sort((a, b) => a.rank < b.rank ? -1 : a.rank > b.rank ? 1 : 0);
+      if (groups.some((group, i) => group.node !== children[i])) container.append(...groups.map(group => group.node));
+    }
     facets.querySelectorAll('[data-lab-type]').forEach(function (label) {
       var value = label.getAttribute('data-lab-type');
       var text = label.closest('fieldset')?.dataset.facet === 'demo_content_type_s' ? FACET_LABELS[value] || value : value;
       if (label.textContent !== text) label.textContent = text;
     });
-    facetEmpty.hidden = Boolean(facets.querySelector('input'));
+    facetEmpty.hidden = Boolean(facets.querySelector('.searchstax-facet-container:not([hidden]) input'));
   }
 
   function readSharedSettings() {
@@ -1004,8 +1040,8 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     var order = selectedOrder();
     var itemsPerPage = selectedPageSize();
     var page = previousSearch?.page ?? 1;
-    var filtersUnchanged = previousSearch ? JSON.stringify(current.facets) === JSON.stringify(previousSearch.facets)
-      : (!clearFilters || !current.facets.length);
+    var nextFilters = visibleBuiltInFilters(previousSearch?.facets ?? (clearFilters ? [] : current.facets));
+    var filtersUnchanged = JSON.stringify(current.facets) === JSON.stringify(nextFilters);
     var unchanged = current.query === cleanQuery && current.model === model && current.page === page &&
       current.order === order && current.itemsPerPage === itemsPerPage && filtersUnchanged;
     if (unchanged && completed && expected.view === workspaceMode) {
@@ -1027,7 +1063,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
       query: expected.query,
       page: page,
       itemsPerPage: itemsPerPage,
-      facets: previousSearch?.facets ?? (clearFilters ? [] : current.facets),
+      facets: nextFilters,
       model: model,
       order: order,
     });
@@ -1117,6 +1153,10 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
               return search.dataLayer.searchResults || [];
             }
             if (workspaceMode === 'design') {
+              builtInFacetGroups = (Array.isArray(response.metadata?.facets) ? response.metadata.facets : [])
+                .filter(group => typeof group?.name === 'string' && group.name)
+                .map(group => ({ field: group.name, label: group.label || group.name }));
+              refreshFacetEditor();
               builtInSorts = publishedSorts(response.metadata);
               if (expected.order && !builtInSorts.some(choice => choice.value === expected.order)) visitorSort = '';
               syncSorting();
@@ -1206,7 +1246,8 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
       updateDesign();
     });
   });
-  facetOptions.addEventListener('change', () => {
+  facetOptions.addEventListener('change', event => {
+    if (![facetMode, facetDesktop, facetMobile].includes(event.target)) return;
     design.facetMode = readFacetMode(facetMode.value);
     design.facetDesktop = readFacetLimit(facetDesktop.value);
     design.facetMobile = readFacetLimit(facetMobile.value);
@@ -1481,6 +1522,10 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
   });
   const refreshCardEditor = setupCardEditor(root, () => !experiencePanel.hidden ? experiencePanel
     : customerPreview.active ? customerPanel : demoOutput, () => design, () => updateDesign());
+  const refreshFacetEditor = setupFacetEditor(root, () => !experiencePanel.hidden ? experiencePreview.facetGroupContext
+    : customerPreview.active ? customerPreview.facetGroupContext : { scope: builtInFacetScope, groups: builtInFacetGroups },
+  () => design, () => updateDesign());
+  experiencePanel.addEventListener('lab-facet-groups', refreshFacetEditor);
   const handoffButtons = [...root.querySelectorAll('.search-lab__handoff-actions button')];
   function setHandoffPanel(selected) {
     for (const control of handoffButtons) {

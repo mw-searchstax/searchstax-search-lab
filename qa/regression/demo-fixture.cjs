@@ -1,7 +1,9 @@
 const fixture = require('./fixtures/searchlabbuild-sorts.json');
+const { matchesFilter } = require('../../src/recorded-response.js');
 
 const demoSite = 'https://mw-searchstax.github.io/university-health-search-demo/';
 const typeField = 'demo_content_type_s';
+const areaField = 'demo_campus_area_s';
 const types = ['location', 'provider', 'department', 'service', 'news', 'resource'];
 const notice = { title: 'Flu Clinic Updates — 2026 Notice', url: demoSite + 'news/flu-clinic-update-2026/' };
 const appointment = demoSite + 'care/resources/flu-shot-appointments/';
@@ -47,19 +49,21 @@ function orderRecords(records, sort) {
 // Synthetic search results for QA only. Each search is resolved in the test process.
 function searchResponse(url) {
   const params = Object.fromEntries(url.searchParams);
-  const original = recordsFor(params.q || '', params.model);
-  const filters = url.searchParams.getAll('fq');
-  const records = original.filter(doc => filters.every(filter => {
-    const values = [...filter.matchAll(/demo_content_type_s:\s*"?([\w-]+)/g)].map(match => match[1]);
-    if (!values.length) return true;
-    return filter.startsWith('-') ? !values.includes(doc[typeField]) : values.includes(doc[typeField]);
-  }));
+  const hasCampusAreas = params.q?.toLowerCase() === 'campus' && params.model === fixture.profile;
+  const fields = [{ name: typeField, label: 'Content type', values: types }];
+  let original = recordsFor(params.q || '', params.model);
+  if (hasCampusAreas) {
+    fields.push({ name: areaField, label: 'Campus area', values: ['North', 'South'] });
+    original = original.map((doc, index) => ({ ...doc, [areaField]: index % 3 === 0 ? 'North' : 'South' }));
+  }
+  const filters = url.searchParams.getAll('fq').filter(filter => filter.trim());
+  const records = original.filter(doc => filters.every(filter => matchesFilter(doc, filter)));
   const start = Number(params.start || 0);
   const docs = orderRecords(records, params.sort).slice(start, start + Number(params.rows ?? 10));
-  const counts = types.flatMap(type => {
-    const count = records.filter(doc => doc[typeField] === type).length;
-    return count ? [type, count] : [];
-  });
+  const counts = Object.fromEntries(fields.map(({ name, values }) => [name, values.flatMap(value => {
+    const count = records.filter(doc => doc[name] === value).length;
+    return count ? [value, count] : [];
+  })]));
   const promotion = params.model === fixture.profile && params.q === 'campus flu clinic';
   const highlight = params.model === fixture.profile && params.q === 'rehabilitation' && params.hl !== 'false';
   return {
@@ -71,11 +75,11 @@ function searchResponse(url) {
       '[elevated]': promotion && doc.id === currentNotice.id })) },
     metadata: {
       sorts: params.model === fixture.profile ? fixture.sorts : [],
-      facets: [{ name: typeField, label: 'Content type' }],
+      facets: fields.map(({ name, label }) => ({ name, label })),
       results: [{ name: 'title', result_card: 'title' }, { name: 'url', result_card: 'url' },
         { name: 'description', result_card: 'description' }, { name: typeField, result_card: 'ribbon' }],
     },
-    facet_counts: { facet_fields: { [typeField]: counts } },
+    facet_counts: { facet_fields: counts },
     externalLinks: promotion ? [{ name: 'Flu shot appointment information', url: appointment }] : [],
   };
 }

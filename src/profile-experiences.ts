@@ -1,4 +1,5 @@
 import { setupPublishedFacets, type FacetSelection } from './published-facets.js';
+import { facetGroupScope, selectedFacetGroups, visibleFacetFilters } from './facet-groups.js';
 import { DEFAULT_DESIGN, type DesignSettings } from './design.js';
 import { setupProfileFeatures, orderDirectoryResults, spanishPromotionQuery } from './profile-features.js';
 import { demoSortOptions } from './demo-sorting.js';
@@ -152,6 +153,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
   const recovery = createSearchRecovery(input, () => { void search(lastAnchor, lastControl); });
   let options: DesignSettings = { ...DEFAULT_DESIGN };
   let filters: FacetSelection = new Map();
+  let facetGroups: BuildPage['facets'] = [];
   const facets = field('[data-exp-facets]');
   const filterPanel = field('[data-exp-filter-panel]');
   const filterButton = field<HTMLButtonElement>('[data-exp-filter-toggle]');
@@ -220,8 +222,11 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
     void search(label, input);
   });
   function showFacets(fields: BuildPage['facets']) {
-    facetView.render(options.filters ? fields : [], filters);
+    facetGroups = fields;
+    const visible = selectedFacetGroups(options.facetGroups, active.profile, active.language);
+    facetView.render(options.filters ? fields : [], filters, visible);
     filterPanel.hidden = !facets.childElementCount;
+    panel.dispatchEvent(new Event('lab-facet-groups', { bubbles: true }));
   }
   let pending: AbortController | undefined;
 
@@ -368,7 +373,9 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
     sorts = [];
     filters.clear();
     facetView.reset();
+    facetGroups = [];
     filterPanel.hidden = true;
+    panel.dispatchEvent(new Event('lab-facet-groups', { bubbles: true }));
     start = 0;
     const choices = catalog.filter(choice => choice.profile && choice.language === active.language);
     tabs.replaceChildren(...choices.map(choice => {
@@ -452,6 +459,9 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       if (!panel.hidden) render();
     },
     get searchState() { return { query, draft: input.value }; },
+    get facetGroupContext() {
+      return { scope: facetGroupScope(active.profile, active.language), groups: facetGroups };
+    },
     submit,
     get spanishDemo() { return !app && spanish(); },
     get promotionQuery() { return spanish() ? spanishPromotionQuery : 'campus flu clinic'; },
@@ -472,11 +482,17 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       panel.dataset.underline = String(design.underlineTitles);
       facetView.refresh();
       if (panel.hidden) return;
+      const visible = selectedFacetGroups(design.facetGroups, active.profile, active.language);
+      const groupsChanged = visible !== selectedFacetGroups(previous.facetGroups, active.profile, active.language);
+      const nextFilters = visibleFacetFilters(filters, visible);
+      const removedFilters = nextFilters.size !== filters.size;
+      if (groupsChanged) showFacets(facetGroups);
+      filters = nextFilters;
       if (previous.profileTabs !== design.profileTabs || previous.languagePicker !== design.languagePicker) {
         render();
       } else if (previous.facetMode !== design.facetMode || previous.filters !== design.filters || previous.resultsPerPage !== design.resultsPerPage ||
                  previous.paginationMode !== design.paginationMode || previous.startingSort !== design.startingSort ||
-                 previous.showSorting !== design.showSorting || previous.samplePromotions !== design.samplePromotions) {
+                 previous.showSorting !== design.showSorting || previous.samplePromotions !== design.samplePromotions || removedFilters) {
         start = 0;
         if (!design.filters || previous.facetMode !== design.facetMode) filters.clear();
         if (!design.showSorting || previous.samplePromotions !== design.samplePromotions) {

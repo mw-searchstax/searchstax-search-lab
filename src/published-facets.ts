@@ -1,6 +1,7 @@
 import type { DesignSettings } from './design.js';
 import type { BuildPage, BuildSearch } from './customer-search.js';
 import { setupFacetLimits } from './facet-limits.js';
+import { orderedFacetGroups } from './facet-groups.js';
 
 export type FacetSelection = BuildSearch['filters'];
 type Fields = BuildPage['facets'];
@@ -26,13 +27,13 @@ export function setupPublishedFacets(host: HTMLElement, settings: () => DesignSe
     change(next, input.closest('label')!, input);
   });
 
-  function render(fields: Fields, active: FacetSelection) {
+  function render(fields: Fields, active: FacetSelection, visible?: string[]) {
     const focus = document.activeElement;
     selection = active;
     if (!active.size) baseline = fields;
     const mode = settings().facetMode;
     const groups: HTMLElement[] = [];
-    for (const field of fields) {
+    for (const field of orderedFacetGroups(fields, visible)) {
       const selected = active.get(field.field) ?? [];
       const counts = new Map(field.choices.map(item => [item.value, item.count]));
       const choices = new Map<string, number>();

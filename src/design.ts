@@ -1,5 +1,6 @@
 import { webURL } from './web-url.js';
 import { readMetadataStyles, type MetadataStyle } from './card-metadata.js';
+import { readFacetGroupStyles, type FacetGroupStyle } from './facet-groups.js';
 
 const FONT_STACKS = {
   arial: 'Arial, Helvetica, sans-serif',
@@ -30,6 +31,7 @@ export type DesignSettings = {
   facetMode: 'or' | 'and' | 'showUnavailable';
   facetDesktop: number;
   facetMobile: number;
+  facetGroups: FacetGroupStyle[];
   highlightStyle: 'default' | 'bold' | 'italic' | 'color' | 'plain';
   promotionBadge: string;
   promotionHeading: string;
@@ -82,6 +84,7 @@ export const DEFAULT_DESIGN: Readonly<DesignSettings> = {
   facetMode: 'or',
   facetDesktop: 20,
   facetMobile: 20,
+  facetGroups: [],
   highlightStyle: 'default',
   promotionBadge: 'Promoted',
   promotionHeading: 'Featured link',
@@ -195,6 +198,7 @@ export function readDesignParams(params: URLSearchParams, allowFictionalPreview 
     facetMode: readFacetMode(params.get('lab_facet_mode')),
     facetDesktop: readFacetLimit(params.get('lab_facet_desktop')),
     facetMobile: readFacetLimit(params.get('lab_facet_mobile')),
+    facetGroups: readFacetGroupStyles(params.get('lab_facet_groups')),
     promotionBadge: resolveSearchText(params.get('lab_badge'), DEFAULT_DESIGN.promotionBadge),
     promotionHeading: resolveSearchText(params.get('lab_promo_heading'), DEFAULT_DESIGN.promotionHeading),
     badgeStyle: params.get('lab_badge_style') === 'pill' ? 'pill' : 'text',
@@ -246,6 +250,7 @@ export function writeDesignParams(params: URLSearchParams, design: DesignSetting
     ['lab_ribbon_color', design.ribbonColor.slice(1)],
     ['lab_ribbon_shape', design.ribbonShape !== 'ribbon' && design.ribbonShape],
     ['lab_card_metadata', design.cardMetadata.length && JSON.stringify(design.cardMetadata)],
+    ['lab_facet_groups', design.facetGroups.length && JSON.stringify(design.facetGroups)],
   ] as const) {
     if (value) params.set(key, value);
     else params.delete(key);

@@ -62,6 +62,8 @@ Run `npm run qa:sorting` to exercise all three starting sorts in Build, download
 
 With the local preview running, use `npm run qa:result-cards` to exercise the card editor and all eight ordinary and profile-tab downloads. The runner supplies fixture search responses and images. It checks missing and invalid fields, a failed image, shared designs and desktop and phone layouts. Set `SEARCH_LAB_BASE_URL` to the loopback preview URL if it differs from the default.
 
+Run `npm run qa:facet-groups` to check facet selection and ordering in Build and all eight starter variants. The campus fixture adds a **Campus area** group so the check can combine filters, hide an active group and restore a shared design.
+
 Run `npm run qa:result-summary` to check count and range summaries in Build and all four starter downloads. It uses the local campus fixture to test paging, Load more, and the Location filter.
 
 For live verification, use a stable release ID for every capture and retry. The release runner reserves one slot before each outbound request. It enforces a ceiling of 10 per release and 100 per calendar month for internal QA on the designated Mac. A quota response stops the run. The ledger is shared across checkouts at `~/Library/Application Support/Search Lab/qa-live-budget.json`. Run the ordinary regression suite against fixtures. Reserve production searches for cases that require the published app.

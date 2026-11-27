@@ -29,6 +29,7 @@ import thumbnailAltJS from './thumbnail-alt.js?raw';
 import promotionsCSS from './sample-promotions.css?raw';
 import publishedFacets from './published-facets.ts?starter-js';
 import facetLimits from './facet-limits.ts?starter-js';
+import facetGroups from './facet-groups.ts?starter-js';
 import promotionDisplay from './promotion-display.ts?starter-js';
 import promotionsJS from './sample-promotions.js?raw';
 import smartAnswersSampleHTML from './smart-answers-sample.html?raw';
@@ -219,6 +220,7 @@ function starterFeatures(design: DesignSettings) {
     facetMode: design.facetMode,
     facetDesktop: design.facetDesktop,
     facetMobile: design.facetMobile,
+    facetGroups: design.facetGroups,
     showSorting: design.showSorting,
     sortLabel: design.sortLabel,
     summaryMode: design.summaryMode,
@@ -274,6 +276,7 @@ function createProfileStarter(framework: Framework, design: DesignSettings, expe
   const entries: Record<string, string> = {
     'search.css': renderStarterCSS(design),
     'src/facet-limits.js': facetLimits,
+    'src/facet-groups.js': facetGroups,
     'src/published-facets.js': publishedFacets,
     'src/profile-experiences.js': profileRuntime,
     'src/result-summary.js': resultSummaryJS,
@@ -421,6 +424,7 @@ export function createStarterZip(
     'index.html': strToU8(html),
     'search.css': strToU8(renderStarterCSS(design)),
     'facet-limits.js': strToU8(facetLimits),
+    'facet-groups.js': strToU8(facetGroups),
     'search.js': strToU8(javascript),
     'recorded-search.js': strToU8(recordedSearchJS),
     'recorded-response.js': strToU8(recordedResponseJS),
@@ -495,6 +499,7 @@ export const design = ${JSON.stringify(settings, null, 2)};
     'src/content-language.js': strToU8(contentLanguageJS),
     'src/web-url.js': strToU8(webURLJS),
     'src/facet-limits.js': strToU8(facetLimits),
+    'src/facet-groups.js': strToU8(facetGroups),
     'src/card-metadata.js': strToU8(cardMetadataJS),
     'src/result-card.js': strToU8(cardRuntime),
     'src/starter-passages.js': strToU8(starterPassages),

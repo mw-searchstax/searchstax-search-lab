@@ -1,4 +1,5 @@
 import { setupFacetLimits } from './facet-limits.js';
+import { selectedFacetGroups } from './facet-groups.js';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   SearchstaxExternalPromotionsWidget,
@@ -27,6 +28,7 @@ installRecordedSearch(recordings);
 
 const analytics = getAnalyticsSettings(connection);
 const resultLanguage = contentLanguageTag(connection.language);
+const specificFacets = selectedFacetGroups(design.facetGroups, connection.model, connection.language);
 const isDemo = connection.source === 'demo' && connection.searchURL === demo.searchURL && connection.model === demo.model && resultLanguage === demo.language;
 const initialQuery = connection.initialQuery || (isDemo ? 'rehabilitation' : '');
 const resultPages = createResultPages();
@@ -215,7 +217,7 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
     <div className="search-starter__body">
       {design.showFilters &&
         <aside ref={filterHost} className="search-starter__filters" aria-label="Filter search results">
-          <SearchstaxFacetsWidget facetingType={design.facetMode} itemsPerPageDesktop={Number.MAX_SAFE_INTEGER} itemsPerPageMobile={Number.MAX_SAFE_INTEGER}
+          <SearchstaxFacetsWidget facetingType={design.facetMode} specificFacets={specificFacets} itemsPerPageDesktop={Number.MAX_SAFE_INTEGER} itemsPerPageMobile={Number.MAX_SAFE_INTEGER}
             facetsTemplateDesktop={facetControls} facetsTemplateMobile={() => null} />
         </aside>}
       <div ref={resultHost}>

@@ -69,7 +69,7 @@ The ten widget families below follow the [Help Center catalog](https://support.s
 |---|---|---|---|---|---|---|---|
 | Facet visibility | Can show or hide filters. | Features · widget mount. Start visible when facets exist. | Returned facet values. | Wired | Wired | Wired | Wired |
 | Desktop and mobile placement | Desktop sidebar or top, mobile filter control. | Advanced Options · template and CSS. Sidebar first, responsive mobile panel. | Mobile and desktop widths, focus on close. | Wired | Wired | Wired | Wired |
-| `specificFacets` | Shows available fields without a designer selection. | Features · native. All returned facets in source order, then select and reorder. | Two configured facet fields in the current response. | Gap | Gap | Gap | Gap |
+| `specificFacets` | Choose which facet groups appear and move them earlier or later. | Features → Filters and sorting. Defaults to all returned groups in profile order. Ordinary starters bind the saved list to the widget. | Two facet groups. Hide an active group and check the remaining filter and result count. | Wired | Wired | Wired | Wired |
 | `facetingType` | Build and downloads offer OR, AND and Show unavailable. | Features · native in ordinary starters, request logic in connected and tabbed previews. Default OR. | Location and Providers on SearchLabBuild. | Wired | Wired | Wired | Wired |
 | Facet tabs | There’s a horizontal filter layout and separate custom Search Profile tabs. | Advanced Options · native tabs faceting mode. Start off. | Multiple facets in one profile. Changing facet tabs must retain that profile. | Gap | Gap | Gap | Gap |
 | `itemsPerPageDesktop` | Choose 3, 5, 10 or 20 visible values before Show more. | Features · responsive facet template. Default 20. | Nine published content types for campus. | Wired | Wired | Wired | Wired |
@@ -222,7 +222,9 @@ Local download verification on November 24, 2026 covered JavaScript, React, Vue 
 
 ### Published facets
 
-On November 25, 2026, the local ordinary and tabbed previews and the JavaScript, React, Vue and Angular downloads used SearchLabBuild’s published Content type facet. Searching **campus** returned 37 results. Selecting **Location** returned eight cards with the **Location** ribbon. Clearing it restored 37. In OR mode, adding **Providers** returned 16. AND mode narrowed the choices to Location, and Show unavailable kept the other choices visible and disabled. All four downloads honored independent limits of three desktop values and five mobile values. Facet selection, ordering and facet tabs across multiple fields remain open for a later example with a second populated facet.
+On November 25, 2026, the local ordinary and tabbed previews and the JavaScript, React, Vue and Angular downloads used SearchLabBuild’s published Content type facet. Searching **campus** returned 37 results. Selecting **Location** returned eight cards with the **Location** ribbon. Clearing it restored 37. In OR mode, adding **Providers** returned 16. AND mode narrowed the choices to Location, and Show unavailable kept the other choices visible and disabled. All four downloads honored independent limits of three desktop values and five mobile values.
+
+In Build, open **Features → Filters and sorting → Filter groups** to show, hide or move groups. Hiding a group clears its active filters. **Use profile defaults** restores all returned groups in profile order. The design and shared link save choices by profile and language. The local **campus** fixture adds **Campus area**. In AND mode, selecting **North**, then **Location**, shows 13 and then three results. Hiding **Campus area** restores the eight Location results. Facet tabs remain open.
 
 ### Load more
 

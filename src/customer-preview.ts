@@ -1,4 +1,5 @@
 import { setupPublishedFacets } from './published-facets.js';
+import { facetGroupScope, selectedFacetGroups, visibleFacetFilters } from './facet-groups.js';
 import { placePromotionBanners, renderPromotionBanners, updatePromotionLabels } from './promotion-display.js';
 import { createSearchRecovery } from './search-recovery';
 import { readAppConfiguration, featureStatus, profileStatus, type Profile, type AppConfiguration } from './app-configuration.js';
@@ -195,10 +196,12 @@ export function setupCustomerPreview(
     if (latestPage?.mappingsKnown && latestPage.total === 0) empty.textContent = design.noResultsText;
   }
 
+  let displayedFacetGroups: string[] | undefined;
   const facetView = setupPublishedFacets(facetFields, getDesign, (filters, label, input) =>
     run({ filters }, label, input));
   function renderFacets(page: BuildPage, active: BuildSearch) {
-    facetView.render(page.facets, active.filters);
+    displayedFacetGroups = selectedFacetGroups(getDesign().facetGroups, connection?.profile, connection?.language);
+    facetView.render(page.facets, active.filters, displayedFacetGroups);
     facetHint.hidden = Boolean(facetFields.childElementCount);
   }
 
@@ -469,6 +472,9 @@ export function setupCustomerPreview(
     get query() { return options?.query; },
     get highlighting() { return latestPage?.highlighting; },
     get order() { return options?.sort; },
+    get facetGroupContext() {
+      return { scope: facetGroupScope(connection?.profile, connection?.language), groups: latestPage?.facets ?? [] };
+    },
     showAnswers,
     suspendAnswers: answers.clear,
     resumeAnswers() {
@@ -504,18 +510,21 @@ export function setupCustomerPreview(
       loadMore.textContent = design.loadMoreText;
       placePromotionBanners(promotions, layout, design.bannerPlacement);
       updatePromotionLabels(panel, design);
-      facetView.refresh();
+      const groups = selectedFacetGroups(design.facetGroups, connection.profile, connection.language);
+      if (latestPage && groups !== displayedFacetGroups) renderFacets(latestPage, options);
+      else facetView.refresh();
       const startingSortChanged = design.startingSort !== lastStartingSort;
       const sortingReenabled = !lastShowSorting && design.showSorting;
       const nextOrder = design.showSorting ? (order ?? (startingSortChanged || sortingReenabled ? design.startingSort : options.sort)) : '';
       if (startingSortChanged) lastStartingSort = design.startingSort;
       lastShowSorting = design.showSorting;
       const clearSelection = !design.filters || options.facetMode !== design.facetMode;
-      if (design.resultsPerPage !== options.rows || previousMode !== nextMode || (clearSelection && options.filters.size) ||
+      const filters = clearSelection ? new Map() : visibleFacetFilters(options.filters, groups);
+      if (design.resultsPerPage !== options.rows || previousMode !== nextMode || filters.size !== options.filters.size ||
         options.facetMode !== design.facetMode || nextOrder !== options.sort) {
         run({
           rows: design.resultsPerPage,
-          filters: clearSelection ? new Map() : options.filters,
+          filters,
           sort: nextOrder,
         });
       }

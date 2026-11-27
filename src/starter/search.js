@@ -8,6 +8,7 @@ import { watchCardThumbnails } from './result-card.js';
 import { starterResults } from './starter-passages.js';
 import { readCustomerEndpoint } from './web-url.js';
 import { setupFacetLimits } from './facet-limits.js';
+import { selectedFacetGroups } from './facet-groups.js';
 import { promotionEntries, renderPromotionBanners, placePromotionBanners } from './promotion-display.js';
 import { createResultPages } from './result-pages.js';
 import { formatResultSummary } from './result-summary.js';
@@ -282,6 +283,7 @@ async function startSearch() {
     }
     search.addFacetsWidget('search-facets', {
       facetingType: config.facetMode,
+      specificFacets: selectedFacetGroups(config.facetGroups, config.model, config.language),
       itemsPerPageDesktop: Number.MAX_SAFE_INTEGER,
       itemsPerPageMobile: Number.MAX_SAFE_INTEGER,
       templates: {

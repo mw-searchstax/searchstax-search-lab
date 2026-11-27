@@ -1,5 +1,6 @@
 <script setup>
 import { setupFacetLimits } from "./facet-limits.js";
+import { selectedFacetGroups } from './facet-groups.js';
 import { h, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import {
   SearchstaxExternalPromotionsWidget,
@@ -32,6 +33,7 @@ function Passage({ parts }) {
 
 const analytics = getAnalyticsSettings(connection);
 const resultLanguage = contentLanguageTag(connection.language);
+const specificFacets = selectedFacetGroups(design.facetGroups, connection.model, connection.language);
 const isDemo = connection.source === 'demo' && connection.searchURL === demo.searchURL && connection.model === demo.model && resultLanguage === demo.language;
 const initialQuery = connection.initialQuery || (isDemo ? 'rehabilitation' : '');
 const resultPages = createResultPages();
@@ -223,7 +225,7 @@ onBeforeUnmount(() => {
       </Teleport>
       <div class="search-starter__body">
         <aside ref="filterHost" v-if="design.showFilters" class="search-starter__filters" aria-label="Filter search results">
-          <SearchstaxFacetsWidget :facetingType="design.facetMode" :itemsPerPageDesktop="Number.MAX_SAFE_INTEGER" :itemsPerPageMobile="Number.MAX_SAFE_INTEGER">
+          <SearchstaxFacetsWidget :facetingType="design.facetMode" :specificFacets="specificFacets" :itemsPerPageDesktop="Number.MAX_SAFE_INTEGER" :itemsPerPageMobile="Number.MAX_SAFE_INTEGER">
             <template #desktopFacets="{ facetsTemplateDataDesktop, onUpdateRefDesktop, isChecked, selectFacet }">
               <fieldset v-for="facet in facetsTemplateDataDesktop?.facets" :key="facet.name" :data-facet="facet.name">
                 <legend>{{ facet.label || facet.name }}</legend>

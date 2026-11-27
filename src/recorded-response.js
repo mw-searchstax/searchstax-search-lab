@@ -12,7 +12,7 @@ function matchesClause(doc, clause) {
   return negative ? !found : found;
 }
 
-function matchesFilter(doc, filter) {
+export function matchesFilter(doc, filter) {
   // The UI Kit and the API client both emit field:value clauses. Groups with
   // the field outside the parentheses share it across their values.
   const group = filter.trim().replace(/^\((.*)\)$/, '$1');

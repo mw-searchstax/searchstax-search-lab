@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, signal } from '@angular/core';
 import { setupFacetLimits } from './facet-limits.js';
+import { selectedFacetGroups } from './facet-groups.js';
 import { NgTemplateOutlet } from '@angular/common';
 import { SearchstudioUxAngularModule } from '@searchstax-inc/searchstudio-ux-angular';
 import type { IExternalPromotion, ISearchstaxParsedResult, ISearchstaxSearchResponse, ISearchstaxSearchSortingData, Searchstax } from '@searchstax-inc/searchstudio-ux-js';
@@ -46,6 +47,7 @@ export class SearchApp implements AfterViewInit, OnDestroy {
   @ViewChild('filterHost') private filterHost?: ElementRef<HTMLElement>;
   readonly facetMode = design.facetMode === 'and' || design.facetMode === 'showUnavailable' ? design.facetMode : 'or';
   readonly allFacetValues = Number.MAX_SAFE_INTEGER;
+  readonly specificFacets = selectedFacetGroups(design.facetGroups, connection.model, connection.language);
   private facetLimits?: ReturnType<typeof setupFacetLimits>;
   @ViewChild('resultHost') private resultHost!: ElementRef<HTMLDivElement>;
   @ViewChild('pagination') private pagination!: ElementRef<HTMLDivElement>;

@@ -75,7 +75,7 @@
       @if (design.showFilters) {
         <aside #filterHost class="search-starter__filters" aria-label="Filter search results">
           <app-searchstax-search-facets
-            [facetingType]="facetMode" [itemsPerPageDesktop]="allFacetValues" [itemsPerPageMobile]="allFacetValues"
+            [facetingType]="facetMode" [specificFacets]="specificFacets" [itemsPerPageDesktop]="allFacetValues" [itemsPerPageMobile]="allFacetValues"
             [templateOverrideDesktop]="facetControls" [templateOverrideMobile]="emptyMobileFacets"
           >
             <ng-template #facetControls let-data="facetsTemplateDataDesktop" let-context="context"

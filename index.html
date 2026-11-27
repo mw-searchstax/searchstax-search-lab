@@ -219,6 +219,25 @@
                   <input id="lab-filters" type="checkbox" checked>
                 </div>
                 <div data-lab-facet-options>
+                  <fieldset class="search-lab__field">
+                    <legend>Filter groups</legend>
+                    <div id="lab-facet-group-editor" hidden>
+                      <div class="search-lab__field">
+                        <label class="search-lab__sr-only" for="lab-facet-group">Filter group</label>
+                        <select id="lab-facet-group"></select>
+                      </div>
+                      <div class="search-lab__field search-lab__field--inline">
+                        <label for="lab-facet-group-show">Show this group</label>
+                        <input type="checkbox" id="lab-facet-group-show">
+                      </div>
+                      <div class="search-lab__actions">
+                        <button class="lt-btn lt-btn--secondary" type="button" id="lab-facet-group-up">Move earlier</button>
+                        <button class="lt-btn lt-btn--secondary" type="button" id="lab-facet-group-down">Move later</button>
+                        <button class="lt-btn lt-btn--secondary" type="button" id="lab-facet-group-reset">Use profile defaults</button>
+                      </div>
+                    </div>
+                    <p id="lab-facet-group-empty">The current results don’t include filter groups.</p>
+                  </fieldset>
                   <div class="search-lab__field">
                     <label for="lab-facet-mode">Match selected filter values</label>
                     <select id="lab-facet-mode">

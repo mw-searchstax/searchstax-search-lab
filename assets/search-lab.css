@@ -46,6 +46,7 @@
 }
 .search-lab__intro p { max-width: 62ch; margin: 0; color: var(--lab-muted); }
 .search-lab__actions { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin-top: .75rem; }
+#lab-facet-group-editor .search-lab__actions button { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
 .search-lab__intro--design { max-width: none; }
 .search-lab__design-heading {
   display: flex;
