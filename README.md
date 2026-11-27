@@ -64,6 +64,8 @@ With the local preview running, use `npm run qa:result-cards` to exercise the ca
 
 Run `npm run qa:facet-groups` to check facet selection, ordering, and **One value per group** in Build and all eight starter variants. The campus fixture adds a **Campus area** group so the check can combine filters, replace a value, hide an active group and restore a shared design.
 
+Run `npm run qa:pagination-placement` to check synchronized Previous/Next controls and keyboard focus in Build and all eight starter variants with the local campus fixture.
+
 Run `npm run qa:result-summary` to check count and range summaries in Build and all four starter downloads. It uses the local campus fixture to test paging, Load more, and the Location filter.
 
 For live verification, use a stable release ID for every capture and retry. The release runner reserves one slot before each outbound request. It enforces a ceiling of 10 per release and 100 per calendar month for internal QA on the designated Mac. A quota response stops the run. The ledger is shared across checkouts at `~/Library/Application Support/Search Lab/qa-live-budget.json`. Run the ordinary regression suite against fixtures. Reserve production searches for cases that require the published app.

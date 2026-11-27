@@ -32,9 +32,13 @@
         <div id="search-facets"></div>
       </aside>
       <div>
+        <div data-pagination-focus data-pager-position="above" tabindex="-1" role="group" aria-label="Pagination above results" hidden>
+          <div data-page-copy></div>
+          <span class="search-starter__sr-only" role="status" data-page-announcement></span>
+        </div>
         <div id="search-results"></div>
         <p class="search-starter__no-results" id="search-no-results" hidden></p>
-        <div data-pagination-focus tabindex="-1" role="group" aria-label="Search result pagination">
+        <div data-pagination-focus data-pager-position="below" tabindex="-1" role="group" aria-label="Search result pagination">
           <div id="search-pagination"></div>
           <span class="search-starter__sr-only" role="status" data-page-announcement></span>
         </div>

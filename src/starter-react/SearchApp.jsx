@@ -17,7 +17,7 @@ import { setupStarterServices } from './starter-services.js';
 import { createCustomerSuggestionSource } from './customer-suggestions.js';
 import { sampleSuggestionSource, setupSearchSuggestions } from './suggestions.js';
 import { getAnalyticsSettings, setupResultTracking } from './result-tracking.js';
-import { setupPaginationFocus } from './pagination-focus.js';
+import { setupPaginationPlacement } from './pagination-focus.js';
 import { createResultPages } from './result-pages.js';
 import { formatResultSummary } from './result-summary.js';
 import { decodedSort, encodedSort, createSortController, readResponseSortOptions, readSortOptions } from './sorting.js';
@@ -142,6 +142,7 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
   const form = useRef(null);
   const input = useRef(null);
   const pagination = useRef(null);
+  const abovePagination = useRef(null);
   const filterHost = useRef(null);
   const resultHost = useRef(null);
   const answerHost = useRef(null);
@@ -201,7 +202,7 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
 
   useEffect(() => watchCardThumbnails(resultHost.current), []);
   useEffect(() => setupResultTracking(resultHost.current, api), [api]);
-  useEffect(() => setupPaginationFocus(pagination.current, () => api), [api]);
+  useEffect(() => setupPaginationPlacement(abovePagination.current, pagination.current, () => design, () => api).destroy, [api]);
 
   return <>
     <form className="search-starter__form" role="search" ref={form}
@@ -221,10 +222,14 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
             facetsTemplateDesktop={facetControls} facetsTemplateMobile={() => null} />
         </aside>}
       <div ref={resultHost}>
+        <div ref={abovePagination} data-pager-position="above" tabIndex={-1} role="group" aria-label="Pagination above results" hidden>
+          <div data-page-copy="" />
+          <span className="search-starter__sr-only" role="status" data-page-announcement="" />
+        </div>
         <SearchstaxResultWidget renderMethod="pagination" resultsPerPage={design.resultsPerPage}
           resultsTemplate={resultCards}
           noResultTemplate={() => <p className="search-starter__no-results">{design.noResultsText}</p>} />
-        <div ref={pagination} tabIndex={-1} role="group" aria-label="Search result pagination">
+        <div ref={pagination} data-pager-position="below" tabIndex={-1} role="group" aria-label="Search result pagination">
           {design.paginationMode === 'loadMore' ? (
             <SearchstaxPaginationWidget
               infiniteScrollTemplate={(data, nextPage) => (

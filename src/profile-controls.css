@@ -46,8 +46,8 @@
 .lab-experiences[data-thumbnails="false"] .profile-result-thumbnail { display: none; }
 .lab-experiences [data-exp-filter-toggle] { display: none; }
 .search-results-toolbar > .search-recovery { flex-basis: 100%; }
-.lab-experiences [data-exp-pages] { display: flex; flex-wrap: wrap; gap: .625rem; margin-top: 1rem; }
-.lab-experiences :is([data-exp-pages] button, [data-exp-filter-toggle]) {
+.lab-experiences :is([data-exp-pages], [data-exp-pages-above]) { display: flex; flex-wrap: wrap; gap: .625rem; margin-top: 1rem; }
+.lab-experiences :is([data-pager-position] button, [data-exp-filter-toggle]) {
   max-width: 100%;
   min-height: 36px;
   padding: .375rem .625rem;

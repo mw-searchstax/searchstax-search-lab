@@ -1,4 +1,5 @@
 import { setupPublishedFacets } from './published-facets.js';
+import { pageControls, showPaginationAt } from './pagination-focus.js';
 import { facetGroupScope, selectedFacetGroups, visibleFacetFilters } from './facet-groups.js';
 import { placePromotionBanners, renderPromotionBanners, updatePromotionLabels } from './promotion-display.js';
 import { createSearchRecovery } from './search-recovery';
@@ -64,15 +65,14 @@ export function setupCustomerPreview(
   const grid = get('[data-customer-grid]');
   const empty = get('[data-customer-empty]');
   const pager = get('[data-customer-pager]');
-  const range = get('[data-customer-range]');
-  const previous = get<HTMLButtonElement>('[data-customer-prev]');
-  const next = get<HTMLButtonElement>('[data-customer-next]');
+  const bottomPager = pageControls(pager);
+  const pagers = [pageControls(panel.querySelector<HTMLElement>('[data-pager-position="above"]')!), bottomPager];
   const loadMore = document.createElement('button');
   loadMore.type = 'button';
   loadMore.className = 'search-lab__load-more';
   loadMore.textContent = getDesign().loadMoreText;
   loadMore.hidden = true;
-  pager.insertBefore(loadMore, range);
+  pager.insertBefore(loadMore, bottomPager.range);
   const searchForm = get<HTMLFormElement>('[data-lab-search-form]');
   const queryInput = get<HTMLInputElement>('#lab-query');
   let place: HTMLElement = searchForm;
@@ -183,6 +183,11 @@ export function setupCustomerPreview(
 
   function updateVisibility() {
     const design = getDesign();
+    for (const { element } of pagers) {
+      element.hidden = !latestPage?.resultCount || !showPaginationAt(design, element.dataset.pagerPosition!);
+    }
+    pager.setAttribute('aria-label', showPaginationAt(design, 'above') && showPaginationAt(design, 'below')
+      ? 'Search result pages below results' : 'Search result pages');
     placeResultSummary(status, design.summaryPlacement, summaryToolbar, layout);
     if (resultWindow) {
       const text = formatResultSummary(design.summaryMode, resultWindow);
@@ -240,18 +245,19 @@ export function setupCustomerPreview(
 
     const focusedPageButton = document.activeElement;
     const focusedLoadMore = focusedPageButton === loadMore;
-    pager.hidden = !page.resultCount;
     const loaded = append ? grid.childElementCount : page.resultCount;
-    range.textContent = (append ? 1 : active.start + 1) + '–' + (append ? loaded : active.start + page.resultCount) + ' of ' + page.total + ' results';
+    const pageRange = (append ? 1 : active.start + 1) + '–' + (append ? loaded : active.start + page.resultCount) + ' of ' + page.total + ' results';
     const moreAvailable = active.start + page.resultCount < page.total;
     const loadingMore = paginationMode() === 'loadMore';
-    previous.hidden = loadingMore || active.start === 0;
-    next.hidden = loadingMore || !moreAvailable;
     loadMore.hidden = !loadingMore || !moreAvailable;
-    if (loadingMore && !moreAvailable && append) range.textContent = 'All ' + page.total + ' results loaded';
-    if ((focusedPageButton === previous && previous.hidden) || (focusedPageButton === next && next.hidden)) range.focus();
-    if (focusedLoadMore) (loadMore.hidden ? range : loadMore).focus({ preventScroll: true });
     updateVisibility();
+    for (const { range, previous, next } of pagers) {
+      range.textContent = loadingMore && !moreAvailable && append ? 'All ' + page.total + ' results loaded' : pageRange;
+      previous.hidden = loadingMore || active.start === 0;
+      next.hidden = loadingMore || !moreAvailable;
+      if ((focusedPageButton === previous && previous.hidden) || (focusedPageButton === next && next.hidden)) range.focus();
+    }
+    if (focusedLoadMore) (loadMore.hidden ? bottomPager.range : loadMore).focus({ preventScroll: true });
   }
 
   async function load(candidate: CustomerConnection, search: BuildSearch, connecting = false) {
@@ -456,12 +462,14 @@ export function setupCustomerPreview(
   connect.disabled = false;
   get('[data-customer-disconnect]').addEventListener('click', disconnect);
   sort.addEventListener('change', () => run({ sort: sort.value }, sortField, sort));
-  previous.addEventListener('click', () => {
-    if (options && !request) run({ start: Math.max(0, displayedStart - options.rows) }, pager, previous);
-  });
-  next.addEventListener('click', () => {
-    if (options && !request) run({ start: displayedStart + options.rows }, pager, next);
-  });
+  for (const { element, previous, next } of pagers) {
+    previous.addEventListener('click', () => {
+      if (options && !request) run({ start: Math.max(0, displayedStart - options.rows) }, element, previous);
+    });
+    next.addEventListener('click', () => {
+      if (options && !request) run({ start: displayedStart + options.rows }, element, next);
+    });
+  }
   loadMore.addEventListener('click', () => {
     if (!connection || !options || !latestPage || request) return;
     run({ start: displayedStart + latestPage.resultCount }, pager, loadMore);

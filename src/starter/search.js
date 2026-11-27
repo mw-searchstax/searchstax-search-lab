@@ -2,7 +2,7 @@ import { sampleSuggestionSource, setupSearchSuggestions } from './suggestions.js
 import { createCustomerSuggestionSource } from './customer-suggestions.js';
 import { getAnalyticsSettings, setupResultTracking } from './result-tracking.js';
 import { setupStarterServices } from './starter-services.js';
-import { setupPaginationFocus } from './pagination-focus.js';
+import { setupPaginationPlacement } from './pagination-focus.js';
 import { contentLanguageTag } from './content-language.js';
 import { watchCardThumbnails } from './result-card.js';
 import { starterResults } from './starter-passages.js';
@@ -188,12 +188,14 @@ async function startSearch() {
     setSearchObject: value => search.dataLayer.setSearchObject(value),
   });
   placeSortField();
-  const pager = document.querySelector('[data-pagination-focus]');
-  if (config.summaryMode === 'range') pager.querySelector('[data-page-announcement]').setAttribute('aria-live', 'off');
-  pager.addEventListener('click', event => {
-    if (event.target.closest('button[data-page-step], .searchstax-pagination-load-more')) pager.after(feedback);
-  }, true);
-  setupPaginationFocus(pager, () => search);
+  const abovePager = document.querySelector('[data-pager-position="above"]');
+  const belowPager = document.querySelector('[data-pager-position="below"]');
+  for (const pager of [abovePager, belowPager]) {
+    pager.addEventListener('click', event => {
+      if (event.target.closest('button[data-page-step], .searchstax-pagination-load-more')) pager.after(feedback);
+    }, true);
+  }
+  setupPaginationPlacement(abovePager, belowPager, () => config, () => search);
   const analytics = getAnalyticsSettings(config);
   search.initialize({
     searchURL: config.searchURL,

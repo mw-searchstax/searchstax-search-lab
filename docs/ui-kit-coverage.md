@@ -98,7 +98,7 @@ The ten widget families below follow the [Help Center catalog](https://support.s
 |---|---|---|---|---|---|---|---|
 | Paged navigation template | Previous and Next and result range. | Appearance · template. Keep existing labels and let designers change each. | A first, middle and last page. | Fixed | Fixed | Fixed | Fixed |
 | Infinite-scroll template | Load more button with editable text and a cumulative count. | Features → Pagination · widget and template. The default button text is “Load more.” | More than one page, with keyboard focus and an end-of-results message. | Wired | Wired | Wired | Wired |
-| Multiple pagination instances | One pager below results. | Advanced Options · widget placement. Offer above, below or both, default below. | Two controls synchronized to one page and focus target. | Gap | Gap | Gap | Gap |
+| Multiple pagination instances | Previous and Next controls can appear above results, below results, or in both places. | Advanced Options → Pagination placement. Default below. Both controls share the active page. | Advance from above and return from below. Check both ranges, the request count, and keyboard focus at page boundaries. | Wired | Wired | Wired | Wired |
 | Range text | Range appears as results are paged. | Appearance · template. Start with the existing range and total. | Final partial page. | Fixed | Fixed | Fixed | Fixed |
 
 ## Search feedback and spelling
@@ -235,6 +235,10 @@ In **Features → Pagination**, choose **Load more**. Paged results are the defa
 On November 25, 2026, the ordinary and tabbed Build previews loaded **campus** on English SearchLabBuild in batches of 10, 10, 10, and seven. The ordinary preview kept the first 10 cards after a failed second request and showed 20 distinct cards after retry. Changing the sort or switching profiles started a fresh list.
 
 The JavaScript, React, Vue and Angular downloads each ran the same query locally with a custom button label. Keyboard activation showed 10, 20, 30, then 37 distinct results in order, with a visible final count. Selecting **Location** showed eight results. Clearing it restored the first 10 of 37.
+
+### Pagination placement
+
+For Previous/Next pagination, open **Features → Advanced Options → Pagination placement**. Choose **Above results**, **Below results**, or **Both**. With **Both** and the local `campus` fixture, **Next** above the results moves both ranges to **11–20 of 37**. **Previous** below the results returns both to **1–10 of 37**. Keyboard focus stays with the pager used and moves to its range when that direction is unavailable.
 
 ### Result summary
 

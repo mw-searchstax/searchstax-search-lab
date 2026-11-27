@@ -1,4 +1,6 @@
 /* Visitor controls used by the preview and the downloadable search pages. */
+[data-pager-position="above"]:not([hidden]) { margin-block-end: .75rem; }
+
 :is(.search-lab__results-heading, .search-results-toolbar):not(:has(> :not([hidden]))) {
   display: none;
 }

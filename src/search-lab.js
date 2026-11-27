@@ -6,6 +6,7 @@ import {
   readHighlightStyle,
   readFacetLimit,
   readFacetMode,
+  readPaginationPlacement,
   isHexColor,
   isFont,
   isLayout,
@@ -50,7 +51,7 @@ import { demoResultText, demoResultTitle } from './demo-content.js';
 import { setupRelevanceComparison } from './relevance-comparison';
 import { createResultPages } from './result-pages.js';
 import { formatResultSummary, placeResultSummary } from './result-summary';
-import { setupPaginationFocus } from './pagination-focus.js';
+import { setupPaginationPlacement } from './pagination-focus.js';
 import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearchEndpoint, recordedSearchMode, useLiveRecordedSearches } from './recorded-searches';
 
 (function () {
@@ -138,6 +139,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
   var fontInput = root.querySelector('#lab-font');
   var spacingInput = root.querySelector('#lab-spacing');
   const paginationModeInput = root.querySelector('#lab-pagination-mode');
+  const paginationPlacementInput = root.querySelector('#lab-pagination-placement');
   var pageSizeInput = root.querySelector('#lab-page-size');
   var scenarioInput = root.querySelector('#lab-scenario');
   var facetsPanel = root.querySelector('[data-lab-facets-panel]');
@@ -156,7 +158,8 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     if (button && button.textContent !== design.loadMoreText) button.textContent = design.loadMoreText;
   }
   new MutationObserver(updateLoadMoreLabel).observe(pagination, { childList: true, subtree: true });
-  setupPaginationFocus(pagination.parentElement, function () { return search; });
+  const paginationPlacement = setupPaginationPlacement(root.querySelector('[data-pagination-focus][data-pager-position="above"]'),
+    pagination.parentElement, () => workspaceMode === 'design' ? design : DEFAULT_DESIGN, () => search);
   var status = root.querySelector('[data-lab-status]');
   var previewBrand = root.querySelector('[data-lab-preview-brand]');
   watchCardThumbnails(designSurface);
@@ -568,7 +571,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     var text = workspaceMode === 'examples' ? DEFAULT_DESIGN : design;
     placeResultSummary(summary, text.summaryPlacement, summaryToolbar, resultsLayout);
     if (workspaceMode === 'design' && builtInSummary) updateBuiltInSummary();
-    pagination.parentElement.querySelector('[data-page-announcement]').setAttribute('aria-live', text.summaryMode === 'range' ? 'off' : 'polite');
+    paginationPlacement.refresh();
     var fieldText = customerPreview.active && text.searchFieldText === DEFAULT_DESIGN.searchFieldText
       ? 'Search your site' : text.searchFieldText;
     queryLabel.textContent = fieldText;
@@ -669,6 +672,8 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     summaryMode.value = design.summaryMode;
     summaryPlacement.value = design.summaryPlacement;
     paginationModeInput.value = design.paginationMode;
+    paginationPlacementInput.value = design.paginationPlacement;
+    paginationPlacementInput.closest('[data-pagination-placement-field]').hidden = design.paginationMode !== 'paged';
     textInputs.loadMoreText.closest('[data-load-more-text-field]').hidden = design.paginationMode !== 'loadMore';
     if (syncPaginationMode() && search.dataLayer.searchObject.query && experiencePanel.hidden && !customerPreview.active) {
       runSearch(search.dataLayer.searchObject.query, false, true);
@@ -1323,6 +1328,10 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     design.paginationMode = paginationModeInput.value === 'loadMore' ? 'loadMore' : 'paged';
     updateDesign();
   });
+  paginationPlacementInput.addEventListener('change', () => {
+    design.paginationPlacement = readPaginationPlacement(paginationPlacementInput.value);
+    updateDesign();
+  });
   summaryMode.addEventListener('change', () => {
     design.summaryMode = summaryMode.value;
     updateDesign();
@@ -1477,7 +1486,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     if (event.target.closest('#lab-facets, #lab-sort-order')) visitorSearchIntent();
   }, true);
   demoOutput.addEventListener('click', event => {
-    if (event.target.closest('#lab-pagination button, #lab-pagination a')) visitorSearchIntent();
+    if (event.target.closest('[data-pagination-focus] button, [data-pagination-focus] a')) visitorSearchIntent();
   }, true);
   form.addEventListener('submit', function (event) {
     event.preventDefault();

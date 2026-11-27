@@ -20,6 +20,11 @@
   </div>
   <p data-exp-empty hidden></p>
   <p data-exp-sort-hint hidden>This Search Profile hasn’t provided sort options.</p>
+  <nav data-exp-pages-above data-pager-position="above" aria-label="Search result pages above results" hidden>
+    <button type="button" data-page-step="previous">Previous page</button>
+    <button type="button" data-page-step="next">Next page</button>
+    <span tabindex="-1" data-page-range></span>
+  </nav>
   <div class="experience-results">
     <aside data-exp-filter-panel aria-label="Filter results" hidden>
       <button type="button" data-exp-filter-toggle aria-controls="lab-exp-facets" aria-expanded="false">Filters</button>
@@ -27,6 +32,10 @@
     </aside>
     <ul></ul>
   </div>
-  <div data-exp-pages hidden><button type="button" data-exp-prev>Previous page</button> <button type="button" data-exp-next>Next page</button><span tabindex="-1" data-exp-loaded></span></div>
+  <nav data-exp-pages data-pager-position="below" aria-label="Search result pages" hidden>
+    <button type="button" data-exp-prev data-page-step="previous">Previous page</button>
+    <button type="button" data-exp-next data-page-step="next">Next page</button>
+    <span tabindex="-1" data-exp-loaded data-page-range></span>
+  </nav>
 </div>
 <p data-exp-source></p>

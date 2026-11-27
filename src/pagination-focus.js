@@ -106,3 +106,61 @@ export function setupPaginationFocus(host, getSearch) {
     host.removeEventListener('focusout', leavePagination);
   };
 }
+
+/** @param {{ paginationMode?: string, paginationPlacement?: string }} design @param {string} position */
+export function showPaginationAt(design, position) {
+  const placement = design.paginationMode === 'loadMore' ? 'below' : design.paginationPlacement || 'below';
+  return placement === 'both' || placement === position;
+}
+
+/**
+ * @param {HTMLElement} element
+ * @returns {{ element: HTMLElement, range: HTMLElement, previous: HTMLButtonElement, next: HTMLButtonElement }}
+ */
+export function pageControls(element) {
+  return {
+    element,
+    range: element.querySelector('[data-page-range]'),
+    previous: element.querySelector('[data-page-step="previous"]'),
+    next: element.querySelector('[data-page-step="next"]'),
+  };
+}
+
+// The existing pager renders the page range and available actions. The upper
+// copy uses the same search controller and restores focus within its own host.
+export function setupPaginationPlacement(above, below, getDesign, getSearch) {
+  const copy = above.querySelector('[data-page-copy]');
+  const stopAbove = setupPaginationFocus(above, getSearch);
+  const stopBelow = setupPaginationFocus(below, getSearch);
+  let markup;
+
+  function refresh() {
+    const design = getDesign();
+    const source = below.querySelector('nav:has([data-page-range])');
+    const hiddenParent = source?.closest('[hidden]');
+    const available = source && (!hiddenParent || hiddenParent === below || !below.contains(hiddenParent));
+    const showAbove = showPaginationAt(design, 'above') && Boolean(available);
+    const showBelow = showPaginationAt(design, 'below');
+    source?.setAttribute('aria-label', showAbove && showBelow ? 'Search result pages below results' : 'Search result pages');
+    const next = showAbove ? source.outerHTML : '';
+    if (markup !== next) {
+      markup = next;
+      if (showAbove) {
+        const nav = source.cloneNode(true);
+        nav.setAttribute('aria-label', 'Search result pages above results');
+        copy.replaceChildren(nav);
+      } else copy.replaceChildren();
+    }
+    above.toggleAttribute('hidden', !showAbove);
+    below.toggleAttribute('hidden', !showBelow);
+    for (const pager of [above, below]) {
+      pager.querySelector('[data-page-announcement]').setAttribute('aria-live', design.summaryMode === 'range' ? 'off' : 'polite');
+    }
+  }
+
+  const observer = new MutationObserver(refresh);
+  observer.observe(below, { childList: true, characterData: true, subtree: true, attributes: true,
+    attributeFilter: ['hidden', 'disabled', 'data-page-start'] });
+  refresh();
+  return { refresh, destroy() { observer.disconnect(); stopAbove(); stopBelow(); } };
+}

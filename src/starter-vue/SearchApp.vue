@@ -18,7 +18,7 @@ import { setupStarterServices } from './starter-services.js';
 import { createCustomerSuggestionSource } from './customer-suggestions.js';
 import { sampleSuggestionSource, setupSearchSuggestions } from './suggestions.js';
 import { getAnalyticsSettings, setupResultTracking } from './result-tracking.js';
-import { setupPaginationFocus } from './pagination-focus.js';
+import { setupPaginationPlacement } from './pagination-focus.js';
 import { createResultPages } from './result-pages.js';
 import { formatResultSummary } from './result-summary.js';
 import { decodedSort, encodedSort, createSortController, readResponseSortOptions, readSortOptions } from './sorting.js';
@@ -42,6 +42,7 @@ const filterHost = ref(null);
 let facetLimits;
 const queryField = ref(null);
 const pagination = ref(null);
+const abovePagination = ref(null);
 const resultHost = ref(null);
 const answerHost = ref(null);
 let services;
@@ -165,8 +166,8 @@ watch(resultHost, (host, _, onCleanup) => {
   }
 }, { flush: 'post' });
 
-watch(pagination, (host, _, onCleanup) => {
-  if (host) onCleanup(setupPaginationFocus(host, () => api));
+watch([abovePagination, pagination], ([above, below], _, onCleanup) => {
+  if (above && below) onCleanup(setupPaginationPlacement(above, below, () => design, () => api).destroy);
 }, { flush: 'post' });
 
 onBeforeUnmount(() => {
@@ -244,6 +245,10 @@ onBeforeUnmount(() => {
           </SearchstaxFacetsWidget>
         </aside>
         <div ref="resultHost">
+          <div ref="abovePagination" data-pager-position="above" tabindex="-1" role="group" aria-label="Pagination above results" hidden>
+            <div data-page-copy></div>
+            <span class="search-starter__sr-only" role="status" data-page-announcement></span>
+          </div>
           <SearchstaxResultWidget renderMethod="pagination" :resultsPerPage="design.resultsPerPage">
             <template #results="{ searchResults }">
               <div class="searchstax-search-results">
@@ -264,7 +269,7 @@ onBeforeUnmount(() => {
               <p class="search-starter__no-results">{{ design.noResultsText }}</p>
             </template>
           </SearchstaxResultWidget>
-          <div ref="pagination" tabindex="-1" role="group" aria-label="Search result pagination">
+          <div ref="pagination" data-pager-position="below" tabindex="-1" role="group" aria-label="Search result pagination">
             <SearchstaxPaginationWidget>
               <template #pagination="{ paginationData }">
                 <nav v-if="design.paginationMode !== 'loadMore' && paginationData?.totalResults" class="search-starter__pagination" aria-label="Search result pages">

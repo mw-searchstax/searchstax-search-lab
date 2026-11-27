@@ -354,6 +354,14 @@
                   <label for="lab-page-size">Results per page</label>
                   <select id="lab-page-size"></select>
                 </div>
+                <div class="search-lab__field" data-pagination-placement-field>
+                  <label for="lab-pagination-placement">Pagination placement</label>
+                  <select id="lab-pagination-placement">
+                    <option value="above">Above results</option>
+                    <option value="below" selected>Below results</option>
+                    <option value="both">Both</option>
+                  </select>
+                </div>
                 <div class="search-lab__field search-lab__text-field">
                   <label for="lab-field-text">Search field text</label>
                   <input id="lab-field-text" type="text" value="Search the website" aria-describedby="lab-field-text-help">
@@ -655,10 +663,14 @@
                       </div>
                     </aside>
                     <div class="search-lab__results-column">
+                      <div data-pagination-focus data-pager-position="above" tabindex="-1" role="group" aria-label="Pagination above results" hidden>
+                        <div data-page-copy></div>
+                        <span class="search-lab__sr-only" role="status" data-page-announcement></span>
+                      </div>
                       <div data-lab-results-content>
                         <div id="lab-results"></div>
                       </div>
-                      <div data-pagination-focus tabindex="-1" role="group" aria-label="Search result pagination">
+                      <div data-pagination-focus data-pager-position="below" tabindex="-1" role="group" aria-label="Search result pagination">
                         <div id="lab-pagination"></div>
                         <span class="search-lab__sr-only" role="status" data-page-announcement></span>
                       </div>
@@ -691,11 +703,16 @@
                       </div>
                     </aside>
                     <div class="search-lab__results-column">
+                      <nav class="search-lab__pagination" aria-label="Search result pages above results" data-pager-position="above" hidden>
+                        <span tabindex="-1" data-page-range></span>
+                        <button type="button" data-page-step="previous">Previous</button>
+                        <button type="button" data-page-step="next">Next</button>
+                      </nav>
                       <div class="searchstax-search-results" data-customer-grid></div>
-                      <nav class="search-lab__pagination" aria-label="Search result pages" data-customer-pager hidden>
-                        <span tabindex="-1" data-customer-range></span>
-                        <button type="button" data-customer-prev>Previous</button>
-                        <button type="button" data-customer-next>Next</button>
+                      <nav class="search-lab__pagination" aria-label="Search result pages" data-customer-pager data-pager-position="below" hidden>
+                        <span tabindex="-1" data-customer-range data-page-range></span>
+                        <button type="button" data-customer-prev data-page-step="previous">Previous</button>
+                        <button type="button" data-customer-next data-page-step="next">Next</button>
                       </nav>
                     </div>
                   </div>

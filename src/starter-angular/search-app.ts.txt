@@ -12,7 +12,7 @@ import { setupStarterServices } from './starter-services.js';
 import { createCustomerSuggestionSource } from './customer-suggestions.js';
 import { sampleSuggestionSource, setupSearchSuggestions } from './suggestions.js';
 import { getAnalyticsSettings, setupResultTracking } from './result-tracking.js';
-import { setupPaginationFocus } from './pagination-focus.js';
+import { setupPaginationPlacement } from './pagination-focus.js';
 import { createResultPages } from './result-pages.js';
 import { formatResultSummary } from './result-summary.js';
 import { decodedSort, encodedSort, createSortController, readResponseSortOptions, readSortOptions } from './sorting.js';
@@ -51,6 +51,7 @@ export class SearchApp implements AfterViewInit, OnDestroy {
   private facetLimits?: ReturnType<typeof setupFacetLimits>;
   @ViewChild('resultHost') private resultHost!: ElementRef<HTMLDivElement>;
   @ViewChild('pagination') private pagination!: ElementRef<HTMLDivElement>;
+  @ViewChild('abovePagination') private abovePagination!: ElementRef<HTMLDivElement>;
   @ViewChild('answerHost') private answerHost!: ElementRef<HTMLDivElement>;
   readonly connection = connection;
   readonly analytics = getAnalyticsSettings(connection);
@@ -89,7 +90,7 @@ export class SearchApp implements AfterViewInit, OnDestroy {
     if (!connection.searchURL || !connection.searchAuth) return;
     if (this.filterHost) this.facetLimits = setupFacetLimits(this.filterHost.nativeElement, () => design);
     this.stopImages = watchCardThumbnails(this.resultHost.nativeElement);
-    this.stopPaginationFocus = setupPaginationFocus(this.pagination.nativeElement, () => this.api);
+    this.stopPaginationFocus = setupPaginationPlacement(this.abovePagination.nativeElement, this.pagination.nativeElement, () => design, () => this.api).destroy;
     queueMicrotask(() => this.start());
   }
 

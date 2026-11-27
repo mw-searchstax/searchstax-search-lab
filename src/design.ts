@@ -61,6 +61,7 @@ export type DesignSettings = {
   showSmartAnswersSample: boolean;
   samplePromotions: 'off' | 'indexed' | 'external' | 'both';
   paginationMode: 'paged' | 'loadMore';
+  paginationPlacement: 'above' | 'below' | 'both';
   loadMoreText: string;
   resultsPerPage: typeof PAGE_SIZES[number];
   color: string;
@@ -114,6 +115,7 @@ export const DEFAULT_DESIGN: Readonly<DesignSettings> = {
   showSmartAnswersSample: true,
   samplePromotions: 'off',
   paginationMode: 'paged',
+  paginationPlacement: 'below',
   loadMoreText: 'Load more',
   resultsPerPage: 10,
   color: '#263f58',
@@ -147,6 +149,10 @@ export function readFacetMode(value: string | null): DesignSettings['facetMode']
 
 export function readPageSize(value: string | null): DesignSettings['resultsPerPage'] {
   return PAGE_SIZES.find(size => String(size) === value) ?? DEFAULT_DESIGN.resultsPerPage;
+}
+
+export function readPaginationPlacement(value: string | null): DesignSettings['paginationPlacement'] {
+  return value === 'above' || value === 'both' ? value : 'below';
 }
 
 export function readSamplePromotions(value: string | null): DesignSettings['samplePromotions'] {
@@ -228,6 +234,7 @@ export function readDesignParams(params: URLSearchParams, allowFictionalPreview 
     showSmartAnswersSample: params.get('lab_answer_sample') !== 'off',
     samplePromotions: readSamplePromotions(params.get('lab_promotions')),
     paginationMode: params.get('lab_pagination') === 'loadMore' ? 'loadMore' : 'paged',
+    paginationPlacement: readPaginationPlacement(params.get('lab_pagination_placement')),
     loadMoreText: resolveSearchText(params.get('lab_load_more_text'), DEFAULT_DESIGN.loadMoreText),
     resultsPerPage: readPageSize(params.get('lab_page_size')),
     color: isHexColor(color) ? color : DEFAULT_DESIGN.color,
@@ -313,6 +320,7 @@ export function writeDesignParams(params: URLSearchParams, design: DesignSetting
     params.set('lab_promotions', design.samplePromotions);
   }
   if (design.paginationMode === 'loadMore') params.set('lab_pagination', design.paginationMode);
+  if (design.paginationPlacement !== 'below') params.set('lab_pagination_placement', design.paginationPlacement);
   if (design.loadMoreText !== DEFAULT_DESIGN.loadMoreText) params.set('lab_load_more_text', design.loadMoreText);
   if (design.resultsPerPage !== DEFAULT_DESIGN.resultsPerPage) {
     params.set('lab_page_size', String(design.resultsPerPage));

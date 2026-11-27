@@ -1,4 +1,5 @@
 import { setupPublishedFacets, type FacetSelection } from './published-facets.js';
+import { pageControls, showPaginationAt } from './pagination-focus.js';
 import { facetGroupScope, selectedFacetGroups, visibleFacetFilters } from './facet-groups.js';
 import { DEFAULT_DESIGN, type DesignSettings } from './design.js';
 import { setupProfileFeatures, orderDirectoryResults, spanishPromotionQuery } from './profile-features.js';
@@ -118,10 +119,10 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
   const summaryToolbar = status.parentElement!;
   let resultWindow: ResultWindow | undefined;
   const input = field<HTMLInputElement>('input[type="search"]');
-  const previous = field<HTMLButtonElement>('[data-exp-prev]');
-  const next = field<HTMLButtonElement>('[data-exp-next]');
   const pages = field('[data-exp-pages]');
-  const loadedStatus = field('[data-exp-loaded]');
+  const bottomPager = pageControls(pages);
+  const pagers = [pageControls(field('[data-exp-pages-above]')), bottomPager];
+  let hasPager = false;
   const resultsGrid = list.parentElement;
   const sortToolbar = field('[data-exp-sort]').parentElement;
   const loadMore = document.createElement('button');
@@ -183,6 +184,19 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
     } else if (sortField.parentElement !== sortToolbar) sortToolbar?.append(sortField);
   }
 
+  function updatePagerPlacement() {
+    const es = spanish();
+    const showAbove = showPaginationAt(options, 'above');
+    const showBelow = showPaginationAt(options, 'below');
+    for (const { element } of pagers) {
+      const above = element.dataset.pagerPosition === 'above';
+      element.hidden = !hasPager || !(above ? showAbove : showBelow);
+      element.setAttribute('aria-label', above ? (es ? 'Paginación superior' : 'Search result pages above results')
+        : showAbove && showBelow ? (es ? 'Paginación inferior' : 'Search result pages below results')
+          : (es ? 'Páginas de resultados' : 'Search result pages'));
+    }
+  }
+
   function updatePresentation() {
     const es = spanish();
     placeResultSummary(status, options.summaryPlacement, summaryToolbar, pages);
@@ -198,8 +212,11 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
     empty.textContent = es && options.noResultsText === DEFAULT_DESIGN.noResultsText ? 'No hay coincidencias. Prueba otra búsqueda o quita un filtro.' : options.noResultsText;
     if (mappingNotice) empty.textContent = mappingNotice;
     empty.hidden = !noMatches && !mappingNotice;
-    previous.textContent = es ? 'Página anterior' : 'Previous page';
-    next.textContent = es ? 'Página siguiente' : 'Next page';
+    for (const { previous, next } of pagers) {
+      previous.textContent = es ? 'Página anterior' : 'Previous page';
+      next.textContent = es ? 'Página siguiente' : 'Next page';
+    }
+    updatePagerPlacement();
     loadMore.textContent = es && options.loadMoreText === DEFAULT_DESIGN.loadMoreText ? 'Cargar más' : options.loadMoreText;
     const selectedCount = Array.from(filters.values()).reduce((count, values) => count + values.length, 0);
     filterButton.textContent = (es ? 'Filtros' : 'Filters') + (selectedCount ? ' (' + selectedCount + ')' : '');
@@ -245,11 +262,15 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
     resultWindow = undefined;
     updatePresentation();
     features.showExternalPromotions([]);
-    let append = paginationMode() === 'loadMore' && anchor === pages && list.childElementCount > 0;
-    const keepPagedResults = paginationMode() === 'paged' && anchor === pages;
+    const fromPager = pagers.some(({ element }) => anchor === element);
+    let append = paginationMode() === 'loadMore' && fromPager && list.childElementCount > 0;
+    const keepPagedResults = paginationMode() === 'paged' && fromPager;
     if (!append && !keepPagedResults) list.replaceChildren();
     if (!options.filters || !query || app && (!app.endpoint || !app.token)) showFacets([]);
-    if (anchor !== pages) pages.hidden = true;
+    if (!fromPager) {
+      hasPager = false;
+      updatePagerPlacement();
+    }
     if (!active.profile) {
       status.textContent = active.language ? 'No profiles are included for ' + languageName(active.language) + '.'
         : 'The default profile’s language is unknown.';
@@ -335,19 +356,26 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       status.textContent = formatResultSummary(options.summaryMode, resultWindow);
       const moreAvailable = start + rows < total;
       const loadingMore = paginationMode() === 'loadMore';
-      const focusedLoadMore = document.activeElement === loadMore;
-      loadedStatus.textContent = loadingMore && append && !moreAvailable
-        ? (es ? 'Se cargaron los ' + total + ' resultados' : 'All ' + total + ' results loaded') : '';
-      previous.hidden = loadingMore;
-      next.hidden = loadingMore;
-      previous.disabled = start === 0;
-      next.disabled = moreAvailable ? false : true;
+      const focused = document.activeElement;
+      const rangeText = (start + 1) + '–' + Math.min(start + rows, total) +
+        (es ? ' de ' + total + ' resultados' : ' of ' + total + ' results');
       loadMore.hidden = !loadingMore || !moreAvailable;
-      pages.hidden = total === 0 || (total <= rows && !loadingMore);
-      if (focusedLoadMore) (loadMore.hidden ? loadedStatus : loadMore).focus({ preventScroll: true });
+      hasPager = total > 0 && (total > rows || loadingMore);
+      updatePagerPlacement();
+      for (const { range, previous, next } of pagers) {
+        range.textContent = loadingMore ? '' : rangeText;
+        previous.hidden = next.hidden = loadingMore;
+        previous.disabled = start === 0;
+        next.disabled = !moreAvailable;
+        if ((focused === previous && previous.disabled) || (focused === next && next.disabled)) range.focus();
+      }
+      if (loadingMore && append && !moreAvailable) {
+        bottomPager.range.textContent = es ? 'Se cargaron los ' + total + ' resultados' : 'All ' + total + ' results loaded';
+      }
+      if (focused === loadMore) (loadMore.hidden ? bottomPager.range : loadMore).focus({ preventScroll: true });
     } catch (error) {
       if (pending !== request) return;
-      status.textContent = anchor === pages ? (es ? 'Resultados de la página anterior.' : 'Showing the previous page.') : '';
+      status.textContent = fromPager ? (es ? 'Resultados de la página anterior.' : 'Showing the previous page.') : '';
       const message = error instanceof CustomerSearchError ? error.message
         : es ? 'No se pudo cargar la búsqueda. Inténtalo de nuevo.' : 'Couldn’t load this search. Try again.';
       recovery.error(message, es ? 'Volver a intentar' : 'Retry search');
@@ -440,8 +468,18 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
     void search();
   }
   field('form').addEventListener('submit', event => { event.preventDefault(); submit(input.value); });
-  previous.addEventListener('click', () => { start = Math.max(0, displayedStart - options.resultsPerPage); void search(pages, previous); });
-  next.addEventListener('click', () => { start = displayedStart + options.resultsPerPage; void search(pages, next); });
+  for (const { element, previous, next } of pagers) {
+    previous.addEventListener('click', () => {
+      if (pending) return;
+      start = Math.max(0, displayedStart - options.resultsPerPage);
+      void search(element, previous);
+    });
+    next.addEventListener('click', () => {
+      if (pending) return;
+      start = displayedStart + options.resultsPerPage;
+      void search(element, next);
+    });
+  }
   loadMore.addEventListener('click', () => {
     if (pending || paginationMode() !== 'loadMore') return;
     start = displayedStart + options.resultsPerPage;

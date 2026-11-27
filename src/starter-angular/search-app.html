@@ -100,6 +100,10 @@
         </aside>
       }
       <div #resultHost>
+        <div #abovePagination data-pager-position="above" tabindex="-1" role="group" aria-label="Pagination above results" hidden>
+          <div data-page-copy></div>
+          <span class="search-starter__sr-only" role="status" data-page-announcement></span>
+        </div>
         <app-searchstax-results renderMethod="pagination" [resultsPerPage]="design.resultsPerPage"
           [resultsTemplate]="resultCards" [noResultsTemplate]="emptyState">
           <ng-template #resultCards let-items="searchResults">
@@ -129,7 +133,7 @@
             <p class="search-starter__no-results">{{ design.noResultsText }}</p>
           </ng-template>
         </app-searchstax-results>
-        <div #pagination tabindex="-1" role="group" aria-label="Search result pagination">
+        <div #pagination data-pager-position="below" tabindex="-1" role="group" aria-label="Search result pagination">
           <app-searchstax-search-pagination [templateOverride]="pageControls" [infiniteScrollTemplateOverride]="loadMoreControls">
             <ng-template #pageControls let-page="paginationData">
               @if (page?.totalResults) {
