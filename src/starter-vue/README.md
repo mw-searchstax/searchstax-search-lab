@@ -40,7 +40,7 @@ Result links open with tracking off by default. To enable search and result-clic
 
 ### Thumbnail Descriptions
 
-To show informative thumbnails, enable thumbnails in the design and map the image URL field to **Thumbnail**. Add the indexed description as a Return Field with **No mapping** in **Results Fields**. Then set `connection.thumbnailAltField` in `src/config.js` to that field’s name, such as `image_alt`. Use a description that conveys the information the image adds. The starter omits a connected thumbnail when its description is missing. Set `thumbnailsWithoutAltAreDecorative` to `true` only if every thumbnail without a description is decorative or repeats the nearby text. Those images use empty alt text. [Decorative images](https://www.w3.org/WAI/tutorials/images/decorative/)
+Result cards display a mapped **Thumbnail** beside or above the result text. The starter treats these images as decorative by default and uses empty alt text. If an image adds information, return its description as an additional field in **Results Fields**. In `src/config.js`, set `connection.thumbnailAltField` to that field’s name and `connection.thumbnailsWithoutAltAreDecorative` to `false`. The starter then omits images that lack a description.
 
 Browser code is visible to visitors. Use a server-side proxy for tokens that need to stay private. [Endpoint and token guidance](https://support.searchstax.com/hc/en-us/articles/39440547272077-Hide-Tokens-and-Endpoints-in-UI-Kits)
 

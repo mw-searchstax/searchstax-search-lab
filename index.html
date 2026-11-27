@@ -300,6 +300,20 @@
               <details class="search-lab__disclosure" id="lab-advanced">
                 <summary>Advanced Options</summary>
                 <p>These controls need custom templates, layout, or search logic in your implementation.</p>
+                <div class="search-lab__field">
+                  <label for="lab-thumbnail-placement">Thumbnail placement</label>
+                  <select id="lab-thumbnail-placement"><option value="above">Above text</option><option value="leading">Beside text</option></select>
+                </div>
+                <div class="search-lab__field">
+                  <label for="lab-metadata-order">Metadata order</label>
+                  <select id="lab-metadata-order" aria-describedby="lab-metadata-order-help"></select>
+                  <p id="lab-metadata-order-help">Choose a field to move it within the card’s metadata.</p>
+                  <div class="search-lab__actions">
+                    <button class="lt-btn lt-btn--secondary" type="button" id="lab-metadata-up">Move earlier</button>
+                    <button class="lt-btn lt-btn--secondary" type="button" id="lab-metadata-down">Move later</button>
+                    <button class="lt-btn lt-btn--secondary" type="button" id="lab-metadata-reset">Use profile order</button>
+                  </div>
+                </div>
                 <div class="search-lab__field" data-sort-setting>
                   <label for="lab-sort-placement">Sort placement</label>
                   <select id="lab-sort-placement"><option value="above">Above results</option><option value="below">Below results</option></select>
@@ -315,10 +329,6 @@
                 <div class="search-lab__field search-lab__field--inline" data-lab-fictional-only>
                   <label for="lab-descriptions">Show result descriptions</label>
                   <input id="lab-descriptions" type="checkbox" checked>
-                </div>
-                <div class="search-lab__field search-lab__field--inline" data-lab-fictional-only>
-                  <label for="lab-thumbnails">Show sample thumbnails</label>
-                  <input id="lab-thumbnails" type="checkbox">
                 </div>
                 <div class="search-lab__field">
                   <label for="lab-page-size">Results per page</label>
@@ -368,6 +378,45 @@
               </details>
             </div>
             <div id="lab-appearance-panel" role="tabpanel" aria-labelledby="lab-appearance-tab" tabindex="0" hidden>
+              <details class="search-lab__disclosure">
+                <summary>Result cards</summary>
+                <div class="search-lab__card-settings">
+                  <div class="search-lab__field">
+                    <label for="lab-thumbnail-size">Thumbnail size</label>
+                    <select id="lab-thumbnail-size"><option value="small">Small</option><option value="standard">Standard</option><option value="large">Large</option></select>
+                    <p id="lab-thumbnail-hint" hidden>These results don’t include thumbnails.</p>
+                  </div>
+                  <div class="search-lab__field search-lab__field--inline" hidden>
+                    <label for="lab-thumbnails">Show sample thumbnails</label>
+                    <input id="lab-thumbnails" type="checkbox">
+                  </div>
+                </div>
+                <div class="search-lab__card-settings">
+                  <div class="search-lab__field">
+                    <label for="lab-ribbon-shape">Ribbon shape</label>
+                    <select id="lab-ribbon-shape"><option value="ribbon">Ribbon</option><option value="pill">Pill</option><option value="square">Square</option></select>
+                  </div>
+                  <div class="search-lab__field search-lab__field--inline">
+                    <label for="lab-ribbon-accent">Use accent color</label>
+                    <input type="checkbox" id="lab-ribbon-accent" aria-controls="lab-ribbon-custom" checked>
+                  </div>
+                  <div id="lab-ribbon-custom" class="search-lab__field search-lab__field--inline" hidden>
+                    <label for="lab-ribbon-color">Custom ribbon color</label>
+                    <input type="color" id="lab-ribbon-color">
+                  </div>
+                </div>
+                <div class="search-lab__card-settings">
+                  <div class="search-lab__field" id="lab-metadata-choice" hidden>
+                    <label for="lab-metadata-field">Metadata field</label>
+                    <select id="lab-metadata-field"></select>
+                  </div>
+                  <div class="search-lab__field search-lab__text-field" id="lab-metadata-edit" hidden>
+                    <label id="lab-metadata-caption" for="lab-metadata-label">Metadata label</label>
+                    <input id="lab-metadata-label" type="text">
+                  </div>
+                  <p class="search-lab__help" id="lab-metadata-empty">Search for a result with metadata to edit its labels.</p>
+                </div>
+              </details>
               <details class="search-lab__disclosure">
                 <summary>Search feedback</summary>
                 <div class="search-lab__field">

@@ -16,6 +16,7 @@ import suggestionsCSS from './sample-suggestions.css?raw';
 import suggestionsJS from './sample-suggestions.js?raw';
 import resultTrackingJS from './result-tracking.js?raw';
 import resultPagesJS from './result-pages.js?raw';
+import cardMetadataJS from './card-metadata.ts?starter-js';
 import resultSummaryJS from './result-summary.ts?starter-js';
 import paginationFocusJS from './pagination-focus.js?raw';
 import contentLanguageJS from './content-language.js?raw';
@@ -212,6 +213,7 @@ ${variables}
 
 function starterFeatures(design: DesignSettings) {
   return {
+    cardMetadata: design.cardMetadata,
     relatedPlacement: design.relatedPlacement,
     showFilters: design.filters,
     facetMode: design.facetMode,
@@ -276,7 +278,9 @@ function createProfileStarter(framework: Framework, design: DesignSettings, expe
     'src/profile-experiences.js': profileRuntime,
     'src/result-summary.js': resultSummaryJS,
     'src/app-configuration.js': appConfigurationRuntime,
+    'src/card-metadata.js': cardMetadataJS,
     'src/result-card.js': cardRuntime,
+    'src/thumbnail-alt.js': thumbnailAltJS,
     'src/search-recovery.js': recoveryRuntime,
     'src/profile-features.js': profileFeaturesJS,
     'src/design.js': designRuntime,
@@ -291,7 +295,7 @@ function createProfileStarter(framework: Framework, design: DesignSettings, expe
     'src/content-language.js': contentLanguageJS,
     'src/web-url.js': webURLJS,
     'src/config.js': `export const settings = ${JSON.stringify({ ...profileExperience, navigation: design, logoURL: design.logoURL,
-      thumbnails: profileExperience.source === 'demo' ? Object.fromEntries(Object.entries(demoThumbnails).map(([url, image]) => [url, image.source])) : {} }, null, 2)};
+      thumbnails: profileExperience.source === 'demo' || (recordedDemo && design.showThumbnails) ? Object.fromEntries(Object.entries(demoThumbnails).map(([url, image]) => [url, image.source])) : {} }, null, 2)};
 
 // Use your app’s HTTPS Select endpoint and a browser-safe read-only token.
 export const connection = ${JSON.stringify(profileConnection)};
@@ -340,6 +344,8 @@ In **src/config.js**, set **settings.source** to **app**. Enter the HTTPS Select
 
 To use optional services in your own app, add the HTTPS Auto-Suggest endpoint as **connection.suggestEndpoint**, the streaming Answer endpoint as **connection.answerEndpoint**, or the Related Searches endpoint and Discovery key as **connection.relatedURL** and **connection.discoveryKey**. Use credentials intended for browser use. Set **settings.entitlements** from the app’s entitlements. For each entry in **settings.profiles**, use the published **relatedSearches** setting for its language and the **smartAnswers** setting for its profile. Each service requires its entitlement and published setting. Related Searches requests use the search phrase and language. Smart Answers requests also use the selected profile.
 
+Mapped thumbnails use empty alt text by default. If the image adds information, return its description as a Results Field. Set **connection.thumbnailAltField** to its field name in **src/config.js** and **connection.thumbnailsWithoutAltAreDecorative** to **false** to omit images without descriptions.
+
 Live results use the Search API. Tracking is off in this starter.
 `;
   const archive = zipSync(Object.fromEntries(Object.entries(entries).map(([name, content]) => [name, strToU8(content)])));
@@ -383,7 +389,7 @@ export function createStarterZip(
 ): Blob {
   if (connection.experience) return createProfileStarter('javascript', design, connection.experience, !connection.customer && connection.experience.source === 'app');
   const config = JSON.stringify({
-    ...ordinaryConnection(connection),
+    ...ordinaryConnection(connection), thumbnailAltField: '', thumbnailsWithoutAltAreDecorative: true,
     ...starterFeatures(design),
   }, null, 2);
   const htmlValues = {
@@ -423,8 +429,10 @@ export function createStarterZip(
     'demo-content.js': strToU8(demoContentJS),
     'content-language.js': strToU8(contentLanguageJS),
     'web-url.js': strToU8(webURLJS),
+    'card-metadata.js': strToU8(cardMetadataJS),
     'result-card.js': strToU8(cardRuntime),
     'starter-passages.js': strToU8(starterPassages),
+    'thumbnail-alt.js': strToU8(thumbnailAltJS),
     'customer-answers.js': strToU8(customerAnswersJS),
     'customer-suggestions.js': strToU8(customerSuggestions),
     'suggestions.js': strToU8(suggestionsJS),
@@ -465,7 +473,7 @@ export const demo = ${JSON.stringify(demo, null, 2)};
 
 // Replace these values with your app’s browser-safe settings.
 export const connection = ${JSON.stringify({
-  ...ordinaryConnection(selected), initialQuery: '', thumbnailAltField: '', thumbnailsWithoutAltAreDecorative: false,
+  ...ordinaryConnection(selected), initialQuery: '', thumbnailAltField: '', thumbnailsWithoutAltAreDecorative: true,
 }, null, 2)};
 
 export const design = ${JSON.stringify(settings, null, 2)};
@@ -487,6 +495,7 @@ export const design = ${JSON.stringify(settings, null, 2)};
     'src/content-language.js': strToU8(contentLanguageJS),
     'src/web-url.js': strToU8(webURLJS),
     'src/facet-limits.js': strToU8(facetLimits),
+    'src/card-metadata.js': strToU8(cardMetadataJS),
     'src/result-card.js': strToU8(cardRuntime),
     'src/starter-passages.js': strToU8(starterPassages),
     'src/customer-answers.js': strToU8(customerAnswersJS),

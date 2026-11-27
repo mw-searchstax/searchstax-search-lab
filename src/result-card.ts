@@ -1,18 +1,21 @@
+import { thumbnailAlt } from './thumbnail-alt.js';
 import { webURL } from './web-url.js';
+import { metadataLabel, metadataScope, orderedMetadata, type MetadataStyle, type MetadataField } from './card-metadata.js';
 
 export type ResultField = { name: string; result_card?: string | null; title?: string };
-export type CardValue = { role: string; label: string; value: string; highlighted: boolean };
-export type ResultCard = { url: string; thumbnail: string; values: CardValue[]; promoted: boolean };
+export type CardValue = MetadataField & { role: string; label: string; value: string; highlighted: boolean };
+export type ThumbnailPolicy = { thumbnailAltField?: string; thumbnailsWithoutAltAreDecorative?: boolean };
+export type ResultCard = { scope: string; url: string; thumbnail: string; alt?: string; sampleThumbnail?: string; values: CardValue[]; promoted: boolean };
 
 function displayText(value: unknown, separator = ', '): string {
   if (Array.isArray(value)) return value.map(item => displayText(item)).filter(Boolean).join(separator);
   return ['number', 'string', 'boolean'].includes(typeof value) ? String(value) : '';
 }
 
-export function mapResultCard(doc: Record<string, unknown>, fields: ResultField[], highlights?: Record<string, unknown>, unit = ''): ResultCard {
-  const card: ResultCard = { url: '', thumbnail: '', values: [], promoted: doc['[elevated]'] === true };
+export function mapResultCard(doc: Record<string, unknown>, fields: ResultField[], highlights?: Record<string, unknown>, unit = '', scope = ''): ResultCard {
+  const card: ResultCard = { scope, url: '', thumbnail: '', values: [], promoted: doc['[elevated]'] === true };
   const mapped = new Set<string>();
-  for (const field of fields) {
+  for (const [position, field] of fields.entries()) {
     if (!field || typeof field.name !== 'string' || (!Object.hasOwn(doc, field.name) && !Object.hasOwn(highlights ?? {}, field.name))) continue;
     const role = field.result_card ?? '';
     if (role && mapped.has(role)) continue;
@@ -29,7 +32,7 @@ export function mapResultCard(doc: Record<string, unknown>, fields: ResultField[
       if (!Number.isFinite(Number(raw))) continue;
       value = [Math.floor(Number(raw)), unit].filter(value => value !== '').join(' ');
     }
-    card.values.push({ role, label: typeof field.title === 'string' ? field.title : '', value, highlighted: !!hit });
+    card.values.push({ name: field.name, position, role, label: typeof field.title === 'string' ? field.title : '', value, highlighted: !!hit });
   }
   return card;
 }
@@ -40,7 +43,7 @@ export type ResultResponse = {
   highlighting?: Record<string, Record<string, unknown>>;
 };
 
-export function resultCards(payload: ResultResponse, documents: Record<string, unknown>[], configured?: boolean) {
+export function resultCards(payload: ResultResponse, documents: Record<string, unknown>[], configured?: boolean, profile?: string, language?: string, policy?: ThumbnailPolicy) {
   const fields = payload.metadata?.results;
   const mappingsKnown = Array.isArray(fields);
   const params = payload.responseHeader?.params;
@@ -51,9 +54,16 @@ export function resultCards(payload: ResultResponse, documents: Record<string, u
     const key = params?.uniqueId;
     const id = key && doc?.[key];
     const hits = highlighting === true && (typeof id === 'string' || typeof id === 'number') ? payload.highlighting?.[id] : undefined;
-    return mapResultCard(doc ?? {}, mappingsKnown ? fields : [], hits, payload.metadata?.locationSearch?.unit);
+    const card = mapResultCard(doc ?? {}, mappingsKnown ? fields : [], hits, payload.metadata?.locationSearch?.unit,
+      metadataScope(profile || params?.model, language || params?.language));
+    if (card.thumbnail) {
+      const alt = thumbnailAlt(doc, policy?.thumbnailAltField, policy?.thumbnailsWithoutAltAreDecorative ?? true);
+      if (alt === null) card.thumbnail = '';
+      else card.alt = alt;
+    }
+    return card;
   });
-  return { cards, mappingsKnown, highlighting };
+  return { cards, mappingsKnown, highlighting, hasThumbnailMapping: mappingsKnown && fields.some(field => field?.result_card === 'thumbnail') };
 }
 
 export function resultMappingNotice(mappingsKnown: boolean, displayed: number, total: number) {
@@ -86,23 +96,28 @@ function appendValue(node: HTMLElement, field: CardValue) {
   }
 }
 
-export function appendResultCard(node: HTMLElement, card: ResultCard) {
+export function appendResultCard(node: HTMLElement, card: ResultCard, styles: MetadataStyle[] = []) {
   node.classList.add('mapped-result-card');
+  const thumbnail = card.thumbnail || card.sampleThumbnail;
+  if (thumbnail) {
+    const image = document.createElement('img');
+    image.src = thumbnail;
+    image.className = 'mapped-result-thumbnail';
+    if (card.sampleThumbnail) image.classList.add('profile-result-thumbnail');
+    image.alt = card.alt || '';
+    image.loading = 'lazy';
+    image.referrerPolicy = 'no-referrer';
+    node.append(image);
+  }
+  const content = document.createElement('div');
+  content.className = 'result-card-content';
+  node.append(content);
   const ribbon = card.values.find(field => field.role === 'ribbon');
   if (ribbon) {
     const badge = document.createElement('span');
     badge.className = 'searchstax-search-result-ribbon';
     appendValue(badge, ribbon);
-    node.append(badge);
-  }
-  if (card.thumbnail) {
-    const image = document.createElement('img');
-    image.src = card.thumbnail;
-    image.className = 'mapped-result-thumbnail';
-    image.alt = '';
-    image.loading = 'lazy';
-    image.referrerPolicy = 'no-referrer';
-    node.append(image);
+    content.append(badge);
   }
   const title = card.values.find(field => field.role === 'title');
   if (title || card.url) {
@@ -116,12 +131,27 @@ export function appendResultCard(node: HTMLElement, card: ResultCard) {
     if (title) appendValue(name, title);
     else name.textContent = card.url;
     heading.append(name);
-    node.append(heading);
+    content.append(heading);
   }
-  for (const field of card.values.filter(f => f.role !== 'title' && f.role !== 'ribbon').sort((a, b) => Number(!a.role) - Number(!b.role))) {
+  const style = styles.find(item => item.scope === card.scope);
+  const metadata = document.createElement('div');
+  metadata.dataset.cardScope = card.scope;
+  const description = card.values.find(field => field.role === 'description');
+  const fields = orderedMetadata(card.values.filter(field => !['title', 'ribbon', 'description'].includes(field.role)), style);
+  for (const field of description ? [description, ...fields] : fields) {
     const line = document.createElement('p');
-    if (field.role === 'description') line.className = 'search-lab__result-description';
-    if (field.label) line.append(field.label + ': ');
+    if (field.role === 'description') {
+      line.className = 'search-lab__result-description';
+      if (field.label) line.append(field.label + ': ');
+    } else {
+      line.dataset.cardField = field.name;
+      line.dataset.cardLabel = field.label;
+      line.dataset.cardPosition = String(field.position);
+      const label = document.createElement('span');
+      const text = metadataLabel(field, style);
+      label.textContent = text ? text + ': ' : '';
+      line.append(label);
+    }
     if (field.role === 'paths' || field.role === 'date' || field.role === 'distance') line.className = 'mapped-result-' + field.role;
     const imageURL = !field.role && /\.(gif|jpe?g|tiff?|png|webp|bmp)$/i.test(field.value) ? webURL(field.value) : null;
     if (imageURL) {
@@ -137,6 +167,24 @@ export function appendResultCard(node: HTMLElement, card: ResultCard) {
       time.textContent = field.value;
       line.append(time);
     } else appendValue(line, field);
-    node.append(line);
+    (field.role === 'description' ? content : metadata).append(line);
   }
+  if (fields.length) content.append(metadata);
+}
+
+// Widget templates can replace their image nodes between searches. Capture image
+// events at the result host, including loads when a framework reuses a failed img.
+export function watchCardThumbnails(host: HTMLElement) {
+  function update(event: Event) {
+    const image = event.target;
+    if (!(image instanceof HTMLImageElement) || !image.matches('.mapped-result-thumbnail, .search-starter__result-thumbnail, .search-lab__result-thumbnail')) return;
+    image.toggleAttribute('data-unavailable', event.type === 'error');
+    if (event.type === 'error') image.loading = 'eager';
+  }
+  host.addEventListener('error', update, true);
+  host.addEventListener('load', update, true);
+  return () => {
+    host.removeEventListener('error', update, true);
+    host.removeEventListener('load', update, true);
+  };
 }

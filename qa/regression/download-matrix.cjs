@@ -44,7 +44,20 @@ async function checkServed(directory, check, env) {
   } finally { await new Promise(resolve => server.close(resolve)); }
 }
 
-module.exports = async function checkDownloads(name, check, variants) {
+async function configureSearchFixture(work, kit) {
+  // These matrices exercise full campus paging and sorting with the larger
+  // synthetic fixture. Configure only the unpacked test copy. The browser
+  // fence fulfills its requests locally, and this token cannot authorize a search.
+  const configFile = path.join(work, kit === 'javascript' ? 'search.js' : 'src/config.js');
+  const config = await fs.readFile(configFile, 'utf8');
+  const configured = config
+    .replace(/"searchURL":\s*"[^"]*"/g, '"searchURL": "' + fixtureEndpoint + '"')
+    .replace(/"searchAuth":\s*"[^"]*"/, '"searchAuth": "fixture-only"');
+  if (!configured.includes('"searchAuth": "fixture-only"')) throw Error('Missing ordinary starter connection');
+  await fs.writeFile(configFile, configured);
+}
+
+module.exports = async function checkDownloads(name, check, variants, configure = configureSearchFixture) {
   const { localQA, liveQA } = require('./runtime.cjs');
   if (!localQA || liveQA) throw Error('Run the fixture download matrix against a local Build server.');
   const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'search-lab-' + name + '-'));
@@ -56,16 +69,7 @@ module.exports = async function checkDownloads(name, check, variants) {
       const base = path.join(dir, variant, kit);
       const work = path.join(base, 'app');
       await unpack(path.join(base, 'starter.zip'), work);
-      // These matrices exercise full campus paging and sorting with the larger
-      // synthetic fixture. Configure only the unpacked test copy. The browser
-      // fence fulfills its requests locally, and this token cannot authorize a search.
-      const configFile = path.join(work, kit === 'javascript' ? 'search.js' : 'src/config.js');
-      const config = await fs.readFile(configFile, 'utf8');
-      const configured = config
-        .replace(/"searchURL":\s*"[^"]*"/g, '"searchURL": "' + fixtureEndpoint + '"')
-        .replace(/"searchAuth":\s*"[^"]*"/, '"searchAuth": "fixture-only"');
-      if (!configured.includes('"searchAuth": "fixture-only"')) throw Error('Missing ordinary starter connection');
-      await fs.writeFile(configFile, configured);
+      await configure(work, kit, variant);
       if (kit !== 'javascript') {
         const lock = await fs.readFile(path.join(work, 'package-lock.json'), 'utf8');
         if (!installs.has(lock)) {

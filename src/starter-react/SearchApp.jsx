@@ -10,9 +10,9 @@ import {
 } from '@searchstax-inc/searchstudio-ux-react';
 import { connection, demo, design } from './config.js';
 import { contentLanguageTag } from './content-language.js';
-import { starterPassages } from './starter-passages.js';
+import { watchCardThumbnails } from './result-card.js';
+import { starterResults } from './starter-passages.js';
 import { setupStarterServices } from './starter-services.js';
-import { thumbnailAlt } from './thumbnail-alt.js';
 import { createCustomerSuggestionSource } from './customer-suggestions.js';
 import { sampleSuggestionSource, setupSearchSuggestions } from './suggestions.js';
 import { getAnalyticsSettings, setupResultTracking } from './result-tracking.js';
@@ -50,13 +50,15 @@ function resultCards(results) {
       {results.map((item) => (
         <article className="searchstax-search-result" key={item.uniqueId || item.url}>
           {item.promoted && <span className="search-promotion-marker">{design.promotionBadge}</span>}
-          {item.previewThumbnail && item.previewThumbnailAlt !== null && (
+          {item.previewThumbnail && (
             <img className="search-starter__result-thumbnail" src={item.previewThumbnail} alt={item.previewThumbnailAlt} lang={resultLanguage} loading="lazy" referrerPolicy="no-referrer" />
           )}
-          {item.ribbonParts.length > 0 && <span className="searchstax-search-result-ribbon">{renderParts(item.ribbonParts)}</span>}
-          <h2 lang={resultLanguage}><a href={item.url} data-result-id={item.uniqueId} referrerPolicy="no-referrer">{renderParts(item.titleParts)}</a></h2>
-          {item.descriptionParts.length > 0 && <p className="search-starter__result-description" lang={resultLanguage}>{renderParts(item.descriptionParts)}</p>}
-          {item.otherFields.map((field, index) => <p key={index}>{field.label && field.label + ': '}{renderParts(field.parts)}</p>)}
+          <div className="result-card-content">
+            {item.ribbonParts.length > 0 && <span className="searchstax-search-result-ribbon">{renderParts(item.ribbonParts)}</span>}
+            {item.hasTitle && <h2 lang={resultLanguage}>{item.url ? <a href={item.url} data-result-id={item.uniqueId} referrerPolicy="no-referrer">{renderParts(item.titleParts)}</a> : renderParts(item.titleParts)}</h2>}
+            {item.descriptionParts.length > 0 && <p className="search-starter__result-description" lang={resultLanguage}>{renderParts(item.descriptionParts)}</p>}
+            {item.otherFields.map((field, index) => <p key={index}>{field.label && field.label + ': '}{renderParts(field.parts)}</p>)}
+          </div>
         </article>
       ))}
     </div>
@@ -195,6 +197,7 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
     return () => setSuggestionSource.current(null);
   }, []);
 
+  useEffect(() => watchCardThumbnails(resultHost.current), []);
   useEffect(() => setupResultTracking(resultHost.current, api), [api]);
   useEffect(() => setupPaginationFocus(pagination.current, () => api), [api]);
 
@@ -258,21 +261,7 @@ export default function SearchApp() {
     // The requested page can change while the previous response is still on screen.
     const options = readResponseSortOptions(response);
     if (sortController.current?.handle(options)) return [];
-    const passages = starterPassages(response, isDemo);
-    const mapped = items.flatMap((item) => {
-      const url = publicLink(item.url);
-      return url ? [{
-        ...item,
-        url,
-        ...passages(item),
-        previewThumbnail: design.showThumbnails ? (isDemo ? demo.thumbnailPaths[url] : publicLink(item.thumbnail)) : '',
-        previewThumbnailAlt: isDemo ? '' : thumbnailAlt(
-          item.allFields,
-          connection.thumbnailAltField,
-          connection.thumbnailsWithoutAltAreDecorative,
-        ),
-      }] : [];
-    });
+    const mapped = starterResults(items, response, isDemo ? demo.thumbnailPaths : null, connection, design.cardMetadata);
     const start = response.response.start ?? 0;
     const results = design.paginationMode === 'loadMore'
       ? resultPages.collect(start, mapped)

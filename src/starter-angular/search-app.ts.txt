@@ -5,9 +5,9 @@ import { SearchstudioUxAngularModule } from '@searchstax-inc/searchstudio-ux-ang
 import type { IExternalPromotion, ISearchstaxParsedResult, ISearchstaxSearchResponse, ISearchstaxSearchSortingData, Searchstax } from '@searchstax-inc/searchstudio-ux-js';
 import { connection, demo, design } from './config.js';
 import { contentLanguageTag } from './content-language.js';
-import { starterPassages } from './starter-passages.js';
+import { watchCardThumbnails } from './result-card.js';
+import { starterResults } from './starter-passages.js';
 import { setupStarterServices } from './starter-services.js';
-import { thumbnailAlt } from './thumbnail-alt.js';
 import { createCustomerSuggestionSource } from './customer-suggestions.js';
 import { sampleSuggestionSource, setupSearchSuggestions } from './suggestions.js';
 import { getAnalyticsSettings, setupResultTracking } from './result-tracking.js';
@@ -68,6 +68,7 @@ export class SearchApp implements AfterViewInit, OnDestroy {
   private timer?: number;
   private services?: ReturnType<typeof setupStarterServices>;
   private setSuggestionSource?: ReturnType<typeof setupSearchSuggestions>;
+  private stopImages?: () => void;
   private stopResultTracking?: () => void;
   private stopPaginationFocus?: () => void;
 
@@ -85,6 +86,7 @@ export class SearchApp implements AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     if (!connection.searchURL || !connection.searchAuth) return;
     if (this.filterHost) this.facetLimits = setupFacetLimits(this.filterHost.nativeElement, () => design);
+    this.stopImages = watchCardThumbnails(this.resultHost.nativeElement);
     this.stopPaginationFocus = setupPaginationFocus(this.pagination.nativeElement, () => this.api);
     queueMicrotask(() => this.start());
   }
@@ -92,6 +94,7 @@ export class SearchApp implements AfterViewInit, OnDestroy {
   ngOnDestroy() {
     this.facetLimits?.destroy();
     this.services?.clear();
+    this.stopImages?.();
     this.stopResultTracking?.();
     this.stopPaginationFocus?.();
     this.setSuggestionSource?.(null);
@@ -157,21 +160,7 @@ export class SearchApp implements AfterViewInit, OnDestroy {
     window.clearTimeout(this.timer);
     const options = readResponseSortOptions(response);
     if (this.sortController?.handle(options)) return [];
-    const passages = starterPassages(response, this.isDemo);
-    const mapped = items.flatMap(item => {
-      const url = publicLink(item.url);
-      return url ? [{
-        ...item,
-        url,
-        ...passages(item),
-        previewThumbnail: design.showThumbnails ? (this.isDemo ? thumbnailPaths[url] : publicLink(item.thumbnail)) : '',
-        previewThumbnailAlt: this.isDemo ? '' : thumbnailAlt(
-          item.allFields,
-          connection.thumbnailAltField,
-          connection.thumbnailsWithoutAltAreDecorative,
-        ),
-      }] : [];
-    });
+    const mapped = starterResults(items, response, this.isDemo ? thumbnailPaths : null, connection, design.cardMetadata);
     const results = design.paginationMode === 'loadMore'
       ? this.resultPages.collect(response?.response?.start ?? 0, mapped)
       : mapped;

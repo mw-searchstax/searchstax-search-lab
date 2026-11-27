@@ -34,7 +34,8 @@ import './smart-answers-sample.css';
 import { setupRelatedSearches, relatedSource } from './related-searches.js';
 import './related-searches.css';
 import profileControls from './profile-controls.html?raw';
-import { resultCards, resultMappingNotice, appendResultCard } from './result-card';
+import { setupCardEditor } from './card-editor';
+import { resultCards, resultMappingNotice, appendResultCard, watchCardThumbnails } from './result-card';
 import { endpointFingerprint, profileStatus, featureStatus, readAppConfiguration } from './app-configuration';
 import { readAnswerEndpoint } from './customer-answers.js';
 import { readCustomerEndpoint } from './web-url.js';
@@ -156,6 +157,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
   setupPaginationFocus(pagination.parentElement, function () { return search; });
   var status = root.querySelector('[data-lab-status]');
   var previewBrand = root.querySelector('[data-lab-preview-brand]');
+  watchCardThumbnails(designSurface);
   var demoOutput = root.querySelector('[data-lab-demo-output]');
   var demoAnchor = form;
   var demoControl = queryInput;
@@ -362,7 +364,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     smartAnswersSampleToggle.closest('.search-lab__field').hidden = !fixture || !profile?.smartAnswers;
     promotionsInput.closest('details').querySelector('summary').textContent = fixture && profile?.smartAnswers
       ? 'Promotions and answers' : 'Promotions';
-    thumbnailToggle.closest('.search-lab__field').hidden = !builtIn;
+    thumbnailToggle.closest('.search-lab__field').hidden = connected || fixture;
     descriptionToggle.closest('.search-lab__field').hidden = connected || (!fixture && !builtIn);
     promotionsInput.closest('details').hidden = !fixture;
     root.querySelector('[data-promotion-hint]').textContent = fixture ? 'Choose a sample under Features to try both formats.'
@@ -417,7 +419,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
       experiencePreview.close();
       experiencePanel.hidden = true;
       // Opening a shared tabbed design uses the same recording as single-profile Build.
-      const preview = source === builtInApp ? { ...source, endpoint: recordedSearchEndpoint } : source;
+      const preview = source === builtInApp ? { ...source, endpoint: recordedSearchEndpoint, sampleThumbnails: true } : source;
       experiencePreview.setSource(preview, catalog, submitted, source?.settings);
       refreshTabChoices();
     }
@@ -666,6 +668,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     root.querySelector('input[name="lab-layout"][value="' + design.layout + '"]').checked = true;
     codeFeedback.textContent = '';
     if (experiencePanel.hidden) customerPreview.updateDesign(connectedOrder);
+    refreshCardEditor();
     saveDesignDraft();
   }
 
@@ -1046,17 +1049,17 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
   }
 
   function renderBuiltInPage(items, response) {
-    const { cards, mappingsKnown, highlighting } = resultCards(response, response.response.docs, builtInApp.settings?.highlighting);
+    const { cards, mappingsKnown, highlighting, hasThumbnailMapping } = resultCards(response, response.response.docs, builtInApp.settings?.highlighting, builtInApp.profile, builtInApp.language);
     builtInHighlighting = highlighting;
     const mapped = cards.flatMap((card, index) => {
       if (card.url && !isDemoResultURL(card.url)) return [];
       if (!card.url && !card.thumbnail && !card.values.length) return [];
       const body = document.createElement('div');
-      appendResultCard(body, card);
+      appendResultCard(body, card, design.cardMetadata);
       const link = body.querySelector('a');
       if (link) link.setAttribute('data-searchstax-unique-result-id', items[index]?.uniqueId ?? '');
       return [{ ...items[index], url: card.url, mappedBody: body.innerHTML, promoted: card.promoted, promotionBadge: design.promotionBadge,
-        demoThumbnail: card.thumbnail ? '' : demoThumbnails[card.url]?.source }];
+        demoThumbnail: hasThumbnailMapping ? '' : demoThumbnails[card.url]?.source }];
     });
     const total = response.response.numFound;
     const notice = resultMappingNotice(mappingsKnown && !unknownResultFields.has(response), mapped.length, total);
@@ -1476,6 +1479,8 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
       runSearch(button.dataset.labRankingQuery, true);
     });
   });
+  const refreshCardEditor = setupCardEditor(root, () => !experiencePanel.hidden ? experiencePanel
+    : customerPreview.active ? customerPanel : demoOutput, () => design, () => updateDesign());
   const handoffButtons = [...root.querySelectorAll('.search-lab__handoff-actions button')];
   function setHandoffPanel(selected) {
     for (const control of handoffButtons) {

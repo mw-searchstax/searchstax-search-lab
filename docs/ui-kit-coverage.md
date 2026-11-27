@@ -2,11 +2,11 @@
 
 **Design review for Thomas, Sabrina, and Kaunaj · November 25, 2026**
 
-### First pilot decision for Thomas, Sabrina, and Kaunaj
+### Result cards
 
-Restore reliable access and verify the request budget first. For the next feature, ship result cards. Start with the mapped thumbnail's size and placement, the content-type ribbon, and metadata labels and order. Review one image-bearing card and one with a missing field on mobile and desktop. The saved design, share link and running downloads should reproduce the same card and preserve the returned link and highlighted passage.
+In Build, open **Appearance → Result cards** to show and size the sample thumbnails, style the content-type ribbon, or change a metadata label. The recorded **rehabilitation** example includes two practice fields, **Sample topic** and **Sample audience**. Under **Features → Advanced Options**, place the thumbnail above or beside the text and move metadata fields earlier or later. The field selectors list metadata in the current results. Clearing a label restores its original label. **Use profile order** restores the original field order for that profile and language.
 
-| Later decision | Evidence to bring back to review |
+| Open matrix item | Example needed |
 |---|---|
 | Grouped results | A profile with a groupable field, a tested JavaScript kit upgrade and a demonstration of counts and paging across groups in ordinary and tabbed exports. |
 | Smart Answers feedback and conversation | An enabled profile with a real answer, an agreed feedback destination and a working follow-up conversation. Decide whether the pilot needs either interaction before adding controls. |
@@ -33,11 +33,11 @@ The ten widget families below follow the [Help Center catalog](https://support.s
 | Snippet count | The profile supplies the passage. | App · retain the published snippet count. Build styles the text returned. | SearchLabBuild reports three. A missing fragment falls back to the field value. | Setup | Setup | Setup | Setup |
 | Result list template | List or cards with configurable spacing and dividers. | Appearance · CSS and template. List, standard spacing, dividers on. | Multiple results and a narrow viewport. | Wired | Wired | Wired | Wired |
 | Result item template | Mapped URL, title, description, date, paths, distance, ribbon, thumbnail and unmapped values. | Handoff · template. Use the profile’s ordered Results Fields and returned values. | Switch between two profiles with different field names. Search Fields control ranking. | Partial | Partial | Partial | Partial |
-| Thumbnail sizing | Mapped images or optional demo thumbnail treatment. | Appearance · CSS. Keep intrinsic aspect ratio, start with current size. | Mapped image URL and a policy for alternative text. | Gap | Gap | Gap | Gap |
-| Thumbnail placement | Fixed card position. | Advanced Options · template. Keep current placement, offer leading or above the text. | Mapped image and a narrow card. | Gap | Gap | Gap | Gap |
-| Ribbon appearance | Mapped badges use title case and preserve the indexed value. | Appearance · CSS. Use its mapped value, offer color and shape. | SearchLabBuild maps content type to Ribbon. | Gap | Gap | Gap | Gap |
-| Metadata labels | Labels come from Results Fields. | Appearance · template. Profile labels initially, then optional overrides keyed by field. | A returned field with a label. | Gap | Gap | Gap | Gap |
-| Metadata order | Mapped roles and unmapped fields have an established order. | Advanced Options · template. Start with published order, reorder within a region. | Two returned metadata fields, reset on profile change. | Gap | Gap | Gap | Gap |
+| Thumbnail sizing | Small, Standard or Large. | Appearance · CSS. Standard starts at 12rem. Images retain their proportions and shrink to fit. | A result with a mapped image. | Wired | Wired | Wired | Wired |
+| Thumbnail placement | Above or beside the card text. | Advanced Options · template and CSS. Above by default. | Test a narrow card and a card without an image. | Wired | Wired | Wired | Wired |
+| Ribbon appearance | Choose a ribbon, pill or square shape. Clear **Use accent color** to pick a custom ribbon color. | Appearance · CSS. Follow the accent color by default and choose contrasting text automatically. | Content type mapped to Ribbon. | Wired | Wired | Wired | Wired |
+| Metadata labels | Rename an individual returned metadata field. | Appearance · template. Start with the profile label. Save overrides by field, profile and language. | Two fields and a result missing one of them. | Wired | Wired | Wired | Wired |
+| Metadata order | Move a metadata field earlier or later. | Advanced Options · template. Default to the published field order within the metadata region. | Two fields, a profile change and a saved design. | Wired | Wired | Wired | Wired |
 | `linkTarget` | Preview and handoff paths have fixed link behavior. | Features · native after upgrade, or template for custom links. Start with same tab, offer new tab. | Mapped HTTP(S) URL. Verify keyboard activation and result-click tracking. | Upgrade | Gap | Gap | Gap |
 | `groupedBy` | Flat list. | Features · native after upgrade. Off, then one supported field. | A groupable field and at least two groups. Confirm counts on a running export. | Upgrade | Gap | Gap | Gap |
 | `itemsPerGroup` | No group size. | Features · native after upgrade. Start with kit default when grouping is selected. | Group with multiple hits. Page size no longer directly sets the number of groups or documents. | Upgrade | Gap | Gap | Gap |
@@ -210,7 +210,7 @@ The kits document three styling paths. Import the distributed theme, override se
 | Profile tabs | Select profiles from the current app catalog | Advanced Options · custom interaction, initially off | More than one included profile in the same language | Wired | Wired | Wired | Wired |
 | Language picker | Shows profiles available in the selected language | Advanced Options · custom interaction, initially off | Catalog with multiple languages | Wired | Wired | Wired | Wired |
 
-The last two rows refer to the profile-navigation exports. For ordinary exports, document-level card rendering still expects a usable result URL. The preview and profile-tab renderer can also show text-only results. Test this case before claiming full parity for the result-item template. Thumbnail treatments also differ between the ordinary starters and the profile-tab renderer.
+The last two rows refer to the profile-navigation exports. In the local result-card fixture, the ordinary starters previously dropped the two results without a URL and omitted both mapped thumbnails. Build and the profile-tab starters kept all four results. The result-card regression now covers these four cases plus invalid addresses and an image that returns a 404. It exercises the five card controls, reload, share links and running ordinary and profile-tab downloads in JavaScript, React, Vue and Angular at desktop and phone widths. The result-item template still has separate checks for other mapped field types.
 
 All four ordinary exports carry the selected app’s language-scoped Related Searches setting and profile-scoped Smart Answers setting. The explicit fictional demo supplies sample related terms, answers and promotions.
 

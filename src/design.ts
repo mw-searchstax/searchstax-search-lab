@@ -1,4 +1,5 @@
 import { webURL } from './web-url.js';
+import { readMetadataStyles, type MetadataStyle } from './card-metadata.js';
 
 const FONT_STACKS = {
   arial: 'Arial, Helvetica, sans-serif',
@@ -21,6 +22,11 @@ const CORNER_RADII = { standard: '5px', square: '0px', rounded: '14px' };
 export const PAGE_SIZES = [5, 10, 20] as const;
 
 export type DesignSettings = {
+  thumbnailSize: 'small' | 'standard' | 'large';
+  thumbnailPlacement: 'above' | 'leading';
+  ribbonColor: string;
+  ribbonShape: 'ribbon' | 'pill' | 'square';
+  cardMetadata: MetadataStyle[];
   facetMode: 'or' | 'and' | 'showUnavailable';
   facetDesktop: number;
   facetMobile: number;
@@ -68,6 +74,11 @@ export type DesignSettings = {
 };
 
 export const DEFAULT_DESIGN: Readonly<DesignSettings> = {
+  thumbnailSize: 'standard',
+  thumbnailPlacement: 'above',
+  ribbonColor: '',
+  ribbonShape: 'ribbon',
+  cardMetadata: [],
   facetMode: 'or',
   facetDesktop: 20,
   facetMobile: 20,
@@ -176,6 +187,11 @@ export function readDesignParams(params: URLSearchParams, allowFictionalPreview 
   const background = '#' + (params.get('lab_background') ?? '').toLowerCase();
 
   return {
+    thumbnailSize: params.get('lab_image_size') === 'small' ? 'small' : params.get('lab_image_size') === 'large' ? 'large' : 'standard',
+    thumbnailPlacement: params.get('lab_image_position') === 'leading' ? 'leading' : 'above',
+    ribbonColor: readHighlightColor(params.get('lab_ribbon_color'), ''),
+    ribbonShape: params.get('lab_ribbon_shape') === 'pill' ? 'pill' : params.get('lab_ribbon_shape') === 'square' ? 'square' : 'ribbon',
+    cardMetadata: readMetadataStyles(params.get('lab_card_metadata')),
     facetMode: readFacetMode(params.get('lab_facet_mode')),
     facetDesktop: readFacetLimit(params.get('lab_facet_desktop')),
     facetMobile: readFacetLimit(params.get('lab_facet_mobile')),
@@ -224,6 +240,16 @@ export function readDesignParams(params: URLSearchParams, allowFictionalPreview 
 }
 
 export function writeDesignParams(params: URLSearchParams, design: DesignSettings): void {
+  for (const [key, value] of [
+    ['lab_image_size', design.thumbnailSize !== 'standard' && design.thumbnailSize],
+    ['lab_image_position', design.thumbnailPlacement !== 'above' && design.thumbnailPlacement],
+    ['lab_ribbon_color', design.ribbonColor.slice(1)],
+    ['lab_ribbon_shape', design.ribbonShape !== 'ribbon' && design.ribbonShape],
+    ['lab_card_metadata', design.cardMetadata.length && JSON.stringify(design.cardMetadata)],
+  ] as const) {
+    if (value) params.set(key, value);
+    else params.delete(key);
+  }
   if (design.facetMode !== DEFAULT_DESIGN.facetMode) params.set('lab_facet_mode', design.facetMode);
   if (design.facetDesktop !== DEFAULT_DESIGN.facetDesktop) params.set('lab_facet_desktop', String(design.facetDesktop));
   if (design.facetMobile !== DEFAULT_DESIGN.facetMobile) params.set('lab_facet_mobile', String(design.facetMobile));
@@ -327,6 +353,14 @@ export function designVariables(design: DesignSettings) {
   const topStyle = design.filterPlacement === 'top' ? design.topFilterStyle : 'list';
   const darkBackground = contrastText(design.background) === '#ffffff';
   return {
+    '--card-thumbnail-width': { small: '6rem', standard: '12rem', large: '18rem' }[design.thumbnailSize],
+    '--card-thumbnail-float': design.thumbnailPlacement === 'leading' ? 'inline-start' : 'none',
+    '--card-thumbnail-limit': design.thumbnailPlacement === 'leading' ? '38%' : '100%',
+    '--card-thumbnail-gap': design.thumbnailPlacement === 'leading' ? '1rem' : '0px',
+    '--card-ribbon-color': design.ribbonColor || design.color,
+    '--card-ribbon-ink': contrastText(design.ribbonColor || design.color),
+    '--card-ribbon-radius': design.ribbonShape === 'pill' ? '999px' : '0px',
+    '--card-ribbon-notch': design.ribbonShape === 'ribbon' ? '.6rem' : '0px',
     '--promotion-badge-padding': design.badgeStyle === 'pill' ? '2px 10px' : '0',
     '--promotion-badge-border': design.badgeStyle === 'pill' ? '1px solid currentColor' : '0',
     '--promotion-banner-background': design.bannerStyle === 'outline' ? 'transparent' : '#f3f7f4',

@@ -149,6 +149,15 @@
 .search-lab__section-heading h2 { margin: 0 0 .25rem; font-size: 1.25rem; }
 .search-lab__section-heading p, .search-lab__field p, .search-lab__handoff p { margin: 0; color: var(--lab-muted); font-size: .875rem; }
 .search-lab__field { min-width: 0; margin: 0 0 .75rem; padding: 0; border: 0; }
+.search-lab__card-settings + .search-lab__card-settings {
+  margin-top: .75rem;
+  padding-top: .75rem;
+  border-top: 1px solid var(--lab-border);
+}
+.search-lab__card-settings .search-lab__field { margin-bottom: 0; }
+.search-lab__card-settings:last-child { padding-bottom: .75rem; }
+.search-lab__card-settings .search-lab__field + .search-lab__field:not([hidden]) { margin-top: .375rem; }
+.search-lab__card-settings .search-lab__field[hidden] + .search-lab__field { margin-top: 0; }
 .search-lab__scenario { margin-top: 1rem; }
 .search-lab__field legend, .search-lab__field label { color: var(--lab-ink); font-size: .875rem; font-weight: 600; }
 .search-lab__field legend { display: block; padding: 0; }
@@ -373,7 +382,7 @@
   letter-spacing: var(--search-result-title-letter-spacing, -.025em);
 }
 .search-lab .searchstax-search-result-title { color: #263f58; font-weight: 700; text-decoration: none; }
-.search-lab .searchstax-search-result-title:hover { text-decoration: underline; }
+.search-lab a.searchstax-search-result-title:hover { text-decoration: underline; }
 .search-lab .searchstax-search-result p {
   margin: 0;
   color: #465766;
@@ -422,7 +431,7 @@
 .search-lab[data-lab-view="design"][data-layout="cards"] #lab-preview .searchstax-search-result { border-radius: var(--preview-corners); }
 .search-lab[data-lab-view="design"][data-layout="list"] #lab-preview [data-hide-list-dividers] .searchstax-search-result { border-block-end-color: transparent; }
 .search-lab[data-lab-view="design"] #lab-preview .searchstax-search-result-title { color: var(--preview-title-ink); }
-#lab-preview [data-underline-titles] .searchstax-search-result-title { text-decoration: underline; }
+#lab-preview [data-underline-titles] a.searchstax-search-result-title { text-decoration: underline; }
 .search-lab__preview-footnote { margin: .625rem .125rem 0; color: var(--lab-muted); font-size: .75rem; line-height: 1.5; }
 .search-lab__feedback { min-height: 1.5em; margin: 10px 0 0; color: var(--lab-muted); font-size: .875rem; }
 .search-lab__sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }

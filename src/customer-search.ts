@@ -2,10 +2,10 @@ import type { DesignSettings } from './design.js';
 import { promotionEntries } from './promotion-display.js';
 import { webURL } from './web-url.js';
 import type { AppConfiguration, Profile } from './app-configuration.js';
-import { resultCards, type ResultResponse } from './result-card.js';
+import { resultCards, type ResultResponse, type ThumbnailPolicy } from './result-card.js';
 export { readCustomerEndpoint } from './web-url.js';
 
-export type CustomerConnection = {
+export type CustomerConnection = ThumbnailPolicy & {
   endpoint: string;
   token: string;
   profile: string;
@@ -16,6 +16,7 @@ export type CustomerConnection = {
   discoveryKey?: string;
   answerEndpoint?: string;
   suggestEndpoint?: string;
+  sampleThumbnails?: boolean;
 };
 
 export type CustomerSearch<Value = string> = {
@@ -146,7 +147,7 @@ export async function searchBuildApp(connection: CustomerConnection, options: Bu
   const language = (connection.language || params?.language)?.toLowerCase().replaceAll('-', '_');
   const matches = connection.configuration?.profiles.filter(item => item.profile === profile && (!language || item.language === language));
   const settings = connection.settings ?? (matches?.length === 1 ? matches[0] : undefined);
-  const { cards, ...metadata } = resultCards(payload, response.docs, settings?.highlighting);
+  const { cards, ...metadata } = resultCards(payload, response.docs, settings?.highlighting, profile, language, connection);
   return { ...page, ...metadata, settings, language, start, sort, cards: cards.filter(card => card.url || card.thumbnail || card.values.length) };
 }
 

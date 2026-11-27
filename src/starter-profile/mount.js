@@ -1,4 +1,5 @@
 import { setupExperiencePreview } from './profile-experiences.js';
+import { watchCardThumbnails } from './result-card.js';
 import { readAnswerEndpoint } from './customer-answers.js';
 import { readCustomerEndpoint } from './web-url.js';
 import { settings, connection } from './config.js';
@@ -35,6 +36,9 @@ export function mountProfileSearch(host) {
   const app = live ? {
     endpoint: recorded ? new URL(connection.endpoint, document.baseURI).href : readCustomerEndpoint(connection.endpoint) || '',
     token: connection.token.trim(),
+    sampleThumbnails: recorded,
+    thumbnailAltField: connection.thumbnailAltField,
+    thumbnailsWithoutAltAreDecorative: connection.thumbnailsWithoutAltAreDecorative,
     configuration: { entitlements: settings.entitlements ?? {}, profiles: settings.profiles },
     answerEndpoint: readAnswerEndpoint(connection.answerEndpoint || ''),
     suggestEndpoint: readCustomerEndpoint(connection.suggestEndpoint || '', 'emsuggest'),
@@ -43,6 +47,7 @@ export function mountProfileSearch(host) {
   } : null;
   search.setSource(app, settings.profiles, settings.initialQuery, settings.selected, settings.defaultLanguage);
   panel.hidden = false;
+  const stopImages = watchCardThumbnails(panel);
   search.open();
-  return () => { search.close(); host.replaceChildren(); };
+  return () => { stopImages(); search.close(); host.replaceChildren(); };
 }

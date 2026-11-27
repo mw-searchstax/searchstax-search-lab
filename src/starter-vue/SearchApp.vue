@@ -11,9 +11,9 @@ import {
 } from '@searchstax-inc/searchstudio-ux-vue';
 import { connection, demo, design } from './config.js';
 import { contentLanguageTag } from './content-language.js';
-import { starterPassages } from './starter-passages.js';
+import { watchCardThumbnails } from './result-card.js';
+import { starterResults } from './starter-passages.js';
 import { setupStarterServices } from './starter-services.js';
-import { thumbnailAlt } from './thumbnail-alt.js';
 import { createCustomerSuggestionSource } from './customer-suggestions.js';
 import { sampleSuggestionSource, setupSearchSuggestions } from './suggestions.js';
 import { getAnalyticsSettings, setupResultTracking } from './result-tracking.js';
@@ -68,21 +68,7 @@ function afterSearch(items, response) {
   window.clearTimeout(timer);
   const options = readResponseSortOptions(response);
   if (sortController?.handle(options)) return [];
-  const passages = starterPassages(response, isDemo);
-  const mapped = items.flatMap(item => {
-    const url = publicLink(item.url);
-    return url ? [{
-      ...item,
-      url,
-      ...passages(item),
-      previewThumbnail: design.showThumbnails ? (isDemo ? demo.thumbnailPaths[url] : publicLink(item.thumbnail)) : '',
-      previewThumbnailAlt: isDemo ? '' : thumbnailAlt(
-        item.allFields,
-        connection.thumbnailAltField,
-        connection.thumbnailsWithoutAltAreDecorative,
-      ),
-    }] : [];
-  });
+  const mapped = starterResults(items, response, isDemo ? demo.thumbnailPaths : null, connection, design.cardMetadata);
   const results = design.paginationMode === 'loadMore'
     ? resultPages.collect(response.response.start ?? 0, mapped)
     : mapped;
@@ -171,6 +157,7 @@ watch(form, async (element) => {
 
 watch(resultHost, (host, _, onCleanup) => {
   if (host) {
+    onCleanup(watchCardThumbnails(host));
     const stop = setupResultTracking(host, api);
     if (stop) onCleanup(stop);
   }
@@ -260,12 +247,14 @@ onBeforeUnmount(() => {
               <div class="searchstax-search-results">
                 <article v-for="item in searchResults" :key="item.uniqueId || item.url" class="searchstax-search-result">
                   <span v-if="item.promoted" class="search-promotion-marker">{{ design.promotionBadge }}</span>
-                  <img v-if="item.previewThumbnail && item.previewThumbnailAlt !== null" class="search-starter__result-thumbnail" :src="item.previewThumbnail"
+                  <img v-if="item.previewThumbnail" class="search-starter__result-thumbnail" :src="item.previewThumbnail"
                     :alt="item.previewThumbnailAlt" :lang="resultLanguage" loading="lazy" referrerpolicy="no-referrer">
-                  <span v-if="item.ribbonParts.length" class="searchstax-search-result-ribbon"><Passage :parts="item.ribbonParts" /></span>
-                  <h2 :lang="resultLanguage"><a :href="item.url" :data-result-id="item.uniqueId" referrerpolicy="no-referrer"><Passage :parts="item.titleParts" /></a></h2>
-                  <p v-if="item.descriptionParts.length" class="search-starter__result-description" :lang="resultLanguage"><Passage :parts="item.descriptionParts" /></p>
-                  <p v-for="(field, i) in item.otherFields" :key="i">{{ field.label ? field.label + ': ' : '' }}<Passage :parts="field.parts" /></p>
+                  <div class="result-card-content">
+                    <span v-if="item.ribbonParts.length" class="searchstax-search-result-ribbon"><Passage :parts="item.ribbonParts" /></span>
+                    <h2 v-if="item.hasTitle" :lang="resultLanguage"><a v-if="item.url" :href="item.url" :data-result-id="item.uniqueId" referrerpolicy="no-referrer"><Passage :parts="item.titleParts" /></a><Passage v-else :parts="item.titleParts" /></h2>
+                    <p v-if="item.descriptionParts.length" class="search-starter__result-description" :lang="resultLanguage"><Passage :parts="item.descriptionParts" /></p>
+                    <p v-for="(field, i) in item.otherFields" :key="i">{{ field.label ? field.label + ': ' : '' }}<Passage :parts="field.parts" /></p>
+                  </div>
                 </article>
               </div>
             </template>

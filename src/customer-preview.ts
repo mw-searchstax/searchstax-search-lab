@@ -222,7 +222,7 @@ export function setupCustomerPreview(
       result.className = 'searchstax-search-result';
       if (language) result.lang = language;
       if (card.promoted) result.append(promotionLabel());
-      appendResultCard(result, card);
+      appendResultCard(result, card, getDesign().cardMetadata);
       return result;
     });
     if (append) grid.append(...rendered);

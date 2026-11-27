@@ -21,6 +21,23 @@ function matchesFilter(doc, filter) {
     and.split(/\s+OR\s+/).some(or => matchesClause(doc, or)));
 }
 
+const sampleMetadata = new Map([
+  ['https://mw-searchstax.github.io/university-health-search-demo/care/providers/simon-kelver', ['Accessible design', 'Design students']],
+  ['https://mw-searchstax.github.io/university-health-search-demo/care/services/rehabilitation', ['Room planning', 'Students and instructors']],
+]);
+
+function addSampleMetadata(payload) {
+  const examples = payload.response.docs.filter(doc => sampleMetadata.has(doc.id));
+  if (!examples.length) return;
+  payload.metadata.results.push(
+    { name: 'sample_topic_s', title: 'Sample topic', result_card: '' },
+    { name: 'sample_audience_s', title: 'Sample audience', result_card: '' },
+  );
+  for (const doc of examples) {
+    [doc.sample_topic_s, doc.sample_audience_s] = sampleMetadata.get(doc.id);
+  }
+}
+
 export function replayRecordedResponse(catalog, searchParams) {
   const model = searchParams.get('model') || '';
   const query = (searchParams.get('q') || '').trim().toLowerCase();
@@ -29,6 +46,8 @@ export function replayRecordedResponse(catalog, searchParams) {
   const language = searchParams.get('language');
   if (language && language !== recording.responseHeader.params.language) return;
   const payload = structuredClone(recording);
+  // Add labeled practice fields to the Build example without changing the capture.
+  if (model === 'SearchLabBuild' && query === 'rehabilitation') addSampleMetadata(payload);
   const params = payload.responseHeader.params;
   for (const name of ['q', 'model', 'language', 'sort', 'start', 'rows', 'facet']) {
     if (searchParams.has(name)) params[name] = searchParams.get(name);

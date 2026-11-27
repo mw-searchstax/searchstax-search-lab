@@ -8,6 +8,7 @@ import { searchBuildApp, CustomerSearchError, type BuildPage, type CustomerConne
 
 import { profileStatus, type Entitlements, type Profile } from './app-configuration.js';
 import { formatResultSummary, placeResultSummary, type ResultWindow } from './result-summary.js';
+import { metadataScope } from './card-metadata.js';
 import { resultMappingNotice, appendResultCard, mapResultCard, type ResultCard } from './result-card.js';
 
 export type Experience = Profile;
@@ -71,7 +72,7 @@ function directoryCards(entries: (ReturnType<typeof searchDirectory>['entries'][
     { name: 'topic', result_card: '', title: profile.language === 'es' ? 'Tema' : 'Topic' },
   ];
   return entries.map(entry => {
-    const card = mapResultCard(entry, fields);
+    const card = mapResultCard(entry, fields, undefined, '', metadataScope(profile.profile, profile.language));
     if (profile.highlighting) {
       for (const field of card.values) {
         const at = field.value.toLocaleLowerCase().indexOf(query.toLocaleLowerCase());
@@ -281,6 +282,9 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
         banners = page.externalPromotions;
         fields = page.facets;
         cards = page.cards;
+        if (app.sampleThumbnails && !page.hasThumbnailMapping) {
+          for (const card of cards) card.sampleThumbnail = thumbnails[card.url];
+        }
         total = page.total;
       } else {
         const samplePage = searchDirectory(active, query, options.profileTabs, filters, options.facetMode);
@@ -311,7 +315,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
           marker.textContent = options.promotionBadge === DEFAULT_DESIGN.promotionBadge ? marker.dataset.defaultLabel : options.promotionBadge;
           item.append(marker);
         }
-        appendResultCard(item, card);
+        appendResultCard(item, card, options.cardMetadata);
         const link = item.querySelector('a');
         if (link) {
           link.target = '_blank';

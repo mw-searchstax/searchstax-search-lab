@@ -109,16 +109,18 @@
                   @if (item.promoted) {
                     <span class="search-promotion-marker">{{ design.promotionBadge }}</span>
                   }
-                  @if (item.previewThumbnail && item.previewThumbnailAlt !== null) {
+                  @if (item.previewThumbnail) {
                     <img class="search-starter__result-thumbnail" [src]="item.previewThumbnail"
                       [alt]="item.previewThumbnailAlt" [attr.lang]="resultLanguage" loading="lazy" referrerpolicy="no-referrer">
                   }
-                  @if (item.ribbonParts.length) {<span class="searchstax-search-result-ribbon"><ng-container [ngTemplateOutlet]="passage" [ngTemplateOutletContext]="{ $implicit: item.ribbonParts }" /></span>}
-                  <h2 [attr.lang]="resultLanguage"><a [href]="item.url" [attr.data-result-id]="item.uniqueId" referrerpolicy="no-referrer"><ng-container [ngTemplateOutlet]="passage" [ngTemplateOutletContext]="{ $implicit: item.titleParts }" /></a></h2>
-                  @if (item.descriptionParts.length) {
-                    <p class="search-starter__result-description" [attr.lang]="resultLanguage"><ng-container [ngTemplateOutlet]="passage" [ngTemplateOutletContext]="{ $implicit: item.descriptionParts }" /></p>
-                  }
-                  @for (field of item.otherFields; track $index) {<p>{{ field.label ? field.label + ': ' : '' }}<ng-container [ngTemplateOutlet]="passage" [ngTemplateOutletContext]="{ $implicit: field.parts }" /></p>}
+                  <div class="result-card-content">
+                    @if (item.ribbonParts.length) {<span class="searchstax-search-result-ribbon"><ng-container [ngTemplateOutlet]="passage" [ngTemplateOutletContext]="{ $implicit: item.ribbonParts }" /></span>}
+                    @if (item.hasTitle) {<h2 [attr.lang]="resultLanguage">@if (item.url) {<a [href]="item.url" [attr.data-result-id]="item.uniqueId" referrerpolicy="no-referrer"><ng-container [ngTemplateOutlet]="passage" [ngTemplateOutletContext]="{ $implicit: item.titleParts }" /></a>} @else {<ng-container [ngTemplateOutlet]="passage" [ngTemplateOutletContext]="{ $implicit: item.titleParts }" />}</h2>}
+                    @if (item.descriptionParts.length) {
+                      <p class="search-starter__result-description" [attr.lang]="resultLanguage"><ng-container [ngTemplateOutlet]="passage" [ngTemplateOutletContext]="{ $implicit: item.descriptionParts }" /></p>
+                    }
+                    @for (field of item.otherFields; track $index) {<p>{{ field.label ? field.label + ': ' : '' }}<ng-container [ngTemplateOutlet]="passage" [ngTemplateOutletContext]="{ $implicit: field.parts }" /></p>}
+                  </div>
                 </article>
               }
             </div>

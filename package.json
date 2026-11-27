@@ -12,6 +12,7 @@
     "qa:release": "node qa/regression/release.cjs",
     "qa:preview": "node qa/regression/preview.cjs",
     "qa:sorting": "node qa/regression/sort-downloads.cjs",
+    "qa:result-cards": "node qa/regression/result-cards.cjs",
     "qa:result-summary": "node qa/regression/result-summary.cjs"
   },
   "engines": {

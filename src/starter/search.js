@@ -4,7 +4,8 @@ import { getAnalyticsSettings, setupResultTracking } from './result-tracking.js'
 import { setupStarterServices } from './starter-services.js';
 import { setupPaginationFocus } from './pagination-focus.js';
 import { contentLanguageTag } from './content-language.js';
-import { starterPassages } from './starter-passages.js';
+import { watchCardThumbnails } from './result-card.js';
+import { starterResults } from './starter-passages.js';
 import { readCustomerEndpoint } from './web-url.js';
 import { setupFacetLimits } from './facet-limits.js';
 import { promotionEntries, renderPromotionBanners, placePromotionBanners } from './promotion-display.js';
@@ -206,13 +207,9 @@ async function startSearch() {
       afterSearch(items, response) {
         const total = response?.response?.numFound;
         if (typeof total !== 'number') return [];
-        const passages = starterPassages(response, usesDemoProfile);
-        const results = items.filter(item => /^https?:\/\//i.test(item.url));
         renderPromotionBanners(externalPromotions, promotionEntries(response.externalLinks), config.promotionHeading, resultLanguage);
-        const mapped = results.map(item => ({
-          ...item, ...passages(item), resultLanguage, promotionBadge: config.promotionBadge,
-          demoThumbnail: usesDemoProfile ? demoThumbnails[item.url] : '',
-        }));
+        const mapped = starterResults(items, response, usesDemoProfile ? demoThumbnails : null, config, config.cardMetadata)
+          .map(item => ({ ...item, resultLanguage, promotionBadge: config.promotionBadge }));
         const options = readResponseSortOptions(response);
         applySortOptions(options);
         if (sortController?.handle(options)) return [];
@@ -226,6 +223,7 @@ async function startSearch() {
   });
   enableResultRecovery(search);
   search.setCookiesDisabled(!analytics.trackApiKey);
+  watchCardThumbnails(document.querySelector('#search-results'));
   setupResultTracking(document.querySelector('#search-results'), search);
 
   if (config.showSorting) {
@@ -251,11 +249,13 @@ async function startSearch() {
       searchResultTemplate: {
         template: `<article class="searchstax-search-result">
           {{#promoted}}<span class="search-promotion-marker">{{promotionBadge}}</span>{{/promoted}}
-          {{#demoThumbnail}}<img class="search-starter__result-thumbnail" src="{{demoThumbnail}}" alt="" width="384" height="216" loading="lazy">{{/demoThumbnail}}
-          {{#hasRibbon}}<span class="searchstax-search-result-ribbon">{{#ribbonParts}}${passageMarkup}{{/ribbonParts}}</span>{{/hasRibbon}}
-          <h2{{#resultLanguage}} lang="{{resultLanguage}}"{{/resultLanguage}}><a href="{{url}}" data-result-id="{{uniqueId}}">{{#titleParts}}${passageMarkup}{{/titleParts}}</a></h2>
-          <p class="search-starter__result-description"{{#resultLanguage}} lang="{{resultLanguage}}"{{/resultLanguage}}>{{#descriptionParts}}${passageMarkup}{{/descriptionParts}}</p>
-          {{#otherFields}}<p>{{#label}}{{label}}: {{/label}}{{#parts}}${passageMarkup}{{/parts}}</p>{{/otherFields}}
+          {{#previewThumbnail}}<img class="search-starter__result-thumbnail" src="{{previewThumbnail}}" alt="{{previewThumbnailAlt}}" loading="lazy" referrerpolicy="no-referrer">{{/previewThumbnail}}
+          <div class="result-card-content">
+            {{#hasRibbon}}<span class="searchstax-search-result-ribbon">{{#ribbonParts}}${passageMarkup}{{/ribbonParts}}</span>{{/hasRibbon}}
+            {{#hasTitle}}<h2{{#resultLanguage}} lang="{{resultLanguage}}"{{/resultLanguage}}>{{#url}}<a href="{{url}}" data-result-id="{{uniqueId}}" referrerpolicy="no-referrer">{{#titleParts}}${passageMarkup}{{/titleParts}}</a>{{/url}}{{^url}}{{#titleParts}}${passageMarkup}{{/titleParts}}{{/url}}</h2>{{/hasTitle}}
+            {{#hasDescription}}<p class="search-starter__result-description"{{#resultLanguage}} lang="{{resultLanguage}}"{{/resultLanguage}}>{{#descriptionParts}}${passageMarkup}{{/descriptionParts}}</p>{{/hasDescription}}
+            {{#otherFields}}<p>{{#label}}{{label}}: {{/label}}{{#parts}}${passageMarkup}{{/parts}}</p>{{/otherFields}}
+          </div>
         </article>`,
       },
       noSearchResultTemplate: { template: ' ' },
