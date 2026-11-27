@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet">
   <script defer id="searchstax-ui-kit" src="https://cdn.jsdelivr.net/npm/@searchstax-inc/searchstudio-ux-js@4.2.34/dist/@searchstax-inc/searchstudio-ux-js.iife.js"></script>
-  <script type="module" crossorigin src="./assets/index-DAsoiSoP.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-Dg_rycUl.css">
+  <script type="module" crossorigin src="./assets/index-Bvi5X3Rt.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-BCTUWM9S.css">
 </head>
 <body>
 <main
@@ -197,13 +197,18 @@
                 <select id="lab-preview-source"><option value="app">SearchLabPilot</option><option value="fictional">Fictional demo</option></select>
               </div>
 
-              <details class="search-lab__disclosure" data-lab-fictional-only>
+              <details class="search-lab__disclosure">
                 <summary>Search box</summary>
                 <div class="search-lab__field" data-lab-fictional-only>
                   <div class="search-lab__field--inline">
                     <label for="lab-suggestions">Suggest terms as visitors type</label>
                     <input id="lab-suggestions" type="checkbox">
                   </div>
+                </div>
+                <div class="search-lab__field">
+                  <label for="lab-suggestion-minimum">Minimum characters for suggestions</label>
+                  <input id="lab-suggestion-minimum" type="number" min="1" step="1" placeholder="Source default" aria-describedby="lab-suggestion-minimum-help">
+                  <p class="search-lab__help" id="lab-suggestion-minimum-help">Leave blank to use the source’s minimum. Enter a higher number to delay suggestions.</p>
                 </div>
               </details>
               <details class="search-lab__disclosure">
