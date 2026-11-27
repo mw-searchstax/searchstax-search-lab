@@ -40,6 +40,7 @@
         <button type="submit" class="search-starter__submit">{{ design.searchButtonText }}</button>
       </form>
     </div>
+    <div id="search-location" class="search-starter__location" hidden></div>
     <div #answerHost></div>
     @if (design.summaryPlacement !== 'below') {
       <p role="status" data-result-summary>{{ status() }}</p>
@@ -105,11 +106,13 @@
           <div data-page-copy></div>
           <span class="search-starter__sr-only" role="status" data-page-announcement></span>
         </div>
-        <app-searchstax-results renderMethod="pagination" [resultsPerPage]="design.resultsPerPage"
+        <app-searchstax-results renderMethod="pagination" [resultsPerPage]="pageSize"
+          [groupedBy]="design.groupedBy || undefined" [itemsPerGroup]="design.itemsPerGroup"
           [resultsTemplate]="resultCards" [noResultsTemplate]="emptyState">
           <ng-template #resultCards let-items="searchResults">
             <div class="searchstax-search-results">
               @for (item of items ?? []; track item.uniqueId || item.url) {
+                @if (item.groupHeading) {<h3 class="search-starter__group-heading">{{ item.groupHeading }}</h3>}
                 <article class="searchstax-search-result">
                   @if (item.promoted) {
                     <span class="search-promotion-marker">{{ design.promotionBadge }}</span>
@@ -135,6 +138,8 @@
           </ng-template>
         </app-searchstax-results>
         <div #pagination data-pager-position="below" tabindex="-1" role="group" aria-label="Search result pagination">
+          <div class="search-starter__pagination" data-grouped-pager hidden></div>
+          <div>
           <app-searchstax-search-pagination [templateOverride]="pageControls" [infiniteScrollTemplateOverride]="loadMoreControls">
             <ng-template #pageControls let-page="paginationData">
               @if (page?.totalResults) {
@@ -157,6 +162,7 @@
               }
             </ng-template>
           </app-searchstax-search-pagination>
+          </div>
           @if (design.paginationMode === 'loadMore' && loadedResults()) {
             <span tabindex="-1" data-page-range [attr.data-page-start]="pageStart()">
               Loaded {{ loadedResults() }} of {{ totalResults() }} results{{ loadedResults() >= totalResults() ? ' (all results loaded)' : '' }}

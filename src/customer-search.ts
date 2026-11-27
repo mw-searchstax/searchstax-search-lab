@@ -4,6 +4,8 @@ import { webURL } from './web-url.js';
 import type { AppConfiguration, Profile } from './app-configuration.js';
 import { resultCards, type ResultResponse, type ThumbnailPolicy } from './result-card.js';
 import { readSearchCorrection, type SearchCorrection } from './spelling.js';
+import { GROUPING_ROWS, groupedPage, groupHeadingsForDocuments, normalizeGroupedResponse } from './grouped-results.js';
+import { locationQuery, readLocationSupport, type LocationSelection } from './location-search.js';
 export { readCustomerEndpoint } from './web-url.js';
 
 export type CustomerConnection = ThumbnailPolicy & {
@@ -30,6 +32,10 @@ export type CustomerSearch<Value = string> = {
   excludeFilters?: Map<string, string>;
   autoCorrect?: boolean | null;
   suppressCorrection?: boolean;
+  groupedBy?: string;
+  itemsPerGroup?: number;
+  page?: number;
+  location?: LocationSelection;
 };
 
 export type BuildSearch = CustomerSearch<string[]>;
@@ -64,8 +70,8 @@ async function requestSearch(connection: CustomerConnection, options: CustomerSe
   const url = new URL(connection.endpoint);
   url.search = new URLSearchParams({
     q: options.query,
-    start: String(options.start),
-    rows: String(options.rows),
+    start: String(options.groupedBy ? 0 : options.start),
+    rows: String(options.groupedBy ? GROUPING_ROWS : options.rows),
     facet: 'true',
   }).toString();
   if (connection.settings?.highlighting !== undefined) url.searchParams.set('hl', String(connection.settings.highlighting));
@@ -74,6 +80,13 @@ async function requestSearch(connection: CustomerConnection, options: CustomerSe
   if (options.suppressCorrection) url.searchParams.set('spellcheck.correct', 'false');
   else if (typeof options.autoCorrect === 'boolean') url.searchParams.set('spellcheck.correct', String(options.autoCorrect));
   if (options.sort) url.searchParams.set('sort', options.sort);
+  if (options.groupedBy) {
+    url.searchParams.set('group', 'true');
+    url.searchParams.set('group.field', options.groupedBy);
+    url.searchParams.set('group.limit', String(options.itemsPerGroup ?? 10));
+    url.searchParams.set('group.offset', String(Math.max(0, options.page ?? 0) * (options.itemsPerGroup ?? 10)));
+  }
+  for (const [name, value] of Object.entries(locationQuery(options.location))) url.searchParams.set(name, value);
   const clause = (field: string, value: string) => field + ':"' + value.replace(/[\\"]/g, '\\$&') + '"';
   const selected: string[] = [];
   for (const [field, values] of options.filters) {
@@ -108,7 +121,7 @@ async function requestSearch(connection: CustomerConnection, options: CustomerSe
 }
 
 async function readPage(connection: CustomerConnection, options: CustomerSearch<string | string[]>, signal: AbortSignal) {
-  const payload = await requestSearch(connection, options, signal);
+  const payload = normalizeGroupedResponse(await requestSearch(connection, options, signal));
   const response = payload?.response;
   if (!response || !Number.isSafeInteger(response.numFound) || response.numFound < 0 || !Array.isArray(response.docs)) {
     throw new CustomerSearchError('The endpoint didn’t return search results. Check the Select endpoint and Search Profile.');
@@ -126,7 +139,8 @@ async function readPage(connection: CustomerConnection, options: CustomerSearch<
     return { field: field.name, label: field.label || field.name, choices };
   });
   const sorts = publishedSorts(payload.metadata);
-  return { payload, response, total: response.numFound, resultCount: response.docs.length, externalPromotions, facets, sorts };
+  return { payload, response, total: response.numFound, resultCount: response.docs.length, externalPromotions, facets, sorts,
+    location: readLocationSupport(payload.metadata) };
 }
 
 export async function searchBuildApp(connection: CustomerConnection, options: BuildSearch, signal: AbortSignal, knownSorts: ReturnType<typeof publishedSorts> = []) {
@@ -152,8 +166,10 @@ export async function searchBuildApp(connection: CustomerConnection, options: Bu
   const language = (connection.language || params?.language)?.toLowerCase().replaceAll('-', '_');
   const matches = connection.configuration?.profiles.filter(item => item.profile === profile && (!language || item.language === language));
   const settings = connection.settings ?? (matches?.length === 1 ? matches[0] : undefined);
-  const { cards, ...metadata } = resultCards(payload, response.docs, settings?.highlighting, profile, language, connection);
+  const { cards: rawCards, ...metadata } = resultCards(payload, response.docs, settings?.highlighting, profile, language, connection);
+  const cards = options.groupedBy ? groupHeadingsForDocuments(rawCards, response.docs, payload) : rawCards;
   return { ...page, ...metadata, settings, language, start, sort,
+    grouped: groupedPage(payload, options.groupedBy, options.itemsPerGroup),
     correction: readSearchCorrection(payload),
     cards: cards.filter(card => card.url || card.thumbnail || card.values.length) };
 }

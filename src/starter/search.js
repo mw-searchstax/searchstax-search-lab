@@ -1,3 +1,4 @@
+import { searchWithLocation, setupStarterLocation } from './location-search.js';
 import { sampleSuggestionSource, setupSearchSuggestions } from './suggestions.js';
 import { createCustomerSuggestionSource } from './customer-suggestions.js';
 import { getAnalyticsSettings, setupResultTracking } from './result-tracking.js';
@@ -10,6 +11,7 @@ import { setupKitSpelling, setupSearchCorrection } from './spelling.js';
 import { readCustomerEndpoint } from './web-url.js';
 import { setupFacetLimits } from './facet-limits.js';
 import { selectedFacetGroups } from './facet-groups.js';
+import { GROUPING_ROWS, groupedPage, groupHeadings, normalizeGroupedResponse, renderKitGroupedPager } from './grouped-results.js';
 import { promotionEntries, renderPromotionBanners, placePromotionBanners } from './promotion-display.js';
 import { createResultPages } from './result-pages.js';
 import { formatResultSummary } from './result-summary.js';
@@ -87,12 +89,12 @@ function withPreviousResults(message) {
     ? message + ' Previous results are still showing.' : message;
 }
 
-function showResultSummary(total, start, visible) {
+function showResultSummary(total, start, visible, grouped = false) {
   const hadFocus = feedback.contains(document.activeElement);
   if (config.summaryPlacement === 'below') {
     if (output.nextElementSibling !== feedback) output.after(feedback);
   } else if (form.nextElementSibling !== feedback) form.after(feedback);
-  showFeedback(formatResultSummary(config.summaryMode, { total, start, visible }));
+  showFeedback(formatResultSummary(config.summaryMode, { total, start, visible, grouped }));
   if (hadFocus) status.focus({ preventScroll: true });
 }
 
@@ -138,7 +140,7 @@ function enableResultRecovery(search) {
       const url = helper.url + helper.generateQueryParams(settings, forceNotCorrected);
       const response = await fetch(url, { headers: helper.authHeader, signal: request.signal });
       if (!response.ok) throw new Error('Search returned HTTP ' + response.status);
-      const data = await response.json();
+      const data = normalizeGroupedResponse(await response.json());
       if (active !== request) return;
       if (typeof data.response?.numFound !== 'number' || !Array.isArray(data.response.docs)) {
         throw new Error('Incomplete search response');
@@ -181,6 +183,7 @@ async function startSearch() {
   const kit = window['@searchstaxInc/searchstudioUxJs'] || window.Searchstax;
   const Searchstax = typeof kit === 'function' ? kit : kit.Searchstax;
   const search = new Searchstax();
+  const renderLocation = setupStarterLocation(config.locationDefaultRadius, selection => searchWithLocation(search, selection));
   activeSearch = search;
   sortController = createSortController({
     enabled: config.showSorting,
@@ -214,19 +217,23 @@ async function startSearch() {
     router: { enabled: false },
     hooks: {
       afterSearch(items, response) {
+        renderLocation(response?.metadata);
         const total = response?.response?.numFound;
         if (typeof total !== 'number') return [];
         correction.render(response);
         renderPromotionBanners(externalPromotions, promotionEntries(response.externalLinks), config.promotionHeading, resultLanguage);
         const mapped = starterResults(items, response, usesDemoProfile ? demoThumbnails : null, config, config.cardMetadata)
           .map(item => ({ ...item, resultLanguage, promotionBadge: config.promotionBadge }));
+        const batch = groupedPage(response, config.groupedBy, config.itemsPerGroup);
+        renderKitGroupedPager(document.querySelector('[data-grouped-pager]'), batch);
+        const grouped = batch ? groupHeadings(mapped, response, usesDemoProfile ? demoFacets.labels : {}) : mapped;
         const options = readResponseSortOptions(response);
         applySortOptions(options);
         if (sortController?.handle(options)) return [];
         const start = response.response.start ?? 0;
         const loadMore = config.paginationMode === 'loadMore';
-        const displayed = loadMore ? resultPages.collect(start, mapped) : mapped;
-        showResultSummary(total, loadMore ? 0 : start, displayed.length);
+        const displayed = loadMore ? resultPages.collect(start, grouped) : grouped;
+        showResultSummary(total, loadMore ? 0 : start, displayed.length, Boolean(batch));
         return displayed;
       },
     },
@@ -251,14 +258,16 @@ async function startSearch() {
   const passageMarkup = '{{#matched}}<mark class="search-result-hit">{{text}}</mark>{{/matched}}{{^matched}}{{text}}{{/matched}}';
   search.addSearchResultsWidget('search-results', {
     renderMethod: 'pagination',
-    resultsPerPage: config.resultsPerPage,
+    resultsPerPage: config.groupedBy ? GROUPING_ROWS : config.resultsPerPage,
+    groupedBy: config.groupedBy || undefined,
+    itemsPerGroup: config.itemsPerGroup,
     templates: {
       mainTemplate: {
         template: '<div id="search-result-list" class="searchstax-search-results"></div>',
         searchResultsContainerId: 'search-result-list',
       },
       searchResultTemplate: {
-        template: `<article class="searchstax-search-result">
+        template: `{{#groupHeading}}<h3 class="search-starter__group-heading">{{groupHeading}}</h3>{{/groupHeading}}<article class="searchstax-search-result">
           {{#promoted}}<span class="search-promotion-marker">{{promotionBadge}}</span>{{/promoted}}
           {{#previewThumbnail}}<img class="search-starter__result-thumbnail" src="{{previewThumbnail}}" alt="{{previewThumbnailAlt}}" loading="lazy" referrerpolicy="no-referrer">{{/previewThumbnail}}
           <div class="result-card-content">
@@ -275,7 +284,7 @@ async function startSearch() {
   // Keep the Results Widget in replacement mode so the accumulated projection
   // from afterSearch is rendered exactly once. The Pagination Widget still
   // uses its native infinite-scroll controls via this data-layer flag.
-  search.dataLayer.setIsInfiniteScroll(config.paginationMode === 'loadMore');
+  search.dataLayer.setIsInfiniteScroll(config.paginationMode === 'loadMore' && !config.groupedBy);
 
   if (config.showFilters) {
     document.querySelector('.search-starter__filters').hidden = false;

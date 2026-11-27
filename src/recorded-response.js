@@ -38,6 +38,39 @@ function addSampleMetadata(payload) {
   }
 }
 
+function addGroupedResponse(payload, docs, searchParams) {
+  const field = searchParams.get('group.field');
+  if (searchParams.get('group') !== 'true' || !field) return false;
+  const limit = Math.max(1, Math.trunc(Number(searchParams.get('group.limit'))) || 10);
+  const offset = Math.max(0, Math.trunc(Number(searchParams.get('group.offset'))) || 0);
+  const groups = [];
+  const byValue = new Map();
+  for (const doc of docs) {
+    const raw = doc[field];
+    const values = Array.isArray(raw) ? raw : [raw];
+    const value = values.length && values[0] != null && String(values[0]).trim() ? String(values[0]) : null;
+    const key = value ?? '__other__';
+    let group = byValue.get(key);
+    if (!group) {
+      group = { groupValue: value, docs: [] };
+      byValue.set(key, group);
+      groups.push(group);
+    }
+    group.docs.push(doc);
+  }
+  payload.grouped = {
+    [field]: {
+      matches: docs.length,
+      groups: groups.map(group => ({
+        groupValue: group.groupValue,
+        doclist: { start: offset, numFound: group.docs.length, numFoundExact: true, docs: group.docs.slice(offset, offset + limit) },
+      })),
+    },
+  };
+  delete payload.response;
+  return true;
+}
+
 export function replayRecordedResponse(catalog, searchParams) {
   const model = searchParams.get('model') || '';
   const query = (searchParams.get('q') || '').trim().toLowerCase();
@@ -78,6 +111,8 @@ export function replayRecordedResponse(catalog, searchParams) {
   }
   const start = Math.max(0, Math.trunc(Number(params.start)) || 0);
   const rows = Math.max(0, Math.trunc(Number(params.rows ?? docs.length)) || 0);
-  payload.response = { ...payload.response, start, numFound: docs.length, docs: docs.slice(start, start + rows) };
+  if (!addGroupedResponse(payload, docs, searchParams)) {
+    payload.response = { ...payload.response, start, numFound: docs.length, docs: docs.slice(start, start + rows) };
+  }
   return payload;
 }

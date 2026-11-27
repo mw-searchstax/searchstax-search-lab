@@ -11,6 +11,8 @@ import { contentLanguageTag } from './content-language.js';
 import { readAnswerEndpoint, setupCustomerAnswers } from './customer-answers.js';
 import { setupSearchCorrection } from './spelling.js';
 import { createCustomerSuggestionSource } from './customer-suggestions.js';
+import { groupedPageLabel } from './grouped-results.js';
+import { decodeBrowserLocation, locationLabel, locationRadius, type LocationSelection, type LocationSupport } from './location-search.js';
 import {
   CustomerSearchError,
   CustomerSearchTokenError,
@@ -53,6 +55,15 @@ export function setupCustomerPreview(
   const summaryToolbar = status.parentElement!;
   let resultWindow: ResultWindow | undefined;
   const searchFeedback = get('[data-customer-search-feedback]');
+  const locationPanel = get<HTMLElement>('[data-customer-location]');
+  const locationInput = get<HTMLInputElement>('#lab-customer-location');
+  const locationRadiusInput = get<HTMLSelectElement>('[data-customer-location-radius]');
+  const locationApply = get<HTMLButtonElement>('[data-customer-location-apply]');
+  const locationClear = get<HTMLButtonElement>('[data-customer-location-clear]');
+  const locationStatus = get<HTMLElement>('[data-customer-location-status]');
+  let locationSupport: LocationSupport | undefined;
+  let locationSelection: LocationSelection | undefined;
+  let locationGeneration = 0;
   const correction = setupSearchCorrection(panel, original => {
     if (options && !request) {
       queryInput.value = original;
@@ -139,7 +150,7 @@ export function setupCustomerPreview(
   let lastShowSorting = getDesign().showSorting;
   let lastAutoCorrect = getDesign().autoCorrect;
   let tokenDestinations: string[] | null = null;
-  const paginationMode = () => getDesign().paginationMode;
+  const paginationMode = () => getDesign().groupedBy ? 'paged' : getDesign().paginationMode;
 
   function emitSortOptions(choices: BuildPage['sorts']) {
     panel.dispatchEvent(new CustomEvent('lab-sort-options', {
@@ -226,28 +237,101 @@ export function setupCustomerPreview(
     return label;
   }
 
+  function renderLocation(support?: LocationSupport) {
+    locationSupport = support;
+    locationPanel.hidden = !support?.enabled;
+    if (!support?.enabled) {
+      locationSelection = undefined;
+      locationStatus.textContent = '';
+      locationGeneration++;
+      locationApply.disabled = false;
+      return;
+    }
+    const preferred = locationRadius(getDesign().locationDefaultRadius, support);
+    locationRadiusInput.replaceChildren(...support.filterValues.map(value => new Option(locationLabel(value, support.unit), value)));
+    locationRadiusInput.value = locationRadius(locationSelection?.radius || preferred, support);
+    locationRadiusInput.hidden = !support.distanceEnabled;
+    locationRadiusInput.labels?.forEach(label => { label.hidden = !support.distanceEnabled; });
+    locationClear.hidden = !locationSelection;
+    locationStatus.textContent = locationSelection
+      ? 'Searching near ' + locationSelection.address +
+        (locationSelection.radius === 'any' ? '.' : ' within ' + locationLabel(locationSelection.radius, support.unit) + '.')
+      : 'Your place and coordinates aren’t saved in the design.';
+  }
+
+  async function applyLocation() {
+    if (!connection || !options || !locationSupport?.enabled || locationApply.disabled) return;
+    const term = locationInput.value.trim();
+    if (!term) return;
+    const generation = ++locationGeneration;
+    locationApply.disabled = true;
+    locationStatus.textContent = 'Finding that place…';
+    try {
+      const decoded = await decodeBrowserLocation(term);
+      if (generation !== locationGeneration || !connection) return;
+      if (!decoded) {
+        locationStatus.textContent = 'That place couldn’t be found. Check the place or the configured geocoder.';
+        return;
+      }
+      locationSelection = { ...decoded, radius: locationRadius(locationRadiusInput.value, locationSupport) };
+      run({ location: locationSelection }, locationApply, locationInput);
+    } catch {
+      if (generation !== locationGeneration) return;
+      locationStatus.textContent = 'The place could not be decoded. Check the configured browser geocoder.';
+    } finally {
+      if (generation === locationGeneration) locationApply.disabled = false;
+    }
+  }
+
+  locationApply.addEventListener('click', () => { void applyLocation(); });
+  locationInput.addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); void applyLocation(); } });
+  locationRadiusInput.addEventListener('change', () => {
+    panel.dispatchEvent(new CustomEvent('lab-location-settings', { bubbles: true, detail: { radius: locationRadiusInput.value || null } }));
+    if (!locationSelection || !options) return;
+    locationSelection = { ...locationSelection, radius: locationRadius(locationRadiusInput.value, locationSupport) };
+    run({ location: locationSelection }, locationRadiusInput, locationRadiusInput);
+  });
+  locationClear.addEventListener('click', () => {
+    if (!options) return;
+    locationSelection = undefined;
+    locationInput.value = '';
+    locationGeneration++;
+    locationApply.disabled = false;
+    locationInput.focus();
+    run({ location: undefined }, locationClear, locationClear);
+  });
+
   function renderResults(page: BuildPage, active: BuildSearch, language?: string) {
+    renderLocation(page.location);
     renderPromotionBanners(promotions, page.externalPromotions, getDesign().promotionHeading, language);
     placePromotionBanners(promotions, layout, getDesign().bannerPlacement);
     sort.replaceChildren(new Option('Relevance', ''), ...page.sorts.map(item => new Option(item.label, item.value)));
     emitSortOptions(page.sorts);
     sort.value = page.sorts.some(item => item.value === active.sort) ? active.sort : '';
     renderFacets(page, active);
-    const append = paginationMode() === 'loadMore' && active.start > 0 && grid.childElementCount > 0;
+    const append = paginationMode() === 'loadMore' && active.start > 0 && grid.querySelectorAll(':scope > article').length > 0;
     const design = getDesign();
     const rendered = page.cards.map(card => {
+      const fragment = document.createDocumentFragment();
+      if (card.groupHeading) {
+        const heading = document.createElement('h3');
+        heading.className = 'search-lab__group-heading';
+        heading.textContent = card.groupHeading;
+        fragment.append(heading);
+      }
       const result = document.createElement('article');
       result.className = 'searchstax-search-result';
       if (language) result.lang = language;
       if (card.promoted) result.append(promotionLabel());
       appendResultCard(result, card, design.cardMetadata, design.resultLinkTarget);
-      return result;
+      fragment.append(result);
+      return fragment;
     });
     if (append) grid.append(...rendered);
     else grid.replaceChildren(...rendered);
-    resultWindow = { total: page.total, start: append ? 0 : active.start, visible: grid.childElementCount, query: active.query };
-    grid.hidden = grid.childElementCount === 0;
-    empty.hidden = grid.childElementCount > 0;
+    resultWindow = { total: page.total, start: append ? 0 : active.start, visible: grid.querySelectorAll(':scope > article').length, query: active.query, grouped: Boolean(page.grouped) };
+    grid.hidden = grid.querySelectorAll(':scope > article').length === 0;
+    empty.hidden = grid.querySelectorAll(':scope > article').length > 0;
     empty.textContent = resultMappingNotice(page.mappingsKnown, page.cards.length, page.total) || getDesign().noResultsText;
     if (settingsSummary && connection && !get('[data-single-experience]').hidden) {
       settingsSummary.textContent = profileStatus(connection.configuration?.entitlements ?? {}, connection.settings, page.highlighting, connection);
@@ -255,9 +339,9 @@ export function setupCustomerPreview(
 
     const focusedPageButton = document.activeElement;
     const focusedLoadMore = focusedPageButton === loadMore;
-    const loaded = append ? grid.childElementCount : page.resultCount;
-    const pageRange = (append ? 1 : active.start + 1) + '–' + (append ? loaded : active.start + page.resultCount) + ' of ' + page.total + ' results';
-    const moreAvailable = active.start + page.resultCount < page.total;
+    const loaded = append ? grid.querySelectorAll(':scope > article').length : page.resultCount;
+    const pageRange = page.grouped ? groupedPageLabel(page.grouped) : (append ? 1 : active.start + 1) + '–' + (append ? loaded : active.start + page.resultCount) + ' of ' + page.total + ' results';
+    const moreAvailable = page.grouped ? page.grouped.number < page.grouped.count : active.start + page.resultCount < page.total;
     const loadingMore = paginationMode() === 'loadMore';
     loadMore.hidden = !loadingMore || !moreAvailable;
     updateVisibility();
@@ -297,9 +381,16 @@ export function setupCustomerPreview(
     }
     const timer = window.setTimeout(() => pending.abort(), 12000);
     try {
-      const page = await searchBuildApp(candidate, { ...search, autoCorrect: getDesign().autoCorrect }, pending.signal, connecting ? [] : latestPage?.sorts);
+      const design = getDesign();
+      search = {
+        ...search,
+        groupedBy: design.groupedBy,
+        itemsPerGroup: design.itemsPerGroup,
+        page: Math.floor(search.start / search.rows),
+      };
+      const page = await searchBuildApp(candidate, { ...search, autoCorrect: design.autoCorrect }, pending.signal, connecting ? [] : latestPage?.sorts);
       if (request !== pending) return;
-      search = { ...search, sort: page.sort, start: page.start };
+      search = { ...search, sort: page.sort, start: page.start, location: page.location ? search.location : undefined };
       if (connecting && candidate.configuration) {
         candidate = { ...candidate, settings: page.settings, language: page.settings?.language ?? page.language ?? '', profile: page.settings?.profile ?? candidate.profile };
       }
@@ -382,10 +473,16 @@ export function setupCustomerPreview(
     connect.textContent = 'Connect';
     failedSearch = null;
     connection = null;
+    locationGeneration++;
     importVersion++;
     suggestionSource = null;
     options = null;
     latestPage = null;
+    locationSupport = undefined;
+    locationSelection = undefined;
+    locationPanel.hidden = true;
+    locationInput.value = '';
+    locationStatus.textContent = '';
     resultWindow = undefined;
     panel.hidden = true;
     panel.removeAttribute('data-searching');
@@ -527,7 +624,7 @@ export function setupCustomerPreview(
       const design = getDesign();
       updateResultLinkTargets(grid, design.resultLinkTarget);
       const previousMode = activePaginationMode;
-      const nextMode = design.paginationMode;
+      const nextMode = paginationMode();
       activePaginationMode = nextMode;
       loadMore.textContent = design.loadMoreText;
       placePromotionBanners(promotions, layout, design.bannerPlacement);
@@ -545,7 +642,8 @@ export function setupCustomerPreview(
       const clearSelection = !design.filters || options.facetMode !== design.facetMode;
       const filters = clearSelection ? new Map() : visibleFacetFilters(options.filters, groups);
       if (design.resultsPerPage !== options.rows || previousMode !== nextMode || filters.size !== options.filters.size ||
-        options.facetMode !== design.facetMode || nextOrder !== options.sort || autoCorrectChanged) {
+        options.facetMode !== design.facetMode || nextOrder !== options.sort || autoCorrectChanged ||
+        options.groupedBy !== design.groupedBy || (design.groupedBy && options.itemsPerGroup !== design.itemsPerGroup)) {
         run({
           rows: design.resultsPerPage,
           filters,

@@ -1,4 +1,5 @@
 <script setup>
+import { searchWithLocation, setupStarterLocation } from './location-search.js';
 import { setupFacetLimits } from "./facet-limits.js";
 import { selectedFacetGroups } from './facet-groups.js';
 import { h, nextTick, onBeforeUnmount, ref, watch } from 'vue';
@@ -23,6 +24,7 @@ import { createResultPages } from './result-pages.js';
 import { formatResultSummary } from './result-summary.js';
 import { renderSearchCorrection, setupKitSpelling, setupSearchCorrection } from './spelling.js';
 import { decodedSort, encodedSort, createSortController, readResponseSortOptions, readSortOptions } from './sorting.js';
+import { GROUPING_ROWS, groupedPage, groupHeadings, renderKitGroupedPager } from './grouped-results.js';
 import { installRecordedSearch } from './recorded-search.js';
 import recordings from './recorded-searches.js';
 
@@ -51,6 +53,7 @@ const status = ref('Connecting to search…');
 const loadedResults = ref(0);
 const totalResults = ref(0);
 let api;
+const renderLocation = setupStarterLocation(design.locationDefaultRadius, selection => searchWithLocation(api, selection));
 let spelling;
 let sortController;
 let loadingSubscription;
@@ -68,6 +71,7 @@ function publicLink(value) {
 
 
 function afterSearch(items, response) {
+  renderLocation(response?.metadata);
   const total = response?.response?.numFound;
   if (typeof total !== 'number') return [];
   renderSearchCorrection(response);
@@ -75,13 +79,16 @@ function afterSearch(items, response) {
   const options = readResponseSortOptions(response);
   if (sortController?.handle(options)) return [];
   const mapped = starterResults(items, response, isDemo ? demo.thumbnailPaths : null, connection, design.cardMetadata);
+  const batch = groupedPage(response, design.groupedBy, design.itemsPerGroup);
+  renderKitGroupedPager(document.querySelector('[data-grouped-pager]'), batch);
+  const grouped = batch ? groupHeadings(mapped, response, isDemo ? demo.facetLabels : {}) : mapped;
   const results = design.paginationMode === 'loadMore'
-    ? resultPages.collect(response.response.start ?? 0, mapped)
-    : mapped;
+    ? resultPages.collect(response.response.start ?? 0, grouped)
+    : grouped;
   loadedResults.value = design.paginationMode === 'loadMore' ? results.length : 0;
   totalResults.value = total;
   status.value = formatResultSummary(design.summaryMode, {
-    total, start: design.paginationMode === 'loadMore' ? 0 : (response.response.start ?? 0), visible: results.length,
+    total, start: design.paginationMode === 'loadMore' ? 0 : (response.response.start ?? 0), visible: results.length, grouped: Boolean(batch),
   });
   return results;
 }
@@ -152,7 +159,7 @@ watch(form, async (element) => {
   // Keep Results Widget replacement-based so the accumulated projection from
   // afterSearch is rendered once; Pagination Widget still uses its native
   // infinite-scroll controls through this data-layer flag.
-  api.dataLayer.setIsInfiniteScroll(design.paginationMode === 'loadMore');
+  api.dataLayer.setIsInfiniteScroll(design.paginationMode === 'loadMore' && !design.groupedBy);
   queryField.value.value = initialQuery;
   if (design.showSuggestions) {
     const source = isDemo ? sampleSuggestionSource : connection.suggesterURL
@@ -209,6 +216,7 @@ onBeforeUnmount(() => {
           <button type="submit" class="search-starter__submit">{{ design.searchButtonText }}</button>
         </form>
       </div>
+      <div id="search-location" class="search-starter__location" hidden></div>
       <div ref="answerHost"></div>
       <p v-if="design.summaryPlacement !== 'below'" role="status" data-result-summary>{{ status }}</p>
       <div class="search-starter__correction" data-search-correction hidden><span data-search-correction-message></span><button type="button" class="search-starter__submit" data-search-correction-retry></button></div>
@@ -260,10 +268,13 @@ onBeforeUnmount(() => {
             <div data-page-copy></div>
             <span class="search-starter__sr-only" role="status" data-page-announcement></span>
           </div>
-          <SearchstaxResultWidget renderMethod="pagination" :resultsPerPage="design.resultsPerPage">
+          <SearchstaxResultWidget renderMethod="pagination" :resultsPerPage="design.groupedBy ? GROUPING_ROWS : design.resultsPerPage"
+            :groupedBy="design.groupedBy || undefined" :itemsPerGroup="design.itemsPerGroup">
             <template #results="{ searchResults }">
               <div class="searchstax-search-results">
-                <article v-for="item in searchResults" :key="item.uniqueId || item.url" class="searchstax-search-result">
+                <template v-for="item in searchResults" :key="item.uniqueId || item.url">
+                  <h3 v-if="item.groupHeading" class="search-starter__group-heading">{{ item.groupHeading }}</h3>
+                  <article class="searchstax-search-result">
                   <span v-if="item.promoted" class="search-promotion-marker">{{ design.promotionBadge }}</span>
                   <img v-if="item.previewThumbnail" class="search-starter__result-thumbnail" :src="item.previewThumbnail"
                     :alt="item.previewThumbnailAlt" :lang="resultLanguage" loading="lazy" referrerpolicy="no-referrer">
@@ -273,7 +284,8 @@ onBeforeUnmount(() => {
                     <p v-if="item.descriptionParts.length" class="search-starter__result-description" :lang="resultLanguage"><Passage :parts="item.descriptionParts" /></p>
                     <p v-for="(field, i) in item.otherFields" :key="i">{{ field.label ? field.label + ': ' : '' }}<Passage :parts="field.parts" /></p>
                   </div>
-                </article>
+                  </article>
+                </template>
               </div>
             </template>
             <template #noResult>
@@ -281,6 +293,8 @@ onBeforeUnmount(() => {
             </template>
           </SearchstaxResultWidget>
           <div ref="pagination" data-pager-position="below" tabindex="-1" role="group" aria-label="Search result pagination">
+            <div class="search-starter__pagination" data-grouped-pager hidden></div>
+            <div>
             <SearchstaxPaginationWidget>
               <template #pagination="{ paginationData }">
                 <nav v-if="design.paginationMode !== 'loadMore' && paginationData?.totalResults" class="search-starter__pagination" aria-label="Search result pages">
@@ -297,6 +311,7 @@ onBeforeUnmount(() => {
                 </button>
               </template>
             </SearchstaxPaginationWidget>
+            </div>
             <span :class="{ 'search-starter__sr-only': design.paginationMode !== 'loadMore' }" role="status" :aria-live="design.summaryMode === 'range' ? 'off' : 'polite'" data-page-announcement>
               {{ design.paginationMode === 'loadMore' && loadedResults ? `Loaded ${loadedResults} of ${totalResults} results${loadedResults >= totalResults ? ' (all results loaded)' : ''}` : '' }}
             </span>

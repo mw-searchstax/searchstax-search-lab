@@ -1,3 +1,4 @@
+import { searchWithLocation, setupStarterLocation } from './location-search.js';
 import { setupFacetLimits } from './facet-limits.js';
 import { selectedFacetGroups } from './facet-groups.js';
 import React, { useEffect, useRef, useState } from 'react';
@@ -22,6 +23,7 @@ import { createResultPages } from './result-pages.js';
 import { formatResultSummary } from './result-summary.js';
 import { renderSearchCorrection, setupKitSpelling, setupSearchCorrection } from './spelling.js';
 import { decodedSort, encodedSort, createSortController, readResponseSortOptions, readSortOptions } from './sorting.js';
+import { GROUPING_ROWS, groupedPage, groupHeadings, renderKitGroupedPager } from './grouped-results.js';
 import { installRecordedSearch } from './recorded-search.js';
 import recordings from './recorded-searches.js';
 
@@ -51,7 +53,9 @@ function resultCards(results) {
   return (
     <div className="searchstax-search-results">
       {results.map((item) => (
-        <article className="searchstax-search-result" key={item.uniqueId || item.url}>
+        <React.Fragment key={item.uniqueId || item.url}>
+          {item.groupHeading && <h3 className="search-starter__group-heading">{item.groupHeading}</h3>}
+          <article className="searchstax-search-result">
           {item.promoted && <span className="search-promotion-marker">{design.promotionBadge}</span>}
           {item.previewThumbnail && (
             <img className="search-starter__result-thumbnail" src={item.previewThumbnail} alt={item.previewThumbnailAlt} lang={resultLanguage} loading="lazy" referrerPolicy="no-referrer" />
@@ -62,7 +66,8 @@ function resultCards(results) {
             {item.descriptionParts.length > 0 && <p className="search-starter__result-description" lang={resultLanguage}>{renderParts(item.descriptionParts)}</p>}
             {item.otherFields.map((field, index) => <p key={index}>{field.label && field.label + ': '}{renderParts(field.parts)}</p>)}
           </div>
-        </article>
+          </article>
+        </React.Fragment>
       ))}
     </div>
   );
@@ -188,7 +193,7 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
     // Keep Results Widget replacement-based so the accumulated projection from
     // afterSearch is rendered once; Pagination Widget still uses its native
     // infinite-scroll controls through this data-layer flag.
-    api.dataLayer.setIsInfiniteScroll(design.paginationMode === 'loadMore');
+    api.dataLayer.setIsInfiniteScroll(design.paginationMode === 'loadMore' && !design.groupedBy);
     services.current = setupStarterServices(form.current, answerHost.current, connection, design);
     if (initialQuery) runSearch(initialQuery);
     else setStatus('Enter a search term.');
@@ -222,6 +227,7 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
       <input id="starter-query" type="search" defaultValue={initialQuery} placeholder={design.searchFieldText} ref={input} autoComplete="off" required />
       <button type="submit" className="search-starter__submit">{design.searchButtonText}</button>
     </form>
+    <div id="search-location" className="search-starter__location" hidden />
     <div ref={answerHost} />
     {design.summaryPlacement !== 'below' && feedback}
     <div className="search-starter__correction" data-search-correction hidden><span data-search-correction-message="" /><button type="button" className="search-starter__submit" data-search-correction-retry="" /></div>
@@ -238,10 +244,13 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
           <div data-page-copy="" />
           <span className="search-starter__sr-only" role="status" data-page-announcement="" />
         </div>
-        <SearchstaxResultWidget renderMethod="pagination" resultsPerPage={design.resultsPerPage}
+        <SearchstaxResultWidget renderMethod="pagination" resultsPerPage={design.groupedBy ? GROUPING_ROWS : design.resultsPerPage}
+          groupedBy={design.groupedBy || undefined} itemsPerGroup={design.itemsPerGroup}
           resultsTemplate={resultCards}
           noResultTemplate={() => <p className="search-starter__no-results">{design.noResultsText}</p>} />
         <div ref={pagination} data-pager-position="below" tabIndex={-1} role="group" aria-label="Search result pagination">
+          <div className="search-starter__pagination" data-grouped-pager hidden />
+          <div>
           {design.paginationMode === 'loadMore' ? (
             <SearchstaxPaginationWidget
               infiniteScrollTemplate={(data, nextPage) => (
@@ -252,6 +261,7 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
               )}
             />
           ) : pageControls(summary)}
+          </div>
           <span className={design.paginationMode === 'loadMore' ? undefined : 'search-starter__sr-only'} role="status" aria-live={design.summaryMode === 'range' ? 'off' : 'polite'} data-page-announcement="">
             {design.paginationMode === 'loadMore' && summary.end > 0
               ? `Loaded ${summary.end} of ${summary.total} results${summary.end >= summary.total ? ' (all results loaded)' : ''}`
@@ -268,12 +278,17 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
 
 export default function SearchApp() {
   const [api, setApi] = useState(null);
+  const locationApi = useRef(null);
+  const [renderLocation] = useState(() => setupStarterLocation(
+    design.locationDefaultRadius, selection => searchWithLocation(locationApi.current, selection),
+  ));
   const [summary, setSummary] = useState({ start: 0, end: 0, total: 0 });
   const [status, setStatus] = useState('Connecting to search…');
   const timer = useRef();
   const sortController = useRef(null);
 
   function afterSearch(items, response) {
+    renderLocation(response?.metadata);
     const total = response?.response?.numFound;
     if (typeof total !== 'number') return [];
     renderSearchCorrection(response);
@@ -282,16 +297,19 @@ export default function SearchApp() {
     const options = readResponseSortOptions(response);
     if (sortController.current?.handle(options)) return [];
     const mapped = starterResults(items, response, isDemo ? demo.thumbnailPaths : null, connection, design.cardMetadata);
+    const batch = groupedPage(response, design.groupedBy, design.itemsPerGroup);
+    renderKitGroupedPager(document.querySelector('[data-grouped-pager]'), batch);
+    const grouped = batch ? groupHeadings(mapped, response, isDemo ? demo.facetLabels : {}) : mapped;
     const start = response.response.start ?? 0;
     const results = design.paginationMode === 'loadMore'
-      ? resultPages.collect(start, mapped)
-      : mapped;
+      ? resultPages.collect(start, grouped)
+      : grouped;
     const end = design.paginationMode === 'loadMore'
       ? results.length
       : Math.min(total, start + (response.response.docs?.length ?? design.resultsPerPage));
     setSummary({ start: design.paginationMode === 'loadMore' ? 0 : start, end, total });
     setStatus(formatResultSummary(design.summaryMode, {
-      total, start: design.paginationMode === 'loadMore' ? 0 : start, visible: results.length,
+      total, start: design.paginationMode === 'loadMore' ? 0 : start, visible: results.length, grouped: Boolean(batch),
     }));
     return results;
   }
@@ -311,6 +329,7 @@ export default function SearchApp() {
         suggesterURL=""
         {...analytics} router={{ enabled: false }} afterSearch={afterSearch}
         initialized={(instance) => {
+          locationApi.current = instance;
           instance.setCookiesDisabled(!analytics.trackApiKey);
           sortController.current = createSortController({
             enabled: design.showSorting,

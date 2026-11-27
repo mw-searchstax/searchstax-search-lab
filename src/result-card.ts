@@ -6,7 +6,7 @@ import { metadataLabel, metadataScope, orderedMetadata, type MetadataStyle, type
 export type ResultField = { name: string; result_card?: string | null; title?: string };
 export type CardValue = MetadataField & { role: string; label: string; value: string; highlighted: boolean };
 export type ThumbnailPolicy = { thumbnailAltField?: string; thumbnailsWithoutAltAreDecorative?: boolean };
-export type ResultCard = { scope: string; url: string; thumbnail: string; alt?: string; sampleThumbnail?: string; values: CardValue[]; promoted: boolean };
+export type ResultCard = { scope: string; url: string; thumbnail: string; alt?: string; sampleThumbnail?: string; values: CardValue[]; promoted: boolean; groupHeading?: string };
 
 function displayText(value: unknown, separator = ', '): string {
   if (Array.isArray(value)) return value.map(item => displayText(item)).filter(Boolean).join(separator);

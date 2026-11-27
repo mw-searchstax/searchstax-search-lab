@@ -70,7 +70,9 @@ import cardRuntime from './result-card.ts?starter-js';
 import appConfigurationRuntime from './app-configuration.ts?starter-js';
 import profileRuntime from './profile-experiences.ts?starter-js';
 import searchRuntime from './customer-search.ts?starter-js';
+import locationRuntime from './location-search.ts?starter-js';
 import spellingRuntime from './spelling.ts?starter-js';
+import groupingRuntime from './grouped-results.ts?starter-js';
 import type { ExperienceHandoff } from './profile-experiences';
 import profileControls from './profile-controls.html?raw';
 import profileCSS from './profile-controls.css?raw';
@@ -94,6 +96,12 @@ type StarterConnection = {
   model: string;
   kitURL: string;
 };
+
+const locationHandoff = `## Manual location search
+
+For a location-enabled Search Profile, configure \`window.SearchLabLocationGeocoder\` on the page. The function receives the typed place and returns an object with \`address\`, \`lat\`, and \`lon\`, or \`null\` when it can’t resolve the place. Keep provider credentials on your server.
+
+The starter uses the radius choices and units published by the profile. Clearing a place restores the full results. Place text and coordinates aren’t stored in the starter’s settings.`;
 
 function escapeHTML(value: string): string {
   return value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
@@ -237,6 +245,7 @@ function starterFeatures(design: DesignSettings) {
     suggestionMinChars: design.suggestionMinChars,
     suggestionRowSpacing: design.suggestionRowSpacing,
     emphasizeSuggestionText: design.emphasizeSuggestionText,
+    locationDefaultRadius: design.locationDefaultRadius,
     smartAnswerHeading: design.smartAnswerHeading,
     smartAnswerCardStyle: design.smartAnswerCardStyle,
     smartAnswerSourceStyle: design.smartAnswerSourceStyle,
@@ -244,10 +253,12 @@ function starterFeatures(design: DesignSettings) {
     promotionBadge: design.promotionBadge,
     promotionHeading: design.promotionHeading,
     bannerPlacement: design.bannerPlacement,
-    paginationMode: design.paginationMode,
+    paginationMode: design.groupedBy ? 'paged' : design.paginationMode,
     paginationPlacement: design.paginationPlacement,
     loadMoreText: design.loadMoreText,
     resultsPerPage: design.resultsPerPage,
+    groupedBy: design.groupedBy,
+    itemsPerGroup: design.itemsPerGroup,
     noResultsText: design.noResultsText,
   };
 }
@@ -311,6 +322,8 @@ function createProfileStarter(framework: Framework, design: DesignSettings, expe
     'src/related-searches.js': relatedJS,
     'src/customer-search.js': searchRuntime,
     'src/spelling.js': spellingRuntime,
+    'src/location-search.js': locationRuntime,
+    'src/grouped-results.js': groupingRuntime,
     'src/content-language.js': contentLanguageJS,
     'src/web-url.js': webURLJS,
     'src/config.js': `export const settings = ${JSON.stringify({ ...profileExperience, navigation: design, logoURL: design.logoURL,
@@ -362,6 +375,8 @@ When both controls are enabled, the language picker controls which profiles appe
 In **src/config.js**, set **settings.source** to **app**. Enter the HTTPS Select endpoint from App Settings → All APIs → Search & Indexing in **connection.endpoint**, and its browser-safe read-only token in **connection.token**. These values are visible to visitors. Use **settings.profiles** for the list of language and profile pairs and **settings.selected** for the starting pair. Empty language and profile values use the app defaults. Set **settings.initialQuery** to your preferred opening query or leave it blank.
 
 To use optional services in your own app, add the HTTPS Auto-Suggest endpoint as **connection.suggestEndpoint**, the streaming Answer endpoint as **connection.answerEndpoint**, or the Related Searches endpoint and Discovery key as **connection.relatedURL** and **connection.discoveryKey**. Use credentials intended for browser use. Set **settings.entitlements** from the app’s entitlements. For each entry in **settings.profiles**, use the published **relatedSearches** setting for its language and the **smartAnswers** setting for its profile. Each service requires its entitlement and published setting. Related Searches requests use the search phrase and language. Smart Answers requests also use the selected profile.
+
+${locationHandoff}
 
 Set **settings.navigation.suggestionMinChars** to **null** to use the suggestion source’s minimum, or enter a higher number to delay suggestions.
 
@@ -465,7 +480,9 @@ export function createStarterZip(
     'result-summary.js': strToU8(resultSummaryJS),
     'promotion-display.js': strToU8(promotionDisplay),
     'spelling.js': strToU8(spellingRuntime),
-    'README.md': strToU8(readme),
+    'location-search.js': strToU8(locationRuntime),
+    'grouped-results.js': strToU8(groupingRuntime),
+    'README.md': strToU8(readme.trimEnd() + '\n\n' + locationHandoff + '\n'),
     ...thumbnailFiles,
   });
 
@@ -524,6 +541,8 @@ export const design = ${JSON.stringify(settings, null, 2)};
     'src/starter-passages.js': strToU8(starterPassages),
     'src/customer-answers.js': strToU8(customerAnswersJS),
     'src/spelling.js': strToU8(spellingRuntime),
+    'src/location-search.js': strToU8(locationRuntime),
+    'src/grouped-results.js': strToU8(groupingRuntime),
     ...ordinaryServiceFiles(selected, 'src/'),
     'src/thumbnail-alt.js': strToU8(thumbnailAltJS),
     'src/customer-suggestions.js': strToU8(customerSuggestions),
@@ -541,7 +560,7 @@ export function createReactStarterZip(
     'index.html': strToU8(reactHTML),
     'package.json': strToU8(reactPackage),
     'package-lock.json': strToU8(reactLock),
-    'README.md': strToU8(reactReadme),
+    'README.md': strToU8(reactReadme.trimEnd() + '\n\n' + locationHandoff + '\n'),
     'src/main.jsx': strToU8(reactEntry),
     'src/SearchApp.jsx': strToU8(reactApp),
     ...frameworkStarterFiles(design, connection, facetLabels),
@@ -559,7 +578,7 @@ export function createVueStarterZip(
     'index.html': strToU8(vueHTML),
     'package.json': strToU8(vuePackage),
     'package-lock.json': strToU8(vueLock),
-    'README.md': strToU8(vueReadme),
+    'README.md': strToU8(vueReadme.trimEnd() + '\n\n' + locationHandoff + '\n'),
     'vite.config.js': strToU8(vueViteConfig),
     'src/main.js': strToU8(vueEntry),
     'src/SearchApp.vue': strToU8(vueApp),
@@ -579,7 +598,7 @@ export function createAngularStarterZip(
     'package-lock.json': strToU8(angularLock),
     'angular.json': strToU8(angularConfig),
     'tsconfig.json': strToU8(angularTsConfig),
-    'README.md': strToU8(angularReadme),
+    'README.md': strToU8(angularReadme.trimEnd() + '\n\n' + locationHandoff + '\n'),
     'src/index.html': strToU8(angularHTML),
     'src/main.ts': strToU8(angularEntry),
     'src/search-app.ts': strToU8(angularApp),

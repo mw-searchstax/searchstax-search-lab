@@ -1,6 +1,7 @@
 import { webURL } from './web-url.js';
 import { readMetadataStyles, type MetadataStyle } from './card-metadata.js';
 import { readFacetGroupStyles, type FacetGroupStyle } from './facet-groups.js';
+import { GROUPING_DEFAULT_ITEMS, readGroupedBy, readItemsPerGroup } from './grouped-results.js';
 
 const FONT_STACKS = {
   arial: 'Arial, Helvetica, sans-serif',
@@ -66,6 +67,9 @@ export type DesignSettings = {
   suggestionMinChars: number | null;
   suggestionRowSpacing: 'standard' | 'compact';
   emphasizeSuggestionText: boolean;
+  /** Published profile radius to use after a place is decoded. The visitor's
+   * place and coordinates are deliberately not part of the design. */
+  locationDefaultRadius: string | null;
   showSmartAnswersSample: boolean;
   smartAnswerHeading: string;
   smartAnswerCardStyle: 'accent' | 'outline';
@@ -76,6 +80,8 @@ export type DesignSettings = {
   paginationPlacement: 'above' | 'below' | 'both';
   loadMoreText: string;
   resultsPerPage: typeof PAGE_SIZES[number];
+  groupedBy: '' | 'demo_content_type_s';
+  itemsPerGroup: number;
   color: string;
   background: string;
   logoURL: string;
@@ -132,6 +138,7 @@ export const DEFAULT_DESIGN: Readonly<DesignSettings> = {
   suggestionMinChars: null,
   suggestionRowSpacing: 'standard',
   emphasizeSuggestionText: false,
+  locationDefaultRadius: null,
   showSmartAnswersSample: true,
   smartAnswerHeading: '',
   smartAnswerCardStyle: 'accent',
@@ -142,6 +149,8 @@ export const DEFAULT_DESIGN: Readonly<DesignSettings> = {
   paginationPlacement: 'below',
   loadMoreText: 'Load more',
   resultsPerPage: 10,
+  groupedBy: '',
+  itemsPerGroup: GROUPING_DEFAULT_ITEMS,
   color: '#263f58',
   background: '#ffffff',
   logoURL: '',
@@ -170,6 +179,12 @@ export function readFacetLimit(value: string | null): number {
 export function readSuggestionMinimum(value: string | null): number | null {
   const minimum = Number(value);
   return Number.isSafeInteger(minimum) && minimum > 0 ? minimum : null;
+}
+
+export function readLocationRadius(value: string | null): string | null {
+  if (!value) return null;
+  const text = value.trim();
+  return text === 'any' || /^\d+(?:\.\d+)?$/.test(text) ? text : null;
 }
 
 export function readSmartAnswerWordLimit(value: string | null): number {
@@ -273,6 +288,7 @@ export function readDesignParams(params: URLSearchParams, allowFictionalPreview 
     suggestionMinChars: readSuggestionMinimum(params.get('lab_suggestion_minimum')),
     suggestionRowSpacing: params.get('lab_suggestion_spacing') === 'compact' ? 'compact' : 'standard',
     emphasizeSuggestionText: params.get('lab_suggestion_emphasis') === 'on',
+    locationDefaultRadius: readLocationRadius(params.get('lab_location_radius')),
     showSmartAnswersSample: params.get('lab_answer_sample') !== 'off',
     smartAnswerHeading: resolveSearchText(params.get('lab_answer_heading'), DEFAULT_DESIGN.smartAnswerHeading),
     smartAnswerCardStyle: params.get('lab_answer_style') === 'outline' ? 'outline' : 'accent',
@@ -283,6 +299,8 @@ export function readDesignParams(params: URLSearchParams, allowFictionalPreview 
     paginationPlacement: readPaginationPlacement(params.get('lab_pagination_placement')),
     loadMoreText: resolveSearchText(params.get('lab_load_more_text'), DEFAULT_DESIGN.loadMoreText),
     resultsPerPage: readPageSize(params.get('lab_page_size')),
+    groupedBy: readGroupedBy(params.get('lab_grouped_by')),
+    itemsPerGroup: readItemsPerGroup(params.get('lab_items_per_group')),
     color: isHexColor(color) ? color : DEFAULT_DESIGN.color,
     background: isHexColor(background) ? background : DEFAULT_DESIGN.background,
     logoURL: readLogoURL(params.get('lab_logo')),
@@ -310,6 +328,7 @@ export function writeDesignParams(params: URLSearchParams, design: DesignSetting
     ['lab_related_spacing', design.relatedSpacing === 'compact' && 'compact'],
     ['lab_suggestion_spacing', design.suggestionRowSpacing === 'compact' && 'compact'],
     ['lab_suggestion_emphasis', design.emphasizeSuggestionText && 'on'],
+    ['lab_location_radius', design.locationDefaultRadius],
     ['lab_answer_heading', design.smartAnswerHeading],
     ['lab_answer_style', design.smartAnswerCardStyle === 'outline' && 'outline'],
     ['lab_answer_source_style', design.smartAnswerSourceStyle === 'cards' && 'cards'],
@@ -390,6 +409,10 @@ export function writeDesignParams(params: URLSearchParams, design: DesignSetting
   if (design.resultsPerPage !== DEFAULT_DESIGN.resultsPerPage) {
     params.set('lab_page_size', String(design.resultsPerPage));
   }
+  if (design.groupedBy) params.set('lab_grouped_by', design.groupedBy);
+  else params.delete('lab_grouped_by');
+  if (design.itemsPerGroup !== DEFAULT_DESIGN.itemsPerGroup) params.set('lab_items_per_group', String(design.itemsPerGroup));
+  else params.delete('lab_items_per_group');
   if (design.searchFieldText !== DEFAULT_DESIGN.searchFieldText) {
     params.set('lab_field_text', design.searchFieldText);
   }

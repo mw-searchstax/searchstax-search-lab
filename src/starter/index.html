@@ -16,6 +16,7 @@
       <input id="search-query" type="search" value="%%INITIAL_QUERY%%" placeholder="%%SEARCH_FIELD_TEXT%%" autocomplete="off" required>
       <button class="search-starter__submit" type="submit" disabled>%%SEARCH_BUTTON_TEXT%%</button>
     </form>
+    <div id="search-location" class="search-starter__location" hidden aria-label="Search near a place"></div>
     <div id="search-feedback">
       <p id="search-status" role="status" tabindex="-1" data-result-summary>Connecting to search…</p>
       <button id="search-retry" type="button" class="search-starter__submit" aria-describedby="search-status" hidden>Retry search</button>
@@ -43,6 +44,7 @@
         <div id="search-results"></div>
         <p class="search-starter__no-results" id="search-no-results" hidden></p>
         <div data-pagination-focus data-pager-position="below" tabindex="-1" role="group" aria-label="Search result pagination">
+          <div class="search-starter__pagination" data-grouped-pager hidden></div>
           <div id="search-pagination"></div>
           <span class="search-starter__sr-only" role="status" data-page-announcement></span>
         </div>

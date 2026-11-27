@@ -32,6 +32,7 @@ import { samplePromotionQuery } from './sample-promotions';
 import { setupFacetLimits } from './facet-limits';
 import { setupFacetEditor } from './facet-editor';
 import { facetGroupScope, selectedFacetGroups } from './facet-groups';
+import { GROUPING_ROWS, groupedPage, groupHeadings, readGroupedBy, readItemsPerGroup, renderKitGroupedPager } from './grouped-results';
 import { promotionEntries, renderPromotionBanners, placePromotionBanners, updatePromotionLabels } from './promotion-display';
 import './sample-promotions.css';
 import smartAnswersSampleHTML from './smart-answers-sample.html?raw';
@@ -153,6 +154,8 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
   var spacingInput = root.querySelector('#lab-spacing');
   const paginationModeInput = root.querySelector('#lab-pagination-mode');
   const paginationPlacementInput = root.querySelector('#lab-pagination-placement');
+  const groupedByInput = root.querySelector('#lab-grouped-by');
+  const itemsPerGroupInput = root.querySelector('#lab-items-per-group');
   var pageSizeInput = root.querySelector('#lab-page-size');
   var scenarioInput = root.querySelector('#lab-scenario');
   var facetsPanel = root.querySelector('[data-lab-facets-panel]');
@@ -422,6 +425,14 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     }
     showProfileSettings(profile, entitlements, summary, highlighting);
   });
+  function saveLocationRadius(event) {
+    const radius = event.detail?.radius;
+    design.locationDefaultRadius = typeof radius === 'string' && radius ? radius : null;
+    saveDesignDraft();
+    clearStaleShareLinks();
+  }
+  experiencePanel.addEventListener('lab-location-settings', saveLocationRadius);
+  customerPanel.addEventListener('lab-location-settings', saveLocationRadius);
   function refreshTabChoices() {
     const choices = availableProfiles.filter(profile => profile.language === choiceLanguage);
     profileChoices.hidden = !design.profileTabs || !choices.length;
@@ -716,14 +727,19 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     summaryMode.value = design.summaryMode;
     summaryPlacement.value = design.summaryPlacement;
     autoCorrect.value = design.autoCorrect === true ? 'on' : design.autoCorrect === false ? 'off' : 'inherit';
-    paginationModeInput.value = design.paginationMode;
+    const paginationMode = design.groupedBy ? 'paged' : design.paginationMode;
+    paginationModeInput.value = paginationMode;
+    const loadMoreOption = paginationModeInput.querySelector('option[value="loadMore"]');
+    if (loadMoreOption) loadMoreOption.disabled = Boolean(design.groupedBy);
     paginationPlacementInput.value = design.paginationPlacement;
-    paginationPlacementInput.closest('[data-pagination-placement-field]').hidden = design.paginationMode !== 'paged';
-    textInputs.loadMoreText.closest('[data-load-more-text-field]').hidden = design.paginationMode !== 'loadMore';
+    paginationPlacementInput.closest('[data-pagination-placement-field]').hidden = paginationMode !== 'paged';
+    textInputs.loadMoreText.closest('[data-load-more-text-field]').hidden = paginationMode !== 'loadMore';
     if (syncPaginationMode() && search.dataLayer.searchObject.query && experiencePanel.hidden && !customerPreview.active) {
       runSearch(search.dataLayer.searchObject.query, false, true);
     }
     pageSizeInput.value = String(design.resultsPerPage);
+    groupedByInput.value = design.groupedBy;
+    itemsPerGroupInput.value = String(design.itemsPerGroup);
     Object.keys(textInputs).forEach(function (key) { textInputs[key].value = design[key]; });
     updatePreviewText();
     root.querySelector('input[name="lab-layout"][value="' + design.layout + '"]').checked = true;
@@ -857,7 +873,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
       status.textContent = message || 'The live demo is unavailable right now. Please try again later.';
     }
     resultsContent.hidden = !hasPreviousResults;
-    pagination.hidden = !hasPreviousResults;
+    pagination.hidden = !hasPreviousResults || Boolean(builtInSummary.grouped);
     noResultsMessage.hidden = true;
   }
 
@@ -870,7 +886,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     hasPreviousResults = true;
     noResultsMessage.hidden = !noMatches;
 
-    pagination.hidden = false;
+    pagination.hidden = Boolean(builtInSummary.grouped);
     status.textContent = '';
     labelFacets();
   }
@@ -1047,7 +1063,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
   }
 
   function syncPaginationMode() {
-    const loadMore = workspaceMode === 'design' && design.paginationMode === 'loadMore';
+    const loadMore = workspaceMode === 'design' && design.paginationMode === 'loadMore' && !design.groupedBy;
     if (!search || search.dataLayer.isInfiniteScroll === loadMore) return false;
     search.dataLayer.setIsInfiniteScroll(loadMore);
     resultPages.clear();
@@ -1055,8 +1071,10 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     return true;
   }
 
+  const selectedGrouping = () => workspaceMode === 'design' ? design.groupedBy || undefined : undefined;
+
   function selectedPageSize() {
-    return workspaceMode === 'design' ? design.resultsPerPage : DEFAULT_DESIGN.resultsPerPage;
+    return selectedGrouping() ? GROUPING_ROWS : workspaceMode === 'design' ? design.resultsPerPage : DEFAULT_DESIGN.resultsPerPage;
   }
 
   function runSearch(query, clearFilters, preserveDraft = false, previousSearch) {
@@ -1094,13 +1112,15 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     var page = previousSearch?.page ?? 1;
     var nextFilters = visibleBuiltInFilters(previousSearch?.facets ?? (clearFilters ? [] : current.facets));
     var filtersUnchanged = JSON.stringify(current.facets) === JSON.stringify(nextFilters);
-    var unchanged = current.query === cleanQuery && current.model === model && current.page === page &&
+    const grouping = selectedGrouping();
+    const sameGrouping = search.dataLayer.groupedBy === grouping && (!grouping || search.dataLayer.itemsPerGroup === design.itemsPerGroup);
+    var unchanged = sameGrouping && current.query === cleanQuery && current.model === model && current.page === page &&
       current.order === order && current.itemsPerPage === itemsPerPage && filtersUnchanged;
     if (unchanged && completed && expected.view === workspaceMode && !clearedOriginal) {
       if (!preserveDraft) queryInput.value = cleanQuery;
       status.textContent = '';
       resultsContent.hidden = false;
-      pagination.hidden = false;
+      pagination.hidden = Boolean(builtInSummary.grouped);
       return;
     }
     expected = { query: cleanQuery, model: model, order: order, itemsPerPage: itemsPerPage, view: workspaceMode };
@@ -1112,6 +1132,8 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     busy(true);
     search.dataLayer.setModel(model);
     search.dataLayer.setItemsPerPage(itemsPerPage);
+    search.dataLayer.setGroupedBy(grouping, design.itemsPerGroup);
+    const additionalProps = (current.additionalProps || []).filter(item => !['group', 'group.field', 'group.limit', 'group.offset'].includes(item.key));
     var nextSearch = Object.assign({}, current, {
       query: expected.query,
       page: page,
@@ -1119,6 +1141,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
       facets: nextFilters,
       model: model,
       order: order,
+      additionalProps: unchanged ? current.additionalProps : additionalProps,
     });
     if (unchanged) search.search(nextSearch);
     else search.dataLayer.setSearchObject(nextSearch);
@@ -1127,7 +1150,8 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
   function refreshSearchOptions() {
     if (!experiencePanel.hidden || customerPreview.active) return;
     var current = search?.dataLayer.searchObject;
-    if (current?.query && (current.order !== selectedOrder() || current.itemsPerPage !== selectedPageSize())) {
+    if (current?.query && (current.order !== selectedOrder() || current.itemsPerPage !== selectedPageSize() ||
+      search?.dataLayer.groupedBy !== selectedGrouping() || (selectedGrouping() && search?.dataLayer.itemsPerGroup !== design.itemsPerGroup))) {
       runSearch(current.query, false, true);
     }
   }
@@ -1151,12 +1175,15 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
       return [{ ...items[index], url: card.url, mappedBody: body.innerHTML, promoted: card.promoted, promotionBadge: design.promotionBadge,
         demoThumbnail: hasThumbnailMapping ? '' : demoThumbnails[card.url]?.source }];
     });
+    const batch = groupedPage(response, selectedGrouping(), design.itemsPerGroup);
+    renderKitGroupedPager(root.querySelector('[data-lab-grouped-pager]'), batch);
+    const grouped = batch ? groupHeadings(mapped, response, FACET_LABELS) : mapped;
     const total = response.response.numFound;
     const notice = resultMappingNotice(mappingsKnown && !unknownResultFields.has(response), mapped.length, total);
     const start = response.response.start ?? 0;
     const loadMore = search.dataLayer.isInfiniteScroll;
-    const displayed = loadMore ? resultPages.collect(start, mapped) : mapped;
-    builtInSummary = { total, start: loadMore ? 0 : start, visible: displayed.length, query: response.responseHeader.params.q, notice };
+    const displayed = loadMore ? resultPages.collect(start, grouped) : grouped;
+    builtInSummary = { total, start: loadMore ? 0 : start, visible: displayed.length, query: response.responseHeader.params.q, notice, grouped: Boolean(batch) };
     updateBuiltInSummary();
     if (experiencePanel.hidden && !customerPreview.active) syncFeatureControls();
     renderPromotionBanners(externalPromotion, promotionEntries(response.externalLinks), design.promotionHeading, 'en');
@@ -1242,13 +1269,15 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
       search.addSearchResultsWidget('lab-results', {
         renderMethod: 'pagination',
         resultsPerPage: selectedPageSize(),
+        groupedBy: design.groupedBy || undefined,
+        itemsPerGroup: design.itemsPerGroup,
         templates: {
           mainTemplate: {
             template: '<div id="lab-results-list" class="searchstax-search-results"></div>',
             searchResultsContainerId: 'lab-results-list',
           },
           searchResultTemplate: {
-            template: '<article class="searchstax-search-result {{#mappedBody}}mapped-result-card{{/mappedBody}}">{{#promoted}}<span class="search-promotion-marker">{{promotionBadge}}</span>{{/promoted}}{{#demoThumbnail}}<img class="search-lab__result-thumbnail" src="{{demoThumbnail}}" alt="" width="384" height="216" loading="lazy">{{/demoThumbnail}}{{#mappedBody}}{{{mappedBody}}}{{/mappedBody}}{{^mappedBody}}<h4><a class="searchstax-search-result-title" href="{{url}}" data-searchstax-unique-result-id="{{uniqueId}}">{{title}}</a></h4><p class="search-lab__result-description">{{description}}</p>{{/mappedBody}}</article>',
+            template: '{{#groupHeading}}<h3 class="search-lab__group-heading">{{groupHeading}}</h3>{{/groupHeading}}<article class="searchstax-search-result {{#mappedBody}}mapped-result-card{{/mappedBody}}">{{#promoted}}<span class="search-promotion-marker">{{promotionBadge}}</span>{{/promoted}}{{#demoThumbnail}}<img class="search-lab__result-thumbnail" src="{{demoThumbnail}}" alt="" width="384" height="216" loading="lazy">{{/demoThumbnail}}{{#mappedBody}}{{{mappedBody}}}{{/mappedBody}}{{^mappedBody}}<h4><a class="searchstax-search-result-title" href="{{url}}" data-searchstax-unique-result-id="{{uniqueId}}">{{title}}</a></h4><p class="search-lab__result-description">{{description}}</p>{{/mappedBody}}</article>',
             searchResultUniqueIdAttribute: 'data-searchstax-unique-result-id',
           },
           noSearchResultTemplate: { template: ' ' },
@@ -1382,6 +1411,16 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
   paginationPlacementInput.addEventListener('change', () => {
     design.paginationPlacement = readPaginationPlacement(paginationPlacementInput.value);
     updateDesign();
+  });
+  groupedByInput.addEventListener('change', () => {
+    design.groupedBy = readGroupedBy(groupedByInput.value);
+    updateDesign();
+    refreshSearchOptions();
+  });
+  itemsPerGroupInput.addEventListener('change', () => {
+    design.itemsPerGroup = readItemsPerGroup(itemsPerGroupInput.value);
+    updateDesign();
+    refreshSearchOptions();
   });
   summaryMode.addEventListener('change', () => {
     design.summaryMode = summaryMode.value;

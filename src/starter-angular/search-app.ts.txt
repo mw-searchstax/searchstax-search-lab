@@ -1,3 +1,4 @@
+import { searchWithLocation, setupStarterLocation } from './location-search.js';
 import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, signal } from '@angular/core';
 import { setupFacetLimits } from './facet-limits.js';
 import { selectedFacetGroups } from './facet-groups.js';
@@ -17,6 +18,7 @@ import { createResultPages } from './result-pages.js';
 import { formatResultSummary } from './result-summary.js';
 import { renderSearchCorrection, setupKitSpelling, setupSearchCorrection } from './spelling.js';
 import { decodedSort, encodedSort, createSortController, readResponseSortOptions, readSortOptions } from './sorting.js';
+import { GROUPING_ROWS, groupedPage, groupHeadings, renderKitGroupedPager } from './grouped-results.js';
 import { installRecordedSearch } from './recorded-search.js';
 import recordings from './recorded-searches.js';
 
@@ -57,6 +59,7 @@ export class SearchApp implements AfterViewInit, OnDestroy {
   readonly connection = connection;
   readonly analytics = getAnalyticsSettings(connection);
   readonly design = design;
+  readonly pageSize = design.groupedBy ? GROUPING_ROWS : design.resultsPerPage;
   readonly resultLanguage = contentLanguageTag(connection.language);
   readonly isDemo = connection.source === 'demo' && connection.searchURL === demo.searchURL && connection.model === demo.model && this.resultLanguage === demo.language;
   readonly status = signal('Connecting to search…');
@@ -68,6 +71,9 @@ export class SearchApp implements AfterViewInit, OnDestroy {
   private readonly initialQuery = connection.initialQuery ||
     (this.isDemo ? 'rehabilitation' : '');
   private api?: Searchstax;
+  private readonly renderLocation = setupStarterLocation(
+    design.locationDefaultRadius, (selection?: SearchObject['location']) => searchWithLocation(this.api, selection),
+  );
   private spelling?: ReturnType<typeof setupKitSpelling>;
   private loadingSubscription?: string;
   private timer?: number;
@@ -162,6 +168,7 @@ export class SearchApp implements AfterViewInit, OnDestroy {
   }
 
   readonly afterSearch = (items: ISearchstaxParsedResult[], response?: ISearchstaxSearchResponse) => {
+    this.renderLocation(response?.metadata);
     const total = response?.response?.numFound;
     if (typeof total !== 'number') return [];
     renderSearchCorrection(response);
@@ -174,14 +181,17 @@ export class SearchApp implements AfterViewInit, OnDestroy {
     const options = readResponseSortOptions(response);
     if (this.sortController?.handle(options)) return [];
     const mapped = starterResults(items, response, this.isDemo ? thumbnailPaths : null, connection, design.cardMetadata);
+    const batch = groupedPage(response, design.groupedBy, design.itemsPerGroup);
+    renderKitGroupedPager(this.pagination?.nativeElement.querySelector('[data-grouped-pager]') ?? null, batch);
+    const grouped = batch ? groupHeadings(mapped, response, this.isDemo ? facetLabels : {}) : mapped;
     const results = design.paginationMode === 'loadMore'
-      ? this.resultPages.collect(response?.response?.start ?? 0, mapped)
-      : mapped;
+      ? this.resultPages.collect(response?.response?.start ?? 0, grouped)
+      : grouped;
     this.pageStart.set((response?.response?.start ?? 0) + 1);
     this.loadedResults.set(design.paginationMode === 'loadMore' ? results.length : 0);
     this.totalResults.set(total);
     this.status.set(formatResultSummary(design.summaryMode, {
-      total, start: design.paginationMode === 'loadMore' ? 0 : (response?.response?.start ?? 0), visible: results.length,
+      total, start: design.paginationMode === 'loadMore' ? 0 : (response?.response?.start ?? 0), visible: results.length, grouped: Boolean(batch),
     }));
     return results;
   };

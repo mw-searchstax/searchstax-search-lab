@@ -31,9 +31,12 @@ export function setupPaginationFocus(host, getSearch) {
     if (!button || button.disabled || !current?.itemsPerPage || api.dataLayer.loading) return;
     const range = host.querySelector('[data-page-range]');
     const from = Number(range?.dataset.pageStart);
+    const groupedPage = Number(range?.dataset.pageNumber);
     const step = button.dataset.pageStep;
-    if (!Number.isSafeInteger(from) || from < 1 || (step !== 'previous' && step !== 'next')) return;
-    const page = 1 + Math.floor((from - 1) / current.itemsPerPage) + (step === 'next' ? 1 : -1);
+    const currentPage = Number.isSafeInteger(groupedPage) && groupedPage >= 1 ? groupedPage
+      : Number.isSafeInteger(from) && from >= 1 ? 1 + Math.floor((from - 1) / current.itemsPerPage) : 0;
+    if (!currentPage || (step !== 'previous' && step !== 'next')) return;
+    const page = currentPage + (step === 'next' ? 1 : -1);
     if (document.activeElement === button || event.detail === 0) {
       pending = { range: range.textContent.trim(), step };
       if (announcement) announcement.textContent = '';
@@ -107,9 +110,9 @@ export function setupPaginationFocus(host, getSearch) {
   };
 }
 
-/** @param {{ paginationMode?: string, paginationPlacement?: string }} design @param {string} position */
+/** @param {{ paginationMode?: string, paginationPlacement?: string, groupedBy?: string }} design @param {string} position */
 export function showPaginationAt(design, position) {
-  const placement = design.paginationMode === 'loadMore' ? 'below' : design.paginationPlacement || 'below';
+  const placement = !design.groupedBy && design.paginationMode === 'loadMore' ? 'below' : design.paginationPlacement || 'below';
   return placement === 'both' || placement === position;
 }
 
@@ -136,10 +139,11 @@ export function setupPaginationPlacement(above, below, getDesign, getSearch) {
 
   function refresh() {
     const design = getDesign();
-    const source = below.querySelector('nav:has([data-page-range])');
-    const hiddenParent = source?.closest('[hidden]');
-    const available = source && (!hiddenParent || hiddenParent === below || !below.contains(hiddenParent));
-    const showAbove = showPaginationAt(design, 'above') && Boolean(available);
+    const source = Array.from(below.querySelectorAll('nav:has([data-page-range])')).find(candidate => {
+      const hiddenParent = candidate.closest('[hidden]');
+      return !hiddenParent || hiddenParent === below || !below.contains(hiddenParent);
+    });
+    const showAbove = showPaginationAt(design, 'above') && Boolean(source);
     const showBelow = showPaginationAt(design, 'below');
     source?.setAttribute('aria-label', showAbove && showBelow ? 'Search result pages below results' : 'Search result pages');
     const next = showAbove ? source.outerHTML : '';

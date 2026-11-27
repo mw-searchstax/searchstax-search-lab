@@ -4,6 +4,15 @@
   <input type="search" id="lab-exp-query" required>
   <button type="submit">Search</button>
 </form>
+<div class="search-lab__location" data-exp-location hidden aria-label="Search near a place">
+  <label for="lab-exp-location">Search near</label>
+  <input id="lab-exp-location" type="text" autocomplete="off" placeholder="Enter a place">
+  <button class="lt-btn lt-btn--secondary" type="button" data-exp-location-apply>Apply location</button>
+  <label for="lab-exp-location-radius">Radius</label>
+  <select id="lab-exp-location-radius" data-exp-location-radius></select>
+  <button class="lt-btn lt-btn--secondary" type="button" data-exp-location-clear hidden>Clear location</button>
+  <p class="search-lab__help" role="status" data-exp-location-status></p>
+</div>
 <div class="search-lab__correction" data-search-correction hidden>
   <span data-search-correction-message></span>
   <button class="lt-btn lt-btn--secondary" type="button" data-search-correction-retry></button>

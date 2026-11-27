@@ -6,13 +6,14 @@ export interface ResultWindow {
   visible: number;
   query?: string;
   spanish?: boolean;
+  grouped?: boolean;
 }
 
-export function formatResultSummary(mode: DesignSettings['summaryMode'], { total, start, visible, query = '', spanish = false }: ResultWindow) {
+export function formatResultSummary(mode: DesignSettings['summaryMode'], { total, start, visible, query = '', spanish = false, grouped = false }: ResultWindow) {
   const end = Math.min(total, start + visible);
   const count = total + (spanish ? (total === 1 ? ' resultado' : ' resultados') : (total === 1 ? ' result' : ' results'));
   const text = mode === 'range' && visible > 0 && end > start
-    ? (spanish ? 'Mostrando ' : 'Showing ') + (start + 1) + '–' + end + (spanish ? ' de ' : ' of ') + total
+    ? (spanish ? 'Mostrando ' : 'Showing ') + (grouped ? visible : (start + 1) + '–' + end) + (spanish ? ' de ' : ' of ') + total
     : count;
   return query ? text + (spanish ? ' para ' : ' for ') + '“' + query + '”' : text;
 }

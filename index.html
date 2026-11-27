@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="./assets/standalone.css">
   <link rel="stylesheet" href="./assets/search-lab.css">
   <link rel="stylesheet" href="./assets/promotions.css">
-  <script defer id="searchstax-ui-kit" src="https://cdn.jsdelivr.net/npm/@searchstax-inc/searchstudio-ux-js@4.2.34/dist/@searchstax-inc/searchstudio-ux-js.iife.js"></script>
+  <script defer id="searchstax-ui-kit" src="https://cdn.jsdelivr.net/npm/@searchstax-inc/searchstudio-ux-js@4.2.70/dist/@searchstax-inc/searchstudio-ux-js.iife.js"></script>
   <script type="module" src="./src/search-lab.js"></script>
   <script type="module" src="./src/promotions.ts"></script>
   <script type="module" src="./src/promotion-checklist.ts"></script>
@@ -295,6 +295,26 @@
                 <div class="search-lab__field" data-load-more-text-field hidden>
                   <label for="lab-load-more-text">Load more button text</label>
                   <input id="lab-load-more-text" type="text" value="Load more">
+                </div>
+              </details>
+              <details class="search-lab__disclosure">
+                <summary>Grouped results</summary>
+                <div class="search-lab__field">
+                  <label for="lab-grouped-by">Group results by</label>
+                  <select id="lab-grouped-by">
+                    <option value="">Off</option>
+                    <option value="demo_content_type_s">Content type</option>
+                  </select>
+                </div>
+                <div class="search-lab__field">
+                  <label for="lab-items-per-group">Items per group</label>
+                  <select id="lab-items-per-group">
+                    <option value="3">3</option>
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                  </select>
+                  <p class="search-lab__help">The UI Kit requests this many items from each group. Pagination moves between group offsets.</p>
                 </div>
               </details>
               <details class="search-lab__disclosure">
@@ -764,6 +784,7 @@
                         <div id="lab-results"></div>
                       </div>
                       <div data-pagination-focus data-pager-position="below" tabindex="-1" role="group" aria-label="Search result pagination">
+                        <div class="search-lab__pagination" data-lab-grouped-pager hidden></div>
                         <div id="lab-pagination"></div>
                         <span class="search-lab__sr-only" role="status" data-page-announcement></span>
                       </div>
@@ -776,6 +797,15 @@
                     <button class="lt-btn lt-btn--secondary" type="button" data-customer-disconnect>Disconnect app</button>
                   </div>
                   <p class="search-lab__status search-lab__search-status" role="status" data-customer-search-feedback></p>
+                  <div class="search-lab__location" data-customer-location hidden>
+                    <label for="lab-customer-location">Search near</label>
+                    <input id="lab-customer-location" type="text" autocomplete="off" placeholder="Enter a place">
+                    <button class="lt-btn lt-btn--secondary" type="button" data-customer-location-apply>Apply location</button>
+                    <label for="lab-customer-location-radius">Radius</label>
+                    <select id="lab-customer-location-radius" data-customer-location-radius></select>
+                    <button class="lt-btn lt-btn--secondary" type="button" data-customer-location-clear hidden>Clear location</button>
+                    <p class="search-lab__help" role="status" data-customer-location-status></p>
+                  </div>
                   <div class="search-lab__correction" data-search-correction hidden>
                     <span data-search-correction-message></span>
                     <button class="lt-btn lt-btn--secondary" type="button" data-search-correction-retry></button>

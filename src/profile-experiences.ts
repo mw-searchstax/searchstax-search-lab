@@ -13,6 +13,8 @@ import { formatResultSummary, placeResultSummary, type ResultWindow } from './re
 import { metadataScope } from './card-metadata.js';
 import { resultMappingNotice, appendResultCard, updateResultLinkTargets, mapResultCard, type ResultCard } from './result-card.js';
 import { setupSearchCorrection } from './spelling.js';
+import { groupedPageLabel, groupLabel, GROUPING_FIELD, type GroupPage } from './grouped-results.js';
+import { decodeBrowserLocation, locationLabel, locationRadius, type LocationSelection, type LocationSupport } from './location-search.js';
 
 export type Experience = Profile;
 
@@ -64,7 +66,7 @@ function searchDirectory(active: Experience, query: string, tabs: boolean, filte
     choices: [...counts].map(([value, count]) => ({ value, count })) }] };
 }
 
-function directoryCards(entries: (ReturnType<typeof searchDirectory>['entries'][number] & { promoted?: boolean })[],
+function directoryCards(entries: (ReturnType<typeof searchDirectory>['entries'][number] & { promoted?: boolean; groupHeading?: string })[],
   profile: Profile, query: string, thumbnails: Record<string, string>) {
   const locations = demoProfiles.find(item => item.profile === profile.profile)?.section === 'locations';
   const fields = [
@@ -86,6 +88,7 @@ function directoryCards(entries: (ReturnType<typeof searchDirectory>['entries'][
       }
     }
     card.promoted = Boolean(entry.promoted);
+    card.groupHeading = entry.groupHeading;
     // These URLs are bundled fixture images. Connected cards use their mapped thumbnail field.
     card.thumbnail = thumbnails[entry.url] ?? '';
     return card;
@@ -120,6 +123,12 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
   const summaryToolbar = status.parentElement!;
   let resultWindow: ResultWindow | undefined;
   const input = field<HTMLInputElement>('input[type="search"]');
+  const locationPanel = field<HTMLElement>('[data-exp-location]');
+  const locationInput = field<HTMLInputElement>('#lab-exp-location');
+  const locationRadiusInput = field<HTMLSelectElement>('[data-exp-location-radius]');
+  const locationApply = field<HTMLButtonElement>('[data-exp-location-apply]');
+  const locationClear = field<HTMLButtonElement>('[data-exp-location-clear]');
+  const locationStatus = field<HTMLElement>('[data-exp-location-status]');
   const pages = field('[data-exp-pages]');
   const bottomPager = pageControls(pages);
   const pagers = [pageControls(field('[data-exp-pages-above]')), bottomPager];
@@ -175,9 +184,13 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
   let noMatches = false;
   let mappingNotice = '';
   let highlighting: boolean | undefined;
+  let locationSupport: LocationSupport | undefined;
+  let locationSelection: LocationSelection | undefined;
+  let selectedLocationRadius: string | undefined;
+  let locationGeneration = 0;
   const features = setupProfileFeatures(panel, submit);
   const spanish = () => active.language.split(/[-_]/)[0] === 'es';
-  const paginationMode = () => options.paginationMode;
+  const paginationMode = () => options.groupedBy ? 'paged' : options.paginationMode;
 
   function emitSortOptions(choices: BuildPage['sorts']) {
     panel.dispatchEvent(new CustomEvent('lab-sort-options', {
@@ -263,6 +276,75 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
     pending = undefined;
     results.removeAttribute('aria-busy');
   }
+
+  function renderLocation(support?: LocationSupport) {
+    locationSupport = support;
+    locationPanel.hidden = !app || !support?.enabled;
+    if (!app || !support?.enabled) {
+      locationSelection = undefined;
+      selectedLocationRadius = undefined;
+      locationStatus.textContent = '';
+      locationGeneration++;
+      locationApply.disabled = false;
+      return;
+    }
+    const preferred = locationRadius(selectedLocationRadius ?? options.locationDefaultRadius, support);
+    locationRadiusInput.replaceChildren(...support.filterValues.map(value => new Option(locationLabel(value, support.unit), value)));
+    locationRadiusInput.value = locationRadius(locationSelection?.radius || preferred, support);
+    locationRadiusInput.hidden = !support.distanceEnabled;
+    locationRadiusInput.labels?.forEach(label => { label.hidden = !support.distanceEnabled; });
+    locationClear.hidden = !locationSelection;
+    locationStatus.textContent = locationSelection
+      ? 'Searching near ' + locationSelection.address +
+        (locationSelection.radius === 'any' ? '.' : ' within ' + locationLabel(locationSelection.radius, support.unit) + '.')
+      : 'Your place and coordinates aren’t saved in the design.';
+  }
+
+  async function applyLocation() {
+    if (!app || !options || !locationSupport?.enabled || locationApply.disabled) return;
+    const term = locationInput.value.trim();
+    if (!term) return;
+    const generation = ++locationGeneration;
+    locationApply.disabled = true;
+    locationStatus.textContent = 'Finding that place…';
+    try {
+      const decoded = await decodeBrowserLocation(term);
+      if (generation !== locationGeneration || !app) return;
+      if (!decoded) {
+        locationStatus.textContent = 'That place couldn’t be found. Check the place or the configured geocoder.';
+        return;
+      }
+      locationSelection = { ...decoded, radius: locationRadius(locationRadiusInput.value, locationSupport) };
+      start = 0;
+      void search(locationApply, locationInput);
+    } catch {
+      if (generation !== locationGeneration) return;
+      locationStatus.textContent = 'The place could not be decoded. Check the configured browser geocoder.';
+    } finally {
+      if (generation === locationGeneration) locationApply.disabled = false;
+    }
+  }
+
+  locationApply.addEventListener('click', () => { void applyLocation(); });
+  locationInput.addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); void applyLocation(); } });
+  locationRadiusInput.addEventListener('change', () => {
+    selectedLocationRadius = locationRadiusInput.value;
+    panel.dispatchEvent(new CustomEvent('lab-location-settings', { bubbles: true, detail: { radius: locationRadiusInput.value || null } }));
+    if (!locationSelection) return;
+    locationSelection = { ...locationSelection, radius: locationRadius(locationRadiusInput.value, locationSupport) };
+    start = 0;
+    void search(locationRadiusInput, locationRadiusInput);
+  });
+  locationClear.addEventListener('click', () => {
+    locationSelection = undefined;
+    locationInput.value = '';
+    locationGeneration++;
+    locationApply.disabled = false;
+    locationInput.focus();
+    start = 0;
+    void search(locationClear, locationClear);
+  });
+
   async function search(anchor = searchForm as HTMLElement, control = input as HTMLElement) {
     cancelSearch();
     lastAnchor = anchor;
@@ -306,12 +388,15 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       let fields: BuildPage['facets'];
       const rows = options.resultsPerPage;
       let total: number;
+      let groupPage: GroupPage | undefined;
       let selected = options.showSorting ? initialSort ?? order.value : '';
       if (app) {
         correction.clear();
         const page = await searchBuildApp({ ...app, ...active, settings: active }, {
           query, start, rows, sort: selected, filters: new Map(filters), facetMode: options.facetMode,
-          autoCorrect: options.autoCorrect, suppressCorrection,
+          groupedBy: options.groupedBy, itemsPerGroup: options.itemsPerGroup,
+          page: Math.floor(start / rows),
+          autoCorrect: options.autoCorrect, suppressCorrection, location: locationSelection,
         }, AbortSignal.any([request.signal, AbortSignal.timeout(12000)]), sorts);
         if (pending !== request) return;
         selected = page.sort;
@@ -322,6 +407,8 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
         choices = page.sorts;
         banners = page.externalPromotions;
         fields = page.facets;
+        renderLocation(page.location);
+        groupPage = page.grouped;
         cards = page.cards;
         correction.render(page.correction);
         if (app.sampleThumbnails && !page.hasThumbnailMapping) {
@@ -329,9 +416,26 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
         }
         total = page.total;
       } else {
+        renderLocation(undefined);
         const samplePage = searchDirectory(active, query, options.profileTabs, filters, options.facetMode);
         const matches = orderDirectoryResults(samplePage.entries, selected, query, options.samplePromotions);
-        cards = directoryCards(matches.slice(start, start + rows), active, query, thumbnails);
+        if (options.groupedBy === GROUPING_FIELD) {
+          const buckets = new Map<string, typeof matches>();
+          for (const entry of matches) {
+            const bucket = buckets.get(entry.type);
+            if (bucket) bucket.push(entry);
+            else buckets.set(entry.type, [entry]);
+          }
+          const page = Math.floor(start / rows);
+          const size = options.itemsPerGroup;
+          const largest = Math.max(0, ...[...buckets.values()].map(group => group.length));
+          groupPage = { number: page + 1, count: Math.ceil(largest / size) };
+          const visible = [...buckets].flatMap(([key, group]) => group.slice(page * size, (page + 1) * size)
+            .map((entry, index) => ({ ...entry, groupHeading: index === 0 ? groupLabel(key) : undefined })));
+          cards = directoryCards(visible, active, query, thumbnails);
+        } else {
+          cards = directoryCards(matches.slice(start, start + rows), active, query, thumbnails);
+        }
         total = samplePage.total;
         fields = samplePage.facets;
       }
@@ -349,6 +453,16 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       features.showExternalPromotions(banners);
       showFacets(fields);
       for (const card of cards) {
+        if (card.groupHeading) {
+          const heading = document.createElement('h3');
+          heading.className = 'search-lab__group-heading';
+          heading.textContent = card.groupHeading;
+          const header = document.createElement('li');
+          header.className = 'search-lab__group-row';
+          header.setAttribute('role', 'presentation');
+          header.append(heading);
+          list.append(header);
+        }
         const item = document.createElement('li');
         if (card.promoted) {
           const marker = document.createElement('strong');
@@ -364,15 +478,15 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       }
       reportSettings();
       list.lang = contentLanguageTag(active.language) || '';
-      resultWindow = { total, start: append ? 0 : start, visible: list.childElementCount, query, spanish: es };
+      resultWindow = { total, start: append ? 0 : start, visible: list.querySelectorAll(':scope > li:not(.search-lab__group-row)').length, query, spanish: es, grouped: Boolean(groupPage) };
       status.textContent = formatResultSummary(options.summaryMode, resultWindow);
-      const moreAvailable = start + rows < total;
+      const moreAvailable = groupPage ? groupPage.number < groupPage.count : start + rows < total;
       const loadingMore = paginationMode() === 'loadMore';
       const focused = document.activeElement;
-      const rangeText = (start + 1) + '–' + Math.min(start + rows, total) +
+      const rangeText = groupPage ? groupedPageLabel(groupPage, es) : (start + 1) + '–' + Math.min(start + rows, total) +
         (es ? ' de ' + total + ' resultados' : ' of ' + total + ' results');
       loadMore.hidden = !loadingMore || !moreAvailable;
-      hasPager = total > 0 && (total > rows || loadingMore);
+      hasPager = total > 0 && (groupPage ? groupPage.count > 1 : total > rows || loadingMore);
       updatePagerPlacement();
       for (const { range, previous, next } of pagers) {
         range.textContent = loadingMore ? '' : rangeText;
@@ -404,6 +518,10 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
 
   function select(item: Experience, focus = false, fromLanguage = false) {
     active = item;
+    locationGeneration++;
+    locationSelection = undefined;
+    locationInput.value = '';
+    renderLocation(undefined);
     highlighting = active.highlighting;
     reportSettings();
     order.replaceChildren();
@@ -500,7 +618,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
   });
   return {
     open(term = query, draft = term) { query = term; input.value = draft; render(); },
-    close() { cancelSearch(); suppressCorrection = false; correction.clear(); recovery.clear(); features.clear(); },
+    close() { cancelSearch(); suppressCorrection = false; correction.clear(); recovery.clear(); features.clear(); locationGeneration++; locationSelection = undefined; locationInput.value = ''; renderLocation(undefined); },
     setProfiles(choices: Experience[]) {
       if (!choices.length) return;
       tabProfiles = choices;
@@ -561,7 +679,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       return { ...experienceHandoff(Boolean(app), catalog, active, query, defaultLanguage), entitlements: app?.configuration?.entitlements };
     },
     setSource(connection: CustomerConnection | null, choices: Experience[], term: string, selected?: Experience, sourceLanguage?: string) {
-      cancelSearch(); suppressCorrection = false; correction.clear(); features.clear(); app = connection;
+      cancelSearch(); suppressCorrection = false; correction.clear(); features.clear(); app = connection; locationGeneration++; locationSelection = undefined; locationInput.value = ''; renderLocation(undefined);
       resultWindow = undefined;
       allProfiles = choices.length ? choices : connection ? [connection.settings ?? { language: connection.language, profile: connection.profile }] : demoProfiles;
       tabProfiles = allProfiles;

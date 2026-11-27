@@ -8,9 +8,10 @@ In Build, open **Appearance → Result cards** to show and size the sample thumb
 
 | Open matrix item | Example needed |
 |---|---|
-| Grouped results | A profile with a groupable field, a tested JavaScript kit upgrade and a demonstration of counts and paging across groups in ordinary and tabbed exports. |
+| Grouped results | Local fixture coverage. A published check needs a profile with a groupable Content type field. |
 | Smart Answers feedback and conversation | An enabled profile with a real answer, an agreed feedback destination and a working follow-up conversation. Decide whether the pilot needs either interaction before adding controls. |
-| Location search | Indexed coordinates, a geocoder and a location-enabled profile. Show manual entry, denied location permission and a radius that changes the results. |
+| Manual location search | Local fixture coverage. A published check needs a location-enabled profile, indexed coordinates, and a browser geocoder configured for that page. |
+| Current location | Needs a secure origin and a design for permission denial, fallback to manual entry, and reverse geocoding. |
 
 Start in Build with **rehabilitation**. Under **Appearance → Hit highlighting**, switch from Italic to Plain text and compare the passage. Then enable profile tabs in Advanced Options and switch from SearchLabBuild to Main Profile. The wording can change when the app stops returning the matched passage. Changing its visual style should preserve every word.
 
@@ -39,9 +40,9 @@ The ten widget families below follow the [Help Center catalog](https://support.s
 | Metadata labels | Rename an individual returned metadata field. | Appearance · template. Start with the profile label. Save overrides by field, profile and language. | Two fields and a result missing one of them. | Wired | Wired | Wired | Wired |
 | Metadata order | Move a metadata field earlier or later. | Advanced Options · template. Default to the published field order within the metadata region. | Two fields, a profile change and a saved design. | Wired | Wired | Wired | Wired |
 | `linkTarget` | Open mapped result links in the same tab or a new tab. | Features → Result links. The same tab is the default. | Activate a mapped result with the keyboard and verify opt-in result-click tracking. | Wired | Wired | Wired | Wired |
-| `groupedBy` | Flat list. | Features · native after upgrade. Off, then one supported field. | A groupable field and at least two groups. Confirm counts on a running export. | Upgrade | Gap | Gap | Gap |
-| `itemsPerGroup` | No group size. | Features · native after upgrade. Start with kit default when grouping is selected. | Group with multiple hits. Page size no longer directly sets the number of groups or documents. | Upgrade | Gap | Gap | Gap |
-| Group heading | No groups. | Appearance · template and CSS. Start with the group value as its heading. | Two distinct group values and a missing value. | Gap | Gap | Gap | Gap |
+| `groupedBy` | Group results by Content type, or leave grouping off. | Features → Grouped results · native in ordinary starters. | A profile with the groupable Content type field and at least two groups. | Wired | Wired | Wired | Wired |
+| `itemsPerGroup` | Choose 3, 5, 10 or 20 results from each group. | Features → Grouped results. Defaults to 10. The pager advances through the results within each group. | Uneven groups that span multiple pages. | Wired | Wired | Wired | Wired |
+| Group heading | Each group starts with its value as a heading. | Template and CSS. | Two distinct group values and a missing value. | Wired | Wired | Wired | Wired |
 | `renderMethod` | Paged results or Load more. | Features · start paged. The pager requests each batch and the result template retains earlier cards. | More than one page, including a final partial batch. | Wired | Wired | Wired | Wired |
 | `resultsPerPage` | 5, 10 or 20 in Advanced Options. | Advanced Options · native widget size plus custom pager coordination. Default 10. | Ungrouped results exceeding the chosen size. | Wired | Wired | Wired | Wired |
 | Empty-result template | Custom empty-state wording. | Appearance · template. Keep the current no-match message. | A query with zero results and a successful response. | Wired | Wired | Wired | Wired |
@@ -161,17 +162,17 @@ The ten widget families below follow the [Help Center catalog](https://support.s
 
 | Option | Build today | Destination, mechanism and proposed default | Prerequisite or review example | JS | React | Vue | Angular |
 |---|---|---|---|---|---|---|---|
-| `locationSearchEnabled` | Mapped distance may appear. No location input. | Features · native. Follow app capability and start with published configuration. | Indexed coordinates and location-enabled profile. | Gap | Gap | Gap | Gap |
-| Location template | No input label or placement choice. | Appearance · template. Accessible place label, then Advanced Options for placement next to search. | Geocoding integration and a location-enabled query. | Gap | Gap | Gap | Gap |
-| `locationValuesOverride` | No overrides. | Handoff · native object. Use the profile’s radius settings as defaults. | Published location configuration. | Setup | Setup | Setup | Setup |
-| `locationDistanceEnabled` | No radius selector. | Features · native. Follow app setting. | Distance filtering and a mapped coordinate field. | Gap | Gap | Gap | Gap |
-| `filterValues` | No radius choices. | Features · native. Offer configured radii in configured order. | Two supported radii returning different sets. | Gap | Gap | Gap | Gap |
-| `filterUnit` | Mapped distance displays returned units. | Features · native. Follow profile units. | Known distance and matching radius units. | Gap | Gap | Gap | Gap |
-| `locationFilterDefaultValue` | No default radius control. | Features · native. Use published default, then select from available radii. | A selectable radius and a result near its boundary. | Gap | Gap | Gap | Gap |
-| Geocoding endpoint (`geocodingURL` in the examples) | No provider connection | Handoff · choose the provider endpoint in the decode callback. Leave unset initially. | A service that resolves places to coordinates. | Setup | Setup | Setup | Setup |
-| Geocoding credential (`geocodingAPIKey` in the examples) | No provider key | Handoff · use the provider’s approved credential flow for that callback. | Provider account and intended audience for the credential. | Setup | Setup | Setup | Setup |
+| `locationSearchEnabled` | Connected Build shows **Search near** when the selected profile publishes location search. | Features · use the returned Search Profile setting. | Published location search and indexed coordinates. | Wired | Wired | Wired | Wired |
+| Location template | **Search near**, **Apply location**, and **Clear location**. Enter applies the place from the input. | Accessible template next to search. | Configured forward geocoder and a known place. | Wired | Wired | Wired | Wired |
+| `locationValuesOverride` | Start with the published default radius. Build can save an available choice in the design. | Preview · only the radius persists in the design and downloads. | Published location configuration with a default radius. | Wired | Wired | Wired | Wired |
+| `locationDistanceEnabled` | Show **Radius** when the profile enables distance filtering. | Follow the published setting. | Distance filtering and a mapped coordinate field. | Wired | Wired | Wired | Wired |
+| `filterValues` | Use published radius choices in their given order. | Preview · select the radius before or after applying a place. | At least two configured radii that return different sets. | Wired | Wired | Wired | Wired |
+| `filterUnit` | Radius choices display the published unit. Cards can display mapped distance. | Follow the published unit. | Known distances with matching radius units. | Wired | Wired | Wired | Wired |
+| `locationFilterDefaultValue` | Use the published default unless the design saves a choice the profile offers. | Preview · clear the place and keep the selected radius. | A selectable radius and a result near its boundary. | Wired | Wired | Wired | Wired |
+| Geocoding endpoint (`geocodingURL` in the examples) | Supply a browser geocoder for the page hosting the preview or starter. | Handoff · set `window.SearchLabLocationGeocoder(place)` to a function returning `{ address, lat, lon }` or `null`. | A provider that resolves typed places to coordinates. | Setup | Setup | Setup | Setup |
+| Geocoding credential (`geocodingAPIKey` in the examples) | The developer configures the provider. | Handoff · use the provider’s approved credential flow. | Provider account and intended audience for the credential. | Setup | Setup | Setup | Setup |
 | Current location action | No geolocation button. | Features · template and native action. Off until supported. Offer a labeled action. | Secure origin and user permission. Test denial and manual entry. | Gap | Gap | Gap | Gap |
-| `locationDecode` | No geocoder. | Handoff · callback. Supply the chosen forward geocoder. | Provider endpoint and a valid place. | Setup | Setup | Setup | Setup |
+| `locationDecode` | The browser geocoder resolves the place for the current request. | Handoff · supply the forward geocoder callback. | Provider endpoint, a valid place and an unknown place. | Setup | Setup | Setup | Setup |
 | `locationDecodeCoordinatesToAddress` | No reverse geocoder. | Handoff · callback. Use only for a supported current-location experience. | Provider and coordinates. Test an unavailable lookup. | Setup | Setup | Setup | Setup |
 
 ## Wrapper and developer handoff
@@ -333,13 +334,21 @@ The JavaScript template objects also expose markup bindings. They belong in the 
 | relatedSearchContainerClass | Related Searches, bind the suggestion | Clickable term |
 | externalPromotionsContainerId | External Promotions, mount returned items | Promotion region |
 | selectId | Sorting, bind the dropdown | Sort selector |
-| locationInputId | Location, bind the address input | Build integration gap |
-| radiusInputId | Location, bind radius choice | Build integration gap |
+| locationInputId | Location, bind the address input | **Search near** |
+| radiusInputId | Location, bind radius choice | **Radius** |
 | currentLocationActionButtonId | Location, bind current location | Build integration gap |
+
+## Local grouping and location checks
+
+In Build, open **Features → Grouped results** and choose **Content type**. The default is **Off**. **Items per group** controls the batch size within each group. Results with missing values appear under **Other**. Grouped results use **Previous** and **Next**. Turning grouping off restores the flat pagination preference.
+
+Manual place search is available in connected Build and the generated starters when the Search Profile publishes location support. The local fixture offers **5 mi**, **15 mi**, and **Any distance**, starting at **15 mi**. Applying a place narrows the results. Clearing it restores the full set and retains the radius. The design link and downloaded config can carry the radius. The place and coordinates stay out of those files.
+
+With the local preview running, use `node qa/regression/group-location-smoke.cjs` for built-in, connected and profile-tab Build plus all eight JavaScript, React, Vue and Angular starters. Use `node qa/regression/location-search.cjs` for the published default, invalid-place response, shared radius and disabled profile. These runners supply their fixtures locally.
 
 ## Version differences and upgrade checks
 
-The pilot and ordinary JavaScript ZIP currently load core 4.2.34. The ordinary React, Vue and Angular ZIPs pin 4.2.70. The profile-tab ZIPs use the shared Search Lab renderer even when packaged in a framework shell. A successful tabbed test establishes parity for that renderer. Test the ordinary widget integration separately. [JS 4.2.34 declarations](https://cdn.jsdelivr.net/npm/@searchstax-inc/searchstudio-ux-js@4.2.34/dist/@searchstax-inc/searchstudio-ux-js.d.ts) · [JS 4.2.70 declarations](https://cdn.jsdelivr.net/npm/@searchstax-inc/searchstudio-ux-js@4.2.70/dist/@searchstax-inc/searchstudio-ux-js.d.ts)
+The local Build and ordinary JavaScript ZIP pin core 4.2.70, matching the ordinary React, Vue and Angular ZIPs. The profile-tab ZIPs use the shared Search Lab renderer in each framework shell. Check the ordinary widget integration and the profile-tab renderer separately. [JS 4.2.34 declarations](https://cdn.jsdelivr.net/npm/@searchstax-inc/searchstudio-ux-js@4.2.34/dist/@searchstax-inc/searchstudio-ux-js.d.ts) · [JS 4.2.70 declarations](https://cdn.jsdelivr.net/npm/@searchstax-inc/searchstudio-ux-js@4.2.70/dist/@searchstax-inc/searchstudio-ux-js.d.ts)
 
 | Option | JS 4.2.34 | JS 4.2.70 | React 4.2.70 | Vue 4.2.70 | Angular 4.2.70 |
 |---|---|---|---|---|---|
@@ -351,10 +360,9 @@ The pilot and ordinary JavaScript ZIP currently load core 4.2.34. The ordinary R
 
 The Answer articles use `showShowMoreAfterWordCount` and some use `feedbackWidget`. The pinned declarations use `showMoreAfterWordCount` and `feedbackwidget`. Angular’s empty result input is `noResultsTemplate`. Verify these spellings against a functioning widget. The release notes date React and Vue Smart Answers support to 4.2.50. Location examples also mention geocoding URLs and keys. They are provider integration details for the geocoding callbacks. [September release notes](https://support.searchstax.com/hc/en-us/articles/48974997007885-Site-Search-Release-Notes-September-17-2026)
 
-1. Pin the candidate JS core in a task branch. Compare the initialization, response parsing, template contracts and click tracking with 4.2.34. Keep the present version available for rollback.
-2. Run the same fixture and SearchLabBuild query against both versions. Check result IDs and fields, highlights, empty results, filters, sorting, pagination, focus recovery, Improve comparisons and all four downloads.
-3. Exercise grouping with more than one group, varied group sizes and multiple pages. Exercise same/new-tab links with pointer and keyboard. Inspect the actual link target and result-click behavior in each ordinary export. Test the profile-tab renderer separately before exposing the same options there.
-4. Add a public control once a designer can see its effect in Build, save/share it, and reproduce it in the relevant running starters. Gate answers, related suggestions, live promotions and location on a verified demonstration query or published trigger. An entitlement alone cannot supply a demonstration.
+Before adding grouping, the upgrade-only build was compared with 4.2.34. Both versions passed the hosted recording and Improve check, pager placement and keyboard focus, native result-link activation, and the downloaded JavaScript spelling, paging, and result-link checks. Result-link checks included the ordinary starter’s opt-in click tracking.
+
+The editor accessibility check reproduced the same thumbnail checkbox clipping on both pins at an 851 CSS-pixel viewport with doubled text and increased spacing.
 
 ## Worked example and acceptance evidence
 
