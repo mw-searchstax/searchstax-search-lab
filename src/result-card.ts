@@ -1,3 +1,4 @@
+import type { DesignSettings } from './design.js';
 import { thumbnailAlt } from './thumbnail-alt.js';
 import { webURL } from './web-url.js';
 import { metadataLabel, metadataScope, orderedMetadata, type MetadataStyle, type MetadataField } from './card-metadata.js';
@@ -96,7 +97,17 @@ function appendValue(node: HTMLElement, field: CardValue) {
   }
 }
 
-export function appendResultCard(node: HTMLElement, card: ResultCard, styles: MetadataStyle[] = []) {
+function setLinkTarget(link: HTMLAnchorElement, target: DesignSettings['resultLinkTarget']) {
+  link.target = target;
+  if (target === '_blank') link.rel = 'noopener noreferrer';
+  else link.removeAttribute('rel');
+}
+
+export function updateResultLinkTargets(host: ParentNode, target: DesignSettings['resultLinkTarget']) {
+  for (const link of host.querySelectorAll<HTMLAnchorElement>('a.searchstax-search-result-title')) setLinkTarget(link, target);
+}
+
+export function appendResultCard(node: HTMLElement, card: ResultCard, styles: MetadataStyle[] = [], target: DesignSettings['resultLinkTarget'] = '_self') {
   node.classList.add('mapped-result-card');
   const thumbnail = card.thumbnail || card.sampleThumbnail;
   if (thumbnail) {
@@ -126,6 +137,7 @@ export function appendResultCard(node: HTMLElement, card: ResultCard, styles: Me
     name.className = 'searchstax-search-result-title';
     if (name instanceof HTMLAnchorElement) {
       name.href = card.url;
+      setLinkTarget(name, target);
       name.referrerPolicy = 'no-referrer';
     }
     if (title) appendValue(name, title);

@@ -15,6 +15,7 @@ import { getAnalyticsSettings, setupResultTracking } from './result-tracking.js'
 import { setupPaginationPlacement } from './pagination-focus.js';
 import { createResultPages } from './result-pages.js';
 import { formatResultSummary } from './result-summary.js';
+import { renderSearchCorrection, setupKitSpelling, setupSearchCorrection } from './spelling.js';
 import { decodedSort, encodedSort, createSortController, readResponseSortOptions, readSortOptions } from './sorting.js';
 import { installRecordedSearch } from './recorded-search.js';
 import recordings from './recorded-searches.js';
@@ -67,6 +68,7 @@ export class SearchApp implements AfterViewInit, OnDestroy {
   private readonly initialQuery = connection.initialQuery ||
     (this.isDemo ? 'rehabilitation' : '');
   private api?: Searchstax;
+  private spelling?: ReturnType<typeof setupKitSpelling>;
   private loadingSubscription?: string;
   private timer?: number;
   private services?: ReturnType<typeof setupStarterServices>;
@@ -77,6 +79,7 @@ export class SearchApp implements AfterViewInit, OnDestroy {
 
   initialized(instance: Searchstax) {
     this.api = instance;
+    this.spelling = setupKitSpelling(instance, () => design.autoCorrect);
     instance.setCookiesDisabled(!this.analytics.trackApiKey);
     this.sortController = createSortController({
       enabled: design.showSorting,
@@ -109,6 +112,11 @@ export class SearchApp implements AfterViewInit, OnDestroy {
   private start() {
     const api = this.api;
     if (!api) return;
+    setupSearchCorrection(document, (original: string) => {
+      this.input.nativeElement.value = original;
+      this.input.nativeElement.focus();
+      this.spelling?.retry(original);
+    });
     this.stopResultTracking = setupResultTracking(this.resultHost.nativeElement, api);
     this.loadingSubscription = api.dataLayer.$loadingChange.subscribe((loading) => {
       if (!loading) return;
@@ -145,6 +153,7 @@ export class SearchApp implements AfterViewInit, OnDestroy {
       this.status.set('Enter a search term.');
       return;
     }
+    this.spelling?.clear();
     const current = api.dataLayer.searchObject;
     const next = { ...current, query: term, page: 1, facets: [] };
     void this.services?.search(term);
@@ -155,6 +164,7 @@ export class SearchApp implements AfterViewInit, OnDestroy {
   readonly afterSearch = (items: ISearchstaxParsedResult[], response?: ISearchstaxSearchResponse) => {
     const total = response?.response?.numFound;
     if (typeof total !== 'number') return [];
+    renderSearchCorrection(response);
     // The Angular Results widget initializes asynchronously and resets this
     // flag. Set it after initialization, before the kit builds the page data.
     if (design.paginationMode === 'loadMore' && this.api && !this.api.dataLayer.isInfiniteScroll) {

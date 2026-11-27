@@ -8,6 +8,7 @@ import {
   readFacetMode,
   readPaginationPlacement,
   readSuggestionMinimum,
+  readSmartAnswerWordLimit,
   isHexColor,
   isFont,
   isLayout,
@@ -39,7 +40,8 @@ import { setupRelatedSearches, relatedSource } from './related-searches.js';
 import './related-searches.css';
 import profileControls from './profile-controls.html?raw';
 import { setupCardEditor } from './card-editor';
-import { resultCards, resultMappingNotice, appendResultCard, watchCardThumbnails } from './result-card';
+import { resultCards, resultMappingNotice, appendResultCard, updateResultLinkTargets, watchCardThumbnails } from './result-card';
+import { setupKitSpelling, setupSearchCorrection } from './spelling';
 import { endpointFingerprint, profileStatus, featureStatus, readAppConfiguration } from './app-configuration';
 import { readAnswerEndpoint } from './customer-answers.js';
 import { readCustomerEndpoint } from './web-url.js';
@@ -121,6 +123,8 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
   const suggestionEmphasis = root.querySelector('#lab-suggestion-emphasis');
   var smartAnswersSampleToggle = root.querySelector('#lab-smart-answers-sample');
   const smartAnswerCardStyle = root.querySelector('#lab-answer-card-style');
+  const smartAnswerSourceStyle = root.querySelector('#lab-answer-source-style');
+  const smartAnswerWordLimit = root.querySelector('#lab-answer-word-limit');
   const answerAppearanceHint = root.querySelector('[data-answer-appearance-hint]');
   var promotionsInput = root.querySelector('#lab-sample-promotions');
   var setSuggestionSource = setupSearchSuggestions(form, 'lab-search-suggestions');
@@ -173,6 +177,14 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
   var previewBrand = root.querySelector('[data-lab-preview-brand]');
   watchCardThumbnails(designSurface);
   var demoOutput = root.querySelector('[data-lab-demo-output]');
+  let builtInSpelling;
+  const builtInCorrection = setupSearchCorrection(demoOutput, original => {
+    visitorSearchIntent();
+    builtInSpelling.rememberOriginal(original);
+    completed = false;
+    runSearch(original, false);
+    queryInput.focus();
+  });
   var demoAnchor = form;
   var demoControl = queryInput;
   var demoRecovery = createSearchRecovery(queryInput, function () {
@@ -199,6 +211,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
   const summaryToolbar = summary.parentElement;
   const summaryMode = root.querySelector('#lab-summary-mode');
   const summaryPlacement = root.querySelector('#lab-summary-placement');
+  const autoCorrect = root.querySelector('#lab-autocorrect');
   let builtInSummary;
   var feedback = root.querySelector('[data-lab-feedback]');
   var shareFields = root.querySelectorAll('.search-lab__share-url');
@@ -263,6 +276,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
   var restoreFocus;
   var relatedToggle = root.querySelector('#lab-related-toggle');
   var relatedPlacement = root.querySelector('#lab-related-placement');
+  const resultLinkTarget = root.querySelector('#lab-result-link-target');
   const relatedItemStyle = root.querySelector('#lab-related-item-style');
   const relatedSpacing = root.querySelector('#lab-related-item-spacing');
   const relatedAppearanceHint = root.querySelector('[data-related-appearance-hint]');
@@ -632,6 +646,8 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     relatedPlacement.closest('.search-lab__field').hidden = !relatedToggle.checked;
     root.querySelector('[data-placement-target="lab-related-placement"]').hidden = !relatedToggle.checked;
     if (relatedToggle.checked) relatedPlacement.value = design.relatedPlacement;
+    resultLinkTarget.value = design.resultLinkTarget;
+    if (root.dataset.labView === 'design') updateResultLinkTargets(resultsLayout, design.resultLinkTarget);
     relatedItemStyle.value = design.relatedItemStyle;
     relatedSpacing.value = design.relatedSpacing;
     updateSingleProfileFeatures();
@@ -668,6 +684,8 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     suggestionEmphasis.checked = design.emphasizeSuggestionText;
     smartAnswersSampleToggle.checked = design.showSmartAnswersSample;
     smartAnswerCardStyle.value = design.smartAnswerCardStyle;
+    smartAnswerSourceStyle.value = design.smartAnswerSourceStyle;
+    smartAnswerWordLimit.value = String(design.smartAnswerWordLimit);
     promotionsInput.value = design.samplePromotions;
     sampleButton.textContent = sampleQuery();
     syncFeatureControls();
@@ -697,6 +715,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     spacingInput.value = design.resultSpacing;
     summaryMode.value = design.summaryMode;
     summaryPlacement.value = design.summaryPlacement;
+    autoCorrect.value = design.autoCorrect === true ? 'on' : design.autoCorrect === false ? 'off' : 'inherit';
     paginationModeInput.value = design.paginationMode;
     paginationPlacementInput.value = design.paginationPlacement;
     paginationPlacementInput.closest('[data-pagination-placement-field]').hidden = design.paginationMode !== 'paged';
@@ -1049,6 +1068,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
       return;
     }
     syncPaginationMode();
+    const clearedOriginal = clearFilters && builtInSpelling?.clear();
     var current = search.dataLayer.searchObject;
     var compareRanking = workspaceMode === 'examples' && state.scenario === 'ranking' && state.phase === 'after';
     var model = workspaceMode === 'design' ? config.build : state.phase === 'before' ? config.before
@@ -1076,7 +1096,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     var filtersUnchanged = JSON.stringify(current.facets) === JSON.stringify(nextFilters);
     var unchanged = current.query === cleanQuery && current.model === model && current.page === page &&
       current.order === order && current.itemsPerPage === itemsPerPage && filtersUnchanged;
-    if (unchanged && completed && expected.view === workspaceMode) {
+    if (unchanged && completed && expected.view === workspaceMode && !clearedOriginal) {
       if (!preserveDraft) queryInput.value = cleanQuery;
       status.textContent = '';
       resultsContent.hidden = false;
@@ -1084,6 +1104,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
       return;
     }
     expected = { query: cleanQuery, model: model, order: order, itemsPerPage: itemsPerPage, view: workspaceMode };
+    builtInCorrection.clear();
     clearStaleShareLinks();
     completed = false;
     if (workspaceMode === 'examples') summary.textContent = '';
@@ -1123,9 +1144,10 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
       if (card.url && !isDemoResultURL(card.url)) return [];
       if (!card.url && !card.thumbnail && !card.values.length) return [];
       const body = document.createElement('div');
-      appendResultCard(body, card, design.cardMetadata);
-      const link = body.querySelector('a');
-      if (link) link.setAttribute('data-searchstax-unique-result-id', items[index]?.uniqueId ?? '');
+      appendResultCard(body, card, design.cardMetadata, design.resultLinkTarget);
+      // The pinned widget cancels native navigation on links with its tracking attribute.
+      const link = body.querySelector('a.searchstax-search-result-title');
+      if (link) link.dataset.resultId = items[index]?.uniqueId ?? '';
       return [{ ...items[index], url: card.url, mappedBody: body.innerHTML, promoted: card.promoted, promotionBadge: design.promotionBadge,
         demoThumbnail: hasThumbnailMapping ? '' : demoThumbnails[card.url]?.source }];
     });
@@ -1179,12 +1201,13 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
           afterSearch: function (items, response) {
             var params = response && response.responseHeader && response.responseHeader.params;
             var total = response && response.response && response.response.numFound;
-            if (!expected || !params || params.q !== expected.query || params.model !== expected.model ||
+            if (!expected || !params || (params.q !== expected.query && params.originalQ !== expected.query) || params.model !== expected.model ||
               (params.sort || 'score desc') !== (expected.order || 'score desc') ||
               Number(params.rows) !== expected.itemsPerPage || typeof total !== 'number') {
               return search.dataLayer.searchResults || [];
             }
             if (workspaceMode === 'design') {
+              builtInCorrection.render(response);
               builtInFacetGroups = (Array.isArray(response.metadata?.facets) ? response.metadata.facets : [])
                 .filter(group => typeof group?.name === 'string' && group.name)
                 .map(group => ({ field: group.name, label: group.label || group.name }));
@@ -1214,6 +1237,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
           },
         },
       });
+      builtInSpelling = setupKitSpelling(search, () => workspaceMode === 'design' ? design.autoCorrect : true);
       search.setCookiesDisabled(true);
       search.addSearchResultsWidget('lab-results', {
         renderMethod: 'pagination',
@@ -1367,6 +1391,16 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     design.summaryPlacement = summaryPlacement.value;
     updateDesign();
   });
+  autoCorrect.addEventListener('change', () => {
+    design.autoCorrect = autoCorrect.value === 'on' ? true : autoCorrect.value === 'off' ? false : null;
+    updateDesign();
+    const query = search?.dataLayer.searchObject.query;
+    if (query && experiencePanel.hidden && !customerPreview.active) {
+      builtInSpelling.clear();
+      completed = false;
+      runSearch(query, false, true);
+    }
+  });
   pageSizeInput.addEventListener('change', function () {
     design.resultsPerPage = readPageSize(pageSizeInput.value);
     updateDesign();
@@ -1402,6 +1436,10 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
   });
   filterPlacement.addEventListener('change', function () {
     design.filterPlacement = filterPlacement.value;
+    updateDesign();
+  });
+  resultLinkTarget.addEventListener('change', () => {
+    design.resultLinkTarget = resultLinkTarget.value === '_blank' ? '_blank' : '_self';
     updateDesign();
   });
   relatedPlacement.addEventListener('change', function () {
@@ -1505,6 +1543,20 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
   smartAnswerCardStyle.addEventListener('change', () => {
     design.smartAnswerCardStyle = smartAnswerCardStyle.value === 'outline' ? 'outline' : 'accent';
     updateDesign();
+  });
+  smartAnswerSourceStyle.addEventListener('change', () => {
+    design.smartAnswerSourceStyle = smartAnswerSourceStyle.value === 'cards' ? 'cards' : 'inline';
+    updateDesign();
+  });
+  smartAnswerWordLimit.addEventListener('input', () => {
+    const limit = readSmartAnswerWordLimit(smartAnswerWordLimit.value);
+    if (!smartAnswerWordLimit.validity.valid || (smartAnswerWordLimit.value !== '' && limit === DEFAULT_DESIGN.smartAnswerWordLimit && smartAnswerWordLimit.value !== String(DEFAULT_DESIGN.smartAnswerWordLimit))) return;
+    if (limit === design.smartAnswerWordLimit) return;
+    design.smartAnswerWordLimit = limit;
+    updateDesign();
+  });
+  smartAnswerWordLimit.addEventListener('blur', () => {
+    smartAnswerWordLimit.value = String(design.smartAnswerWordLimit);
   });
   promotionsInput.addEventListener('change', function () {
     design.samplePromotions = readSamplePromotions(promotionsInput.value);

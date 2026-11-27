@@ -45,6 +45,7 @@ export type DesignSettings = {
   resultSpacing: keyof typeof RESULT_GAPS;
   filterPlacement: 'sidebar' | 'top';
   topFilterStyle: 'list' | 'row';
+  resultLinkTarget: '_self' | '_blank';
   relatedPlacement: 'above' | 'below' | 'off';
   relatedHeading: string;
   relatedItemStyle: 'buttons' | 'chips';
@@ -58,6 +59,7 @@ export type DesignSettings = {
   sortLabel: string;
   summaryMode: 'count' | 'range';
   summaryPlacement: 'above' | 'below';
+  autoCorrect: boolean | null;
   sortPlacement: 'above' | 'below';
   startingSort: string;
   showSuggestions: boolean;
@@ -67,6 +69,8 @@ export type DesignSettings = {
   showSmartAnswersSample: boolean;
   smartAnswerHeading: string;
   smartAnswerCardStyle: 'accent' | 'outline';
+  smartAnswerSourceStyle: 'inline' | 'cards';
+  smartAnswerWordLimit: number;
   samplePromotions: 'off' | 'indexed' | 'external' | 'both';
   paginationMode: 'paged' | 'loadMore';
   paginationPlacement: 'above' | 'below' | 'both';
@@ -107,6 +111,7 @@ export const DEFAULT_DESIGN: Readonly<DesignSettings> = {
   resultSpacing: 'standard',
   filterPlacement: 'sidebar',
   topFilterStyle: 'list',
+  resultLinkTarget: '_self',
   relatedPlacement: 'below',
   relatedHeading: '',
   relatedItemStyle: 'buttons',
@@ -120,6 +125,7 @@ export const DEFAULT_DESIGN: Readonly<DesignSettings> = {
   sortLabel: 'Sort by',
   summaryMode: 'count',
   summaryPlacement: 'above',
+  autoCorrect: null,
   sortPlacement: 'above',
   startingSort: '',
   showSuggestions: false,
@@ -129,6 +135,8 @@ export const DEFAULT_DESIGN: Readonly<DesignSettings> = {
   showSmartAnswersSample: true,
   smartAnswerHeading: '',
   smartAnswerCardStyle: 'accent',
+  smartAnswerSourceStyle: 'inline',
+  smartAnswerWordLimit: 100,
   samplePromotions: 'off',
   paginationMode: 'paged',
   paginationPlacement: 'below',
@@ -162,6 +170,11 @@ export function readFacetLimit(value: string | null): number {
 export function readSuggestionMinimum(value: string | null): number | null {
   const minimum = Number(value);
   return Number.isSafeInteger(minimum) && minimum > 0 ? minimum : null;
+}
+
+export function readSmartAnswerWordLimit(value: string | null): number {
+  const limit = Number(value);
+  return Number.isSafeInteger(limit) && limit > 0 ? limit : DEFAULT_DESIGN.smartAnswerWordLimit;
 }
 
 export function readFacetMode(value: string | null): DesignSettings['facetMode'] {
@@ -239,6 +252,7 @@ export function readDesignParams(params: URLSearchParams, allowFictionalPreview 
     resultSpacing: isResultSpacing(spacing) ? spacing : DEFAULT_DESIGN.resultSpacing,
     topFilterStyle: topStyle === 'row' || topStyle === 'tabs' ? 'row' : 'list',
     filterPlacement: params.get('lab_filter_placement') === 'top' ? 'top' : 'sidebar',
+    resultLinkTarget: params.get('lab_result_link_target') === '_blank' ? '_blank' : '_self',
     relatedPlacement: params.get('lab_related') === 'above' ? 'above' : params.get('lab_related') === 'off' ? 'off' : 'below',
     relatedHeading: resolveSearchText(params.get('lab_related_heading'), DEFAULT_DESIGN.relatedHeading),
     relatedItemStyle: params.get('lab_related_style') === 'chips' ? 'chips' : 'buttons',
@@ -252,6 +266,7 @@ export function readDesignParams(params: URLSearchParams, allowFictionalPreview 
     sortLabel: resolveSearchText(params.get('lab_sort_label'), DEFAULT_DESIGN.sortLabel),
     summaryMode: params.get('lab_summary') === 'range' ? 'range' : 'count',
     summaryPlacement: params.get('lab_summary_placement') === 'below' ? 'below' : 'above',
+    autoCorrect: params.get('lab_autocorrect') === 'on' ? true : params.get('lab_autocorrect') === 'off' ? false : null,
     sortPlacement: params.get('lab_sort_placement') === 'below' ? 'below' : 'above',
     startingSort: params.get('lab_starting_sort') ?? '',
     showSuggestions: params.get('lab_suggestions') === 'on',
@@ -261,6 +276,8 @@ export function readDesignParams(params: URLSearchParams, allowFictionalPreview 
     showSmartAnswersSample: params.get('lab_answer_sample') !== 'off',
     smartAnswerHeading: resolveSearchText(params.get('lab_answer_heading'), DEFAULT_DESIGN.smartAnswerHeading),
     smartAnswerCardStyle: params.get('lab_answer_style') === 'outline' ? 'outline' : 'accent',
+    smartAnswerSourceStyle: params.get('lab_answer_source_style') === 'cards' ? 'cards' : 'inline',
+    smartAnswerWordLimit: readSmartAnswerWordLimit(params.get('lab_answer_word_limit')),
     samplePromotions: readSamplePromotions(params.get('lab_promotions')),
     paginationMode: params.get('lab_pagination') === 'loadMore' ? 'loadMore' : 'paged',
     paginationPlacement: readPaginationPlacement(params.get('lab_pagination_placement')),
@@ -287,6 +304,7 @@ export function writeDesignParams(params: URLSearchParams, design: DesignSetting
     ['lab_ribbon_shape', design.ribbonShape !== 'ribbon' && design.ribbonShape],
     ['lab_card_metadata', design.cardMetadata.length && JSON.stringify(design.cardMetadata)],
     ['lab_facet_groups', design.facetGroups.length && JSON.stringify(design.facetGroups)],
+    ['lab_result_link_target', design.resultLinkTarget === '_blank' && '_blank'],
     ['lab_related_heading', design.relatedHeading],
     ['lab_related_style', design.relatedItemStyle === 'chips' && 'chips'],
     ['lab_related_spacing', design.relatedSpacing === 'compact' && 'compact'],
@@ -294,9 +312,15 @@ export function writeDesignParams(params: URLSearchParams, design: DesignSetting
     ['lab_suggestion_emphasis', design.emphasizeSuggestionText && 'on'],
     ['lab_answer_heading', design.smartAnswerHeading],
     ['lab_answer_style', design.smartAnswerCardStyle === 'outline' && 'outline'],
+    ['lab_answer_source_style', design.smartAnswerSourceStyle === 'cards' && 'cards'],
   ] as const) {
     if (value) params.set(key, value);
     else params.delete(key);
+  }
+  if (design.smartAnswerWordLimit !== DEFAULT_DESIGN.smartAnswerWordLimit) {
+    params.set('lab_answer_word_limit', String(design.smartAnswerWordLimit));
+  } else {
+    params.delete('lab_answer_word_limit');
   }
   if (design.facetMode !== DEFAULT_DESIGN.facetMode) params.set('lab_facet_mode', design.facetMode);
   if (design.facetDesktop !== DEFAULT_DESIGN.facetDesktop) params.set('lab_facet_desktop', String(design.facetDesktop));
@@ -344,6 +368,9 @@ export function writeDesignParams(params: URLSearchParams, design: DesignSetting
   if (design.sortLabel !== DEFAULT_DESIGN.sortLabel) params.set('lab_sort_label', design.sortLabel);
   if (design.summaryMode === 'range') params.set('lab_summary', 'range');
   if (design.summaryPlacement === 'below') params.set('lab_summary_placement', 'below');
+  if (design.autoCorrect === true) params.set('lab_autocorrect', 'on');
+  else if (design.autoCorrect === false) params.set('lab_autocorrect', 'off');
+  else params.delete('lab_autocorrect');
   if (design.sortPlacement !== DEFAULT_DESIGN.sortPlacement) params.set('lab_sort_placement', design.sortPlacement);
   if (design.startingSort) params.set('lab_starting_sort', design.startingSort);
   if (design.showSuggestions) {

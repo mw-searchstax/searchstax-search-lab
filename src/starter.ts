@@ -70,6 +70,7 @@ import cardRuntime from './result-card.ts?starter-js';
 import appConfigurationRuntime from './app-configuration.ts?starter-js';
 import profileRuntime from './profile-experiences.ts?starter-js';
 import searchRuntime from './customer-search.ts?starter-js';
+import spellingRuntime from './spelling.ts?starter-js';
 import type { ExperienceHandoff } from './profile-experiences';
 import profileControls from './profile-controls.html?raw';
 import profileCSS from './profile-controls.css?raw';
@@ -215,6 +216,7 @@ ${variables}
 function starterFeatures(design: DesignSettings) {
   return {
     cardMetadata: design.cardMetadata,
+    resultLinkTarget: design.resultLinkTarget,
     relatedPlacement: design.relatedPlacement,
     relatedHeading: design.relatedHeading,
     relatedItemStyle: design.relatedItemStyle,
@@ -228,6 +230,7 @@ function starterFeatures(design: DesignSettings) {
     sortLabel: design.sortLabel,
     summaryMode: design.summaryMode,
     summaryPlacement: design.summaryPlacement,
+    autoCorrect: design.autoCorrect,
     sortPlacement: design.sortPlacement,
     startingSort: design.startingSort,
     showSuggestions: design.showSuggestions,
@@ -236,6 +239,8 @@ function starterFeatures(design: DesignSettings) {
     emphasizeSuggestionText: design.emphasizeSuggestionText,
     smartAnswerHeading: design.smartAnswerHeading,
     smartAnswerCardStyle: design.smartAnswerCardStyle,
+    smartAnswerSourceStyle: design.smartAnswerSourceStyle,
+    smartAnswerWordLimit: design.smartAnswerWordLimit,
     promotionBadge: design.promotionBadge,
     promotionHeading: design.promotionHeading,
     bannerPlacement: design.bannerPlacement,
@@ -305,6 +310,7 @@ function createProfileStarter(framework: Framework, design: DesignSettings, expe
     'src/sample-promotions.js': promotionsJS,
     'src/related-searches.js': relatedJS,
     'src/customer-search.js': searchRuntime,
+    'src/spelling.js': spellingRuntime,
     'src/content-language.js': contentLanguageJS,
     'src/web-url.js': webURLJS,
     'src/config.js': `export const settings = ${JSON.stringify({ ...profileExperience, navigation: design, logoURL: design.logoURL,
@@ -458,6 +464,7 @@ export function createStarterZip(
     'result-pages.js': strToU8(resultPagesJS),
     'result-summary.js': strToU8(resultSummaryJS),
     'promotion-display.js': strToU8(promotionDisplay),
+    'spelling.js': strToU8(spellingRuntime),
     'README.md': strToU8(readme),
     ...thumbnailFiles,
   });
@@ -516,6 +523,7 @@ export const design = ${JSON.stringify(settings, null, 2)};
     'src/result-card.js': strToU8(cardRuntime),
     'src/starter-passages.js': strToU8(starterPassages),
     'src/customer-answers.js': strToU8(customerAnswersJS),
+    'src/spelling.js': strToU8(spellingRuntime),
     ...ordinaryServiceFiles(selected, 'src/'),
     'src/thumbnail-alt.js': strToU8(thumbnailAltJS),
     'src/customer-suggestions.js': strToU8(customerSuggestions),

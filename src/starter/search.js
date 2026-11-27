@@ -6,6 +6,7 @@ import { setupPaginationPlacement } from './pagination-focus.js';
 import { contentLanguageTag } from './content-language.js';
 import { watchCardThumbnails } from './result-card.js';
 import { starterResults } from './starter-passages.js';
+import { setupKitSpelling, setupSearchCorrection } from './spelling.js';
 import { readCustomerEndpoint } from './web-url.js';
 import { setupFacetLimits } from './facet-limits.js';
 import { selectedFacetGroups } from './facet-groups.js';
@@ -197,6 +198,11 @@ async function startSearch() {
   }
   setupPaginationPlacement(abovePager, belowPager, () => config, () => search);
   const analytics = getAnalyticsSettings(config);
+  const correction = setupSearchCorrection(document, original => {
+    query.value = original;
+    query.focus();
+    spelling.retry(original);
+  });
   search.initialize({
     searchURL: config.searchURL,
     searchAuth: config.searchAuth,
@@ -210,6 +216,7 @@ async function startSearch() {
       afterSearch(items, response) {
         const total = response?.response?.numFound;
         if (typeof total !== 'number') return [];
+        correction.render(response);
         renderPromotionBanners(externalPromotions, promotionEntries(response.externalLinks), config.promotionHeading, resultLanguage);
         const mapped = starterResults(items, response, usesDemoProfile ? demoThumbnails : null, config, config.cardMetadata)
           .map(item => ({ ...item, resultLanguage, promotionBadge: config.promotionBadge }));
@@ -224,6 +231,7 @@ async function startSearch() {
       },
     },
   });
+  const spelling = setupKitSpelling(search, () => config.autoCorrect);
   enableResultRecovery(search);
   search.setCookiesDisabled(!analytics.trackApiKey);
   watchCardThumbnails(document.querySelector('#search-results'));
@@ -255,7 +263,7 @@ async function startSearch() {
           {{#previewThumbnail}}<img class="search-starter__result-thumbnail" src="{{previewThumbnail}}" alt="{{previewThumbnailAlt}}" loading="lazy" referrerpolicy="no-referrer">{{/previewThumbnail}}
           <div class="result-card-content">
             {{#hasRibbon}}<span class="searchstax-search-result-ribbon">{{#ribbonParts}}${passageMarkup}{{/ribbonParts}}</span>{{/hasRibbon}}
-            {{#hasTitle}}<h2{{#resultLanguage}} lang="{{resultLanguage}}"{{/resultLanguage}}>{{#url}}<a href="{{url}}" data-result-id="{{uniqueId}}" referrerpolicy="no-referrer">{{#titleParts}}${passageMarkup}{{/titleParts}}</a>{{/url}}{{^url}}{{#titleParts}}${passageMarkup}{{/titleParts}}{{/url}}</h2>{{/hasTitle}}
+            {{#hasTitle}}<h2{{#resultLanguage}} lang="{{resultLanguage}}"{{/resultLanguage}}>{{#url}}<a href="{{url}}" ${config.resultLinkTarget === '_blank' ? 'target="_blank" rel="noopener noreferrer"' : 'target="_self"'} data-result-id="{{uniqueId}}" referrerpolicy="no-referrer">{{#titleParts}}${passageMarkup}{{/titleParts}}</a>{{/url}}{{^url}}{{#titleParts}}${passageMarkup}{{/titleParts}}{{/url}}</h2>{{/hasTitle}}
             {{#hasDescription}}<p class="search-starter__result-description"{{#resultLanguage}} lang="{{resultLanguage}}"{{/resultLanguage}}>{{#descriptionParts}}${passageMarkup}{{/descriptionParts}}</p>{{/hasDescription}}
             {{#otherFields}}<p>{{#label}}{{label}}: {{/label}}{{#parts}}${passageMarkup}{{/parts}}</p>{{/otherFields}}
           </div>
@@ -328,6 +336,8 @@ async function startSearch() {
       return;
     }
     void services.search(term);
+    spelling.clear();
+    correction.clear();
     const current = search.dataLayer.searchObject;
     const next = { ...current, query: term, page: 1, facets: [] };
     if (term === current.query && current.page === 1 && !current.facets.length) {

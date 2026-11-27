@@ -3,6 +3,7 @@ import { promotionEntries } from './promotion-display.js';
 import { webURL } from './web-url.js';
 import type { AppConfiguration, Profile } from './app-configuration.js';
 import { resultCards, type ResultResponse, type ThumbnailPolicy } from './result-card.js';
+import { readSearchCorrection, type SearchCorrection } from './spelling.js';
 export { readCustomerEndpoint } from './web-url.js';
 
 export type CustomerConnection = ThumbnailPolicy & {
@@ -27,6 +28,8 @@ export type CustomerSearch<Value = string> = {
   filters: Map<string, Value>;
   facetMode?: DesignSettings['facetMode'];
   excludeFilters?: Map<string, string>;
+  autoCorrect?: boolean | null;
+  suppressCorrection?: boolean;
 };
 
 export type BuildSearch = CustomerSearch<string[]>;
@@ -68,6 +71,8 @@ async function requestSearch(connection: CustomerConnection, options: CustomerSe
   if (connection.settings?.highlighting !== undefined) url.searchParams.set('hl', String(connection.settings.highlighting));
   if (connection.language) url.searchParams.set('language', connection.language);
   if (connection.profile) url.searchParams.set('model', connection.profile);
+  if (options.suppressCorrection) url.searchParams.set('spellcheck.correct', 'false');
+  else if (typeof options.autoCorrect === 'boolean') url.searchParams.set('spellcheck.correct', String(options.autoCorrect));
   if (options.sort) url.searchParams.set('sort', options.sort);
   const clause = (field: string, value: string) => field + ':"' + value.replace(/[\\"]/g, '\\$&') + '"';
   const selected: string[] = [];
@@ -148,7 +153,9 @@ export async function searchBuildApp(connection: CustomerConnection, options: Bu
   const matches = connection.configuration?.profiles.filter(item => item.profile === profile && (!language || item.language === language));
   const settings = connection.settings ?? (matches?.length === 1 ? matches[0] : undefined);
   const { cards, ...metadata } = resultCards(payload, response.docs, settings?.highlighting, profile, language, connection);
-  return { ...page, ...metadata, settings, language, start, sort, cards: cards.filter(card => card.url || card.thumbnail || card.values.length) };
+  return { ...page, ...metadata, settings, language, start, sort,
+    correction: readSearchCorrection(payload),
+    cards: cards.filter(card => card.url || card.thumbnail || card.values.length) };
 }
 
 // The prepared Improve lessons use the demo’s original linked-result projection.

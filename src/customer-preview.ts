@@ -4,11 +4,12 @@ import { facetGroupScope, selectedFacetGroups, visibleFacetFilters } from './fac
 import { placePromotionBanners, renderPromotionBanners, updatePromotionLabels } from './promotion-display.js';
 import { createSearchRecovery } from './search-recovery';
 import { readAppConfiguration, featureStatus, profileStatus, type Profile, type AppConfiguration } from './app-configuration.js';
-import { resultMappingNotice, appendResultCard } from './result-card.js';
+import { resultMappingNotice, appendResultCard, updateResultLinkTargets } from './result-card.js';
 import type { DesignSettings } from './design';
 import { formatResultSummary, placeResultSummary, type ResultWindow } from './result-summary.js';
 import { contentLanguageTag } from './content-language.js';
 import { readAnswerEndpoint, setupCustomerAnswers } from './customer-answers.js';
+import { setupSearchCorrection } from './spelling.js';
 import { createCustomerSuggestionSource } from './customer-suggestions.js';
 import {
   CustomerSearchError,
@@ -52,6 +53,13 @@ export function setupCustomerPreview(
   const summaryToolbar = status.parentElement!;
   let resultWindow: ResultWindow | undefined;
   const searchFeedback = get('[data-customer-search-feedback]');
+  const correction = setupSearchCorrection(panel, original => {
+    if (options && !request) {
+      queryInput.value = original;
+      queryInput.focus();
+      run({ query: original, suppressCorrection: true }, searchForm, queryInput);
+    }
+  });
   const previousResults = get('[data-customer-previous-results]');
   const layout = get('[data-customer-layout]');
   const facets = get('[data-customer-facets]');
@@ -129,6 +137,7 @@ export function setupCustomerPreview(
   let activePaginationMode: DesignSettings['paginationMode'] = getDesign().paginationMode;
   let lastStartingSort = getDesign().startingSort;
   let lastShowSorting = getDesign().showSorting;
+  let lastAutoCorrect = getDesign().autoCorrect;
   let tokenDestinations: string[] | null = null;
   const paginationMode = () => getDesign().paginationMode;
 
@@ -225,12 +234,13 @@ export function setupCustomerPreview(
     sort.value = page.sorts.some(item => item.value === active.sort) ? active.sort : '';
     renderFacets(page, active);
     const append = paginationMode() === 'loadMore' && active.start > 0 && grid.childElementCount > 0;
+    const design = getDesign();
     const rendered = page.cards.map(card => {
       const result = document.createElement('article');
       result.className = 'searchstax-search-result';
       if (language) result.lang = language;
       if (card.promoted) result.append(promotionLabel());
-      appendResultCard(result, card, getDesign().cardMetadata);
+      appendResultCard(result, card, design.cardMetadata, design.resultLinkTarget);
       return result;
     });
     if (append) grid.append(...rendered);
@@ -278,6 +288,7 @@ export function setupCustomerPreview(
       }
     } else {
       options = search;
+      correction.clear();
       lastStartingSort = getDesign().startingSort;
       previousResults.hidden = !status.textContent;
       empty.hidden = true;
@@ -286,7 +297,7 @@ export function setupCustomerPreview(
     }
     const timer = window.setTimeout(() => pending.abort(), 12000);
     try {
-      const page = await searchBuildApp(candidate, search, pending.signal, connecting ? [] : latestPage?.sorts);
+      const page = await searchBuildApp(candidate, { ...search, autoCorrect: getDesign().autoCorrect }, pending.signal, connecting ? [] : latestPage?.sorts);
       if (request !== pending) return;
       search = { ...search, sort: page.sort, start: page.start };
       if (connecting && candidate.configuration) {
@@ -310,6 +321,7 @@ export function setupCustomerPreview(
       recovery.clear();
       displayedStart = search.start;
       searchFeedback.textContent = '';
+      correction.render(page.correction);
       renderResults(page, search, contentLanguageTag(candidate.language));
       onResultSettings();
       const rows = getDesign().resultsPerPage;
@@ -506,13 +518,14 @@ export function setupCustomerPreview(
         return;
       }
       facetView.reset();
-      run({ query: term, filters: new Map() });
+      run({ query: term, filters: new Map(), suppressCorrection: false });
       if (connection) showAnswers(connection, term);
     },
     updateDesign(order?: string) {
       if (!connection || !options) return;
       updateVisibility();
       const design = getDesign();
+      updateResultLinkTargets(grid, design.resultLinkTarget);
       const previousMode = activePaginationMode;
       const nextMode = design.paginationMode;
       activePaginationMode = nextMode;
@@ -523,18 +536,21 @@ export function setupCustomerPreview(
       if (latestPage && groups !== displayedFacetGroups) renderFacets(latestPage, options);
       else facetView.refresh();
       const startingSortChanged = design.startingSort !== lastStartingSort;
+      const autoCorrectChanged = design.autoCorrect !== lastAutoCorrect;
       const sortingReenabled = !lastShowSorting && design.showSorting;
       const nextOrder = design.showSorting ? (order ?? (startingSortChanged || sortingReenabled ? design.startingSort : options.sort)) : '';
       if (startingSortChanged) lastStartingSort = design.startingSort;
       lastShowSorting = design.showSorting;
+      lastAutoCorrect = design.autoCorrect;
       const clearSelection = !design.filters || options.facetMode !== design.facetMode;
       const filters = clearSelection ? new Map() : visibleFacetFilters(options.filters, groups);
       if (design.resultsPerPage !== options.rows || previousMode !== nextMode || filters.size !== options.filters.size ||
-        options.facetMode !== design.facetMode || nextOrder !== options.sort) {
+        options.facetMode !== design.facetMode || nextOrder !== options.sort || autoCorrectChanged) {
         run({
           rows: design.resultsPerPage,
           filters,
           sort: nextOrder,
+          suppressCorrection: autoCorrectChanged ? false : options.suppressCorrection,
         });
       }
     },

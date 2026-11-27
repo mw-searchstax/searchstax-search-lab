@@ -21,6 +21,7 @@ import { getAnalyticsSettings, setupResultTracking } from './result-tracking.js'
 import { setupPaginationPlacement } from './pagination-focus.js';
 import { createResultPages } from './result-pages.js';
 import { formatResultSummary } from './result-summary.js';
+import { renderSearchCorrection, setupKitSpelling, setupSearchCorrection } from './spelling.js';
 import { decodedSort, encodedSort, createSortController, readResponseSortOptions, readSortOptions } from './sorting.js';
 import { installRecordedSearch } from './recorded-search.js';
 import recordings from './recorded-searches.js';
@@ -50,6 +51,7 @@ const status = ref('Connecting to search…');
 const loadedResults = ref(0);
 const totalResults = ref(0);
 let api;
+let spelling;
 let sortController;
 let loadingSubscription;
 let timer;
@@ -68,6 +70,7 @@ function publicLink(value) {
 function afterSearch(items, response) {
   const total = response?.response?.numFound;
   if (typeof total !== 'number') return [];
+  renderSearchCorrection(response);
   window.clearTimeout(timer);
   const options = readResponseSortOptions(response);
   if (sortController?.handle(options)) return [];
@@ -108,6 +111,7 @@ function runSearch(value) {
     status.value = 'Enter a search term.';
     return;
   }
+  spelling.clear();
   const current = api.dataLayer.searchObject;
   const next = { ...current, query: term, page: 1, facets: [] };
   void services?.search(term);
@@ -117,6 +121,7 @@ function runSearch(value) {
 
 function initialized(instance) {
   api = instance;
+  spelling = setupKitSpelling(api, () => design.autoCorrect);
   api.setCookiesDisabled(!analytics.trackApiKey);
   sortController = createSortController({
     enabled: design.showSorting,
@@ -131,6 +136,11 @@ watch(form, async (element) => {
   if (!element || loadingSubscription) return;
   await nextTick();
   if (!form.value) return;
+  setupSearchCorrection(document, original => {
+    queryField.value.value = original;
+    queryField.value.focus();
+    spelling.retry(original);
+  });
   if (filterHost.value) facetLimits = setupFacetLimits(filterHost.value, () => design);
   loadingSubscription = api.dataLayer.$loadingChange.subscribe((loading) => {
     if (!loading) return;
@@ -201,6 +211,7 @@ onBeforeUnmount(() => {
       </div>
       <div ref="answerHost"></div>
       <p v-if="design.summaryPlacement !== 'below'" role="status" data-result-summary>{{ status }}</p>
+      <div class="search-starter__correction" data-search-correction hidden><span data-search-correction-message></span><button type="button" class="search-starter__submit" data-search-correction-retry></button></div>
       <SearchstaxSortingWidget v-if="design.showSorting && design.sortPlacement !== 'below'">
         <template #sorting="{ sortingData, selectedSorting }">
           <label v-if="sortingData?.searchExecuted && sortChoices(sortingData).length" class="search-starter__sort">
@@ -258,7 +269,7 @@ onBeforeUnmount(() => {
                     :alt="item.previewThumbnailAlt" :lang="resultLanguage" loading="lazy" referrerpolicy="no-referrer">
                   <div class="result-card-content">
                     <span v-if="item.ribbonParts.length" class="searchstax-search-result-ribbon"><Passage :parts="item.ribbonParts" /></span>
-                    <h2 v-if="item.hasTitle" :lang="resultLanguage"><a v-if="item.url" :href="item.url" :data-result-id="item.uniqueId" referrerpolicy="no-referrer"><Passage :parts="item.titleParts" /></a><Passage v-else :parts="item.titleParts" /></h2>
+                    <h2 v-if="item.hasTitle" :lang="resultLanguage"><a v-if="item.url" :href="item.url" :target="design.resultLinkTarget === '_blank' ? '_blank' : '_self'" :rel="design.resultLinkTarget === '_blank' ? 'noopener noreferrer' : undefined" :data-result-id="item.uniqueId" referrerpolicy="no-referrer"><Passage :parts="item.titleParts" /></a><Passage v-else :parts="item.titleParts" /></h2>
                     <p v-if="item.descriptionParts.length" class="search-starter__result-description" :lang="resultLanguage"><Passage :parts="item.descriptionParts" /></p>
                     <p v-for="(field, i) in item.otherFields" :key="i">{{ field.label ? field.label + ': ' : '' }}<Passage :parts="field.parts" /></p>
                   </div>

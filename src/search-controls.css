@@ -25,6 +25,16 @@
   font-size: .8125rem;
 }
 
+.search-lab__correction,
+.search-starter__correction {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem;
+  margin-block: .75rem;
+  font-size: .875rem;
+}
+
 .search-lab__sort,
 .search-starter__sort,
 .lab-experiences [data-exp-sort] {

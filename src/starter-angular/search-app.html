@@ -44,6 +44,7 @@
     @if (design.summaryPlacement !== 'below') {
       <p role="status" data-result-summary>{{ status() }}</p>
     }
+    <div class="search-starter__correction" data-search-correction hidden><span data-search-correction-message></span><button type="button" class="search-starter__submit" data-search-correction-retry></button></div>
     @if (design.showSorting && design.sortPlacement !== 'below') {
       <app-searchstax-search-sorting [templateOverride]="sortControls" />
     }
@@ -119,7 +120,7 @@
                   }
                   <div class="result-card-content">
                     @if (item.ribbonParts.length) {<span class="searchstax-search-result-ribbon"><ng-container [ngTemplateOutlet]="passage" [ngTemplateOutletContext]="{ $implicit: item.ribbonParts }" /></span>}
-                    @if (item.hasTitle) {<h2 [attr.lang]="resultLanguage">@if (item.url) {<a [href]="item.url" [attr.data-result-id]="item.uniqueId" referrerpolicy="no-referrer"><ng-container [ngTemplateOutlet]="passage" [ngTemplateOutletContext]="{ $implicit: item.titleParts }" /></a>} @else {<ng-container [ngTemplateOutlet]="passage" [ngTemplateOutletContext]="{ $implicit: item.titleParts }" />}</h2>}
+                    @if (item.hasTitle) {<h2 [attr.lang]="resultLanguage">@if (item.url) {<a [href]="item.url" [attr.target]="design.resultLinkTarget === '_blank' ? '_blank' : '_self'" [attr.rel]="design.resultLinkTarget === '_blank' ? 'noopener noreferrer' : null" [attr.data-result-id]="item.uniqueId" referrerpolicy="no-referrer"><ng-container [ngTemplateOutlet]="passage" [ngTemplateOutletContext]="{ $implicit: item.titleParts }" /></a>} @else {<ng-container [ngTemplateOutlet]="passage" [ngTemplateOutletContext]="{ $implicit: item.titleParts }" />}</h2>}
                     @if (item.descriptionParts.length) {
                       <p class="search-starter__result-description" [attr.lang]="resultLanguage"><ng-container [ngTemplateOutlet]="passage" [ngTemplateOutletContext]="{ $implicit: item.descriptionParts }" /></p>
                     }

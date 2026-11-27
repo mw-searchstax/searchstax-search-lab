@@ -20,6 +20,7 @@ import { getAnalyticsSettings, setupResultTracking } from './result-tracking.js'
 import { setupPaginationPlacement } from './pagination-focus.js';
 import { createResultPages } from './result-pages.js';
 import { formatResultSummary } from './result-summary.js';
+import { renderSearchCorrection, setupKitSpelling, setupSearchCorrection } from './spelling.js';
 import { decodedSort, encodedSort, createSortController, readResponseSortOptions, readSortOptions } from './sorting.js';
 import { installRecordedSearch } from './recorded-search.js';
 import recordings from './recorded-searches.js';
@@ -57,7 +58,7 @@ function resultCards(results) {
           )}
           <div className="result-card-content">
             {item.ribbonParts.length > 0 && <span className="searchstax-search-result-ribbon">{renderParts(item.ribbonParts)}</span>}
-            {item.hasTitle && <h2 lang={resultLanguage}>{item.url ? <a href={item.url} data-result-id={item.uniqueId} referrerPolicy="no-referrer">{renderParts(item.titleParts)}</a> : renderParts(item.titleParts)}</h2>}
+            {item.hasTitle && <h2 lang={resultLanguage}>{item.url ? <a href={item.url} target={design.resultLinkTarget === '_blank' ? '_blank' : '_self'} rel={design.resultLinkTarget === '_blank' ? 'noopener noreferrer' : undefined} data-result-id={item.uniqueId} referrerPolicy="no-referrer">{renderParts(item.titleParts)}</a> : renderParts(item.titleParts)}</h2>}
             {item.descriptionParts.length > 0 && <p className="search-starter__result-description" lang={resultLanguage}>{renderParts(item.descriptionParts)}</p>}
             {item.otherFields.map((field, index) => <p key={index}>{field.label && field.label + ': '}{renderParts(field.parts)}</p>)}
           </div>
@@ -147,6 +148,7 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
   const resultHost = useRef(null);
   const answerHost = useRef(null);
   const services = useRef(null);
+  const spelling = useRef(null);
   const setSuggestionSource = useRef(null);
   const sortWidget = design.showSorting ? <SearchstaxSortingWidget searchSortingTemplate={(data, _, selected) => sortControls(data, selected, api)} /> : null;
   const feedback = <p role="status" data-result-summary="">{status}</p>;
@@ -157,6 +159,7 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
       setStatus('Enter a search term.');
       return;
     }
+    spelling.current?.clear();
     const current = api.dataLayer.searchObject;
     const next = { ...current, query: term, page: 1, facets: [] };
     void services.current?.search(term);
@@ -164,6 +167,14 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
     else api.dataLayer.setSearchObject(next);
   }
 
+  useEffect(() => {
+    spelling.current = setupKitSpelling(api, () => design.autoCorrect);
+    setupSearchCorrection(document, original => {
+      input.current.value = original;
+      input.current.focus();
+      spelling.current.retry(original);
+    });
+  }, [api]);
   useEffect(() => {
     const limits = filterHost.current && setupFacetLimits(filterHost.current, () => design);
     const loading = api.dataLayer.$loadingChange;
@@ -213,6 +224,7 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
     </form>
     <div ref={answerHost} />
     {design.summaryPlacement !== 'below' && feedback}
+    <div className="search-starter__correction" data-search-correction hidden><span data-search-correction-message="" /><button type="button" className="search-starter__submit" data-search-correction-retry="" /></div>
     {design.sortPlacement === 'below' ? null : sortWidget}
     {design.bannerPlacement === 'above' && <SearchstaxExternalPromotionsWidget searchExternalPromotionsTemplate={livePromotions} />}
     <div className="search-starter__body">
@@ -264,6 +276,7 @@ export default function SearchApp() {
   function afterSearch(items, response) {
     const total = response?.response?.numFound;
     if (typeof total !== 'number') return [];
+    renderSearchCorrection(response);
     window.clearTimeout(timer.current);
     // The requested page can change while the previous response is still on screen.
     const options = readResponseSortOptions(response);

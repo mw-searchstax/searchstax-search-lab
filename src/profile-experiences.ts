@@ -11,7 +11,8 @@ import { searchBuildApp, CustomerSearchError, type BuildPage, type CustomerConne
 import { profileStatus, type Entitlements, type Profile } from './app-configuration.js';
 import { formatResultSummary, placeResultSummary, type ResultWindow } from './result-summary.js';
 import { metadataScope } from './card-metadata.js';
-import { resultMappingNotice, appendResultCard, mapResultCard, type ResultCard } from './result-card.js';
+import { resultMappingNotice, appendResultCard, updateResultLinkTargets, mapResultCard, type ResultCard } from './result-card.js';
+import { setupSearchCorrection } from './spelling.js';
 
 export type Experience = Profile;
 
@@ -146,6 +147,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       ?? choices[0] ?? { language: code, profile: '' };
   }
   let query = 'campus';
+  let suppressCorrection = false;
   let start = 0;
   let displayedStart = 0;
   const searchForm = field<HTMLFormElement>('form');
@@ -153,6 +155,14 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
   let lastControl: HTMLElement = input;
   const recovery = createSearchRecovery(input, () => { void search(lastAnchor, lastControl); });
   let options: DesignSettings = { ...DEFAULT_DESIGN };
+  const correction = setupSearchCorrection(panel, original => {
+    query = original;
+    input.value = original;
+    input.focus();
+    start = 0;
+    suppressCorrection = true;
+    void search(searchForm, input);
+  });
   let filters: FacetSelection = new Map();
   let facetGroups: BuildPage['facets'] = [];
   const facets = field('[data-exp-facets]');
@@ -198,6 +208,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
   }
 
   function updatePresentation() {
+    updateResultLinkTargets(list, options.resultLinkTarget);
     const es = spanish();
     placeResultSummary(status, options.summaryPlacement, summaryToolbar, pages);
     if (resultWindow) {
@@ -297,7 +308,11 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       let total: number;
       let selected = options.showSorting ? initialSort ?? order.value : '';
       if (app) {
-        const page = await searchBuildApp({ ...app, ...active, settings: active }, { query, start, rows, sort: selected, filters: new Map(filters), facetMode: options.facetMode }, AbortSignal.any([request.signal, AbortSignal.timeout(12000)]), sorts);
+        correction.clear();
+        const page = await searchBuildApp({ ...app, ...active, settings: active }, {
+          query, start, rows, sort: selected, filters: new Map(filters), facetMode: options.facetMode,
+          autoCorrect: options.autoCorrect, suppressCorrection,
+        }, AbortSignal.any([request.signal, AbortSignal.timeout(12000)]), sorts);
         if (pending !== request) return;
         selected = page.sort;
         start = page.start;
@@ -308,6 +323,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
         banners = page.externalPromotions;
         fields = page.facets;
         cards = page.cards;
+        correction.render(page.correction);
         if (app.sampleThumbnails && !page.hasThumbnailMapping) {
           for (const card of cards) card.sampleThumbnail = thumbnails[card.url];
         }
@@ -341,13 +357,9 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
           marker.textContent = options.promotionBadge === DEFAULT_DESIGN.promotionBadge ? marker.dataset.defaultLabel : options.promotionBadge;
           item.append(marker);
         }
-        appendResultCard(item, card, options.cardMetadata);
-        const link = item.querySelector('a');
-        if (link) {
-          link.target = '_blank';
-          link.rel = 'noopener noreferrer';
-          if (!app) link.hreflang = 'en';
-        }
+        appendResultCard(item, card, options.cardMetadata, options.resultLinkTarget);
+        const link = item.querySelector<HTMLAnchorElement>('a.searchstax-search-result-title');
+        if (link && !app) link.hreflang = 'en';
         list.append(item);
       }
       reportSettings();
@@ -460,6 +472,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
     render(true);
   });
   function submit(term: string) {
+    suppressCorrection = false;
     query = term.trim();
     input.value = term;
     filters.clear();
@@ -487,7 +500,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
   });
   return {
     open(term = query, draft = term) { query = term; input.value = draft; render(); },
-    close() { cancelSearch(); recovery.clear(); features.clear(); },
+    close() { cancelSearch(); suppressCorrection = false; correction.clear(); recovery.clear(); features.clear(); },
     setProfiles(choices: Experience[]) {
       if (!choices.length) return;
       tabProfiles = choices;
@@ -524,13 +537,15 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       const groupsChanged = visible !== selectedFacetGroups(previous.facetGroups, active.profile, active.language);
       const nextFilters = visibleFacetFilters(filters, visible);
       const removedFilters = nextFilters.size !== filters.size;
+      const changedSpelling = previous.autoCorrect !== design.autoCorrect;
       if (groupsChanged) showFacets(facetGroups);
       filters = nextFilters;
+      if (changedSpelling) suppressCorrection = false;
       if (previous.profileTabs !== design.profileTabs || previous.languagePicker !== design.languagePicker) {
         render();
       } else if (previous.facetMode !== design.facetMode || previous.filters !== design.filters || previous.resultsPerPage !== design.resultsPerPage ||
                  previous.paginationMode !== design.paginationMode || previous.startingSort !== design.startingSort ||
-                 previous.showSorting !== design.showSorting || previous.samplePromotions !== design.samplePromotions || removedFilters) {
+                 previous.showSorting !== design.showSorting || previous.samplePromotions !== design.samplePromotions || changedSpelling || removedFilters) {
         start = 0;
         if (!design.filters || previous.facetMode !== design.facetMode) filters.clear();
         if (!design.showSorting || previous.samplePromotions !== design.samplePromotions) {
@@ -546,7 +561,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       return { ...experienceHandoff(Boolean(app), catalog, active, query, defaultLanguage), entitlements: app?.configuration?.entitlements };
     },
     setSource(connection: CustomerConnection | null, choices: Experience[], term: string, selected?: Experience, sourceLanguage?: string) {
-      cancelSearch(); features.clear(); app = connection;
+      cancelSearch(); suppressCorrection = false; correction.clear(); features.clear(); app = connection;
       resultWindow = undefined;
       allProfiles = choices.length ? choices : connection ? [connection.settings ?? { language: connection.language, profile: connection.profile }] : demoProfiles;
       tabProfiles = allProfiles;

@@ -16,7 +16,7 @@ function starterAnswerEndpoint(value) {
 /**
  * @param {HTMLElement} host
  * @param {{ questionURL: string, searchAuth: string, model: string, language: string }} connection
- * @param {{ smartAnswerHeading?: string, smartAnswerCardStyle?: string }} design
+ * @param {{ smartAnswerHeading?: string, smartAnswerCardStyle?: string, smartAnswerSourceStyle?: string, smartAnswerWordLimit?: number }} design
  */
 export function setupStarterAnswers(host, connection, design) {
   const answerEndpoint = starterAnswerEndpoint(connection.questionURL.trim());

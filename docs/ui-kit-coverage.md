@@ -38,7 +38,7 @@ The ten widget families below follow the [Help Center catalog](https://support.s
 | Ribbon appearance | Choose a ribbon, pill or square shape. Clear **Use accent color** to pick a custom ribbon color. | Appearance · CSS. Follow the accent color by default and choose contrasting text automatically. | Content type mapped to Ribbon. | Wired | Wired | Wired | Wired |
 | Metadata labels | Rename an individual returned metadata field. | Appearance · template. Start with the profile label. Save overrides by field, profile and language. | Two fields and a result missing one of them. | Wired | Wired | Wired | Wired |
 | Metadata order | Move a metadata field earlier or later. | Advanced Options · template. Default to the published field order within the metadata region. | Two fields, a profile change and a saved design. | Wired | Wired | Wired | Wired |
-| `linkTarget` | Preview and handoff paths have fixed link behavior. | Features · native after upgrade, or template for custom links. Start with same tab, offer new tab. | Mapped HTTP(S) URL. Verify keyboard activation and result-click tracking. | Upgrade | Gap | Gap | Gap |
+| `linkTarget` | Open mapped result links in the same tab or a new tab. | Features → Result links. The same tab is the default. | Activate a mapped result with the keyboard and verify opt-in result-click tracking. | Wired | Wired | Wired | Wired |
 | `groupedBy` | Flat list. | Features · native after upgrade. Off, then one supported field. | A groupable field and at least two groups. Confirm counts on a running export. | Upgrade | Gap | Gap | Gap |
 | `itemsPerGroup` | No group size. | Features · native after upgrade. Start with kit default when grouping is selected. | Group with multiple hits. Page size no longer directly sets the number of groups or documents. | Upgrade | Gap | Gap | Gap |
 | Group heading | No groups. | Appearance · template and CSS. Start with the group value as its heading. | Two distinct group values and a missing value. | Gap | Gap | Gap | Gap |
@@ -108,8 +108,8 @@ The ten widget families below follow the [Help Center catalog](https://support.s
 | Option | Build today | Destination, mechanism and proposed default | Prerequisite or review example | JS | React | Vue | Angular |
 |---|---|---|---|---|---|---|---|
 | Feedback or overview template | Result count or visible range above or below results. Load more reports the accumulated range. | Appearance → Search feedback · response data and template. Default to the count above results. | Use the campus fixture to page, append, filter to Location, and clear. A search with zero hits shows a count in either mode. | Wired | Wired | Wired | Wired |
-| Corrected query | Build has no complete live correction presentation. | Features · response and template. Display corrected and original terms when supplied. | A real misspelling with a corrected-query response. | Gap | Gap | Gap | Gap |
-| Retry original query | No live original-query action in Build. | Features · native feedback action or custom template. Offer only when the response includes an original term. | Retry must suppress correction for that request. | Gap | Gap | Gap | Gap |
+| Corrected query | Identifies the corrected term when the app reports a correction. | Search feedback · response and template. Show the app’s corrected term above the results. | Verify the message with and without a returned original term. | Wired | Wired | Wired | Wired |
+| Retry original query | Retains current filters, starts on page one, and searches the original term. | Search feedback · show the retry only when the app includes an original term. | Verify suppression on retry and subsequent pages, and that a fresh search restores the design setting. | Wired | Wired | Wired | Wired |
 
 ## External and indexed promotions
 
@@ -142,8 +142,8 @@ The ten widget families below follow the [Help Center catalog](https://support.s
 |---|---|---|---|---|---|---|---|
 | Answer availability | Configured answers can stream, with sources. Samples live in the fictional experience. | Features · app and template. Follow both entitlement and profile configuration. | Answer endpoint and an answerable query. Handle empty/error responses. | Wired | Wired | Wired | Wired |
 | Answer template | Editable heading and Accent border or Plain outline. | Appearance → Smart Answers. Leave Heading blank for Smart Answer, and keep Accent border by default. | Stream an answer with two source links and verify both links after completion. | Wired | Wired | Wired | Wired |
-| Citation styling | Source links in the connected answer. | Appearance · CSS and template. Preserve link labels and order. | An answer with sources. | Gap | Gap | Gap | Gap |
-| `showMoreAfterWordCount` | No word-count control. | Features · native. Start at 100 words, allow adjustment. | A long answer. Check expand/collapse in each kit. | Gap | Gap | Gap | Gap |
+| Citation styling | Inline links or outlined source cards. | Appearance → Smart Answers. Default to inline links. | An answer with two sources. Verify labels, destinations, order, and keyboard focus. | Wired | Wired | Wired | Wired |
+| `showMoreAfterWordCount` | Completed answers collapse past the configured word count. | Appearance → Smart Answers. Default to 100 words. | Expand and collapse a long answer, then verify its complete text and links. | Wired | Wired | Wired | Wired |
 | `feedbackwidget` | No answer feedback choice. | Features · native. Default off, opt in when integration is configured. | A real answer plus approved feedback destination. | Gap | Gap | Gap | Gap |
 | `renderFeedbackWidget` | No thumbs controls in the custom card. | Features · native feedback config. Off initially. | An answer eligible for feedback. | Gap | Gap | Gap | Gap |
 | `emailOverride` | No identity override. | Handoff · callback. Unset by default. | Integrator-owned identity and feedback policy. | Setup | Setup | Setup | Setup |
@@ -186,7 +186,7 @@ The ten widget families below follow the [Help Center catalog](https://support.s
 | `sessionId` | No designer override. | Handoff · native. Use the integration’s session policy. | Analytics session policy. | Setup | Setup | Setup | Setup |
 | `suggesterURL` | Optional app suggester. | Handoff · native connection or custom source. Empty until configured. | App suggester endpoint. | Setup | Setup | Setup | Setup |
 | `questionURL` | Optional connected answer endpoint. | Handoff · native connection or streaming implementation. Empty until configured. | Entitled and configured Smart Answers. | Setup | Setup | Setup | Setup |
-| `autoCorrect` | No Build switch. | Features · native. Inherit app behavior unless explicitly overridden. | Configured correction dictionary and a misspelling. | Gap | Gap | Gap | Gap |
+| `autoCorrect` | Use the app’s default behavior, or turn correction On or Off. | Features → Spelling. Default to Use app default. | Inspect requests with all three choices. | Wired | Wired | Wired | Wired |
 | `trackApiKey` | Tracking opt-in in ordinary starters. | Handoff · native. Off by default. | Browser-appropriate tracking key. | Setup | Setup | Setup | Setup |
 | `analyticsBaseUrl` | Optional tracking destination. | Handoff · native. Empty until configured. | Approved analytics destination. | Setup | Setup | Setup | Setup |
 | `analyticsSrc` | No source override in Build. | Handoff · native. Use integration default. | Analytics source configuration. | Setup | Setup | Setup | Setup |
@@ -297,7 +297,7 @@ Each row is a distinct replacement point. Keep the kit template by default when 
 | Selected filter chips | No chip treatment control | selectedFacetsTemplate | within facet templates | within facet slots | within facet templates |
 | Pagination | Previous, range, next | mainTemplate | paginationTemplate | pagination | templateOverride |
 | Load more | Load more button and cumulative count | infiniteScrollTemplate | infiniteScrollTemplate | infiniteScroll | infiniteScrollTemplateOverride |
-| Count and corrections | Count, visible range and placement wired. Corrected-query display and retry remain open. | main | searchOverviewTemplate | searchFeedback | templateOverride |
+| Count and corrections | Count, visible range, placement, and corrected-query display and retry. | main | searchOverviewTemplate | searchFeedback | templateOverride |
 | Sorting | Labeled dropdown above or below results | main | searchSortingTemplate | sorting | templateOverride |
 | External promotions shell | Banner | mainTemplate | searchExternalPromotionsTemplate | externalPromotions | templateOverride |
 | One external promotion | Fixed treatment | externalPromotion | within promotions template | within externalPromotions | within promotions template |

@@ -146,8 +146,74 @@ export function setupCustomerAnswers(preview) {
   const status = /** @type {HTMLElement} */ (panel.querySelector('[data-customer-answer-status]'));
   const content = /** @type {HTMLElement} */ (panel.querySelector('[data-customer-answer-content]'));
   const announcement = preview.querySelector('[data-customer-answer-announcement]');
+  const toggle = document.createElement('button');
+  toggle.type = 'button';
+  toggle.className = 'smart-answer__toggle';
+  toggle.hidden = true;
+  content.after(toggle);
   /** @type {AbortController | null} */
   let current = null;
+  let completedAnswer = null;
+  let expanded = false;
+  let wordLimit = 100;
+
+  function resetToggle() {
+    expanded = false;
+    toggle.hidden = true;
+    toggle.textContent = 'Show more';
+    toggle.setAttribute('aria-expanded', 'false');
+  }
+
+  /**
+   * Keep complete source links intact while placing the tail of a long answer
+   * behind an ordinary keyboard-accessible button.
+   */
+  function limitAnswer() {
+    resetToggle();
+    const boundary = [...content.textContent.matchAll(/\S+/g)][wordLimit]?.index;
+    if (boundary === undefined) return;
+    const nodes = [...content.childNodes];
+    let offset = 0;
+    for (let i = 0; i < nodes.length; i++) {
+      const node = nodes[i];
+      const text = node.textContent ?? '';
+      const end = offset + text.length;
+      if (end <= boundary) {
+        offset = end;
+        continue;
+      }
+      const overflow = document.createElement('span');
+      overflow.className = 'smart-answer__overflow';
+      overflow.hidden = true;
+      if (node.nodeType === Node.TEXT_NODE) {
+        const split = boundary - offset;
+        node.textContent = text.slice(0, split);
+        overflow.append(text.slice(split));
+      } else {
+        overflow.append(node);
+      }
+      while (nodes[++i]) overflow.append(nodes[i]);
+      content.append(overflow);
+      toggle.hidden = false;
+      return;
+    }
+  }
+
+  /** @param {string} answer */
+  function renderCompleteAnswer(answer) {
+    content.replaceChildren(...answerNodes(answer, true));
+    content.hidden = false;
+    limitAnswer();
+  }
+
+  toggle.addEventListener('click', () => {
+    const overflow = content.querySelector('.smart-answer__overflow');
+    if (!overflow) return;
+    expanded = !expanded;
+    overflow.hidden = !expanded;
+    toggle.textContent = expanded ? 'Show less' : 'Show more';
+    toggle.setAttribute('aria-expanded', String(expanded));
+  });
 
   /** @param {string} message */
   function setStatus(message) {
@@ -158,6 +224,8 @@ export function setupCustomerAnswers(preview) {
   function clear() {
     current?.abort();
     current = null;
+    completedAnswer = null;
+    resetToggle();
     panel.hidden = true;
     setStatus('');
     content.replaceChildren();
@@ -190,8 +258,8 @@ export function setupCustomerAnswers(preview) {
       if (answer === null) {
         clear();
       } else if (answer) {
-        content.replaceChildren(...answerNodes(answer, true));
-        content.hidden = false;
+        completedAnswer = answer;
+        renderCompleteAnswer(answer);
         setStatus('Smart Answer ready.');
       } else {
         setStatus('No Smart Answer was returned for this search.');
@@ -211,12 +279,17 @@ export function setupCustomerAnswers(preview) {
   return {
     clear,
     start,
-    /** @param {{ smartAnswerHeading?: string, smartAnswerCardStyle?: string }} design */
+    /** @param {{ smartAnswerHeading?: string, smartAnswerCardStyle?: string, smartAnswerSourceStyle?: string, smartAnswerWordLimit?: number }} design */
     setAppearance(design) {
       const label = design.smartAnswerHeading?.trim() || 'Smart Answer';
       heading.textContent = label;
       if (panel.hasAttribute('aria-label')) panel.setAttribute('aria-label', label);
       panel.classList.toggle('smart-answer--outline', design.smartAnswerCardStyle === 'outline');
+      panel.classList.toggle('smart-answer--source-cards', design.smartAnswerSourceStyle === 'cards');
+      const previousLimit = wordLimit;
+      wordLimit = Number.isSafeInteger(design.smartAnswerWordLimit) && design.smartAnswerWordLimit > 0
+        ? design.smartAnswerWordLimit : 100;
+      if (completedAnswer && previousLimit !== wordLimit) renderCompleteAnswer(completedAnswer);
     },
   };
 }

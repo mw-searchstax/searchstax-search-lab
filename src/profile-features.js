@@ -109,6 +109,7 @@ export function setupProfileFeatures(panel, submit) {
       void related.show(panel.querySelector('#lab-exp-results'), app && design.relatedPlacement === 'off' ? 'below' : design.relatedPlacement, query, relatedTerms);
       answers.setAppearance(design);
       sampleCard.classList.toggle('smart-answer--outline', design.smartAnswerCardStyle === 'outline');
+      sampleCard.classList.toggle('smart-answer--source-cards', design.smartAnswerSourceStyle === 'cards');
       sampleHeading.textContent = design.smartAnswerHeading ?? '';
       sampleHeading.hidden = !sampleHeading.textContent;
       sampleAnswer.hidden = Boolean(app) || !active.smartAnswers || !design.showSmartAnswersSample;
