@@ -28,7 +28,7 @@ export type DesignSettings = {
   ribbonColor: string;
   ribbonShape: 'ribbon' | 'pill' | 'square';
   cardMetadata: MetadataStyle[];
-  facetMode: 'or' | 'and' | 'showUnavailable';
+  facetMode: 'or' | 'and' | 'tabs' | 'showUnavailable';
   facetDesktop: number;
   facetMobile: number;
   facetGroups: FacetGroupStyle[];
@@ -142,7 +142,7 @@ export function readFacetLimit(value: string | null): number {
 }
 
 export function readFacetMode(value: string | null): DesignSettings['facetMode'] {
-  return value === 'and' || value === 'showUnavailable' ? value : 'or';
+  return value === 'and' || value === 'tabs' || value === 'showUnavailable' ? value : 'or';
 }
 
 export function readPageSize(value: string | null): DesignSettings['resultsPerPage'] {

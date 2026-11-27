@@ -19,8 +19,15 @@ export function setupPublishedFacets(host: HTMLElement, settings: () => DesignSe
     const field = input.dataset.customerFacet;
     const next = new Map(selection);
     const values = new Set(next.get(field));
-    if (input.checked) values.add(input.value);
-    else values.delete(input.value);
+    if (input.checked) {
+      if (settings().facetMode === 'tabs') {
+        values.clear();
+        for (const previous of input.closest('fieldset')?.querySelectorAll<HTMLInputElement>('input:checked') ?? []) {
+          if (previous !== input) previous.checked = false;
+        }
+      }
+      values.add(input.value);
+    } else values.delete(input.value);
     if (values.size) next.set(field, [...values]);
     else next.delete(field);
     selection = next;

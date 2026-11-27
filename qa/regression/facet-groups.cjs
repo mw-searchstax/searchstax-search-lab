@@ -9,7 +9,7 @@ const type = 'demo_content_type_s';
 const area = 'demo_campus_area_s';
 const profile = 'SearchLabBuild';
 const modes = ['ordinary', 'profile'];
-const designs = ['ordered', 'selected'];
+const designs = ['ordered', 'selected', 'tabs'];
 const starter = process.env.QA_STARTER_URL;
 const defaultOrder = ['Content type', 'Campus area'];
 const customOrder = ['Campus area', 'Content type'];
@@ -47,6 +47,7 @@ async function groups(scope, order) {
 const group = (scope, field) => scope.locator('fieldset[data-facet="' + field + '"]');
 const location = scope => group(scope, type).getByRole('checkbox', { name: /^location\b/i });
 const north = scope => group(scope, area).getByRole('checkbox', { name: /^North\b/ });
+const south = scope => group(scope, area).getByRole('checkbox', { name: /^South\b/ });
 
 async function checkFiltering(scope) {
   await north(scope).click();
@@ -54,6 +55,24 @@ async function checkFiltering(scope) {
   await location(scope).click();
   await count(scope, 3);
   assert.ok(await north(scope).isChecked());
+  assert.ok(await location(scope).isChecked());
+}
+
+async function checkTabs(scope) {
+  await north(scope).press('Space');
+  await count(scope, 13);
+  await location(scope).click();
+  await count(scope, 3);
+  assert.ok(await north(scope).isChecked());
+  assert.ok(await location(scope).isChecked());
+  await south(scope).press('Space');
+  await count(scope, 5);
+  assert.ok(await south(scope).isChecked());
+  assert.equal(await north(scope).isChecked(), false);
+  assert.ok(await location(scope).isChecked());
+  await south(scope).press('Space');
+  await count(scope, 8);
+  assert.equal(await south(scope).isChecked(), false);
   assert.ok(await location(scope).isChecked());
 }
 
@@ -90,12 +109,12 @@ async function enableProfileTabs(page) {
   await page.getByLabel('Show profile tabs').check();
 }
 
-async function share(page) {
+async function share(page, setting = 'lab_facet_groups') {
   await page.evaluate(() => Object.defineProperty(navigator, 'clipboard', { configurable: true, value: undefined }));
   await page.getByRole('button', { name: 'Share Design', exact: true }).click();
   await page.getByRole('button', { name: 'Copy design link' }).click();
   const url = await page.getByLabel('Design link', { exact: true }).inputValue();
-  assert.ok(new URL(url).searchParams.has('lab_facet_groups'));
+  assert.ok(new URL(url).searchParams.has(setting));
   return url;
 }
 
@@ -189,10 +208,10 @@ async function checkBuild(browser) {
   console.log('Build passed default and custom order, clearing hidden filters, reload, shared links, profile tabs and connected preview.');
 }
 
-async function checkConnected(page, ordered) {
+async function connectFixture(page, url) {
   const target = 'https://review.searchstax.com/facet-fixture/emselect';
   await page.route(target + '*', route => route.fulfill({ json: searchResponse(new URL(route.request().url())) }));
-  await page.goto(ordered);
+  await page.goto(url);
   await page.getByRole('button', { name: 'Preview with your Search App' }).click();
   await page.locator('#lab-customer-endpoint').fill(target);
   await page.locator('#lab-customer-token').fill('local-fixture');
@@ -203,6 +222,11 @@ async function checkConnected(page, ordered) {
   await page.locator('[data-customer-submit]').click();
   const connected = page.locator('[data-customer-preview]');
   await count(connected, 37);
+  return connected;
+}
+
+async function checkConnected(page, ordered) {
+  const connected = await connectFixture(page, ordered);
   await groups(connected, customOrder);
   await checkFiltering(connected);
   await settings(page);
@@ -213,14 +237,63 @@ async function checkConnected(page, ordered) {
   assert.ok(await location(connected).isChecked());
 }
 
+async function checkTabsBuild(browser) {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 950 } });
+  const requests = [];
+  await page.route(endpoint + '*', route => {
+    const url = new URL(route.request().url());
+    requests.push(url);
+    return route.fulfill({ json: searchResponse(url) });
+  });
+  await page.goto(baseURL);
+  await page.getByRole('link', { name: 'Start designing' }).click();
+  const ordinary = page.locator('[data-lab-demo-output]');
+  await search(page, ordinary);
+  await settings(page);
+  const match = page.getByLabel('Match selected filter values');
+  await match.selectOption({ label: 'One value per group' });
+  await checkTabs(ordinary);
+  assert.ok(requests.some(url => {
+    const clauses = url.searchParams.getAll('fq');
+    return url.searchParams.get('model') === profile && clauses.includes(type + ':"location"') &&
+      clauses.includes(area + ':"South"') && !clauses.includes(area + ':"North"');
+  }), 'Replacing North with South keeps Location and the same profile in the search request.');
+  const shared = await share(page, 'lab_facet_mode');
+  assert.equal(new URL(shared).searchParams.get('lab_facet_mode'), 'tabs');
+  await page.reload();
+  await settings(page);
+  assert.equal(await match.inputValue(), 'tabs');
+
+  const recipient = await browser.newPage({ viewport: { width: 1440, height: 950 } });
+  await recipient.goto(shared);
+  await settings(recipient);
+  assert.equal(await recipient.getByLabel('Match selected filter values').inputValue(), 'tabs');
+  await search(recipient, recipient.locator('[data-lab-demo-output]'));
+  await exportStarters(recipient, 'ordinary-tabs');
+  await enableProfileTabs(recipient);
+  const tabbed = recipient.locator('#lab-experiences');
+  await count(tabbed, 37);
+  await checkTabs(tabbed);
+  assert.equal(await tabbed.getByRole('tab', { name: profile, exact: true }).getAttribute('aria-selected'), 'true');
+  await exportStarters(recipient, 'profile-tabs');
+  await recipient.close();
+
+  await checkTabs(await connectFixture(page, shared));
+  await page.close();
+  console.log('One value per group passed keyboard selection, replacement, clearing, reload, shared links, profile tabs and connected Build.');
+}
+
 async function checkStarter(browser) {
   const [mode, variant] = process.env.QA_FACET_VARIANT.split('-');
   const page = await browser.newPage({ viewport: { width: 1440, height: 950 } });
   await page.goto(starter);
   const scope = mode === 'profile' ? page.locator('.lab-experiences') : page.locator('.search-starter');
   await search(scope);
-  await groups(scope, variant === 'ordered' ? customOrder : subset);
-  if (variant === 'ordered') {
+  await groups(scope, variant === 'tabs' ? defaultOrder : variant === 'ordered' ? customOrder : subset);
+  if (variant === 'tabs') {
+    await checkTabs(scope);
+    if (mode === 'profile') assert.equal(await scope.getByRole('tab', { name: profile, exact: true }).getAttribute('aria-selected'), 'true');
+  } else if (variant === 'ordered') {
     await checkFiltering(scope);
     await north(scope).click();
     await count(scope, 8);
@@ -241,7 +314,10 @@ async function run() {
   const browser = await chromium.launch({ channel: 'chrome' });
   try {
     if (starter) await checkStarter(browser);
-    else await checkBuild(browser);
+    else {
+      await checkBuild(browser);
+      await checkTabsBuild(browser);
+    }
   } finally { await browser.close(); }
 }
 

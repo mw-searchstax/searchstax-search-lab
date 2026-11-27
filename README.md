@@ -62,7 +62,7 @@ Run `npm run qa:sorting` to exercise all three starting sorts in Build, download
 
 With the local preview running, use `npm run qa:result-cards` to exercise the card editor and all eight ordinary and profile-tab downloads. The runner supplies fixture search responses and images. It checks missing and invalid fields, a failed image, shared designs and desktop and phone layouts. Set `SEARCH_LAB_BASE_URL` to the loopback preview URL if it differs from the default.
 
-Run `npm run qa:facet-groups` to check facet selection and ordering in Build and all eight starter variants. The campus fixture adds a **Campus area** group so the check can combine filters, hide an active group and restore a shared design.
+Run `npm run qa:facet-groups` to check facet selection, ordering, and **One value per group** in Build and all eight starter variants. The campus fixture adds a **Campus area** group so the check can combine filters, replace a value, hide an active group and restore a shared design.
 
 Run `npm run qa:result-summary` to check count and range summaries in Build and all four starter downloads. It uses the local campus fixture to test paging, Load more, and the Location filter.
 
