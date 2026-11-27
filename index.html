@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet">
   <script defer id="searchstax-ui-kit" src="https://cdn.jsdelivr.net/npm/@searchstax-inc/searchstudio-ux-js@4.2.34/dist/@searchstax-inc/searchstudio-ux-js.iife.js"></script>
-  <script type="module" crossorigin src="./assets/index-CPaE8gfl.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-DGt7bUrg.css">
+  <script type="module" crossorigin src="./assets/index-CK5tv0_6.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-BqJWzeTk.css">
 </head>
 <body>
 <main
@@ -213,6 +213,25 @@
                   <input id="lab-filters" type="checkbox" checked>
                 </div>
                 <div data-lab-facet-options>
+                  <fieldset class="search-lab__field">
+                    <legend>Filter groups</legend>
+                    <div id="lab-facet-group-editor" hidden>
+                      <div class="search-lab__field">
+                        <label class="search-lab__sr-only" for="lab-facet-group">Filter group</label>
+                        <select id="lab-facet-group"></select>
+                      </div>
+                      <div class="search-lab__field search-lab__field--inline">
+                        <label for="lab-facet-group-show">Show this group</label>
+                        <input type="checkbox" id="lab-facet-group-show">
+                      </div>
+                      <div class="search-lab__actions">
+                        <button class="lt-btn lt-btn--secondary" type="button" id="lab-facet-group-up">Move earlier</button>
+                        <button class="lt-btn lt-btn--secondary" type="button" id="lab-facet-group-down">Move later</button>
+                        <button class="lt-btn lt-btn--secondary" type="button" id="lab-facet-group-reset">Use profile defaults</button>
+                      </div>
+                    </div>
+                    <p id="lab-facet-group-empty">The current results don’t include filter groups.</p>
+                  </fieldset>
                   <div class="search-lab__field">
                     <label for="lab-facet-mode">Match selected filter values</label>
                     <select id="lab-facet-mode">
