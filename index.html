@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet">
   <script defer id="searchstax-ui-kit" src="https://cdn.jsdelivr.net/npm/@searchstax-inc/searchstudio-ux-js@4.2.34/dist/@searchstax-inc/searchstudio-ux-js.iife.js"></script>
-  <script type="module" crossorigin src="./assets/index-BfIpDgmn.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-DmaUWbu9.css">
+  <script type="module" crossorigin src="./assets/index-C8xBZBEc.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-CXXbjHzw.css">
 </head>
 <body>
 <main
@@ -316,6 +316,27 @@
                   <input id="lab-smart-answers-sample" type="checkbox" checked>
                 </div>
               </details>
+              <details class="search-lab__disclosure" id="lab-result-links">
+                <summary><span class="search-lab__disclosure-label">Result links</span></summary>
+                <div class="search-lab__field">
+                  <label for="lab-result-link-target">Open result links in</label>
+                  <select id="lab-result-link-target">
+                    <option value="_self">Same tab</option>
+                    <option value="_blank">New tab</option>
+                  </select>
+                </div>
+              </details>
+              <details class="search-lab__disclosure" id="lab-spelling">
+                <summary>Spelling</summary>
+                <div class="search-lab__field">
+                  <label for="lab-autocorrect">Spelling correction</label>
+                  <select id="lab-autocorrect">
+                    <option value="inherit">Use app default</option>
+                    <option value="on">On</option>
+                    <option value="off">Off</option>
+                  </select>
+                </div>
+              </details>
               <details class="search-lab__disclosure" id="lab-advanced">
                 <summary>Advanced Options</summary>
                 <p>These controls need custom templates, layout, or search logic in your implementation.</p>
@@ -454,6 +475,18 @@
                     <option value="accent">Accent border</option>
                     <option value="outline">Plain outline</option>
                   </select>
+                </div>
+                <div class="search-lab__field">
+                  <label for="lab-answer-source-style">Source link style</label>
+                  <select id="lab-answer-source-style">
+                    <option value="inline">Inline links</option>
+                    <option value="cards">Source cards</option>
+                  </select>
+                </div>
+                <div class="search-lab__field">
+                  <label for="lab-answer-word-limit">Show more after word count</label>
+                  <input id="lab-answer-word-limit" type="number" min="1" step="1" value="100" inputmode="numeric">
+                  <p id="lab-answer-word-limit-help">Long answers start collapsed at this number of words.</p>
                 </div>
               </details>
               <details class="search-lab__disclosure">
@@ -694,6 +727,10 @@
 
                 <div data-lab-demo-output>
                   <p class="search-lab__status search-lab__search-status" role="status" data-lab-status>Connecting to the demo…</p>
+                  <div class="search-lab__correction" data-search-correction hidden>
+                    <span data-search-correction-message></span>
+                    <button class="lt-btn lt-btn--secondary" type="button" data-search-correction-retry></button>
+                  </div>
                   <div class="search-lab__results-heading">
                     <span class="search-lab__previous-results" data-lab-previous-results hidden>Previous results</span>
                     <strong data-lab-summary aria-live="polite" aria-atomic="true">Search results</strong>
@@ -733,6 +770,10 @@
                     <button class="lt-btn lt-btn--secondary" type="button" data-customer-disconnect>Disconnect app</button>
                   </div>
                   <p class="search-lab__status search-lab__search-status" role="status" data-customer-search-feedback></p>
+                  <div class="search-lab__correction" data-search-correction hidden>
+                    <span data-search-correction-message></span>
+                    <button class="lt-btn lt-btn--secondary" type="button" data-search-correction-retry></button>
+                  </div>
                   <div class="search-lab__results-heading">
                     <span class="search-lab__previous-results" data-customer-previous-results hidden>Previous results</span>
                     <strong role="status" data-customer-status></strong>
