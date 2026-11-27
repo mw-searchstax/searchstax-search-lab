@@ -229,6 +229,8 @@ function starterFeatures(design: DesignSettings) {
     startingSort: design.startingSort,
     showSuggestions: design.showSuggestions,
     suggestionMinChars: design.suggestionMinChars,
+    suggestionRowSpacing: design.suggestionRowSpacing,
+    emphasizeSuggestionText: design.emphasizeSuggestionText,
     promotionBadge: design.promotionBadge,
     promotionHeading: design.promotionHeading,
     bannerPlacement: design.bannerPlacement,

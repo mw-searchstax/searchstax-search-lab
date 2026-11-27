@@ -59,6 +59,8 @@ export type DesignSettings = {
   startingSort: string;
   showSuggestions: boolean;
   suggestionMinChars: number | null;
+  suggestionRowSpacing: 'standard' | 'compact';
+  emphasizeSuggestionText: boolean;
   showSmartAnswersSample: boolean;
   samplePromotions: 'off' | 'indexed' | 'external' | 'both';
   paginationMode: 'paged' | 'loadMore';
@@ -114,6 +116,8 @@ export const DEFAULT_DESIGN: Readonly<DesignSettings> = {
   startingSort: '',
   showSuggestions: false,
   suggestionMinChars: null,
+  suggestionRowSpacing: 'standard',
+  emphasizeSuggestionText: false,
   showSmartAnswersSample: true,
   samplePromotions: 'off',
   paginationMode: 'paged',
@@ -239,6 +243,8 @@ export function readDesignParams(params: URLSearchParams, allowFictionalPreview 
     startingSort: params.get('lab_starting_sort') ?? '',
     showSuggestions: params.get('lab_suggestions') === 'on',
     suggestionMinChars: readSuggestionMinimum(params.get('lab_suggestion_minimum')),
+    suggestionRowSpacing: params.get('lab_suggestion_spacing') === 'compact' ? 'compact' : 'standard',
+    emphasizeSuggestionText: params.get('lab_suggestion_emphasis') === 'on',
     showSmartAnswersSample: params.get('lab_answer_sample') !== 'off',
     samplePromotions: readSamplePromotions(params.get('lab_promotions')),
     paginationMode: params.get('lab_pagination') === 'loadMore' ? 'loadMore' : 'paged',
@@ -266,6 +272,8 @@ export function writeDesignParams(params: URLSearchParams, design: DesignSetting
     ['lab_ribbon_shape', design.ribbonShape !== 'ribbon' && design.ribbonShape],
     ['lab_card_metadata', design.cardMetadata.length && JSON.stringify(design.cardMetadata)],
     ['lab_facet_groups', design.facetGroups.length && JSON.stringify(design.facetGroups)],
+    ['lab_suggestion_spacing', design.suggestionRowSpacing === 'compact' && 'compact'],
+    ['lab_suggestion_emphasis', design.emphasizeSuggestionText && 'on'],
   ] as const) {
     if (value) params.set(key, value);
     else params.delete(key);

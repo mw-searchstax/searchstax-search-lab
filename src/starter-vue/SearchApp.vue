@@ -150,7 +150,7 @@ watch(form, async (element) => {
       : null;
     if (source) {
       setSuggestionSource = setupSearchSuggestions(element, 'vue-search-suggestions');
-      setSuggestionSource(source, design.suggestionMinChars);
+      setSuggestionSource(source, design);
     }
   }
   services = setupStarterServices(element, answerHost.value, connection, design);

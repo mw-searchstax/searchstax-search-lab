@@ -56,7 +56,7 @@ The ten widget families below follow the [Help Center catalog](https://support.s
 | Input template | Custom form, field label and submit text. | Appearance · template. Start with “Search the website” and “Search”. | Submit with both Enter and the button. | Wired | Wired | Wired | Wired |
 | Suggestions | Sample suggestions and a connected suggester. | Features · app and template. Follow available connection and configured minimum. | A working suggester and a matching prefix. | Wired | Wired | Wired | Wired |
 | `suggestAfterMinChars` | Use the source’s minimum or set a higher one in the shared suggestion control. | Features → Search box → Minimum characters for suggestions. | With the connected-profile fixture, raise the minimum from three to four. Type **cam**, then **camp**, and select a suggestion with the keyboard. | Wired | Wired | Wired | Wired |
-| Autosuggest item template | One row style. | Appearance · template and CSS. Keep current row, offer density and match emphasis. | At least two genuine suggestions. Test arrow keys and selection. | Gap | Gap | Gap | Gap |
+| Autosuggest item template | Standard or Compact rows with optional typed-text emphasis. | Appearance → Search suggestions. Standard spacing and plain text by default. | Open the fixture suggestions for **camp**. Check the matching text, row spacing, and keyboard selection. | Wired | Wired | Wired | Wired |
 | `beforeAutosuggest` | No author-supplied callback. | Handoff · native hook. Pass term and query parameters through. | Configured suggester. | Setup | Setup | Setup | Setup |
 | `afterAutosuggest` | Response normalization in custom suggestion source. | Handoff · native hook. Keep response order by default. | A nonempty suggestion response. | Setup | Setup | Setup | Setup |
 | `searchInputId` | Inputs have fixed labels and IDs. | Handoff · template binding. Keep a unique input ID per instance. | Label association and two mounted forms. | Fixed | Fixed | Fixed | Fixed |
@@ -244,9 +244,13 @@ For Previous/Next pagination, open **Features → Advanced Options → Paginatio
 
 In **Features → Search box**, leave **Minimum characters for suggestions** blank to use the source’s minimum. Sample suggestions start at three characters. A connected preview can make an initial request from two characters to learn the app’s minimum. Once the app reports its minimum, the search box uses the higher of that minimum and the design setting.
 
-The setting is saved in the Build draft, share link, and starter configuration. The connected-profile fixture reports a minimum of three characters and returns two suggestions at or above that minimum.
+The setting is saved in the Build draft, share link, and starter configuration. The connected-profile fixture reports a minimum of three characters.
 
 Local QA covered Build and the ordinary and profile variants for JavaScript, React, Vue, and Angular. With a minimum of four, **cam** sent no request and **camp** opened the list. Arrow keys and Enter submitted the selected term in the active language.
+
+### Search suggestion styling
+
+In **Appearance → Search suggestions**, set **Row spacing** to **Standard** or **Compact**. Turn on **Emphasize typed text** to bold matching text regardless of case. With the connected-profile fixture, type **camp** to see the match in **Campus clinic** and **Campus library**. **Visitor information** stays plain. Both settings are saved in the Build draft, share link, and starter configuration.
 
 ### Result summary
 

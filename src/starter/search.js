@@ -168,7 +168,7 @@ if (config.showSuggestions) {
     const endpoint = readCustomerEndpoint(config.suggesterURL, 'emsuggest');
     if (endpoint) source = createCustomerSuggestionSource({ token: config.searchAuth, language }, endpoint);
   }
-  if (source) setupSearchSuggestions(form, 'starter-search-suggestions')(source, config.suggestionMinChars);
+  if (source) setupSearchSuggestions(form, 'starter-search-suggestions')(source, config);
 }
 
 async function startSearch() {

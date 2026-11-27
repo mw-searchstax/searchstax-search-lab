@@ -103,7 +103,7 @@ export function setupProfileFeatures(panel, submit) {
       heading = design.promotionHeading;
       placePromotionBanners(host, panel.querySelector('#lab-exp-results'), design.bannerPlacement);
       updatePromotionLabels(panel, design);
-      setSuggestions(app || design.showSuggestions ? suggestions : null, design.suggestionMinChars);
+      setSuggestions(app || design.showSuggestions ? suggestions : null, design);
       void related.show(panel.querySelector('#lab-exp-results'), app && design.relatedPlacement === 'off' ? 'below' : design.relatedPlacement, query, relatedTerms);
       sampleAnswer.hidden = Boolean(app) || !active.smartAnswers || !design.showSmartAnswersSample;
       if (sampleAnswer.hidden) sampleAnswer.open = false;

@@ -12,6 +12,8 @@
 .sample-search-suggestions p { margin: 4px 8px; font-size: .8125rem; font-weight: 600; }
 .sample-search-suggestions ul { margin: 0; padding: 0; list-style: none; }
 .sample-search-suggestions [role='option'] { min-height: 40px; padding: 9px 8px; cursor: pointer; overflow-wrap: anywhere; }
+.sample-search-suggestions--compact [role='option'] { min-height: 32px; padding-block: 5px; }
+.search-suggestion-match { font-weight: 700; }
 .sample-search-suggestions [role='option']:hover { background: #f2f6f4; }
 .sample-search-suggestions [aria-selected='true'] { background: #e5eee8; outline: 2px solid #526a5b; outline-offset: -2px; }
 .search-suggestions-feedback { margin: 4px 0 8px; color: #526759; font-size: .8125rem; }

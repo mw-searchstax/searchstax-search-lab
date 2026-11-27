@@ -37,6 +37,7 @@ export function setupSearchSuggestions(form, listId) {
 
   let source = null;
   let minimumChars = 0;
+  let emphasizeText = false;
   let pending = null;
   let activeIndex = -1;
 
@@ -54,15 +55,26 @@ export function setupSearchSuggestions(form, listId) {
     if (source) input.setAttribute('aria-expanded', 'false');
   }
 
-  function show(matches) {
+  function show(matches, prefix) {
     if (!matches.length) return;
+    const pattern = emphasizeText ? new RegExp(prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'giu') : null;
     list.replaceChildren(...matches.map((term, index) => {
       const option = document.createElement('li');
       option.id = listId + '-' + index;
       option.setAttribute('role', 'option');
       option.setAttribute('aria-selected', 'false');
       if (source.language) option.lang = source.language;
-      option.textContent = term;
+      let start = 0;
+      if (pattern) {
+        for (const { 0: text, index: matchStart } of term.matchAll(pattern)) {
+          const emphasis = document.createElement('span');
+          emphasis.className = 'search-suggestion-match';
+          emphasis.textContent = text;
+          option.append(term.slice(start, matchStart), emphasis);
+          start = matchStart + text.length;
+        }
+      }
+      option.append(term.slice(start));
       return option;
     }));
     popup.hidden = false;
@@ -81,7 +93,7 @@ export function setupSearchSuggestions(form, listId) {
         const matches = await activeSource.suggest(prefix, request.controller.signal);
         if (pending !== request || input.value.trim() !== prefix) return;
         if (prefix.length < activeSource.minimumChars) return;
-        show(matches);
+        show(matches, prefix);
         if (!popup.hidden && request.step) moveSelection(request.step);
       } catch {
         if (pending === request) feedback.textContent = 'Search suggestions are unavailable. You can continue searching.';
@@ -150,12 +162,16 @@ export function setupSearchSuggestions(form, listId) {
     if (option) choose(option);
   });
 
-  /** @param {number | null} [minimum] */
-  return function setSuggestionSource(value, minimum = null) {
+  /** @param {{ suggestionMinChars?: number | null, suggestionRowSpacing?: string, emphasizeSuggestionText?: boolean }} [settings] */
+  return function setSuggestionSource(value, settings = {}) {
+    const minimum = settings.suggestionMinChars;
     const nextMinimum = Number.isSafeInteger(minimum) && minimum > 0 ? minimum : 0;
-    if (source === value && minimumChars === nextMinimum) return;
+    const nextEmphasis = settings.emphasizeSuggestionText === true;
+    popup.classList.toggle('sample-search-suggestions--compact', settings.suggestionRowSpacing === 'compact');
+    if (source === value && minimumChars === nextMinimum && emphasizeText === nextEmphasis) return;
     source = value;
     minimumChars = nextMinimum;
+    emphasizeText = nextEmphasis;
     close();
     if (source) {
       label.textContent = source.label;

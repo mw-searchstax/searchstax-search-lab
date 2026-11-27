@@ -124,7 +124,7 @@ export class SearchApp implements AfterViewInit, OnDestroy {
         : null;
       if (source) {
         this.setSuggestionSource = setupSearchSuggestions(this.form.nativeElement, 'angular-search-suggestions');
-        this.setSuggestionSource(source, design.suggestionMinChars);
+        this.setSuggestionSource(source, design);
       }
     }
     this.services = setupStarterServices(this.form.nativeElement, this.answerHost.nativeElement, connection, design);
