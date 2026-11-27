@@ -65,6 +65,8 @@ export type DesignSettings = {
   suggestionRowSpacing: 'standard' | 'compact';
   emphasizeSuggestionText: boolean;
   showSmartAnswersSample: boolean;
+  smartAnswerHeading: string;
+  smartAnswerCardStyle: 'accent' | 'outline';
   samplePromotions: 'off' | 'indexed' | 'external' | 'both';
   paginationMode: 'paged' | 'loadMore';
   paginationPlacement: 'above' | 'below' | 'both';
@@ -125,6 +127,8 @@ export const DEFAULT_DESIGN: Readonly<DesignSettings> = {
   suggestionRowSpacing: 'standard',
   emphasizeSuggestionText: false,
   showSmartAnswersSample: true,
+  smartAnswerHeading: '',
+  smartAnswerCardStyle: 'accent',
   samplePromotions: 'off',
   paginationMode: 'paged',
   paginationPlacement: 'below',
@@ -255,6 +259,8 @@ export function readDesignParams(params: URLSearchParams, allowFictionalPreview 
     suggestionRowSpacing: params.get('lab_suggestion_spacing') === 'compact' ? 'compact' : 'standard',
     emphasizeSuggestionText: params.get('lab_suggestion_emphasis') === 'on',
     showSmartAnswersSample: params.get('lab_answer_sample') !== 'off',
+    smartAnswerHeading: resolveSearchText(params.get('lab_answer_heading'), DEFAULT_DESIGN.smartAnswerHeading),
+    smartAnswerCardStyle: params.get('lab_answer_style') === 'outline' ? 'outline' : 'accent',
     samplePromotions: readSamplePromotions(params.get('lab_promotions')),
     paginationMode: params.get('lab_pagination') === 'loadMore' ? 'loadMore' : 'paged',
     paginationPlacement: readPaginationPlacement(params.get('lab_pagination_placement')),
@@ -286,6 +292,8 @@ export function writeDesignParams(params: URLSearchParams, design: DesignSetting
     ['lab_related_spacing', design.relatedSpacing === 'compact' && 'compact'],
     ['lab_suggestion_spacing', design.suggestionRowSpacing === 'compact' && 'compact'],
     ['lab_suggestion_emphasis', design.emphasizeSuggestionText && 'on'],
+    ['lab_answer_heading', design.smartAnswerHeading],
+    ['lab_answer_style', design.smartAnswerCardStyle === 'outline' && 'outline'],
   ] as const) {
     if (value) params.set(key, value);
     else params.delete(key);

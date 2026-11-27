@@ -484,6 +484,7 @@ export function setupCustomerPreview(
       return { scope: facetGroupScope(connection?.profile, connection?.language), groups: latestPage?.facets ?? [] };
     },
     showAnswers,
+    setAnswerAppearance: answers.setAppearance,
     suspendAnswers: answers.clear,
     resumeAnswers() {
       if (connection && options?.query) showAnswers(connection, options.query);

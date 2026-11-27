@@ -363,7 +363,7 @@
 .search-lab__customer-preview { margin-top: 12px; overflow-wrap: anywhere; }
 .search-lab__customer-source { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
 .search-lab__customer-source p { margin: 0; color: var(--lab-muted); font-size: .875rem; }
-.search-lab__customer-answer { margin-bottom: 14px; padding: 12px 16px; border: 1px solid var(--lab-border); border-inline-start: 3px solid var(--preview-accent); border-radius: 5px; }
+.search-lab__customer-answer { margin-bottom: 14px; }
 .search-lab__customer-answer h4 { margin: 0; font-size: 1rem; }
 .search-lab__customer-answer-content { color: var(--lab-ink); font-size: .875rem; line-height: 1.55; white-space: pre-wrap; }
 .search-lab__customer-answer-content a { color: #263f58; text-decoration: underline; }

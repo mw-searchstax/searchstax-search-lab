@@ -234,6 +234,8 @@ function starterFeatures(design: DesignSettings) {
     suggestionMinChars: design.suggestionMinChars,
     suggestionRowSpacing: design.suggestionRowSpacing,
     emphasizeSuggestionText: design.emphasizeSuggestionText,
+    smartAnswerHeading: design.smartAnswerHeading,
+    smartAnswerCardStyle: design.smartAnswerCardStyle,
     promotionBadge: design.promotionBadge,
     promotionHeading: design.promotionHeading,
     bannerPlacement: design.bannerPlacement,

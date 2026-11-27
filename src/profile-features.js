@@ -49,7 +49,9 @@ export function setupProfileFeatures(panel, submit) {
   const related = setupRelatedSearches(form, term => { form.querySelector('input').focus(); submit(term); });
   const answers = setupCustomerAnswers(panel);
   const sampleAnswer = panel.querySelector('.smart-answers-sample');
-  const englishAnswer = [...sampleAnswer.querySelectorAll('summary, .smart-answers-sample__note, strong, .smart-answers-sample__card > p:nth-child(3), a')].map(node => [node, node.textContent]);
+  const sampleCard = sampleAnswer.querySelector('.smart-answers-sample__card');
+  const sampleHeading = sampleCard.querySelector('[data-smart-answer-sample-heading]');
+  const englishAnswer = [...sampleAnswer.querySelectorAll('summary, .smart-answers-sample__note, strong, .smart-answers-sample__card > p:nth-of-type(3), a')].map(node => [node, node.textContent]);
   const spanishAnswer = ['Ejemplo de Smart Answers', 'Un ejemplo fijo con contenido ficticio.', '¿Qué incluye la exposición del Centro de Rehabilitación?', 'Incluye la distribución de un apartamento modelo y planos de mobiliario ajustable. Los dibujos de las paredes señalan puertas, zonas de circulación y movimiento.', 'Lee la página del Centro de Rehabilitación en inglés'];
   const sampleBanner = createSampleExternalPromotion();
   const bannerLink = sampleBanner.querySelector('a');
@@ -105,6 +107,10 @@ export function setupProfileFeatures(panel, submit) {
       setSuggestions(app || design.showSuggestions ? suggestions : null, design);
       related.setAppearance(design, es ? 'Búsquedas relacionadas' : 'Related searches');
       void related.show(panel.querySelector('#lab-exp-results'), app && design.relatedPlacement === 'off' ? 'below' : design.relatedPlacement, query, relatedTerms);
+      answers.setAppearance(design);
+      sampleCard.classList.toggle('smart-answer--outline', design.smartAnswerCardStyle === 'outline');
+      sampleHeading.textContent = design.smartAnswerHeading ?? '';
+      sampleHeading.hidden = !sampleHeading.textContent;
       sampleAnswer.hidden = Boolean(app) || !active.smartAnswers || !design.showSmartAnswersSample;
       if (sampleAnswer.hidden) sampleAnswer.open = false;
       updateSampleExternalPromotion(sampleBanner, app ? 'off' : promotionMode(query, design.samplePromotions));

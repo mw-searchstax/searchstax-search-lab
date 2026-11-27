@@ -142,6 +142,7 @@ function answerNodes(answer, linkSources) {
 /** @param {HTMLElement} preview */
 export function setupCustomerAnswers(preview) {
   const panel = /** @type {HTMLElement} */ (preview.querySelector('[data-customer-answer]'));
+  const heading = panel.querySelector('[data-customer-answer-heading]');
   const status = /** @type {HTMLElement} */ (panel.querySelector('[data-customer-answer-status]'));
   const content = /** @type {HTMLElement} */ (panel.querySelector('[data-customer-answer-content]'));
   const announcement = preview.querySelector('[data-customer-answer-announcement]');
@@ -207,5 +208,15 @@ export function setupCustomerAnswers(preview) {
     }
   }
 
-  return { clear, start };
+  return {
+    clear,
+    start,
+    /** @param {{ smartAnswerHeading?: string, smartAnswerCardStyle?: string }} design */
+    setAppearance(design) {
+      const label = design.smartAnswerHeading?.trim() || 'Smart Answer';
+      heading.textContent = label;
+      if (panel.hasAttribute('aria-label')) panel.setAttribute('aria-label', label);
+      panel.classList.toggle('smart-answer--outline', design.smartAnswerCardStyle === 'outline');
+    },
+  };
 }

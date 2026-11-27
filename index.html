@@ -447,6 +447,21 @@
                   </select>
                 </div>
               </details>
+              <details class="search-lab__disclosure" id="lab-answer-appearance">
+                <summary><span class="search-lab__disclosure-label">Smart Answers</span></summary>
+                <p class="search-lab__disclosure-label" data-answer-appearance-hint>Connect a Search App with Smart Answers to preview these styles.</p>
+                <div class="search-lab__field search-lab__text-field">
+                  <label for="lab-answer-heading">Heading</label>
+                  <input id="lab-answer-heading" type="text" placeholder="Smart Answer">
+                </div>
+                <div class="search-lab__field">
+                  <label for="lab-answer-card-style">Card style</label>
+                  <select id="lab-answer-card-style">
+                    <option value="accent">Accent border</option>
+                    <option value="outline">Plain outline</option>
+                  </select>
+                </div>
+              </details>
               <details class="search-lab__disclosure">
                 <summary>Result cards</summary>
                 <div class="search-lab__card-settings">
@@ -678,7 +693,7 @@
 
                 <p class="search-lab__sr-only" role="status" aria-atomic="true" data-customer-answer-announcement></p>
                 <section class="search-lab__customer-answer" aria-labelledby="lab-customer-answer-heading" data-customer-answer hidden>
-                  <h4 id="lab-customer-answer-heading">Smart Answer</h4>
+                  <h4 id="lab-customer-answer-heading" data-customer-answer-heading>Smart Answer</h4>
                   <p class="search-lab__status" data-customer-answer-status></p>
                   <div class="search-lab__customer-answer-content" data-customer-answer-content hidden></div>
                 </section>

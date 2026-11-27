@@ -101,6 +101,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
   var submitButton = form.querySelector('button[type="submit"]');
   var textInputs = {
     relatedHeading: root.querySelector('#lab-related-heading'),
+    smartAnswerHeading: root.querySelector('#lab-answer-heading'),
     sortLabel: root.querySelector('#lab-sort-label'),
     loadMoreText: root.querySelector('#lab-load-more-text'),
     promotionHeading: root.querySelector('#lab-promo-heading'),
@@ -119,6 +120,8 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
   const suggestionSpacing = root.querySelector('#lab-suggestion-row-spacing');
   const suggestionEmphasis = root.querySelector('#lab-suggestion-emphasis');
   var smartAnswersSampleToggle = root.querySelector('#lab-smart-answers-sample');
+  const smartAnswerCardStyle = root.querySelector('#lab-answer-card-style');
+  const answerAppearanceHint = root.querySelector('[data-answer-appearance-hint]');
   var promotionsInput = root.querySelector('#lab-sample-promotions');
   var setSuggestionSource = setupSearchSuggestions(form, 'lab-search-suggestions');
   var sortOrder = root.querySelector('#lab-sort-order');
@@ -285,6 +288,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
   });
   function updateSingleProfileFeatures() {
     const connected = customerPreview.active;
+    customerPreview.setAnswerAppearance(design);
     if (root.dataset.labView !== 'design' || !experiencePanel.hidden) {
       related.clear();
       if (builtInAnswerQuery) customerPreview.suspendAnswers();
@@ -371,8 +375,10 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     sourceLabel.textContent = !connected && !fixture && root.dataset.labView === 'design'
       ? [(recordedSearchMode() === 'recorded' ? 'Recorded example' : root.dataset.searchAppName || 'Live app'), liveProfile].filter(Boolean).join(' · ') : 'Fictional demo';
     const configured = featureStatus(entitlements?.relatedSearches, profile?.relatedSearches) === 'On';
-    const relatedConnection = connected ? customerPreview.connection : builtInApp;
-    relatedAppearanceHint.hidden = configured && (fixture || Boolean(relatedConnection.relatedURL && relatedConnection.discoveryKey));
+    const featureConnection = connected ? customerPreview.connection : builtInApp;
+    relatedAppearanceHint.hidden = configured && (fixture || Boolean(featureConnection.relatedURL && featureConnection.discoveryKey));
+    answerAppearanceHint.hidden = fixture ? Boolean(profile?.smartAnswers)
+      : Boolean(featureConnection.answerEndpoint) && featureStatus(entitlements?.smartAnswers, profile?.smartAnswers) === 'On';
     const relatedSection = relatedToggle.closest('details');
     relatedSection.hidden = !configured;
     relatedToggle.disabled = !fixture;
@@ -661,6 +667,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     suggestionSpacing.value = design.suggestionRowSpacing;
     suggestionEmphasis.checked = design.emphasizeSuggestionText;
     smartAnswersSampleToggle.checked = design.showSmartAnswersSample;
+    smartAnswerCardStyle.value = design.smartAnswerCardStyle;
     promotionsInput.value = design.samplePromotions;
     sampleButton.textContent = sampleQuery();
     syncFeatureControls();
@@ -1370,6 +1377,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     input.addEventListener('input', function () {
       design[key] = resolveSearchText(input.value, DEFAULT_DESIGN[key]);
       if (key === 'relatedHeading') related.setAppearance(design);
+      if (key === 'smartAnswerHeading') customerPreview.setAnswerAppearance(design);
       if ((key === 'loadMoreText' || key === 'sortLabel') && customerPreview.active) customerPreview.updateDesign();
       clearDesignFeedback();
       updatePreviewText();
@@ -1492,6 +1500,10 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
   });
   smartAnswersSampleToggle.addEventListener('change', function () {
     design.showSmartAnswersSample = smartAnswersSampleToggle.checked;
+    updateDesign();
+  });
+  smartAnswerCardStyle.addEventListener('change', () => {
+    design.smartAnswerCardStyle = smartAnswerCardStyle.value === 'outline' ? 'outline' : 'accent';
     updateDesign();
   });
   promotionsInput.addEventListener('change', function () {

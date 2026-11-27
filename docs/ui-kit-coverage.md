@@ -141,7 +141,7 @@ The ten widget families below follow the [Help Center catalog](https://support.s
 | Option | Build today | Destination, mechanism and proposed default | Prerequisite or review example | JS | React | Vue | Angular |
 |---|---|---|---|---|---|---|---|
 | Answer availability | Configured answers can stream, with sources. Samples live in the fictional experience. | Features · app and template. Follow both entitlement and profile configuration. | Answer endpoint and an answerable query. Handle empty/error responses. | Wired | Wired | Wired | Wired |
-| Answer template | One heading and answer card. | Appearance · template and CSS. Start with current heading and card, make heading and treatment editable. | A streamed answer. | Gap | Gap | Gap | Gap |
+| Answer template | Editable heading and Accent border or Plain outline. | Appearance → Smart Answers. Leave Heading blank for Smart Answer, and keep Accent border by default. | Stream an answer with two source links and verify both links after completion. | Wired | Wired | Wired | Wired |
 | Citation styling | Source links in the connected answer. | Appearance · CSS and template. Preserve link labels and order. | An answer with sources. | Gap | Gap | Gap | Gap |
 | `showMoreAfterWordCount` | No word-count control. | Features · native. Start at 100 words, allow adjustment. | A long answer. Check expand/collapse in each kit. | Gap | Gap | Gap | Gap |
 | `feedbackwidget` | No answer feedback choice. | Features · native. Default off, opt in when integration is configured. | A real answer plus approved feedback destination. | Gap | Gap | Gap | Gap |
@@ -257,6 +257,12 @@ In **Appearance → Search suggestions**, set **Row spacing** to **Standard** or
 In **Appearance → Related searches**, leave **Heading** blank to use the default. Choose **Outlined buttons** or **Chips**, and set **Item spacing** to **Standard** or **Compact**. Compact spacing brings items closer together while keeping their padding. The heading and both styling choices are saved in the Build draft, share link, and starter configuration.
 
 Local fixture QA covered Build and the ordinary and profile variants for JavaScript, React, Vue, and Angular. **campus** returned two related searches in English and Spanish. Enter and Space submitted the full selected term in the active language and profile. **visitor maps** returned search results with no Related Searches section.
+
+### Smart Answers appearance
+
+In **Appearance → Smart Answers**, leave **Heading** blank to display **Smart Answer**, and choose **Accent border** or **Plain outline**. The fictional sample keeps its sample label and shows a custom heading inside the card. Both settings are saved in the Build draft, share link, and starter configuration.
+
+Local fixture QA covered Build and the ordinary and profile variants for JavaScript, React, Vue, and Angular. Both sources became keyboard-focusable links after the stream completed, with their labels, URLs, and order preserved in English and Spanish.
 
 ### Result summary
 

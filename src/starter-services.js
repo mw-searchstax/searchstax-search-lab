@@ -34,7 +34,7 @@ export function setupStarterServices(form, answerHost, connection, design) {
       if (!appMatches || !await appMatches || current !== revision) return;
       void related.show(anchor, design.relatedPlacement === 'above' ? 'above' : 'below', query, source);
       if (answerReady) {
-        answers ??= setupStarterAnswers(answerHost, connection);
+        answers ??= setupStarterAnswers(answerHost, connection, design);
         answers?.start(query);
       }
     },
