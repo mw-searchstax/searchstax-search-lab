@@ -14,7 +14,7 @@ import { metadataScope } from './card-metadata.js';
 import { resultMappingNotice, appendResultCard, updateResultLinkTargets, mapResultCard, type ResultCard } from './result-card.js';
 import { setupSearchCorrection } from './spelling.js';
 import { groupedPageLabel, groupLabel, GROUPING_FIELD, type GroupPage } from './grouped-results.js';
-import { decodeBrowserLocation, locationLabel, locationRadius, type LocationSelection, type LocationSupport } from './location-search.js';
+import { setupLocationControls } from './location-search.js';
 
 export type Experience = Profile;
 
@@ -123,12 +123,6 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
   const summaryToolbar = status.parentElement!;
   let resultWindow: ResultWindow | undefined;
   const input = field<HTMLInputElement>('input[type="search"]');
-  const locationPanel = field<HTMLElement>('[data-exp-location]');
-  const locationInput = field<HTMLInputElement>('#lab-exp-location');
-  const locationRadiusInput = field<HTMLSelectElement>('[data-exp-location-radius]');
-  const locationApply = field<HTMLButtonElement>('[data-exp-location-apply]');
-  const locationClear = field<HTMLButtonElement>('[data-exp-location-clear]');
-  const locationStatus = field<HTMLElement>('[data-exp-location-status]');
   const pages = field('[data-exp-pages]');
   const bottomPager = pageControls(pages);
   const pagers = [pageControls(field('[data-exp-pages-above]')), bottomPager];
@@ -184,10 +178,16 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
   let noMatches = false;
   let mappingNotice = '';
   let highlighting: boolean | undefined;
-  let locationSupport: LocationSupport | undefined;
-  let locationSelection: LocationSelection | undefined;
-  let selectedLocationRadius: string | undefined;
-  let locationGeneration = 0;
+  const location = setupLocationControls(field('[data-exp-location]'), {
+    defaultRadius: () => options.locationDefaultRadius,
+    allowCurrent: () => options.showCurrentLocation,
+    idleMessage: 'Your place and coordinates aren’t saved in the design.',
+    search: (_, anchor, control) => {
+      start = 0;
+      void search(anchor, control);
+    },
+    saveRadius: radius => panel.dispatchEvent(new CustomEvent('lab-location-settings', { bubbles: true, detail: { radius } })),
+  });
   const features = setupProfileFeatures(panel, submit);
   const spanish = () => active.language.split(/[-_]/)[0] === 'es';
   const paginationMode = () => options.groupedBy ? 'paged' : options.paginationMode;
@@ -277,74 +277,6 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
     results.removeAttribute('aria-busy');
   }
 
-  function renderLocation(support?: LocationSupport) {
-    locationSupport = support;
-    locationPanel.hidden = !app || !support?.enabled;
-    if (!app || !support?.enabled) {
-      locationSelection = undefined;
-      selectedLocationRadius = undefined;
-      locationStatus.textContent = '';
-      locationGeneration++;
-      locationApply.disabled = false;
-      return;
-    }
-    const preferred = locationRadius(selectedLocationRadius ?? options.locationDefaultRadius, support);
-    locationRadiusInput.replaceChildren(...support.filterValues.map(value => new Option(locationLabel(value, support.unit), value)));
-    locationRadiusInput.value = locationRadius(locationSelection?.radius || preferred, support);
-    locationRadiusInput.hidden = !support.distanceEnabled;
-    locationRadiusInput.labels?.forEach(label => { label.hidden = !support.distanceEnabled; });
-    locationClear.hidden = !locationSelection;
-    locationStatus.textContent = locationSelection
-      ? 'Searching near ' + locationSelection.address +
-        (locationSelection.radius === 'any' ? '.' : ' within ' + locationLabel(locationSelection.radius, support.unit) + '.')
-      : 'Your place and coordinates aren’t saved in the design.';
-  }
-
-  async function applyLocation() {
-    if (!app || !options || !locationSupport?.enabled || locationApply.disabled) return;
-    const term = locationInput.value.trim();
-    if (!term) return;
-    const generation = ++locationGeneration;
-    locationApply.disabled = true;
-    locationStatus.textContent = 'Finding that place…';
-    try {
-      const decoded = await decodeBrowserLocation(term);
-      if (generation !== locationGeneration || !app) return;
-      if (!decoded) {
-        locationStatus.textContent = 'That place couldn’t be found. Check the place or the configured geocoder.';
-        return;
-      }
-      locationSelection = { ...decoded, radius: locationRadius(locationRadiusInput.value, locationSupport) };
-      start = 0;
-      void search(locationApply, locationInput);
-    } catch {
-      if (generation !== locationGeneration) return;
-      locationStatus.textContent = 'The place could not be decoded. Check the configured browser geocoder.';
-    } finally {
-      if (generation === locationGeneration) locationApply.disabled = false;
-    }
-  }
-
-  locationApply.addEventListener('click', () => { void applyLocation(); });
-  locationInput.addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); void applyLocation(); } });
-  locationRadiusInput.addEventListener('change', () => {
-    selectedLocationRadius = locationRadiusInput.value;
-    panel.dispatchEvent(new CustomEvent('lab-location-settings', { bubbles: true, detail: { radius: locationRadiusInput.value || null } }));
-    if (!locationSelection) return;
-    locationSelection = { ...locationSelection, radius: locationRadius(locationRadiusInput.value, locationSupport) };
-    start = 0;
-    void search(locationRadiusInput, locationRadiusInput);
-  });
-  locationClear.addEventListener('click', () => {
-    locationSelection = undefined;
-    locationInput.value = '';
-    locationGeneration++;
-    locationApply.disabled = false;
-    locationInput.focus();
-    start = 0;
-    void search(locationClear, locationClear);
-  });
-
   async function search(anchor = searchForm as HTMLElement, control = input as HTMLElement) {
     cancelSearch();
     lastAnchor = anchor;
@@ -396,7 +328,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
           query, start, rows, sort: selected, filters: new Map(filters), facetMode: options.facetMode,
           groupedBy: options.groupedBy, itemsPerGroup: options.itemsPerGroup,
           page: Math.floor(start / rows),
-          autoCorrect: options.autoCorrect, suppressCorrection, location: locationSelection,
+          autoCorrect: options.autoCorrect, suppressCorrection, location: location.selection,
         }, AbortSignal.any([request.signal, AbortSignal.timeout(12000)]), sorts);
         if (pending !== request) return;
         selected = page.sort;
@@ -407,7 +339,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
         choices = page.sorts;
         banners = page.externalPromotions;
         fields = page.facets;
-        renderLocation(page.location);
+        location.render(page.location);
         groupPage = page.grouped;
         cards = page.cards;
         correction.render(page.correction);
@@ -416,7 +348,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
         }
         total = page.total;
       } else {
-        renderLocation(undefined);
+        location.render();
         const samplePage = searchDirectory(active, query, options.profileTabs, filters, options.facetMode);
         const matches = orderDirectoryResults(samplePage.entries, selected, query, options.samplePromotions);
         if (options.groupedBy === GROUPING_FIELD) {
@@ -518,10 +450,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
 
   function select(item: Experience, focus = false, fromLanguage = false) {
     active = item;
-    locationGeneration++;
-    locationSelection = undefined;
-    locationInput.value = '';
-    renderLocation(undefined);
+    location.render();
     highlighting = active.highlighting;
     reportSettings();
     order.replaceChildren();
@@ -618,7 +547,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
   });
   return {
     open(term = query, draft = term) { query = term; input.value = draft; render(); },
-    close() { cancelSearch(); suppressCorrection = false; correction.clear(); recovery.clear(); features.clear(); locationGeneration++; locationSelection = undefined; locationInput.value = ''; renderLocation(undefined); },
+    close() { cancelSearch(); suppressCorrection = false; correction.clear(); recovery.clear(); features.clear(); location.render(); },
     setProfiles(choices: Experience[]) {
       if (!choices.length) return;
       tabProfiles = choices;
@@ -637,6 +566,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
     configure(design: DesignSettings) {
       const previous = options;
       options = { ...design };
+      location.refreshCurrentLocation();
       catalog = options.profileTabs ? tabProfiles : allProfiles;
       const code = design.languagePicker ? active.language : defaultLanguage;
       const leavingTabs = previous.profileTabs && !design.profileTabs;
@@ -679,7 +609,7 @@ export function setupExperiencePreview(panel: HTMLElement, thumbnails: Record<st
       return { ...experienceHandoff(Boolean(app), catalog, active, query, defaultLanguage), entitlements: app?.configuration?.entitlements };
     },
     setSource(connection: CustomerConnection | null, choices: Experience[], term: string, selected?: Experience, sourceLanguage?: string) {
-      cancelSearch(); suppressCorrection = false; correction.clear(); features.clear(); app = connection; locationGeneration++; locationSelection = undefined; locationInput.value = ''; renderLocation(undefined);
+      cancelSearch(); suppressCorrection = false; correction.clear(); features.clear(); app = connection; location.render();
       resultWindow = undefined;
       allProfiles = choices.length ? choices : connection ? [connection.settings ?? { language: connection.language, profile: connection.profile }] : demoProfiles;
       tabProfiles = allProfiles;

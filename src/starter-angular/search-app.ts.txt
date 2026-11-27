@@ -72,7 +72,7 @@ export class SearchApp implements AfterViewInit, OnDestroy {
     (this.isDemo ? 'rehabilitation' : '');
   private api?: Searchstax;
   private readonly renderLocation = setupStarterLocation(
-    design.locationDefaultRadius, (selection?: SearchObject['location']) => searchWithLocation(this.api, selection),
+    design.locationDefaultRadius, design.showCurrentLocation, (selection?: SearchObject['location']) => searchWithLocation(this.api, selection),
   );
   private spelling?: ReturnType<typeof setupKitSpelling>;
   private loadingSubscription?: string;

@@ -12,7 +12,7 @@ import { readAnswerEndpoint, setupCustomerAnswers } from './customer-answers.js'
 import { setupSearchCorrection } from './spelling.js';
 import { createCustomerSuggestionSource } from './customer-suggestions.js';
 import { groupedPageLabel } from './grouped-results.js';
-import { decodeBrowserLocation, locationLabel, locationRadius, type LocationSelection, type LocationSupport } from './location-search.js';
+import { setupLocationControls } from './location-search.js';
 import {
   CustomerSearchError,
   CustomerSearchTokenError,
@@ -55,15 +55,13 @@ export function setupCustomerPreview(
   const summaryToolbar = status.parentElement!;
   let resultWindow: ResultWindow | undefined;
   const searchFeedback = get('[data-customer-search-feedback]');
-  const locationPanel = get<HTMLElement>('[data-customer-location]');
-  const locationInput = get<HTMLInputElement>('#lab-customer-location');
-  const locationRadiusInput = get<HTMLSelectElement>('[data-customer-location-radius]');
-  const locationApply = get<HTMLButtonElement>('[data-customer-location-apply]');
-  const locationClear = get<HTMLButtonElement>('[data-customer-location-clear]');
-  const locationStatus = get<HTMLElement>('[data-customer-location-status]');
-  let locationSupport: LocationSupport | undefined;
-  let locationSelection: LocationSelection | undefined;
-  let locationGeneration = 0;
+  const location = setupLocationControls(get('[data-customer-location]'), {
+    defaultRadius: () => getDesign().locationDefaultRadius,
+    allowCurrent: () => getDesign().showCurrentLocation,
+    idleMessage: 'Your place and coordinates aren’t saved in the design.',
+    search: (selection, anchor, control) => run({ location: selection }, anchor, control),
+    saveRadius: radius => panel.dispatchEvent(new CustomEvent('lab-location-settings', { bubbles: true, detail: { radius } })),
+  });
   const correction = setupSearchCorrection(panel, original => {
     if (options && !request) {
       queryInput.value = original;
@@ -237,72 +235,8 @@ export function setupCustomerPreview(
     return label;
   }
 
-  function renderLocation(support?: LocationSupport) {
-    locationSupport = support;
-    locationPanel.hidden = !support?.enabled;
-    if (!support?.enabled) {
-      locationSelection = undefined;
-      locationStatus.textContent = '';
-      locationGeneration++;
-      locationApply.disabled = false;
-      return;
-    }
-    const preferred = locationRadius(getDesign().locationDefaultRadius, support);
-    locationRadiusInput.replaceChildren(...support.filterValues.map(value => new Option(locationLabel(value, support.unit), value)));
-    locationRadiusInput.value = locationRadius(locationSelection?.radius || preferred, support);
-    locationRadiusInput.hidden = !support.distanceEnabled;
-    locationRadiusInput.labels?.forEach(label => { label.hidden = !support.distanceEnabled; });
-    locationClear.hidden = !locationSelection;
-    locationStatus.textContent = locationSelection
-      ? 'Searching near ' + locationSelection.address +
-        (locationSelection.radius === 'any' ? '.' : ' within ' + locationLabel(locationSelection.radius, support.unit) + '.')
-      : 'Your place and coordinates aren’t saved in the design.';
-  }
-
-  async function applyLocation() {
-    if (!connection || !options || !locationSupport?.enabled || locationApply.disabled) return;
-    const term = locationInput.value.trim();
-    if (!term) return;
-    const generation = ++locationGeneration;
-    locationApply.disabled = true;
-    locationStatus.textContent = 'Finding that place…';
-    try {
-      const decoded = await decodeBrowserLocation(term);
-      if (generation !== locationGeneration || !connection) return;
-      if (!decoded) {
-        locationStatus.textContent = 'That place couldn’t be found. Check the place or the configured geocoder.';
-        return;
-      }
-      locationSelection = { ...decoded, radius: locationRadius(locationRadiusInput.value, locationSupport) };
-      run({ location: locationSelection }, locationApply, locationInput);
-    } catch {
-      if (generation !== locationGeneration) return;
-      locationStatus.textContent = 'The place could not be decoded. Check the configured browser geocoder.';
-    } finally {
-      if (generation === locationGeneration) locationApply.disabled = false;
-    }
-  }
-
-  locationApply.addEventListener('click', () => { void applyLocation(); });
-  locationInput.addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); void applyLocation(); } });
-  locationRadiusInput.addEventListener('change', () => {
-    panel.dispatchEvent(new CustomEvent('lab-location-settings', { bubbles: true, detail: { radius: locationRadiusInput.value || null } }));
-    if (!locationSelection || !options) return;
-    locationSelection = { ...locationSelection, radius: locationRadius(locationRadiusInput.value, locationSupport) };
-    run({ location: locationSelection }, locationRadiusInput, locationRadiusInput);
-  });
-  locationClear.addEventListener('click', () => {
-    if (!options) return;
-    locationSelection = undefined;
-    locationInput.value = '';
-    locationGeneration++;
-    locationApply.disabled = false;
-    locationInput.focus();
-    run({ location: undefined }, locationClear, locationClear);
-  });
-
   function renderResults(page: BuildPage, active: BuildSearch, language?: string) {
-    renderLocation(page.location);
+    location.render(page.location);
     renderPromotionBanners(promotions, page.externalPromotions, getDesign().promotionHeading, language);
     placePromotionBanners(promotions, layout, getDesign().bannerPlacement);
     sort.replaceChildren(new Option('Relevance', ''), ...page.sorts.map(item => new Option(item.label, item.value)));
@@ -473,16 +407,11 @@ export function setupCustomerPreview(
     connect.textContent = 'Connect';
     failedSearch = null;
     connection = null;
-    locationGeneration++;
     importVersion++;
     suggestionSource = null;
     options = null;
     latestPage = null;
-    locationSupport = undefined;
-    locationSelection = undefined;
-    locationPanel.hidden = true;
-    locationInput.value = '';
-    locationStatus.textContent = '';
+    location.render();
     resultWindow = undefined;
     panel.hidden = true;
     panel.removeAttribute('data-searching');
@@ -622,6 +551,7 @@ export function setupCustomerPreview(
       if (!connection || !options) return;
       updateVisibility();
       const design = getDesign();
+      location.refreshCurrentLocation();
       updateResultLinkTargets(grid, design.resultLinkTarget);
       const previousMode = activePaginationMode;
       const nextMode = paginationMode();

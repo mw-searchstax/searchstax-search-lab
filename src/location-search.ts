@@ -68,13 +68,12 @@ export function locationLabel(value: string, unit: string): string {
 type DecodedPlace = { address?: string; lat?: string | number; lon?: string | number };
 type Geocoder = (place: string) => Promise<DecodedPlace | null>;
 
-export async function decodeBrowserLocation(place: string) {
+async function decodeBrowserLocation(place: string): Promise<DecodedPlace | null> {
   const decode = (globalThis as typeof globalThis & { SearchLabLocationGeocoder?: Geocoder }).SearchLabLocationGeocoder;
   if (typeof decode !== 'function') return null;
   const match = await decode(place);
   if (match?.lat == null || match.lon == null) return null;
-  const location = { address: match.address?.trim() || place, lat: numberText(match.lat), lon: numberText(match.lon) };
-  return locationQuery({ ...location, radius: 'any' }).pt ? location : null;
+  return { address: match.address?.trim() || place, lat: match.lat, lon: match.lon };
 }
 
 type KitSearch = { query: string; page: number; additionalProps?: { key: string; value: string }[] };
@@ -91,107 +90,189 @@ export function searchWithLocation<T extends KitSearch>(
   kit?.dataLayer.setSearchObject({ ...current, page: 1, additionalProps });
 }
 
-export function setupStarterLocation(
-  savedRadius: string | null,
-  search: (location?: LocationSelection) => void,
-) {
+type LocationControls = {
+  defaultRadius: () => string | null;
+  allowCurrent: () => boolean;
+  search: (selection: LocationSelection | undefined, anchor: HTMLElement, control: HTMLElement) => void;
+  saveRadius?: (radius: string) => void;
+  idleMessage?: string;
+};
+
+async function readCurrentPosition() {
+  const { coords } = await new Promise<GeolocationPosition>((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
+  });
+  return { address: 'your current location', lat: coords.latitude, lon: coords.longitude };
+}
+
+function currentPositionError(error: unknown) {
+  if (typeof error === 'object' && error && 'code' in error && error.code === 1) {
+    return 'Location permission was denied. Enter a place to search nearby.';
+  }
+  return 'Your current location is unavailable. Enter a place to search nearby.';
+}
+
+export function setupLocationControls(panel: HTMLElement, options: LocationControls) {
+  const input = panel.querySelector<HTMLInputElement>('input')!;
+  const radius = panel.querySelector<HTMLSelectElement>('select')!;
+  const apply = panel.querySelector<HTMLButtonElement>('[data-location-apply]')!;
+  const current = panel.querySelector<HTMLButtonElement>('[data-location-current]')!;
+  const clear = panel.querySelector<HTMLButtonElement>('[data-location-clear]')!;
+  const status = panel.querySelector<HTMLElement>('[role="status"]')!;
   let support: LocationSupport | undefined;
-  let location: LocationSelection | undefined;
-  let render: ((value: LocationSupport | undefined) => void) | undefined;
+  let selection: LocationSelection | undefined;
+  let selectedRadius = '';
+  let renderedRadiusOptions = '';
+  let revision = 0;
+  let pending: HTMLButtonElement | undefined;
 
-  function attach(panel: HTMLElement) {
-    panel.innerHTML = `<label for="search-location-input">Search near</label>
-      <input id="search-location-input" type="text" autocomplete="off" placeholder="Enter a place">
-      <button type="button" class="search-starter__submit" data-location-apply>Apply location</button>
-      <label for="search-location-radius">Radius</label>
-      <select id="search-location-radius"></select>
-      <button type="button" class="search-starter__submit" data-location-clear hidden>Clear location</button>
-      <p role="status"></p>`;
-    const input = panel.querySelector<HTMLInputElement>('input')!;
-    const radius = panel.querySelector<HTMLSelectElement>('select')!;
-    const label = panel.querySelector<HTMLLabelElement>('label[for="search-location-radius"]')!;
-    const apply = panel.querySelector<HTMLButtonElement>('[data-location-apply]')!;
-    const clear = panel.querySelector<HTMLButtonElement>('[data-location-clear]')!;
-    const status = panel.querySelector<HTMLElement>('[role="status"]')!;
-    let revision = 0;
-    let selectedRadius = '';
-    let options = '';
-
-    async function submit() {
-      const place = input.value.trim();
-      if (!place || !support || apply.disabled) return;
-      const current = ++revision;
-      apply.disabled = true;
-      status.textContent = 'Finding that place…';
-      try {
-        const decoded = await decodeBrowserLocation(place);
-        if (current !== revision || !support) return;
-        if (!decoded) {
-          status.textContent = 'That place couldn’t be found. Check the place or the site’s geocoder.';
-          return;
-        }
-        location = { ...decoded, radius: locationRadius(selectedRadius, support) };
-        clear.hidden = false;
-        status.textContent = '';
-        search(location);
-      } catch {
-        if (current === revision) status.textContent = 'Location search couldn’t find that place. Try again.';
-      } finally {
-        if (current === revision) apply.disabled = false;
-      }
-    }
-
-    apply.addEventListener('click', () => void submit());
-    input.addEventListener('keydown', event => {
-      if (event.key === 'Enter') { event.preventDefault(); void submit(); }
-    });
-    radius.addEventListener('change', () => {
-      selectedRadius = radius.value;
-      if (!location) return;
-      location = { ...location, radius: selectedRadius };
-      search(location);
-    });
-    clear.addEventListener('click', () => {
-      revision++;
-      location = undefined;
-      apply.disabled = false;
-      input.value = '';
-      status.textContent = '';
-      clear.hidden = true;
-      input.focus();
-      search();
-    });
-
-    return (next?: LocationSupport) => {
-      panel.hidden = !next;
-      if (!next) {
-        revision++;
-        location = undefined;
-        selectedRadius = '';
-        options = '';
-        status.textContent = '';
-        apply.disabled = false;
-        input.value = '';
-        clear.hidden = true;
-        return;
-      }
-      label.hidden = radius.hidden = !next.distanceEnabled;
-      const optionKey = JSON.stringify([next.unit, next.filterValues]);
-      if (optionKey !== options) {
-        options = optionKey;
-        radius.replaceChildren(...next.filterValues.map(value => new Option(locationLabel(value, next.unit), value)));
-      }
-      selectedRadius = locationRadius(selectedRadius || savedRadius, next);
-      radius.value = selectedRadius;
-    };
+  function cancelLookup() {
+    revision++;
+    pending?.removeAttribute('aria-disabled');
+    pending = undefined;
   }
 
-  return (metadata: unknown) => {
-    support = readLocationSupport(metadata);
-    if (!render && support) {
-      const panel = document.getElementById('search-location');
-      if (panel) render = attach(panel);
+  function showSelection() {
+    clear.hidden = !selection;
+    status.textContent = selection
+      ? 'Searching near ' + selection.address + (selection.radius === 'any' ? '.' :
+        ' within ' + locationLabel(selection.radius, support?.unit ?? '') + '.')
+      : options.idleMessage ?? '';
+  }
+
+  function refreshCurrentLocation() {
+    current.hidden = !(support?.enabled && options.allowCurrent() && window.isSecureContext && navigator.geolocation);
+    if (current.hidden && pending === current) {
+      cancelLookup();
+      showSelection();
     }
-    render?.(support);
+  }
+
+  async function lookup(through: HTMLButtonElement, read: () => Promise<DecodedPlace | null>) {
+    if (!support?.enabled || pending === through || through.closest('[hidden]')) return;
+    cancelLookup();
+    const request = revision;
+    const device = through === current;
+    pending = through;
+    through.setAttribute('aria-disabled', 'true');
+    status.textContent = device ? 'Finding your current location…' : 'Finding that place…';
+    try {
+      const place = await read();
+      if (request !== revision || through.closest('[hidden]')) return;
+      const chosenRadius = locationRadius(radius.value, support);
+      const next = place && {
+        address: place.address ?? input.value.trim(),
+        lat: numberText(place.lat),
+        lon: numberText(place.lon),
+        radius: chosenRadius,
+      };
+      if (!next || !locationQuery(next).pt) {
+        status.textContent = device ? currentPositionError(null) :
+          'That place couldn’t be found. Check the place or the configured geocoder.';
+        return;
+      }
+      selection = next;
+      if (device) input.value = '';
+      showSelection();
+      options.search(selection, through, device ? current : input);
+    } catch (error) {
+      if (request !== revision || through.closest('[hidden]')) return;
+      status.textContent = device ? currentPositionError(error) :
+        'The place could not be decoded. Check the configured browser geocoder.';
+    } finally {
+      if (request === revision) cancelLookup();
+    }
+  }
+
+  function submitPlace() {
+    const place = input.value.trim();
+    if (place) void lookup(apply, () => decodeBrowserLocation(place));
+  }
+
+  apply.addEventListener('click', submitPlace);
+  input.addEventListener('keydown', event => {
+    if (event.key === 'Enter') { event.preventDefault(); submitPlace(); }
+  });
+  input.addEventListener('input', () => {
+    if (!pending) return;
+    cancelLookup();
+    showSelection();
+  });
+  current.addEventListener('click', () => { void lookup(current, readCurrentPosition); });
+  radius.addEventListener('change', () => {
+    selectedRadius = locationRadius(radius.value, support);
+    options.saveRadius?.(selectedRadius);
+    if (!selection) return;
+    selection = { ...selection, radius: selectedRadius };
+    if (!pending) showSelection();
+    options.search(selection, radius, radius);
+  });
+  clear.addEventListener('click', () => {
+    cancelLookup();
+    selection = undefined;
+    input.value = '';
+    showSelection();
+    input.focus();
+    options.search(undefined, clear, input);
+  });
+
+  return {
+    get selection() { return selection; },
+    refreshCurrentLocation,
+    render(next?: LocationSupport) {
+      support = next;
+      panel.hidden = !next?.enabled;
+      if (!next?.enabled) {
+        cancelLookup();
+        selection = undefined;
+        selectedRadius = '';
+        input.value = '';
+        status.textContent = '';
+        clear.hidden = true;
+        refreshCurrentLocation();
+        return;
+      }
+      radius.hidden = !next.distanceEnabled;
+      radius.labels?.forEach(label => { label.hidden = !next.distanceEnabled; });
+      const optionsKey = JSON.stringify([next.unit, next.filterValues]);
+      if (optionsKey !== renderedRadiusOptions) {
+        renderedRadiusOptions = optionsKey;
+        radius.replaceChildren(...next.filterValues.map(value => new Option(locationLabel(value, next.unit), value)));
+      }
+      radius.value = locationRadius(selection?.radius || selectedRadius || options.defaultRadius(), next);
+      refreshCurrentLocation();
+      if (!pending) showSelection();
+    },
+  };
+}
+
+export function setupStarterLocation(
+  savedRadius: string | null,
+  showCurrentLocation: boolean,
+  search: (location?: LocationSelection) => void,
+) {
+  let controls: ReturnType<typeof setupLocationControls> | undefined;
+
+  return (metadata: unknown) => {
+    const support = readLocationSupport(metadata);
+    if (!controls && support) {
+      const panel = document.getElementById('search-location');
+      if (panel) {
+        panel.innerHTML = `<label for="search-location-input">Search near</label>
+          <input id="search-location-input" type="text" autocomplete="off" placeholder="Enter a place">
+          <button type="button" class="search-starter__submit" data-location-apply>Apply location</button>
+          <button type="button" class="search-starter__submit" data-location-current hidden>Use my location</button>
+          <label for="search-location-radius">Radius</label>
+          <select id="search-location-radius"></select>
+          <button type="button" class="search-starter__submit" data-location-clear hidden>Clear location</button>
+          <p role="status"></p>`;
+        controls = setupLocationControls(panel, {
+          defaultRadius: () => savedRadius,
+          allowCurrent: () => showCurrentLocation,
+          search,
+        });
+      }
+    }
+    controls?.render(support);
   };
 }

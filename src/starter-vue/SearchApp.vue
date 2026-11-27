@@ -53,7 +53,7 @@ const status = ref('Connecting to search…');
 const loadedResults = ref(0);
 const totalResults = ref(0);
 let api;
-const renderLocation = setupStarterLocation(design.locationDefaultRadius, selection => searchWithLocation(api, selection));
+const renderLocation = setupStarterLocation(design.locationDefaultRadius, design.showCurrentLocation, selection => searchWithLocation(api, selection));
 let spelling;
 let sortController;
 let loadingSubscription;

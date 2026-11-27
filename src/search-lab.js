@@ -155,6 +155,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
   const paginationModeInput = root.querySelector('#lab-pagination-mode');
   const paginationPlacementInput = root.querySelector('#lab-pagination-placement');
   const groupedByInput = root.querySelector('#lab-grouped-by');
+  const currentLocationInput = root.querySelector('#lab-current-location');
   const itemsPerGroupInput = root.querySelector('#lab-items-per-group');
   var pageSizeInput = root.querySelector('#lab-page-size');
   var scenarioInput = root.querySelector('#lab-scenario');
@@ -739,6 +740,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     }
     pageSizeInput.value = String(design.resultsPerPage);
     groupedByInput.value = design.groupedBy;
+    currentLocationInput.checked = design.showCurrentLocation;
     itemsPerGroupInput.value = String(design.itemsPerGroup);
     Object.keys(textInputs).forEach(function (key) { textInputs[key].value = design[key]; });
     updatePreviewText();
@@ -1410,6 +1412,10 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
   });
   paginationPlacementInput.addEventListener('change', () => {
     design.paginationPlacement = readPaginationPlacement(paginationPlacementInput.value);
+    updateDesign();
+  });
+  currentLocationInput.addEventListener('change', () => {
+    design.showCurrentLocation = currentLocationInput.checked;
     updateDesign();
   });
   groupedByInput.addEventListener('change', () => {

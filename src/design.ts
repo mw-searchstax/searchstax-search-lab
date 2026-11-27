@@ -70,6 +70,7 @@ export type DesignSettings = {
   /** Published profile radius to use after a place is decoded. The visitor's
    * place and coordinates are deliberately not part of the design. */
   locationDefaultRadius: string | null;
+  showCurrentLocation: boolean;
   showSmartAnswersSample: boolean;
   smartAnswerHeading: string;
   smartAnswerCardStyle: 'accent' | 'outline';
@@ -139,6 +140,7 @@ export const DEFAULT_DESIGN: Readonly<DesignSettings> = {
   suggestionRowSpacing: 'standard',
   emphasizeSuggestionText: false,
   locationDefaultRadius: null,
+  showCurrentLocation: false,
   showSmartAnswersSample: true,
   smartAnswerHeading: '',
   smartAnswerCardStyle: 'accent',
@@ -289,6 +291,7 @@ export function readDesignParams(params: URLSearchParams, allowFictionalPreview 
     suggestionRowSpacing: params.get('lab_suggestion_spacing') === 'compact' ? 'compact' : 'standard',
     emphasizeSuggestionText: params.get('lab_suggestion_emphasis') === 'on',
     locationDefaultRadius: readLocationRadius(params.get('lab_location_radius')),
+    showCurrentLocation: params.get('lab_current_location') === 'on',
     showSmartAnswersSample: params.get('lab_answer_sample') !== 'off',
     smartAnswerHeading: resolveSearchText(params.get('lab_answer_heading'), DEFAULT_DESIGN.smartAnswerHeading),
     smartAnswerCardStyle: params.get('lab_answer_style') === 'outline' ? 'outline' : 'accent',
@@ -329,6 +332,7 @@ export function writeDesignParams(params: URLSearchParams, design: DesignSetting
     ['lab_suggestion_spacing', design.suggestionRowSpacing === 'compact' && 'compact'],
     ['lab_suggestion_emphasis', design.emphasizeSuggestionText && 'on'],
     ['lab_location_radius', design.locationDefaultRadius],
+    ['lab_current_location', design.showCurrentLocation && 'on'],
     ['lab_answer_heading', design.smartAnswerHeading],
     ['lab_answer_style', design.smartAnswerCardStyle === 'outline' && 'outline'],
     ['lab_answer_source_style', design.smartAnswerSourceStyle === 'cards' && 'cards'],

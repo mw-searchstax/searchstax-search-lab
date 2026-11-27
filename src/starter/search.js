@@ -183,7 +183,7 @@ async function startSearch() {
   const kit = window['@searchstaxInc/searchstudioUxJs'] || window.Searchstax;
   const Searchstax = typeof kit === 'function' ? kit : kit.Searchstax;
   const search = new Searchstax();
-  const renderLocation = setupStarterLocation(config.locationDefaultRadius, selection => searchWithLocation(search, selection));
+  const renderLocation = setupStarterLocation(config.locationDefaultRadius, config.showCurrentLocation, selection => searchWithLocation(search, selection));
   activeSearch = search;
   sortController = createSortController({
     enabled: config.showSorting,

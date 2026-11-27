@@ -101,6 +101,8 @@ const locationHandoff = `## Manual location search
 
 For a location-enabled Search Profile, configure \`window.SearchLabLocationGeocoder\` on the page. The function receives the typed place and returns an object with \`address\`, \`lat\`, and \`lon\`, or \`null\` when it can’t resolve the place. Keep provider credentials on your server.
 
+The **Offer current location** setting exports an optional **Use my location** button. The browser asks for permission when a visitor activates it. A secure context is required.
+
 The starter uses the radius choices and units published by the profile. Clearing a place restores the full results. Place text and coordinates aren’t stored in the starter’s settings.`;
 
 function escapeHTML(value: string): string {
@@ -246,6 +248,7 @@ function starterFeatures(design: DesignSettings) {
     suggestionRowSpacing: design.suggestionRowSpacing,
     emphasizeSuggestionText: design.emphasizeSuggestionText,
     locationDefaultRadius: design.locationDefaultRadius,
+    showCurrentLocation: design.showCurrentLocation,
     smartAnswerHeading: design.smartAnswerHeading,
     smartAnswerCardStyle: design.smartAnswerCardStyle,
     smartAnswerSourceStyle: design.smartAnswerSourceStyle,

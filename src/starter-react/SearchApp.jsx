@@ -280,7 +280,7 @@ export default function SearchApp() {
   const [api, setApi] = useState(null);
   const locationApi = useRef(null);
   const [renderLocation] = useState(() => setupStarterLocation(
-    design.locationDefaultRadius, selection => searchWithLocation(locationApi.current, selection),
+    design.locationDefaultRadius, design.showCurrentLocation, selection => searchWithLocation(locationApi.current, selection),
   ));
   const [summary, setSummary] = useState({ start: 0, end: 0, total: 0 });
   const [status, setStatus] = useState('Connecting to search…');

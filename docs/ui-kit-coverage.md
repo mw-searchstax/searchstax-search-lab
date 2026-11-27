@@ -11,7 +11,7 @@ In Build, open **Appearance → Result cards** to show and size the sample thumb
 | Grouped results | Local fixture coverage. A published check needs a profile with a groupable Content type field. |
 | Smart Answers feedback and conversation | An enabled profile with a real answer, an agreed feedback destination and a working follow-up conversation. Decide whether the pilot needs either interaction before adding controls. |
 | Manual location search | Local fixture coverage. A published check needs a location-enabled profile, indexed coordinates, and a browser geocoder configured for that page. |
-| Current location | Needs a secure origin and a design for permission denial, fallback to manual entry, and reverse geocoding. |
+| Current location | Local fixture coverage for permission, unavailable position, manual fallback, and clearing. Check geolocation permission in the Help Center embed before release. |
 
 Start in Build with **rehabilitation**. Under **Appearance → Hit highlighting**, switch from Italic to Plain text and compare the passage. Then enable profile tabs in Advanced Options and switch from SearchLabBuild to Main Profile. The wording can change when the app stops returning the matched passage. Changing its visual style should preserve every word.
 
@@ -171,9 +171,9 @@ The ten widget families below follow the [Help Center catalog](https://support.s
 | `locationFilterDefaultValue` | Use the published default unless the design saves a choice the profile offers. | Preview · clear the place and keep the selected radius. | A selectable radius and a result near its boundary. | Wired | Wired | Wired | Wired |
 | Geocoding endpoint (`geocodingURL` in the examples) | Supply a browser geocoder for the page hosting the preview or starter. | Handoff · set `window.SearchLabLocationGeocoder(place)` to a function returning `{ address, lat, lon }` or `null`. | A provider that resolves typed places to coordinates. | Setup | Setup | Setup | Setup |
 | Geocoding credential (`geocodingAPIKey` in the examples) | The developer configures the provider. | Handoff · use the provider’s approved credential flow. | Provider account and intended audience for the credential. | Setup | Setup | Setup | Setup |
-| Current location action | No geolocation button. | Features · template and native action. Off until supported. Offer a labeled action. | Secure origin and user permission. Test denial and manual entry. | Gap | Gap | Gap | Gap |
+| Current location action | **Use my location** uses the browser position and selected radius. | Features → Location search → **Offer current location**. Off by default. | A location-enabled profile, secure context, and visitor permission. Test denial, unavailable position, and manual entry. | Wired | Wired | Wired | Wired |
 | `locationDecode` | The browser geocoder resolves the place for the current request. | Handoff · supply the forward geocoder callback. | Provider endpoint, a valid place and an unknown place. | Setup | Setup | Setup | Setup |
-| `locationDecodeCoordinatesToAddress` | No reverse geocoder. | Handoff · callback. Use only for a supported current-location experience. | Provider and coordinates. Test an unavailable lookup. | Setup | Setup | Setup | Setup |
+| `locationDecodeCoordinatesToAddress` | The selected position is labeled **your current location**. | Handoff · existing kit callback for implementations that want an address label. | Reverse-geocoding provider. | Setup | Setup | Setup | Setup |
 
 ## Wrapper and developer handoff
 
@@ -305,7 +305,7 @@ Each row is a distinct replacement point. Keep the kit template by default when 
 | Related Searches shell | Conditional suggestions | main | searchRelatedSearchesTemplate | related | templateOverride |
 | One related search | Fixed link treatment | relatedSearch | within related template | within related | within related template |
 | Answer | Streamed text and sources | main | searchAnswerTemplate | answer | templateOverride |
-| Location | Gap | mainTemplate | searchLocationTemplate | location | templateOverride |
+| Location | Manual entry, current location, and radius | mainTemplate | searchLocationTemplate | location | templateOverride |
 
 The JavaScript template objects also expose markup bindings. They belong in the developer handoff with the widget that uses them. Preserve the kit defaults unless supplying a replacement template. In React, Vue and Angular, use the corresponding slot, ref, template context or callback above.
 
@@ -336,13 +336,17 @@ The JavaScript template objects also expose markup bindings. They belong in the 
 | selectId | Sorting, bind the dropdown | Sort selector |
 | locationInputId | Location, bind the address input | **Search near** |
 | radiusInputId | Location, bind radius choice | **Radius** |
-| currentLocationActionButtonId | Location, bind current location | Build integration gap |
+| currentLocationActionButtonId | Location, bind current location | **Use my location** |
 
 ## Local grouping and location checks
 
 In Build, open **Features → Grouped results** and choose **Content type**. The default is **Off**. **Items per group** controls the batch size within each group. Results with missing values appear under **Other**. Grouped results use **Previous** and **Next**. Turning grouping off restores the flat pagination preference.
 
 Manual place search is available in connected Build and the generated starters when the Search Profile publishes location support. The local fixture offers **5 mi**, **15 mi**, and **Any distance**, starting at **15 mi**. Applying a place narrows the results. Clearing it restores the full set and retains the radius. The design link and downloaded config can carry the radius. The place and coordinates stay out of those files.
+
+To offer **Use my location**, open **Features → Location search** and enable **Offer current location**. The browser requests a position when the visitor activates the button. The current radius applies to the returned position. If permission is denied or the position is unavailable, the visitor can enter a place. **Clear location** restores the full set and retains the radius. The design saves the opt-in and the radius while the visitor’s coordinates stay in the current preview.
+
+Run `node qa/regression/current-location.cjs` against a local Build preview to exercise keyboard activation, permission granted and denied, unavailable position, manual fallback, radius changes, and clearing in Build and all eight downloaded starters. The fixture uses the North Campus results. Check the Help Center iframe’s geolocation permission separately before publishing. [Geolocation in an iframe](https://www.w3.org/TR/geolocation/#third-party-contexts)
 
 With the local preview running, use `node qa/regression/group-location-smoke.cjs` for built-in, connected and profile-tab Build plus all eight JavaScript, React, Vue and Angular starters. Use `node qa/regression/location-search.cjs` for the published default, invalid-place response, shared radius and disabled profile. These runners supply their fixtures locally.
 

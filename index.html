@@ -297,6 +297,14 @@
                   <input id="lab-load-more-text" type="text" value="Load more">
                 </div>
               </details>
+              <details class="search-lab__disclosure" id="lab-location-settings">
+                <summary>Location search</summary>
+                <div class="search-lab__field search-lab__field--inline">
+                  <label for="lab-current-location">Offer current location</label>
+                  <input id="lab-current-location" type="checkbox" aria-describedby="lab-current-location-help">
+                </div>
+                <p id="lab-current-location-help" class="search-lab__help">Requires a location-enabled Search Profile. Visitors choose when to share their location.</p>
+              </details>
               <details class="search-lab__disclosure">
                 <summary>Grouped results</summary>
                 <div class="search-lab__field">
@@ -800,10 +808,11 @@
                   <div class="search-lab__location" data-customer-location hidden>
                     <label for="lab-customer-location">Search near</label>
                     <input id="lab-customer-location" type="text" autocomplete="off" placeholder="Enter a place">
-                    <button class="lt-btn lt-btn--secondary" type="button" data-customer-location-apply>Apply location</button>
+                    <button class="lt-btn lt-btn--secondary" type="button" data-location-apply>Apply location</button>
+                    <button class="lt-btn lt-btn--secondary" type="button" data-location-current hidden>Use my location</button>
                     <label for="lab-customer-location-radius">Radius</label>
                     <select id="lab-customer-location-radius" data-customer-location-radius></select>
-                    <button class="lt-btn lt-btn--secondary" type="button" data-customer-location-clear hidden>Clear location</button>
+                    <button class="lt-btn lt-btn--secondary" type="button" data-location-clear hidden>Clear location</button>
                     <p class="search-lab__help" role="status" data-customer-location-status></p>
                   </div>
                   <div class="search-lab__correction" data-search-correction hidden>

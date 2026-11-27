@@ -37,7 +37,8 @@
 }
 
 .search-lab__location input { flex: 1 1 14rem; }
-.search-lab__location [data-customer-location-status] { flex-basis: 100%; margin: 0; }
+.search-lab__location [role="status"],
+.search-starter__location [role="status"] { flex-basis: 100%; margin: 0; }
 
 .search-starter__location:not([hidden]) {
   display: flex;
