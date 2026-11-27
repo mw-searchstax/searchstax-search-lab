@@ -2,3 +2,6 @@
 .search-related-terms[hidden] { display: none; }
 .search-related-terms > div { display: flex; flex-wrap: wrap; gap: .5rem; margin-block-start: .4rem; }
 .search-related-terms button { font: inherit; color: inherit; background: transparent; cursor: pointer; padding: .35em .65em; border: 1px solid currentColor; border-radius: var(--search-corners, 5px); }
+.search-related-terms > strong, .search-related-terms button { overflow-wrap: anywhere; }
+.search-related-terms--chips button { border-radius: 999px; background: color-mix(in srgb, currentColor 8%, transparent); }
+.search-related-terms--compact > div { gap: .25rem; }

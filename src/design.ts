@@ -46,6 +46,9 @@ export type DesignSettings = {
   filterPlacement: 'sidebar' | 'top';
   topFilterStyle: 'list' | 'row';
   relatedPlacement: 'above' | 'below' | 'off';
+  relatedHeading: string;
+  relatedItemStyle: 'buttons' | 'chips';
+  relatedSpacing: 'standard' | 'compact';
   profileTabs: boolean;
   languagePicker: boolean;
   filters: boolean;
@@ -103,6 +106,9 @@ export const DEFAULT_DESIGN: Readonly<DesignSettings> = {
   filterPlacement: 'sidebar',
   topFilterStyle: 'list',
   relatedPlacement: 'below',
+  relatedHeading: '',
+  relatedItemStyle: 'buttons',
+  relatedSpacing: 'standard',
   profileTabs: false,
   languagePicker: false,
   filters: true,
@@ -230,6 +236,9 @@ export function readDesignParams(params: URLSearchParams, allowFictionalPreview 
     topFilterStyle: topStyle === 'row' || topStyle === 'tabs' ? 'row' : 'list',
     filterPlacement: params.get('lab_filter_placement') === 'top' ? 'top' : 'sidebar',
     relatedPlacement: params.get('lab_related') === 'above' ? 'above' : params.get('lab_related') === 'off' ? 'off' : 'below',
+    relatedHeading: resolveSearchText(params.get('lab_related_heading'), DEFAULT_DESIGN.relatedHeading),
+    relatedItemStyle: params.get('lab_related_style') === 'chips' ? 'chips' : 'buttons',
+    relatedSpacing: params.get('lab_related_spacing') === 'compact' ? 'compact' : 'standard',
     languagePicker: params.has('lab_languages') ? params.get('lab_languages') === 'on' : params.get('lab_profile_tabs') === 'on',
     profileTabs: params.get('lab_profile_tabs') === 'on',
     filters: params.get('lab_filters') !== 'off',
@@ -272,6 +281,9 @@ export function writeDesignParams(params: URLSearchParams, design: DesignSetting
     ['lab_ribbon_shape', design.ribbonShape !== 'ribbon' && design.ribbonShape],
     ['lab_card_metadata', design.cardMetadata.length && JSON.stringify(design.cardMetadata)],
     ['lab_facet_groups', design.facetGroups.length && JSON.stringify(design.facetGroups)],
+    ['lab_related_heading', design.relatedHeading],
+    ['lab_related_style', design.relatedItemStyle === 'chips' && 'chips'],
+    ['lab_related_spacing', design.relatedSpacing === 'compact' && 'compact'],
     ['lab_suggestion_spacing', design.suggestionRowSpacing === 'compact' && 'compact'],
     ['lab_suggestion_emphasis', design.emphasizeSuggestionText && 'on'],
   ] as const) {

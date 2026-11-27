@@ -216,6 +216,9 @@ function starterFeatures(design: DesignSettings) {
   return {
     cardMetadata: design.cardMetadata,
     relatedPlacement: design.relatedPlacement,
+    relatedHeading: design.relatedHeading,
+    relatedItemStyle: design.relatedItemStyle,
+    relatedSpacing: design.relatedSpacing,
     showFilters: design.filters,
     facetMode: design.facetMode,
     facetDesktop: design.facetDesktop,

@@ -130,8 +130,8 @@ The ten widget families below follow the [Help Center catalog](https://support.s
 |---|---|---|---|---|---|---|---|
 | `relatedSearchesURL` | Optional Discovery connection. | Handoff · app. Obtain a browser-safe endpoint. Leave blank for unconfigured apps. | Discovery service and published language setting. | Setup | Setup | Setup | Setup |
 | `relatedSearchesAPIKey` | Optional Discovery key. | Handoff · app. Supply only a browser-appropriate key during integration. | Entitlement, language setting and endpoint all available. | Setup | Setup | Setup | Setup |
-| Related searches template | App-aware suggestions and separate fictional examples. | Appearance · template. Start with Related searches and offer a heading. | A query with returned suggestions in the chosen language. | Partial | Partial | Partial | Partial |
-| Related item template | Existing suggestion links. | Appearance · template and CSS. Links initially, offer chips and spacing. | Keyboard activation submits the suggested query. | Gap | Gap | Gap | Gap |
+| Related searches template | App-aware suggestions and separate fictional examples with an editable heading. | Appearance → Related searches. Leave Heading blank to use the default. | A query with returned suggestions in the chosen language. | Wired | Wired | Wired | Wired |
+| Related item template | Outlined buttons or Chips, with Standard or Compact spacing. | Appearance → Related searches. Outlined buttons and Standard spacing are the defaults. | Keyboard activation submits the suggested query. | Wired | Wired | Wired | Wired |
 | Placement | Above or below the results. | Advanced Options · template. Default below. | Switch language and profile. Omit the block for an empty response. | Wired | Wired | Wired | Wired |
 
 ## Smart Answers
@@ -251,6 +251,12 @@ Local QA covered Build and the ordinary and profile variants for JavaScript, Rea
 ### Search suggestion styling
 
 In **Appearance → Search suggestions**, set **Row spacing** to **Standard** or **Compact**. Turn on **Emphasize typed text** to bold matching text regardless of case. With the connected-profile fixture, type **camp** to see the match in **Campus clinic** and **Campus library**. **Visitor information** stays plain. Both settings are saved in the Build draft, share link, and starter configuration.
+
+### Related Searches appearance
+
+In **Appearance → Related searches**, leave **Heading** blank to use the default. Choose **Outlined buttons** or **Chips**, and set **Item spacing** to **Standard** or **Compact**. Compact spacing brings items closer together while keeping their padding. The heading and both styling choices are saved in the Build draft, share link, and starter configuration.
+
+Local fixture QA covered Build and the ordinary and profile variants for JavaScript, React, Vue, and Angular. **campus** returned two related searches in English and Spanish. Enter and Space submitted the full selected term in the active language and profile. **visitor maps** returned search results with no Related Searches section.
 
 ### Result summary
 

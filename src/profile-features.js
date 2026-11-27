@@ -79,13 +79,12 @@ export function setupProfileFeatures(panel, submit) {
   return {
     clear,
     update(design, connection, profile, query) {
+      const es = profile.language.split(/[-_]/)[0] === 'es';
       if (app !== connection || active !== profile) {
         clear();
         app = connection;
         if (!app) host.prepend(sampleBanner);
         active = profile;
-        const es = active.language.split(/[-_]/)[0] === 'es';
-        related.setLabel(es ? 'Búsquedas relacionadas' : 'Related searches');
         englishAnswer.forEach(([node, text], i) => { node.textContent = es ? spanishAnswer[i] : text; });
         sampleAnswer.lang = es ? 'es' : 'en';
         const bannerLabel = es ? 'Promoción externa de ejemplo' : 'Sample external promotion';
@@ -104,6 +103,7 @@ export function setupProfileFeatures(panel, submit) {
       placePromotionBanners(host, panel.querySelector('#lab-exp-results'), design.bannerPlacement);
       updatePromotionLabels(panel, design);
       setSuggestions(app || design.showSuggestions ? suggestions : null, design);
+      related.setAppearance(design, es ? 'Búsquedas relacionadas' : 'Related searches');
       void related.show(panel.querySelector('#lab-exp-results'), app && design.relatedPlacement === 'off' ? 'below' : design.relatedPlacement, query, relatedTerms);
       sampleAnswer.hidden = Boolean(app) || !active.smartAnswers || !design.showSmartAnswersSample;
       if (sampleAnswer.hidden) sampleAnswer.open = false;

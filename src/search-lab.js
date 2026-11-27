@@ -100,6 +100,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
   var queryLabel = form.querySelector('label[for="lab-query"]');
   var submitButton = form.querySelector('button[type="submit"]');
   var textInputs = {
+    relatedHeading: root.querySelector('#lab-related-heading'),
     sortLabel: root.querySelector('#lab-sort-label'),
     loadMoreText: root.querySelector('#lab-load-more-text'),
     promotionHeading: root.querySelector('#lab-promo-heading'),
@@ -259,6 +260,9 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
   var restoreFocus;
   var relatedToggle = root.querySelector('#lab-related-toggle');
   var relatedPlacement = root.querySelector('#lab-related-placement');
+  const relatedItemStyle = root.querySelector('#lab-related-item-style');
+  const relatedSpacing = root.querySelector('#lab-related-item-spacing');
+  const relatedAppearanceHint = root.querySelector('[data-related-appearance-hint]');
   var topFilterStyle = root.querySelector('#lab-top-filter-style');
   const promotionStyles = [['#lab-badge-style', 'badgeStyle'], ['#lab-banner-style', 'bannerStyle'], ['#lab-banner-placement', 'bannerPlacement']];
   const hitStyle = root.querySelector('#lab-hit-style');
@@ -289,6 +293,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     }
     const anchor = connected ? root.querySelector('[data-customer-layout]') : resultsLayout;
     const placement = design.relatedPlacement === 'off' ? 'below' : design.relatedPlacement;
+    related.setAppearance(design);
     void related.show(anchor, placement, singleProfileQuery, connected ? connectedRelatedSource : builtInRelatedSource);
     if (connected) builtInAnswerQuery = '';
     else if (singleProfileQuery !== builtInAnswerQuery) {
@@ -366,6 +371,8 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     sourceLabel.textContent = !connected && !fixture && root.dataset.labView === 'design'
       ? [(recordedSearchMode() === 'recorded' ? 'Recorded example' : root.dataset.searchAppName || 'Live app'), liveProfile].filter(Boolean).join(' · ') : 'Fictional demo';
     const configured = featureStatus(entitlements?.relatedSearches, profile?.relatedSearches) === 'On';
+    const relatedConnection = connected ? customerPreview.connection : builtInApp;
+    relatedAppearanceHint.hidden = configured && (fixture || Boolean(relatedConnection.relatedURL && relatedConnection.discoveryKey));
     const relatedSection = relatedToggle.closest('details');
     relatedSection.hidden = !configured;
     relatedToggle.disabled = !fixture;
@@ -619,6 +626,8 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     relatedPlacement.closest('.search-lab__field').hidden = !relatedToggle.checked;
     root.querySelector('[data-placement-target="lab-related-placement"]').hidden = !relatedToggle.checked;
     if (relatedToggle.checked) relatedPlacement.value = design.relatedPlacement;
+    relatedItemStyle.value = design.relatedItemStyle;
+    relatedSpacing.value = design.relatedSpacing;
     updateSingleProfileFeatures();
     designSurface.toggleAttribute('data-hide-list-dividers', !design.listDividers);
     designSurface.toggleAttribute('data-underline-titles', design.underlineTitles);
@@ -1360,6 +1369,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     var input = textInputs[key];
     input.addEventListener('input', function () {
       design[key] = resolveSearchText(input.value, DEFAULT_DESIGN[key]);
+      if (key === 'relatedHeading') related.setAppearance(design);
       if ((key === 'loadMoreText' || key === 'sortLabel') && customerPreview.active) customerPreview.updateDesign();
       clearDesignFeedback();
       updatePreviewText();
@@ -1388,6 +1398,14 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
   });
   relatedPlacement.addEventListener('change', function () {
     design.relatedPlacement = relatedPlacement.value;
+    updateDesign();
+  });
+  relatedItemStyle.addEventListener('change', () => {
+    design.relatedItemStyle = relatedItemStyle.value === 'chips' ? 'chips' : 'buttons';
+    updateDesign();
+  });
+  relatedSpacing.addEventListener('change', () => {
+    design.relatedSpacing = relatedSpacing.value === 'compact' ? 'compact' : 'standard';
     updateDesign();
   });
   relatedToggle.addEventListener('change', function () {

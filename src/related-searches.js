@@ -77,8 +77,17 @@ export function setupRelatedSearches(form, selectTerm) {
       }
     }
   }
-  return { show, clear, setLabel(label) {
-    heading.textContent = label;
-    section.setAttribute('aria-label', label);
-  } };
+  return {
+    show,
+    clear,
+    setAppearance(design, defaultHeading = 'Related searches') {
+      const label = design.relatedHeading?.trim() || defaultHeading;
+      if (heading.textContent !== label) {
+        heading.textContent = label;
+        section.setAttribute('aria-label', label);
+      }
+      section.classList.toggle('search-related-terms--chips', design.relatedItemStyle === 'chips');
+      section.classList.toggle('search-related-terms--compact', design.relatedSpacing === 'compact');
+    },
+  };
 }

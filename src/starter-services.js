@@ -25,6 +25,7 @@ export function setupStarterServices(form, answerHost, connection, design) {
     form.querySelector('input[type="search"]').value = term;
     form.requestSubmit();
   });
+  related.setAppearance(design);
   let answers;
   let revision = 0;
   return {
