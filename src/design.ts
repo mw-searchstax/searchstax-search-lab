@@ -58,6 +58,7 @@ export type DesignSettings = {
   sortPlacement: 'above' | 'below';
   startingSort: string;
   showSuggestions: boolean;
+  suggestionMinChars: number | null;
   showSmartAnswersSample: boolean;
   samplePromotions: 'off' | 'indexed' | 'external' | 'both';
   paginationMode: 'paged' | 'loadMore';
@@ -112,6 +113,7 @@ export const DEFAULT_DESIGN: Readonly<DesignSettings> = {
   sortPlacement: 'above',
   startingSort: '',
   showSuggestions: false,
+  suggestionMinChars: null,
   showSmartAnswersSample: true,
   samplePromotions: 'off',
   paginationMode: 'paged',
@@ -141,6 +143,11 @@ export function isResultSpacing(value: string | null): value is DesignSettings['
 export function readFacetLimit(value: string | null): number {
   const n = Number(value);
   return [3, 5, 10, 20].includes(n) ? n : 20;
+}
+
+export function readSuggestionMinimum(value: string | null): number | null {
+  const minimum = Number(value);
+  return Number.isSafeInteger(minimum) && minimum > 0 ? minimum : null;
 }
 
 export function readFacetMode(value: string | null): DesignSettings['facetMode'] {
@@ -231,6 +238,7 @@ export function readDesignParams(params: URLSearchParams, allowFictionalPreview 
     sortPlacement: params.get('lab_sort_placement') === 'below' ? 'below' : 'above',
     startingSort: params.get('lab_starting_sort') ?? '',
     showSuggestions: params.get('lab_suggestions') === 'on',
+    suggestionMinChars: readSuggestionMinimum(params.get('lab_suggestion_minimum')),
     showSmartAnswersSample: params.get('lab_answer_sample') !== 'off',
     samplePromotions: readSamplePromotions(params.get('lab_promotions')),
     paginationMode: params.get('lab_pagination') === 'loadMore' ? 'loadMore' : 'paged',
@@ -313,6 +321,8 @@ export function writeDesignParams(params: URLSearchParams, design: DesignSetting
   if (design.showSuggestions) {
     params.set('lab_suggestions', 'on');
   }
+  if (design.suggestionMinChars !== null) params.set('lab_suggestion_minimum', String(design.suggestionMinChars));
+  else params.delete('lab_suggestion_minimum');
   if (!design.showSmartAnswersSample) {
     params.set('lab_answer_sample', 'off');
   }

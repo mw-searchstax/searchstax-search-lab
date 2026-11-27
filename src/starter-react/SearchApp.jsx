@@ -196,7 +196,7 @@ function SearchExperience({ api, summary, status, setStatus, timer }) {
       : null;
     if (!source) return;
     setSuggestionSource.current ??= setupSearchSuggestions(form.current, 'react-search-suggestions');
-    setSuggestionSource.current(source);
+    setSuggestionSource.current(source, design.suggestionMinChars);
     return () => setSuggestionSource.current(null);
   }, []);
 

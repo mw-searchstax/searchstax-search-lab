@@ -22,7 +22,7 @@ Use `src/config.js` to connect your app. Keep the `demo` object and set `connect
 
 1. In Site Search, go to **App Settings > All APIs > Search & Indexing** for your Select endpoint and token.
 2. Map Title, URL, and Description in your Search Profile’s **Results Fields**. Map Thumbnail if you’re displaying images. Configure and publish any facets, sort options, and Promotions you want to use. [Results Fields](https://support.searchstax.com/hc/en-us/articles/40837318253197-Results-Fields)
-3. For live suggestions, publish Auto-Suggest, set `suggesterURL` to its endpoint, and enable `showSuggestions` in `design`. [Auto-Suggest API](https://support.searchstax.com/hc/en-us/articles/40243330090893-Auto-Suggest-API)
+3. For live suggestions, publish Auto-Suggest, set `suggesterURL` to its endpoint, and enable `showSuggestions` in `design`. Set `suggestionMinChars` to `null` to use the source’s minimum, or enter a higher number to delay suggestions. [Auto-Suggest API](https://support.searchstax.com/hc/en-us/articles/40243330090893-Auto-Suggest-API)
 
 ### Promotions
 

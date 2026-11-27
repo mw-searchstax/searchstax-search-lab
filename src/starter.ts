@@ -228,6 +228,7 @@ function starterFeatures(design: DesignSettings) {
     sortPlacement: design.sortPlacement,
     startingSort: design.startingSort,
     showSuggestions: design.showSuggestions,
+    suggestionMinChars: design.suggestionMinChars,
     promotionBadge: design.promotionBadge,
     promotionHeading: design.promotionHeading,
     bannerPlacement: design.bannerPlacement,
@@ -348,6 +349,8 @@ When both controls are enabled, the language picker controls which profiles appe
 In **src/config.js**, set **settings.source** to **app**. Enter the HTTPS Select endpoint from App Settings → All APIs → Search & Indexing in **connection.endpoint**, and its browser-safe read-only token in **connection.token**. These values are visible to visitors. Use **settings.profiles** for the list of language and profile pairs and **settings.selected** for the starting pair. Empty language and profile values use the app defaults. Set **settings.initialQuery** to your preferred opening query or leave it blank.
 
 To use optional services in your own app, add the HTTPS Auto-Suggest endpoint as **connection.suggestEndpoint**, the streaming Answer endpoint as **connection.answerEndpoint**, or the Related Searches endpoint and Discovery key as **connection.relatedURL** and **connection.discoveryKey**. Use credentials intended for browser use. Set **settings.entitlements** from the app’s entitlements. For each entry in **settings.profiles**, use the published **relatedSearches** setting for its language and the **smartAnswers** setting for its profile. Each service requires its entitlement and published setting. Related Searches requests use the search phrase and language. Smart Answers requests also use the selected profile.
+
+Set **settings.navigation.suggestionMinChars** to **null** to use the suggestion source’s minimum, or enter a higher number to delay suggestions.
 
 Mapped thumbnails use empty alt text by default. If the image adds information, return its description as a Results Field. Set **connection.thumbnailAltField** to its field name in **src/config.js** and **connection.thumbnailsWithoutAltAreDecorative** to **false** to omit images without descriptions.
 

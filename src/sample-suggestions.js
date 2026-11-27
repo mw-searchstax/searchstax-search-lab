@@ -36,6 +36,7 @@ export function setupSearchSuggestions(form, listId) {
   form.after(popup, feedback);
 
   let source = null;
+  let minimumChars = 0;
   let pending = null;
   let activeIndex = -1;
 
@@ -72,13 +73,14 @@ export function setupSearchSuggestions(form, listId) {
     close();
     const prefix = input.value.trim();
     const activeSource = source;
-    if (!activeSource || prefix.length < activeSource.minimumChars) return;
+    if (!activeSource || prefix.length < Math.max(activeSource.minimumChars, minimumChars)) return;
     const request = { controller: new AbortController(), step: 0, timer: undefined };
     pending = request;
     const resolve = async () => {
       try {
         const matches = await activeSource.suggest(prefix, request.controller.signal);
         if (pending !== request || input.value.trim() !== prefix) return;
+        if (prefix.length < activeSource.minimumChars) return;
         show(matches);
         if (!popup.hidden && request.step) moveSelection(request.step);
       } catch {
@@ -148,9 +150,12 @@ export function setupSearchSuggestions(form, listId) {
     if (option) choose(option);
   });
 
-  return function setSuggestionSource(value) {
-    if (source === value) return;
+  /** @param {number | null} [minimum] */
+  return function setSuggestionSource(value, minimum = null) {
+    const nextMinimum = Number.isSafeInteger(minimum) && minimum > 0 ? minimum : 0;
+    if (source === value && minimumChars === nextMinimum) return;
     source = value;
+    minimumChars = nextMinimum;
     close();
     if (source) {
       label.textContent = source.label;

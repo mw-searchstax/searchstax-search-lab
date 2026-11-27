@@ -7,6 +7,7 @@ import {
   readFacetLimit,
   readFacetMode,
   readPaginationPlacement,
+  readSuggestionMinimum,
   isHexColor,
   isFont,
   isLayout,
@@ -112,6 +113,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
   var thumbnailToggle = root.querySelector('#lab-thumbnails');
   var sortingToggle = root.querySelector('#lab-sorting');
   var suggestionsToggle = root.querySelector('#lab-suggestions');
+  const suggestionMinimum = root.querySelector('#lab-suggestion-minimum');
   var smartAnswersSampleToggle = root.querySelector('#lab-smart-answers-sample');
   var promotionsInput = root.querySelector('#lab-sample-promotions');
   var setSuggestionSource = setupSearchSuggestions(form, 'lab-search-suggestions');
@@ -377,7 +379,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     root.querySelector('[data-promotion-hint]').textContent = fixture ? 'Choose a sample under Features to try both formats.'
       : !connected && liveProfile === 'SearchLabBuild' ? 'Search for “campus flu clinic” to try these styles.'
       : 'Search with a published promotion trigger to see these styles.';
-    suggestionsToggle.closest('details').hidden = connected || (!builtIn && !fixture);
+    suggestionsToggle.closest('details').hidden = connected ? !customerPreview.suggestionSource : !builtIn && !fixture;
   }
   experiencePanel.addEventListener('profile-settings', event => {
     if (experiencePanel.hidden) return;
@@ -584,7 +586,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
 
   function updateSuggestions() {
     var source = customerPreview.active ? customerPreview.suggestionSource : (design.showSuggestions ? sampleSuggestionSource : null);
-    setSuggestionSource(root.dataset.labView === 'design' && experiencePanel.hidden ? source : null);
+    setSuggestionSource(root.dataset.labView === 'design' && experiencePanel.hidden ? source : null, design.suggestionMinChars);
   }
 
   function clearDesignFeedback() {
@@ -641,6 +643,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     thumbnailToggle.checked = design.showThumbnails;
     sortingToggle.checked = design.showSorting;
     suggestionsToggle.checked = design.showSuggestions;
+    suggestionMinimum.value = design.suggestionMinChars ?? '';
     smartAnswersSampleToggle.checked = design.showSmartAnswersSample;
     promotionsInput.value = design.samplePromotions;
     sampleButton.textContent = sampleQuery();
@@ -923,6 +926,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
       const app = customer ?? builtInApp;
       const experience = experiencePanel.hidden ? undefined : experiencePreview.handoff();
       const savedDesign = { ...design };
+      if (customerPreview.suggestionSource) savedDesign.showSuggestions = true;
       if (!experience && !customer) await snapshotRequest;
       const settings = app.settings;
       const connection = {
@@ -1426,9 +1430,12 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     if (!suggestionDemoPending || (experiencePanel.hidden && queryInput.disabled)) return;
     suggestionDemoPending = false;
     if (!design.showSuggestions || customerPreview.active || root.dataset.labView !== 'design') return;
+    const example = selectedSettings?.profile?.language === 'es' ? 'rehabilitación' : 'rehabilitation center';
+    const minimum = Math.max(sampleSuggestionSource.minimumChars, design.suggestionMinChars ?? 0);
+    if (minimum >= example.length) return;
     showDesignPreview();
     const field = experiencePanel.hidden ? queryInput : experiencePanel.querySelector('input[type="search"]');
-    field.value = 'reh';
+    field.value = example.slice(0, minimum);
     field.focus();
     field.scrollIntoView({ block: 'center' });
     field.dispatchEvent(new Event('input', { bubbles: true }));
@@ -1439,6 +1446,19 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     suggestionDemoPending = design.showSuggestions;
     updateDesign();
     showSuggestionDemo();
+  });
+  suggestionMinimum.addEventListener('input', () => {
+    const minimum = readSuggestionMinimum(suggestionMinimum.value);
+    if (!suggestionMinimum.validity.valid || (suggestionMinimum.value !== '' && minimum === null) || minimum === design.suggestionMinChars) return;
+    design.suggestionMinChars = minimum;
+    clearDesignFeedback();
+    updateSuggestions();
+    experiencePreview.configure(design);
+    codeFeedback.textContent = '';
+    saveDesignDraft();
+  });
+  suggestionMinimum.addEventListener('blur', () => {
+    suggestionMinimum.value = design.suggestionMinChars ?? '';
   });
   smartAnswersSampleToggle.addEventListener('change', function () {
     design.showSmartAnswersSample = smartAnswersSampleToggle.checked;

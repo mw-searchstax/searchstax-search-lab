@@ -175,7 +175,7 @@
 .search-lab__field--inline:has(input[type='checkbox']) label { flex: 1; display: flex; align-items: center; min-height: var(--lab-target); cursor: pointer; }
 .search-lab__field input[type='checkbox'] { width: 24px; height: 24px; margin: 0; accent-color: var(--color-brand-primary, #eb3500); }
 .search-lab__field input[type='color'] { width: var(--lab-target); height: var(--lab-target); flex: 0 0 auto; padding: 3px; border: 1px solid var(--lab-control-border); border-radius: var(--border-radius-base, 6px); background: var(--color-bg, #fff); }
-.search-lab__field select, .search-lab__scenario select, .search-lab__text-field input, .search-lab__share-url { width: 100%; min-height: var(--lab-target); margin-top: .5rem; padding: .5rem .75rem; border: 1px solid var(--lab-control-border); border-radius: var(--border-radius-base, 6px); color: var(--lab-ink); background: var(--color-bg, #fff); }
+.search-lab__field select, .search-lab__field input[type='number'], .search-lab__scenario select, .search-lab__text-field input, .search-lab__share-url { width: 100%; min-height: var(--lab-target); margin-top: .5rem; padding: .5rem .75rem; border: 1px solid var(--lab-control-border); border-radius: var(--border-radius-base, 6px); color: var(--lab-ink); background: var(--color-bg, #fff); }
 .search-lab__text-field p { margin-top: .25rem; }
 .search-lab__lesson-label { display: flex; justify-content: space-between; gap: .5rem; margin-top: 1.25rem; color: var(--lab-ink); font-size: .75rem; font-weight: 600; }
 .search-lab__lesson-label span { color: var(--lab-muted); }
