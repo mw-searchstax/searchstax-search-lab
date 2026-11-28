@@ -6,6 +6,7 @@ import { resultCards, type ResultResponse, type ThumbnailPolicy } from './result
 import { readSearchCorrection, type SearchCorrection } from './spelling.js';
 import { GROUPING_ROWS, groupedPage, groupHeadingsForDocuments, normalizeGroupedResponse } from './grouped-results.js';
 import { locationQuery, readLocationSupport, type LocationSelection } from './location-search.js';
+import type { SubmitAnswerFeedback } from './customer-answers.js';
 export { readCustomerEndpoint } from './web-url.js';
 
 export type CustomerConnection = ThumbnailPolicy & {
@@ -18,6 +19,7 @@ export type CustomerConnection = ThumbnailPolicy & {
   relatedURL?: string;
   discoveryKey?: string;
   answerEndpoint?: string;
+  submitAnswerFeedback?: SubmitAnswerFeedback;
   suggestEndpoint?: string;
   sampleThumbnails?: boolean;
 };

@@ -39,22 +39,20 @@ export function recordedSearchCanGoLive(endpoint: string, token: string) {
   return Boolean(readCustomerEndpoint(endpoint)) && (fixtureBrowser() || (!localhost() && !!token && token !== 'recorded-only'));
 }
 
-// Wrap only GET requests for our built-in app. A connected customer's
-// endpoints, streamed responses and tracking calls keep their own fetch path.
+// Wrap only the built-in preview's virtual endpoint. An explicitly connected
+// app uses its own fetch path, even if it has the same Select endpoint.
 export function installRecordedSearchTransport(actualEndpoint: () => string) {
   const endpoint = readCustomerEndpoint(actualEndpoint());
   const cache = new Map<string, { response: Promise<SavedResponse>; signal?: AbortSignal }>();
   window.fetch = async (input, init) => {
     const url = new URL(input instanceof Request ? input.url : String(input), document.baseURI);
-    const address = url.origin + url.pathname;
-    const virtual = address === recordedSearchEndpoint;
-    if (!virtual && address !== endpoint) return browserFetch(input, init);
+    if (url.origin + url.pathname !== recordedSearchEndpoint) return browserFetch(input, init);
 
     const request = new Request(input, init);
-    if (request.method !== 'GET') return virtual ? unavailable() : browserFetch(input, init);
+    if (request.method !== 'GET') return unavailable();
     const auth = request.headers.get('authorization') || '';
     const fixture = fixtureBrowser();
-    if (virtual && !fixture && (!live || auth === 'Token ' + fixedLessonToken)) {
+    if (!fixture && (!live || auth === 'Token ' + fixedLessonToken)) {
       const recorded = replayRecordedResponse(await catalog(), url.searchParams);
       return recorded ? Response.json(recorded) : unavailable();
     }

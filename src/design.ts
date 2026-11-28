@@ -76,6 +76,7 @@ export type DesignSettings = {
   smartAnswerCardStyle: 'accent' | 'outline';
   smartAnswerSourceStyle: 'inline' | 'cards';
   smartAnswerWordLimit: number;
+  showSmartAnswerFeedback: boolean;
   samplePromotions: 'off' | 'indexed' | 'external' | 'both';
   paginationMode: 'paged' | 'loadMore';
   paginationPlacement: 'above' | 'below' | 'both';
@@ -146,6 +147,7 @@ export const DEFAULT_DESIGN: Readonly<DesignSettings> = {
   smartAnswerCardStyle: 'accent',
   smartAnswerSourceStyle: 'inline',
   smartAnswerWordLimit: 100,
+  showSmartAnswerFeedback: false,
   samplePromotions: 'off',
   paginationMode: 'paged',
   paginationPlacement: 'below',
@@ -297,6 +299,7 @@ export function readDesignParams(params: URLSearchParams, allowFictionalPreview 
     smartAnswerCardStyle: params.get('lab_answer_style') === 'outline' ? 'outline' : 'accent',
     smartAnswerSourceStyle: params.get('lab_answer_source_style') === 'cards' ? 'cards' : 'inline',
     smartAnswerWordLimit: readSmartAnswerWordLimit(params.get('lab_answer_word_limit')),
+    showSmartAnswerFeedback: params.get('lab_answer_feedback') === 'on',
     samplePromotions: readSamplePromotions(params.get('lab_promotions')),
     paginationMode: params.get('lab_pagination') === 'loadMore' ? 'loadMore' : 'paged',
     paginationPlacement: readPaginationPlacement(params.get('lab_pagination_placement')),
@@ -336,6 +339,7 @@ export function writeDesignParams(params: URLSearchParams, design: DesignSetting
     ['lab_answer_heading', design.smartAnswerHeading],
     ['lab_answer_style', design.smartAnswerCardStyle === 'outline' && 'outline'],
     ['lab_answer_source_style', design.smartAnswerSourceStyle === 'cards' && 'cards'],
+    ['lab_answer_feedback', design.showSmartAnswerFeedback && 'on'],
   ] as const) {
     if (value) params.set(key, value);
     else params.delete(key);

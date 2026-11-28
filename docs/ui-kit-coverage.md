@@ -9,7 +9,8 @@ In Build, open **Appearance → Result cards** to show and size the sample thumb
 | Open matrix item | Example needed |
 |---|---|
 | Grouped results | Local fixture coverage. A published check needs a profile with a groupable Content type field. |
-| Smart Answers feedback and conversation | An enabled profile with a real answer, an agreed feedback destination and a working follow-up conversation. Decide whether the pilot needs either interaction before adding controls. |
+| Smart Answers feedback | Local fixture coverage. A published check needs an enabled profile and an approved feedback destination. |
+| Smart Answers conversation | A conversation-enabled profile and a working follow-up exchange in the relevant kit. |
 | Manual location search | Local fixture coverage. A published check needs a location-enabled profile, indexed coordinates, and a browser geocoder configured for that page. |
 | Current location | Local fixture coverage for permission, unavailable position, manual fallback, and clearing. Check geolocation permission in the Help Center embed before release. |
 
@@ -145,8 +146,8 @@ The ten widget families below follow the [Help Center catalog](https://support.s
 | Answer template | Editable heading and Accent border or Plain outline. | Appearance → Smart Answers. Leave Heading blank for Smart Answer, and keep Accent border by default. | Stream an answer with two source links and verify both links after completion. | Wired | Wired | Wired | Wired |
 | Citation styling | Inline links or outlined source cards. | Appearance → Smart Answers. Default to inline links. | An answer with two sources. Verify labels, destinations, order, and keyboard focus. | Wired | Wired | Wired | Wired |
 | `showMoreAfterWordCount` | Completed answers collapse past the configured word count. | Appearance → Smart Answers. Default to 100 words. | Expand and collapse a long answer, then verify its complete text and links. | Wired | Wired | Wired | Wired |
-| `feedbackwidget` | No answer feedback choice. | Features · native. Default off, opt in when integration is configured. | A real answer plus approved feedback destination. | Gap | Gap | Gap | Gap |
-| `renderFeedbackWidget` | No thumbs controls in the custom card. | Features · native feedback config. Off initially. | An answer eligible for feedback. | Gap | Gap | Gap | Gap |
+| `feedbackwidget` | The opt-in is saved with the design. Connected Build can submit votes to SearchStax Analytics. | Features → Smart Answers feedback. Off by default. Downloaded starters accept a site-provided submission handler. | An enabled profile and an approved feedback destination for live use. | Wired | Wired | Wired | Wired |
+| `renderFeedbackWidget` | Thumbs up and down, confirmation, and retry on completed answers. | Features → Smart Answers feedback. The controls require both the opt-in and a submission handler. | A streamed answer and a handler that accepts or rejects the vote. | Wired | Wired | Wired | Wired |
 | `emailOverride` | No identity override. | Handoff · callback. Unset by default. | Integrator-owned identity and feedback policy. | Setup | Setup | Setup | Setup |
 | `searchstaxFeedbackTextAreaOverride` | No custom comment prompt. | Handoff · callback. Use kit prompt initially. | Feedback integration. | Setup | Setup | Setup | Setup |
 | `lightweightTemplateOverride` | No lightweight feedback template. | Handoff · template. Use kit rendering initially. | Feedback integration. | Setup | Setup | Setup | Setup |
@@ -264,6 +265,14 @@ Local fixture QA covered Build and the ordinary and profile variants for JavaScr
 In **Appearance → Smart Answers**, leave **Heading** blank to display **Smart Answer**, and choose **Accent border** or **Plain outline**. The fictional sample keeps its sample label and shows a custom heading inside the card. Both settings are saved in the Build draft, share link, and starter configuration.
 
 Local fixture QA covered Build and the ordinary and profile variants for JavaScript, React, Vue, and Angular. Both sources became keyboard-focusable links after the stream completed, with their labels, URLs, and order preserved in English and Spanish.
+
+### Smart Answers feedback
+
+In **Features → Smart Answers feedback**, turn on **Show answer feedback**. The choice is saved in the Build draft, share link, and starter configuration. In **Preview with your Search App**, enter the app's Smart Answers endpoint and the Tracking URL and key from **App Settings → All APIs → Analytics**. The key is held in memory for the connection. A vote submits the question and answer with a score of 0 or 10. Build confirms receipt after Analytics returns HTTP 204. The downloaded starters use `window.SearchLabSubmitAnswerFeedback`; their README describes how to configure a handler and deduplicate retries.
+
+Local fixture QA covered Build and all eight ordinary and profile starter variants. Enter and Space submitted thumbs up and down. The fixture rejected the first down vote and accepted the retry with the same submission ID. Confirmation appeared after acceptance. Build also verified that feedback stayed hidden during streaming, after an interrupted answer, and without a handler.
+
+The connected Build Analytics path uses the documented Tracking API. On November 27, 2026, local Build displayed the published flu-shot Custom Answer and its source link for **where can i read the sample flu shot notice** in `SearchLabPilot` → `SearchLabFeedbackTest` → English. Analytics accepted one thumbs-up at 5:52 p.m. CT with HTTP 204. After the hourly refresh, **Analytics → Search Feedback** showed one matching row under `SearchLabFeedbackTest` with score **10**, the question, and the answer. [Tracking API](https://support.searchstax.com/hc/en-us/articles/40243299287053-Tracking-API-REST)
 
 ### Result summary
 

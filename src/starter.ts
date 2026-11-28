@@ -105,6 +105,10 @@ The **Offer current location** setting exports an optional **Use my location** b
 
 The starter uses the radius choices and units published by the profile. Clearing a place restores the full results. Place text and coordinates aren’t stored in the starter’s settings.`;
 
+const answerFeedbackHandoff = `## Smart Answers feedback
+
+When **Show answer feedback** is enabled, set \`window.SearchLabSubmitAnswerFeedback\` before the starter displays an answer. The handler receives \`{ submissionId, rating, question, profile, language, answer }\` and \`{ signal }\`, where \`rating\` is \`'up'\` or \`'down'\` and \`signal\` is an AbortSignal. Send feedback to your configured destination and resolve after it accepts the vote. Reject on failure to let the visitor retry. Deduplicate retries using \`submissionId\`. Keep service credentials on your server.`;
+
 function escapeHTML(value: string): string {
   return value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
 }
@@ -253,6 +257,7 @@ function starterFeatures(design: DesignSettings) {
     smartAnswerCardStyle: design.smartAnswerCardStyle,
     smartAnswerSourceStyle: design.smartAnswerSourceStyle,
     smartAnswerWordLimit: design.smartAnswerWordLimit,
+    showSmartAnswerFeedback: design.showSmartAnswerFeedback,
     promotionBadge: design.promotionBadge,
     promotionHeading: design.promotionHeading,
     bannerPlacement: design.bannerPlacement,
@@ -381,6 +386,8 @@ To use optional services in your own app, add the HTTPS Auto-Suggest endpoint as
 
 ${locationHandoff}
 
+${answerFeedbackHandoff}
+
 Set **settings.navigation.suggestionMinChars** to **null** to use the suggestion source’s minimum, or enter a higher number to delay suggestions.
 
 Mapped thumbnails use empty alt text by default. If the image adds information, return its description as a Results Field. Set **connection.thumbnailAltField** to its field name in **src/config.js** and **connection.thumbnailsWithoutAltAreDecorative** to **false** to omit images without descriptions.
@@ -485,7 +492,7 @@ export function createStarterZip(
     'spelling.js': strToU8(spellingRuntime),
     'location-search.js': strToU8(locationRuntime),
     'grouped-results.js': strToU8(groupingRuntime),
-    'README.md': strToU8(readme.trimEnd() + '\n\n' + locationHandoff + '\n'),
+    'README.md': strToU8([readme.trimEnd(), locationHandoff, answerFeedbackHandoff].join('\n\n') + '\n'),
     ...thumbnailFiles,
   });
 
@@ -563,7 +570,7 @@ export function createReactStarterZip(
     'index.html': strToU8(reactHTML),
     'package.json': strToU8(reactPackage),
     'package-lock.json': strToU8(reactLock),
-    'README.md': strToU8(reactReadme.trimEnd() + '\n\n' + locationHandoff + '\n'),
+    'README.md': strToU8([reactReadme.trimEnd(), locationHandoff, answerFeedbackHandoff].join('\n\n') + '\n'),
     'src/main.jsx': strToU8(reactEntry),
     'src/SearchApp.jsx': strToU8(reactApp),
     ...frameworkStarterFiles(design, connection, facetLabels),
@@ -581,7 +588,7 @@ export function createVueStarterZip(
     'index.html': strToU8(vueHTML),
     'package.json': strToU8(vuePackage),
     'package-lock.json': strToU8(vueLock),
-    'README.md': strToU8(vueReadme.trimEnd() + '\n\n' + locationHandoff + '\n'),
+    'README.md': strToU8([vueReadme.trimEnd(), locationHandoff, answerFeedbackHandoff].join('\n\n') + '\n'),
     'vite.config.js': strToU8(vueViteConfig),
     'src/main.js': strToU8(vueEntry),
     'src/SearchApp.vue': strToU8(vueApp),
@@ -601,7 +608,7 @@ export function createAngularStarterZip(
     'package-lock.json': strToU8(angularLock),
     'angular.json': strToU8(angularConfig),
     'tsconfig.json': strToU8(angularTsConfig),
-    'README.md': strToU8(angularReadme.trimEnd() + '\n\n' + locationHandoff + '\n'),
+    'README.md': strToU8([angularReadme.trimEnd(), locationHandoff, answerFeedbackHandoff].join('\n\n') + '\n'),
     'src/index.html': strToU8(angularHTML),
     'src/main.ts': strToU8(angularEntry),
     'src/search-app.ts': strToU8(angularApp),

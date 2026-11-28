@@ -123,6 +123,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
   const suggestionSpacing = root.querySelector('#lab-suggestion-row-spacing');
   const suggestionEmphasis = root.querySelector('#lab-suggestion-emphasis');
   var smartAnswersSampleToggle = root.querySelector('#lab-smart-answers-sample');
+  const answerFeedbackToggle = root.querySelector('#lab-show-answer-feedback');
   const smartAnswerCardStyle = root.querySelector('#lab-answer-card-style');
   const smartAnswerSourceStyle = root.querySelector('#lab-answer-source-style');
   const smartAnswerWordLimit = root.querySelector('#lab-answer-word-limit');
@@ -695,6 +696,7 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
     suggestionSpacing.value = design.suggestionRowSpacing;
     suggestionEmphasis.checked = design.emphasizeSuggestionText;
     smartAnswersSampleToggle.checked = design.showSmartAnswersSample;
+    answerFeedbackToggle.checked = design.showSmartAnswerFeedback;
     smartAnswerCardStyle.value = design.smartAnswerCardStyle;
     smartAnswerSourceStyle.value = design.smartAnswerSourceStyle;
     smartAnswerWordLimit.value = String(design.smartAnswerWordLimit);
@@ -1583,6 +1585,10 @@ import { installRecordedSearchTransport, recordedSearchCanGoLive, recordedSearch
   });
   smartAnswersSampleToggle.addEventListener('change', function () {
     design.showSmartAnswersSample = smartAnswersSampleToggle.checked;
+    updateDesign();
+  });
+  answerFeedbackToggle.addEventListener('change', () => {
+    design.showSmartAnswerFeedback = answerFeedbackToggle.checked;
     updateDesign();
   });
   smartAnswerCardStyle.addEventListener('change', () => {

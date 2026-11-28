@@ -9,6 +9,7 @@ import type { DesignSettings } from './design';
 import { formatResultSummary, placeResultSummary, type ResultWindow } from './result-summary.js';
 import { contentLanguageTag } from './content-language.js';
 import { readAnswerEndpoint, setupCustomerAnswers } from './customer-answers.js';
+import { createAnswerFeedbackSender, readTrackingEndpoint } from './answer-feedback';
 import { setupSearchCorrection } from './spelling.js';
 import { createCustomerSuggestionSource } from './customer-suggestions.js';
 import { groupedPageLabel } from './grouped-results.js';
@@ -42,6 +43,11 @@ export function setupCustomerPreview(
   const connectionOptions = get<HTMLDetailsElement>('[data-customer-options]');
   const language = get<HTMLInputElement>('#lab-customer-language');
   const answerEndpoint = get<HTMLInputElement>('#lab-customer-answer-endpoint');
+  const trackingEndpoint = get<HTMLInputElement>('#lab-tracking-endpoint');
+  const trackingKey = get<HTMLInputElement>('#lab-tracking-key');
+  for (const field of [endpoint, answerEndpoint, trackingEndpoint]) {
+    field.addEventListener('input', () => { trackingKey.value = ''; });
+  }
   const suggestEndpoint = get<HTMLInputElement>('#lab-customer-suggest-endpoint');
   const relatedEndpoint = get<HTMLInputElement>('#lab-related-endpoint');
   const discoveryKey = get<HTMLInputElement>('#lab-discovery-key');
@@ -334,6 +340,7 @@ export function setupCustomerPreview(
       if (connecting) {
         snapshot.value = '';
         discoveryKey.value = '';
+        trackingKey.value = '';
         clearFormToken();
         suggestionSource = candidate.suggestEndpoint ? createCustomerSuggestionSource(candidate, candidate.suggestEndpoint) : null;
         form.hidden = true;
@@ -460,6 +467,19 @@ export function setupCustomerPreview(
       fieldError(answerEndpoint, 'Enter the HTTPS SearchStax streaming Answer endpoint ending in /answer.');
       return;
     }
+    const requestedTrackingEndpoint = trackingEndpoint.value.trim();
+    const tracking = readTrackingEndpoint(requestedTrackingEndpoint);
+    const trackingCredential = trackingKey.value.trim();
+    if (requestedTrackingEndpoint || trackingCredential) {
+      if (!streamingEndpoint) {
+        fieldError(answerEndpoint, 'Enter the Smart Answers endpoint to use answer feedback tracking.');
+        return;
+      }
+      if (!tracking || !trackingCredential || /\s/.test(trackingCredential)) {
+        fieldError(tracking ? trackingKey : trackingEndpoint, 'Enter the HTTPS SearchStax Tracking URL and its Tracking key.');
+        return;
+      }
+    }
     if (requestedSuggestEndpoint && !autoSuggestEndpoint) {
       fieldError(suggestEndpoint, 'Enter the HTTPS SearchStax Auto-Suggest endpoint ending in /emsuggest.');
       return;
@@ -494,6 +514,7 @@ export function setupCustomerPreview(
       endpoint: selectEndpoint, token: key, configuration, settings, profile: settings?.profile ?? profileName, language: settings?.language ?? language.value.trim(),
       relatedURL: relatedURL ?? undefined, discoveryKey: discovery || undefined,
       answerEndpoint: streamingEndpoint ?? undefined, suggestEndpoint: autoSuggestEndpoint ?? undefined,
+      submitAnswerFeedback: tracking && trackingCredential ? createAnswerFeedbackSender(tracking, trackingCredential) : undefined,
     },
       { query, start: 0, rows: getDesign().resultsPerPage, sort: getDesign().showSorting ? getDesign().startingSort : '', filters: new Map(), facetMode: getDesign().facetMode }, true);
   });

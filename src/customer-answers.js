@@ -1,7 +1,9 @@
 import { webURL } from './web-url.js';
 import { contentLanguageTag } from './content-language.js';
 
-/** @typedef {{ token: string, profile: string, language: string, answerEndpoint?: string }} AnswerConnection */
+/** @typedef {{ token: string, profile: string, language: string, answerEndpoint?: string, submitAnswerFeedback?: SubmitAnswerFeedback }} AnswerConnection */
+/** @typedef {{ submissionId: string, rating: 'up' | 'down', question: string, profile: string, language: string, answer: string }} AnswerRating */
+/** @typedef {(rating: AnswerRating, options: { signal: AbortSignal }) => Promise<void>} SubmitAnswerFeedback */
 const answerLimit = 65536;
 const frameBoundary = /\r\n\r\n|\n\n|\r\r|\n\r\n|\r\n\n/;
 const referenceDefinition = /^ {0,3}\[([^\]\r\n]+)\]:[ \t]*(<[^>\r\n]+>|[^\s<>]+)(?:[ \t]+"[^"\r\n]*")?[ \t]*$/gm;
@@ -151,6 +153,23 @@ export function setupCustomerAnswers(preview) {
   toggle.className = 'smart-answer__toggle';
   toggle.hidden = true;
   content.after(toggle);
+  const feedback = document.createElement('fieldset');
+  feedback.className = 'smart-answer__feedback';
+  feedback.hidden = true;
+  feedback.innerHTML = `
+    <legend>Was this answer helpful?</legend>
+    <button type="button">Thumbs up</button>
+    <button type="button">Thumbs down</button>
+    <p class="smart-answer__feedback-status" role="status" aria-atomic="true" tabindex="-1"></p>
+    <button type="button" hidden>Retry feedback</button>`;
+  const [up, down, retry] = feedback.querySelectorAll('button');
+  const feedbackStatus = /** @type {HTMLElement} */ (feedback.querySelector('[role="status"]'));
+  toggle.after(feedback);
+  /** @type {{ question: string, profile: string, language: string, answer: string, send: SubmitAnswerFeedback } | null} */
+  let feedbackAnswer = null;
+  /** @type {{ rating: AnswerRating, controller: AbortController, state: 'sending' | 'failed' | 'sent' } | null} */
+  let submission = null;
+  let showFeedback = false;
   /** @type {AbortController | null} */
   let current = null;
   let completedAnswer = null;
@@ -221,10 +240,58 @@ export function setupCustomerAnswers(preview) {
     if (announcement) announcement.textContent = message;
   }
 
+  /** @param {AnswerRating['rating']} rating */
+  function rateAnswer(rating) {
+    if (feedback.hidden || !feedbackAnswer || submission) return;
+    const { question, profile, language, answer } = feedbackAnswer;
+    const vote = { submissionId: crypto.randomUUID(), rating, question, profile, language, answer };
+    up.setAttribute('aria-disabled', 'true');
+    down.setAttribute('aria-disabled', 'true');
+    sendFeedback(vote);
+  }
+
+  /** @param {AnswerRating} rating */
+  async function sendFeedback(rating) {
+    if (feedback.hidden || !feedbackAnswer) return;
+    const controller = new AbortController();
+    const attempt = /** @type {NonNullable<typeof submission>} */ ({ rating, controller, state: 'sending' });
+    submission = attempt;
+    retry.setAttribute('aria-disabled', 'true');
+    feedbackStatus.textContent = 'Sending feedback…';
+    try {
+      await feedbackAnswer.send({ ...rating }, { signal: controller.signal });
+      if (submission !== attempt) return;
+      attempt.state = 'sent';
+      feedbackStatus.textContent = 'Thanks for your feedback.';
+      if (document.activeElement === retry) feedbackStatus.focus();
+      retry.hidden = true;
+    } catch {
+      if (submission !== attempt) return;
+      attempt.state = 'failed';
+      feedbackStatus.textContent = 'Feedback couldn’t be sent. Try again.';
+      retry.removeAttribute('aria-disabled');
+      retry.hidden = false;
+    }
+  }
+
+  up.addEventListener('click', () => rateAnswer('up'));
+  down.addEventListener('click', () => rateAnswer('down'));
+  retry.addEventListener('click', () => {
+    if (submission?.state === 'failed') sendFeedback(submission.rating);
+  });
+
   function clear() {
     current?.abort();
     current = null;
     completedAnswer = null;
+    if (submission?.state === 'sending') submission.controller.abort();
+    submission = null;
+    feedbackAnswer = null;
+    feedback.hidden = true;
+    feedbackStatus.textContent = '';
+    up.removeAttribute('aria-disabled');
+    down.removeAttribute('aria-disabled');
+    retry.hidden = true;
     resetToggle();
     panel.hidden = true;
     setStatus('');
@@ -261,6 +328,11 @@ export function setupCustomerAnswers(preview) {
         completedAnswer = answer;
         renderCompleteAnswer(answer);
         setStatus('Smart Answer ready.');
+        const send = connection.submitAnswerFeedback ?? globalThis.SearchLabSubmitAnswerFeedback;
+        if (typeof send === 'function') {
+          feedbackAnswer = { question, profile: connection.profile, language: connection.language, answer, send };
+          feedback.hidden = !showFeedback;
+        }
       } else {
         setStatus('No Smart Answer was returned for this search.');
       }
@@ -279,7 +351,7 @@ export function setupCustomerAnswers(preview) {
   return {
     clear,
     start,
-    /** @param {{ smartAnswerHeading?: string, smartAnswerCardStyle?: string, smartAnswerSourceStyle?: string, smartAnswerWordLimit?: number }} design */
+    /** @param {{ smartAnswerHeading?: string, smartAnswerCardStyle?: string, smartAnswerSourceStyle?: string, smartAnswerWordLimit?: number, showSmartAnswerFeedback?: boolean }} design */
     setAppearance(design) {
       const label = design.smartAnswerHeading?.trim() || 'Smart Answer';
       heading.textContent = label;
@@ -290,6 +362,8 @@ export function setupCustomerAnswers(preview) {
       wordLimit = Number.isSafeInteger(design.smartAnswerWordLimit) && design.smartAnswerWordLimit > 0
         ? design.smartAnswerWordLimit : 100;
       if (completedAnswer && previousLimit !== wordLimit) renderCompleteAnswer(completedAnswer);
+      showFeedback = design.showSmartAnswerFeedback === true;
+      feedback.hidden = !showFeedback || !feedbackAnswer;
     },
   };
 }
