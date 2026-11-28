@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet">
   <script defer id="searchstax-ui-kit" src="https://cdn.jsdelivr.net/npm/@searchstax-inc/searchstudio-ux-js@4.2.70/dist/@searchstax-inc/searchstudio-ux-js.iife.js"></script>
-  <script type="module" crossorigin src="./assets/index-CgiNYeTS.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-Crg1AmYP.css">
+  <script type="module" crossorigin src="./assets/index-D-7S-X19.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-DefHvG7L.css">
 </head>
 <body>
 <main
@@ -164,9 +164,9 @@
                 <input id="lab-customer-suggest-endpoint" type="url" aria-describedby="lab-customer-suggest-help">
                 <p id="lab-customer-suggest-help">Use the Auto-Suggest endpoint for this app to preview suggestions as you type. <a href="https://support.searchstax.com/hc/en-us/articles/40243330090893-Auto-Suggest-API">Find the Auto-Suggest endpoint</a>.</p>
               </div>
-              <fieldset class="search-lab__field" disabled aria-describedby="lab-tracking-setup-help">
-                <legend>Analytics setup (preview only)</legend>
-                <p id="lab-tracking-setup-help">Tracking is off in this preview. Your app’s Tracking endpoint and key are under App Settings → All APIs → Analytics. The starter README explains how to enable tracking on your own site.</p>
+              <fieldset class="search-lab__field" aria-describedby="lab-tracking-setup-help">
+                <legend>Smart Answers feedback tracking (optional)</legend>
+                <p id="lab-tracking-setup-help">Use the Tracking URL and key for this app from App Settings → All APIs → Analytics. With Show answer feedback enabled, a vote sends the question, answer, and rating to SearchStax. The connection lasts until you leave Design.</p>
                 <label for="lab-tracking-endpoint">Tracking endpoint</label>
                 <input id="lab-tracking-endpoint" type="url" placeholder="https://…/api/v2/track/">
                 <label for="lab-tracking-key">Tracking key</label>
@@ -343,6 +343,14 @@
                   <label for="lab-smart-answers-sample">Show Smart Answers sample</label>
                   <input id="lab-smart-answers-sample" type="checkbox" checked>
                 </div>
+              </details>
+              <details class="search-lab__disclosure" id="lab-answer-feedback">
+                <summary><span class="search-lab__disclosure-label">Smart Answers feedback</span></summary>
+                <div class="search-lab__field search-lab__field--inline">
+                  <label for="lab-show-answer-feedback">Show answer feedback</label>
+                  <input id="lab-show-answer-feedback" type="checkbox" aria-describedby="lab-answer-feedback-help">
+                </div>
+                <p id="lab-answer-feedback-help">Connect a Smart Answers-enabled app with feedback tracking to preview votes on completed answers.</p>
               </details>
               <details class="search-lab__disclosure" id="lab-result-links">
                 <summary><span class="search-lab__disclosure-label">Result links</span></summary>
