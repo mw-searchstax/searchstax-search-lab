@@ -63,8 +63,14 @@ function resultCards(results) {
           <div className="result-card-content">
             {item.ribbonParts.length > 0 && <span className="searchstax-search-result-ribbon">{renderParts(item.ribbonParts)}</span>}
             {item.hasTitle && <h2 lang={resultLanguage}>{item.url ? <a href={item.url} target={design.resultLinkTarget === '_blank' ? '_blank' : '_self'} rel={design.resultLinkTarget === '_blank' ? 'noopener noreferrer' : undefined} data-result-id={item.uniqueId} referrerPolicy="no-referrer">{renderParts(item.titleParts)}</a> : renderParts(item.titleParts)}</h2>}
-            {item.descriptionParts.length > 0 && <p className="search-starter__result-description" lang={resultLanguage}>{renderParts(item.descriptionParts)}</p>}
-            {item.otherFields.map((field, index) => <p key={index}>{field.label && field.label + ': '}{renderParts(field.parts)}</p>)}
+            {item.descriptionParts.length > 0 && <p className="search-starter__result-description" lang={resultLanguage}>{item.descriptionLabel && item.descriptionLabel + ': '}{renderParts(item.descriptionParts)}</p>}
+            {item.otherFields.map((field, index) => (
+              <p key={index} className={field.className || undefined}>
+                {field.label && field.label + ': '}
+                {field.imageURL ? <img className="mapped-result-thumbnail" src={field.imageURL} alt="" referrerPolicy="no-referrer" />
+                  : field.dateTime ? <time dateTime={field.dateTime}>{field.dateTime}</time> : renderParts(field.parts)}
+              </p>
+            ))}
           </div>
           </article>
         </React.Fragment>

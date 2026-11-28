@@ -10,7 +10,8 @@ export type ResultCard = { scope: string; url: string; thumbnail: string; alt?: 
 
 function displayText(value: unknown, separator = ', '): string {
   if (Array.isArray(value)) return value.map(item => displayText(item)).filter(Boolean).join(separator);
-  return ['number', 'string', 'boolean'].includes(typeof value) ? String(value) : '';
+  if (typeof value === 'string') return value.trim() ? value : '';
+  return typeof value === 'number' || typeof value === 'boolean' ? String(value) : '';
 }
 
 export function mapResultCard(doc: Record<string, unknown>, fields: ResultField[], highlights?: Record<string, unknown>, unit = '', scope = ''): ResultCard {
@@ -86,8 +87,16 @@ export function passageParts(value: string, highlighted = false) {
   return parts;
 }
 
-function appendValue(node: HTMLElement, field: CardValue) {
-  for (const part of passageParts(field.value, field.highlighted)) {
+export function cardFieldContent(field: CardValue) {
+  const className = ['paths', 'date', 'distance'].includes(field.role) ? 'mapped-result-' + field.role : '';
+  const dateTime = field.role === 'date' && /^\d{4}-\d{2}-\d{2}(?:T\S+)?$/.test(field.value) && Number.isFinite(Date.parse(field.value))
+    ? field.value : '';
+  const imageURL = !field.role && /\.(gif|jpe?g|tiff?|png|webp|bmp)$/i.test(field.value) ? webURL(field.value) || '' : '';
+  return { className, dateTime, imageURL, parts: passageParts(field.value, field.highlighted) };
+}
+
+function appendParts(node: HTMLElement, parts: ReturnType<typeof passageParts>) {
+  for (const part of parts) {
     if (part.matched) {
       const mark = document.createElement('mark');
       mark.className = 'search-result-hit';
@@ -127,7 +136,7 @@ export function appendResultCard(node: HTMLElement, card: ResultCard, styles: Me
   if (ribbon) {
     const badge = document.createElement('span');
     badge.className = 'searchstax-search-result-ribbon';
-    appendValue(badge, ribbon);
+    appendParts(badge, passageParts(ribbon.value, ribbon.highlighted));
     content.append(badge);
   }
   const title = card.values.find(field => field.role === 'title');
@@ -140,7 +149,7 @@ export function appendResultCard(node: HTMLElement, card: ResultCard, styles: Me
       setLinkTarget(name, target);
       name.referrerPolicy = 'no-referrer';
     }
-    if (title) appendValue(name, title);
+    if (title) appendParts(name, passageParts(title.value, title.highlighted));
     else name.textContent = card.url;
     heading.append(name);
     content.append(heading);
@@ -164,8 +173,8 @@ export function appendResultCard(node: HTMLElement, card: ResultCard, styles: Me
       label.textContent = text ? text + ': ' : '';
       line.append(label);
     }
-    if (field.role === 'paths' || field.role === 'date' || field.role === 'distance') line.className = 'mapped-result-' + field.role;
-    const imageURL = !field.role && /\.(gif|jpe?g|tiff?|png|webp|bmp)$/i.test(field.value) ? webURL(field.value) : null;
+    const { className, imageURL, dateTime, parts } = cardFieldContent(field);
+    if (className) line.className = className;
     if (imageURL) {
       const image = document.createElement('img');
       image.className = 'mapped-result-thumbnail';
@@ -173,12 +182,12 @@ export function appendResultCard(node: HTMLElement, card: ResultCard, styles: Me
       image.alt = '';
       image.referrerPolicy = 'no-referrer';
       line.append(image);
-    } else if (field.role === 'date' && /^\d{4}-\d{2}-\d{2}(?:T\S+)?$/.test(field.value) && Number.isFinite(Date.parse(field.value))) {
+    } else if (dateTime) {
       const time = document.createElement('time');
-      time.dateTime = field.value;
-      time.textContent = field.value;
+      time.dateTime = dateTime;
+      time.textContent = dateTime;
       line.append(time);
-    } else appendValue(line, field);
+    } else appendParts(line, parts);
     (field.role === 'description' ? content : metadata).append(line);
   }
   if (fields.length) content.append(metadata);

@@ -64,10 +64,5 @@
   .lab-experiences [data-exp-filter-toggle][aria-expanded="false"] + [data-exp-facets] { display: none; }
 }
 
-.mapped-result-thumbnail { display: block; width: min(100%, 12rem); height: auto; margin-bottom: .5rem; }
-
 .mapped-result-card { position: relative; }
-.mapped-result-card :is(.mapped-result-paths, .mapped-result-date, .mapped-result-distance) {
-  font-size: .875em;
-}
 .mapped-result-card a.searchstax-search-result-title::after { content: ''; position: absolute; inset: 0; }

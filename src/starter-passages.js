@@ -1,4 +1,4 @@
-import { passageParts, resultCards } from './result-card.js';
+import { cardFieldContent, passageParts, resultCards } from './result-card.js';
 import { metadataLabel, orderedMetadata } from './card-metadata.js';
 
 // Project one card per displayable document. A kit's link or fallback title
@@ -29,8 +29,9 @@ export function starterResults(items, response, sampleImages, connection, styles
       promoted: card.promoted, titleParts: title.length ? title : card.url ? passageParts(card.url) : [],
       hasTitle: Boolean(title.length || card.url), hasRibbon: Boolean(ribbonParts.length), ribbonParts,
       descriptionParts, hasDescription: Boolean(descriptionParts.length),
+      descriptionLabel: fields.find(field => field.role === 'description')?.label ?? '',
       otherFields: orderedMetadata(fields.filter(field => !['title', 'description', 'ribbon'].includes(field.role)), style)
-        .map(field => ({ label: metadataLabel(field, style), parts: passageParts(field.value, field.highlighted) })),
+        .map(field => ({ label: metadataLabel(field, style), ...cardFieldContent(field) })),
     }];
   });
 }

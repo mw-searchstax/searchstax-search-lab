@@ -273,8 +273,10 @@ async function startSearch() {
           <div class="result-card-content">
             {{#hasRibbon}}<span class="searchstax-search-result-ribbon">{{#ribbonParts}}${passageMarkup}{{/ribbonParts}}</span>{{/hasRibbon}}
             {{#hasTitle}}<h2{{#resultLanguage}} lang="{{resultLanguage}}"{{/resultLanguage}}>{{#url}}<a href="{{url}}" ${config.resultLinkTarget === '_blank' ? 'target="_blank" rel="noopener noreferrer"' : 'target="_self"'} data-result-id="{{uniqueId}}" referrerpolicy="no-referrer">{{#titleParts}}${passageMarkup}{{/titleParts}}</a>{{/url}}{{^url}}{{#titleParts}}${passageMarkup}{{/titleParts}}{{/url}}</h2>{{/hasTitle}}
-            {{#hasDescription}}<p class="search-starter__result-description"{{#resultLanguage}} lang="{{resultLanguage}}"{{/resultLanguage}}>{{#descriptionParts}}${passageMarkup}{{/descriptionParts}}</p>{{/hasDescription}}
-            {{#otherFields}}<p>{{#label}}{{label}}: {{/label}}{{#parts}}${passageMarkup}{{/parts}}</p>{{/otherFields}}
+            {{#hasDescription}}<p class="search-starter__result-description"{{#resultLanguage}} lang="{{resultLanguage}}"{{/resultLanguage}}>{{#descriptionLabel}}{{descriptionLabel}}: {{/descriptionLabel}}{{#descriptionParts}}${passageMarkup}{{/descriptionParts}}</p>{{/hasDescription}}
+            {{#otherFields}}<p{{#className}} class="{{className}}"{{/className}}>{{#label}}{{label}}: {{/label}}
+              {{#imageURL}}<img class="mapped-result-thumbnail" src="{{imageURL}}" alt="" referrerpolicy="no-referrer">{{/imageURL}}
+              {{^imageURL}}{{#dateTime}}<time datetime="{{dateTime}}">{{dateTime}}</time>{{/dateTime}}{{^dateTime}}{{#parts}}${passageMarkup}{{/parts}}{{/dateTime}}{{/imageURL}}</p>{{/otherFields}}
           </div>
         </article>`,
       },

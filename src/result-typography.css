@@ -47,6 +47,8 @@
 :is(.mapped-result-card, .search-starter .searchstax-search-result) { display: flow-root; }
 
 .result-card-content { display: flow-root; }
+.result-card-content :is(.mapped-result-paths, .mapped-result-date, .mapped-result-distance) { font-size: .875em; }
+.mapped-result-thumbnail { display: block; width: min(100%, 12rem); height: auto; margin-bottom: .5rem; }
 
 :is(.mapped-result-thumbnail, .search-starter__result-thumbnail, .search-lab__result-thumbnail)[data-unavailable] { display: none !important; }
 .search-lab__group-heading,

@@ -125,9 +125,20 @@
                     @if (item.ribbonParts.length) {<span class="searchstax-search-result-ribbon"><ng-container [ngTemplateOutlet]="passage" [ngTemplateOutletContext]="{ $implicit: item.ribbonParts }" /></span>}
                     @if (item.hasTitle) {<h2 [attr.lang]="resultLanguage">@if (item.url) {<a [href]="item.url" [attr.target]="design.resultLinkTarget === '_blank' ? '_blank' : '_self'" [attr.rel]="design.resultLinkTarget === '_blank' ? 'noopener noreferrer' : null" [attr.data-result-id]="item.uniqueId" referrerpolicy="no-referrer"><ng-container [ngTemplateOutlet]="passage" [ngTemplateOutletContext]="{ $implicit: item.titleParts }" /></a>} @else {<ng-container [ngTemplateOutlet]="passage" [ngTemplateOutletContext]="{ $implicit: item.titleParts }" />}</h2>}
                     @if (item.descriptionParts.length) {
-                      <p class="search-starter__result-description" [attr.lang]="resultLanguage"><ng-container [ngTemplateOutlet]="passage" [ngTemplateOutletContext]="{ $implicit: item.descriptionParts }" /></p>
+                      <p class="search-starter__result-description" [attr.lang]="resultLanguage">{{ item.descriptionLabel ? item.descriptionLabel + ': ' : '' }}<ng-container [ngTemplateOutlet]="passage" [ngTemplateOutletContext]="{ $implicit: item.descriptionParts }" /></p>
                     }
-                    @for (field of item.otherFields; track $index) {<p>{{ field.label ? field.label + ': ' : '' }}<ng-container [ngTemplateOutlet]="passage" [ngTemplateOutletContext]="{ $implicit: field.parts }" /></p>}
+                    @for (field of item.otherFields; track $index) {
+                      <p [attr.class]="field.className || null">
+                        {{ field.label ? field.label + ': ' : '' }}
+                        @if (field.imageURL) {
+                          <img class="mapped-result-thumbnail" [src]="field.imageURL" alt="" referrerpolicy="no-referrer">
+                        } @else if (field.dateTime) {
+                          <time [attr.datetime]="field.dateTime">{{ field.dateTime }}</time>
+                        } @else {
+                          <ng-container [ngTemplateOutlet]="passage" [ngTemplateOutletContext]="{ $implicit: field.parts }" />
+                        }
+                      </p>
+                    }
                   </div>
                 </article>
               }

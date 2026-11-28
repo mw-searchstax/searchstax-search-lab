@@ -281,8 +281,13 @@ onBeforeUnmount(() => {
                   <div class="result-card-content">
                     <span v-if="item.ribbonParts.length" class="searchstax-search-result-ribbon"><Passage :parts="item.ribbonParts" /></span>
                     <h2 v-if="item.hasTitle" :lang="resultLanguage"><a v-if="item.url" :href="item.url" :target="design.resultLinkTarget === '_blank' ? '_blank' : '_self'" :rel="design.resultLinkTarget === '_blank' ? 'noopener noreferrer' : undefined" :data-result-id="item.uniqueId" referrerpolicy="no-referrer"><Passage :parts="item.titleParts" /></a><Passage v-else :parts="item.titleParts" /></h2>
-                    <p v-if="item.descriptionParts.length" class="search-starter__result-description" :lang="resultLanguage"><Passage :parts="item.descriptionParts" /></p>
-                    <p v-for="(field, i) in item.otherFields" :key="i">{{ field.label ? field.label + ': ' : '' }}<Passage :parts="field.parts" /></p>
+                    <p v-if="item.descriptionParts.length" class="search-starter__result-description" :lang="resultLanguage">{{ item.descriptionLabel ? item.descriptionLabel + ': ' : '' }}<Passage :parts="item.descriptionParts" /></p>
+                    <p v-for="(field, i) in item.otherFields" :key="i" :class="field.className || undefined">
+                      {{ field.label ? field.label + ': ' : '' }}
+                      <img v-if="field.imageURL" class="mapped-result-thumbnail" :src="field.imageURL" alt="" referrerpolicy="no-referrer">
+                      <time v-else-if="field.dateTime" :datetime="field.dateTime">{{ field.dateTime }}</time>
+                      <Passage v-else :parts="field.parts" />
+                    </p>
                   </div>
                   </article>
                 </template>
